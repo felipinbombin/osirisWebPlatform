@@ -1,6 +1,7 @@
-{% load static %}
+{% load i18n static %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %} >
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Meta, title, CSS, favicons, etc. -->
@@ -18,120 +19,14 @@
     <!-- NProgress -->
     <link href="{% static gentelella_static|add:"nprogress/nprogress.css" %}" rel="stylesheet">
     <!-- Custom Theme Style -->
-    <link href="{% static gentelella_static|add:"../build/css/custom.min.css" %}" rel="stylesheet">
-    {# css block for specific css #}
-    {% block css %}{% endblock %}
+    <link href="{% block stylesheet %}{% static gentelella_static|add:"../build/css/custom.min.css" %}{% endblock %}" rel="stylesheet">
+    {% block extrastyle %}{% endblock %}
+    {% block extrahead %}{% endblock %}
+    {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
   </head>
 
-  <body class="nav-md">
-    <div class="container body">
-      <div class="main_container">
-        <div class="col-md-3 left_col">
-          <div class="left_col scroll-view">
-            <div class="navbar nav_title" style="border: 0;">
-              <a href="index.html" class="site_title"><i class="fa fa-dashboard"></i> <span>Osiris web!</span></a>
-            </div>
-
-            <div class="clearfix"></div>
-
-            <br />
-
-            <!-- sidebar menu -->
-            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-              <div class="menu_section">
-                <h3>Ayuda</h3>
-                <ul class="nav side-menu">
-                  <li><a href="javascript:void(0)"><i class="fa fa-laptop"></i> Manual de uso</a></li>
-                </ul>
-              </div>
-              <div class="menu_section">
-                <h3>Administración</h3>
-                <ul class="nav side-menu">
-                  <li><a href="javascript:void(0)"><i class="fa fa-laptop"></i> Usuarios</a></li>
-                </ul>
-              </div>
-              <div class="menu_section">
-                <h3>Escenarios</h3>
-                <ul class="nav side-menu">
-                  <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="index.html">Dashboard</a></li>
-                      <li><a href="index2.html">Dashboard2</a></li>
-                      <li><a href="index3.html">Dashboard3</a></li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-              <div class="menu_section">
-                <h3>Visualizaciones</h3>
-                <ul class="nav side-menu">
-                  <li><a><i class="fa fa-bug"></i> Velocidad<span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="e_commerce.html">E-commerce</a></li>
-                    </ul>
-                  </li>
-                  <li><a><i class="fa fa-windows"></i> Fuerza y tracción <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="page_403.html">403 Error</a></li>
-                    </ul>
-                  </li>
-                  <li><a><i class="fa fa-windows"></i> Energía <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="page_403.html">403 Error</a></li>
-                    </ul>
-                  </li>
-                  <li><a><i class="fa fa-windows"></i> Calor <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="page_403.html">403 Error</a></li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <!-- /sidebar menu -->
-          </div>
-        </div>
-
-        <!-- top navigation -->
-        <div class="top_nav">
-          <div class="nav_menu">
-            <nav>
-              <div class="nav toggle">
-                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-              </div>
-
-              <ul class="nav navbar-nav navbar-right">
-                <li class="">
-                  <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    Felipe Hernández
-                    <span class=" fa fa-angle-down"></span>
-                  </a>
-                  <ul class="dropdown-menu dropdown-usermenu pull-right">
-                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar sesión</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-        <!-- /top navigation -->
-
-        <!-- page content -->
-        <div class="right_col" role="main">
-          {% block content %}{% endblock %}
-        </div>
-        <!-- /page content -->
-
-        <!-- footer content
-        <footer>
-          <div class="pull-right">
-            Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
-          </div>
-          <div class="clearfix"></div>
-        </footer>
-         /footer content -->
-      </div>
-    </div>
+  <body class="{% block bodyclass %}{% endblock %}" data-admin-utc-offset="{% now "Z" %}">
+    {% block basecontent %}{% endblock %}
 
     <!-- jQuery -->
     <script src="{% static gentelella_static|add:"jquery/dist/jquery.min.js" %}"></script>
@@ -143,9 +38,7 @@
     <script src="{% static gentelella_static|add:"nprogress/nprogress.js" %}"></script>
     <!-- Custom Theme Scripts -->
     <script src="{% static gentelella_static|add:"../build/js/custom.min.js" %}"></script>
-
-    {# javascript block for specific css #}
-    {% block js %}{% endblock %}
     {% endwith %}
+    {% block extrajs %}{% endblock %}
   </body>
 </html>

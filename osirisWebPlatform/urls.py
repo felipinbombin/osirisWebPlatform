@@ -16,9 +16,11 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name="base.html")),
+    url(r'^$', login_required(TemplateView.as_view(template_name="base_site.html")), name="index"),
     url(r'^admin/', admin.site.urls),
     url(r'^scene/', include('scene.urls')),
+    url(r'^myadmin/', include('myadmin.urls')),
 ]
