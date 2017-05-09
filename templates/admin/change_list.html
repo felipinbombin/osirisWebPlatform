@@ -3,7 +3,7 @@
 
 {% block extrastyle %}
   {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}" />
+  <!--<link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}" />-->
   {% if cl.formset %}
     <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />
   {% endif %}
@@ -36,7 +36,7 @@
             {% if has_add_permission %}
             <li>
               {% url cl.opts|admin_urlname:'add' as add_url %}
-              <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
+              <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink" style="color:#2A3F54">
               <i class="fa fa-plus fa-lg"></i> {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
               </a>
             </li>

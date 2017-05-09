@@ -6,9 +6,9 @@ from django.contrib.auth.models import Group, User
 
 # Register your models here.
 admin.site.unregister(Group)
-admin.site.unregister(User)
+#admin.site.unregister(User)
 
-class UserAdmin(models.Admin):
-    pass
+#class UserAdmin(models.Admin):
+#    pass
 
-admin.site.register(User, UserAdmin)
+#admin.site.register(User, UserAdmin)
