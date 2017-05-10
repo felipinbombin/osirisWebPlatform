@@ -16,6 +16,23 @@
       #changelist table thead th:first-child {width: inherit}
     </style>
   {% endif %}
+  <style>
+.fa.fa-sort:after {
+  position: absolute;
+  content: "/";
+  color: red;
+  font-weight: 700;
+  font-size: 1.7em;
+  left: 0px;
+  top: -5px;
+}
+.sortremove {
+  display: none;
+}
+.sortable:hover a {
+  display: inline;
+}
+  </style>
 {% endblock %}
 
 {% block extrahead %}
