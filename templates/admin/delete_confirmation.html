@@ -51,7 +51,7 @@
             {% if to_field %}
               <input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}" />
             {% endif %}
-            <input type="btn btn-danger submit" value="{% trans "Yes, I'm sure" %}" />
+            <input type="submit" class="btn btn-danger submit" value="{% trans "Yes, I'm sure" %}" />
             <a href="#" class="btn btn-warning cancel-link">{% trans "No, take me back" %}</a>
           </div>
         </form>
