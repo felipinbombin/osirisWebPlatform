@@ -39,7 +39,7 @@
               {% if user.is_staff %}
               <li><a><i class="fa fa-users"></i> Administración <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
-                  <li><a href="{% url "users" %}"> Usuarios</a></li>
+                  <li><a href="{% url "admin:index" %}"> Usuarios</a></li>
                 </ul>
               </li>
               {% endif %}
@@ -88,7 +88,7 @@
                 {% if user.has_usable_password %}
                 <li><a href="{% url 'admin:password_change' %}"><i class="fa fa-edit pull-right"></i> Cambiar contraseña</a></li>
                 {% endif %}
-                <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out pull-right"></i> Cerrar sesión</a></li>
+                <li><a href="{% url 'admin:logout' %}"><i class="fa fa-sign-out pull-right"></i> Cerrar sesión</a></li>
               </ul>
             </li>
           </ul>
