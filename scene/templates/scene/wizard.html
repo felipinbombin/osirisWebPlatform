@@ -1,0 +1,307 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+  {{ media }}
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />
+  {% with "components/gentelella/vendors/" as gentelella_static %}
+    <link href="{% static gentelella_static|add:"jQuery-Smart-Wizard/styles/smart_wizard.css" %}" rel="stylesheet" />
+    <link href="{% static gentelella_static|add:"dropzone/dist/min/dropzone.min.css" %}" rel="stylesheet" />
+  {% endwith %}
+{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}
+  {{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="col-md-12 col-sm-12 col-xs-12">
+  <div id="wizard" class="form_wizard wizard_horizontal">
+    <ul class="wizard_steps">
+      <li>
+         <a href="#step-1">
+           <span class="step_no">1</span>
+           <span class="step_descr">
+             Variables <br />topológicas<br />
+             <small>Globales</small>
+           </span>
+         </a>
+       </li>
+       <li>
+         <a href="#step-2">
+          <span class="step_no">2</span>
+          <span class="step_descr">
+            Subir Archivo <br /> topológico<br />
+            <small>Detalle topológico</small>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a href="#step-3">
+          <span class="step_no">3</span>
+          <span class="step_descr">
+             Variables <br />sistemicas<br />
+             <small>Globales</small>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a href="#step-4">
+          <span class="step_no">4</span>
+          <span class="step_descr">
+            Subir Archivo <br />sistemico<br />
+            <small>Detalle sistemico</small>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a href="#step-5">
+          <span class="step_no">5</span>
+          <span class="step_descr">
+            Variables <br />operacionales<br />
+            <small>Globales</small>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a href="#step-6">
+          <span class="step_no">6</span>
+          <span class="step_descr">
+            Subir Archivo<br />operacional<br />
+            <small>Detalle</small>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a href="#step-7">
+          <span class="step_no">7</span>
+          <span class="step_descr">
+            Subir Archivo<br />de Velocidades<br />
+            <small>Detalle</small>
+          </span>
+        </a>
+      </li>
+    </ul>
+    <div id="step-1">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Variables topológicas</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <h2>Líneas de metro</h2>
+            <p>A continuación debe indicar las líneas presentes en el sistema, para lo cual debe definir un nombre y un número de estaciones.</p>
+            <form id="lineContainer" class="form-horizontal form-label-left input_mask">
+              <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                <input type="text" class="form-control has-feedback-left" id="lineName1" placeholder="Nombre de línea">
+                <span class="fa fa-ellipsis-h form-control-feedback left" aria-hidden="true"></span>
+              </div>
+              <div class="col-md-4 col-sm-4 col-xs-12 form-group has-feedback">
+                <input type="text" class="form-control has-feedback-left" id="stationQuantity1" placeholder="Número de estaciones">
+                <span class="fa fa-bank form-control-feedback left" aria-hidden="true"></span>
+              </div>
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <button type="submit" class="btn btn-success">agregar línea</button>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <h2>Conexiones</h2>
+            <p>La conexión se realiza mediante la elección de la línea y estación </p>
+            <form id="lineContainer" class="form-horizontal form-label-left input_mask">
+              <div class="col-md-2 col-sm-3 col-xs-12 form-group">
+                <input type="text" class="form-control has-feedback-left" id="lineName1" placeholder="Nombre">
+                <span class="fa fa-exchange form-control-feedback left" aria-hidden="true"></span>
+              </div>
+              <div class="col-md-2 col-sm-2 col-xs-12 form-group has-feedback">
+                <select type="text" class="form-control has-feedback-left"  style="padding-right:0px" id="stationQuantity1" placeholder="Línea">
+                  <option>L1</option>
+                  <option>L2</option>
+                </select>
+                <span class="fa fa-ellipsis-h form-control-feedback left" aria-hidden="true"></span>
+              </div>
+              <div class="col-md-1 col-sm-2 col-xs-12 form-group has-feedback">
+                <select type="text" class="form-control"  style="padding-right:0px" id="stationQuantity1" placeholder="Estación">
+                  <option>S1</option>
+                  <option>S2</option>
+                </select>
+              </div>
+              <div class="col-md-2 col-sm-2 col-xs-12 form-group has-feedback">
+                <select type="text" class="form-control has-feedback-left"  style="padding-right:0px" id="stationQuantity1" placeholder="Línea">
+                  <option>L1</option>
+                  <option>L2</option>
+                </select>
+                <span class="fa fa-ellipsis-h form-control-feedback left" aria-hidden="true"></span>
+              </div>
+              <div class="col-md-1 col-sm-2 col-xs-12 form-group has-feedback">
+                <select type="text" class="form-control"  style="padding-right:0px" id="stationQuantity1" placeholder="Estación">
+                  <option>S1</option>
+                  <option>S2</option>
+                </select>
+              </div>
+              <div class="col-md-2 col-sm-2 col-xs-12 form-group has-feedback">
+                <input type="text" class="form-control has-feedback-left"  style="padding-right:0px" id="stationQuantity1" placeholder="Altura promedio">
+                <span class="fa fa-crop form-control-feedback left" aria-hidden="true"></span>
+              </div>
+              <div class="col-md-2 col-sm-2 col-xs-12 form-group has-feedback">
+                <input type="text" class="form-control has-feedback-left"  style="padding-right:0px" id="stationQuantity1" placeholder="Superficie promedio">
+                <span class="fa fa-cube form-control-feedback left" aria-hidden="true"></span>
+              </div>
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <button type="submit" class="btn btn-success">agregar conexión</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="step-2">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Subir archivo topológico</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <p>La estructura general del sistema de metro se ha generado. En este paso debe realizar las siguientes tareas:</p>
+          <ul>
+            <li>Descargar el archivo de detalle del sistema topológico (botón "Descargar plantilla Excel")</li>
+            <li>Completar el archivo descargado en el paso anterior respetando la estructura que allí se presenta</li>
+            <li>Una vez completado, arrastrar el archivo al cuadro de la derecha</li>
+          </ul>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <button type="button" class="btn btn-info btn-lg btn-block"><i class="fa fa-file-excel-o fa-5x"></i><br />Descargar plantilla<br />Excel</button>   
+          </div>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <form action='uploadTopologicFile' class="dropzone">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="step-3">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Variables sistemicas globales</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+        </div>
+      </div>
+    </div>
+    <div id="step-4">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Subir archivo sistemico</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <p>En este paso debe realizar las siguientes tareas:</p>
+          <ul>
+            <li>Descargar el archivo de detalle sistemico (botón "Descargar plantilla Excel")</li>
+            <li>Completar el archivo descargado en el paso anterior respetando la estructura que allí se presenta</li>
+            <li>Una vez completado, arrastrar el archivo al cuadro de la derecha</li>
+          </ul>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <button type="button" class="btn btn-info btn-lg btn-block"><i class="fa fa-file-excel-o fa-5x"></i><br />Descargar plantilla<br />Excel</button>   
+          </div>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <form action='uploadTopologicFile' class="dropzone">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="step-5">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Variables operacionales globales</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="step-6">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Subir archivo operacional</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <p>En este paso debe realizar las siguientes tareas:</p>
+          <ul>
+            <li>Descargar el archivo de detalle operacional (botón "Descargar plantilla Excel")</li>
+            <li>Completar el archivo descargado en el paso anterior respetando la estructura que allí se presenta</li>
+            <li>Una vez completado, arrastrar el archivo al cuadro de la derecha</li>
+          </ul>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <button type="button" class="btn btn-info btn-lg btn-block"><i class="fa fa-file-excel-o fa-5x"></i><br />Descargar plantilla<br />Excel</button>   
+          </div>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <form action='uploadTopologicFile' class="dropzone">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="step-7">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Subir archivo de velocidades</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <p>En este paso debe realizar las siguientes tareas:</p>
+          <ul>
+            <li>Descargar el archivo de detalle operacional (botón "Descargar plantilla Excel")</li>
+            <li>Completar el archivo descargado en el paso anterior respetando la estructura que allí se presenta</li>
+            <li>Una vez completado, arrastrar el archivo al cuadro de la derecha</li>
+          </ul>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <button type="button" class="btn btn-info btn-lg btn-block"><i class="fa fa-file-excel-o fa-5x"></i><br />Descargar plantilla<br />Excel</button>   
+          </div>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <form action='uploadTopologicFile' class="dropzone">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extrajs %}
+  {% with "components/gentelella/vendors/" as gentelella_static %}
+    <script src="{% static gentelella_static|add:"jQuery-Smart-Wizard/js/jquery.smartWizard.js" %}"></script>
+    <script src="{% static gentelella_static|add:"dropzone/dist/min/dropzone.min.js" %}"></script>
+  {% endwith %}
+  <script>
+    $('#wizard').smartWizard({
+      labelNext:'Siguiente', 
+      labelPrevious:'Anterior',
+      labelFinish:'Finalizar',  
+      buttonOrder: ['prev', 'next', 'finish']
+    });
+
+    $('.buttonNext').addClass('btn btn-success');
+    $('.buttonPrevious').addClass('btn btn-primary');
+    $('.buttonFinish').addClass('btn btn-default');
+
+    $(document).ready(function(){
+      
+      let row = ''
+    });
+  </script>
+{% endblock %}

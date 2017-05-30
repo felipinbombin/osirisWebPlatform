@@ -7,14 +7,31 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Scene(models.Model):
     ''' group of parameter to run models '''
-    name = models.CharField(max_length=100)
-    timeCreation = models.DateTimeField(null=False)
+    name = models.CharField('Nombre', max_length=100)
+    timeCreation = models.DateTimeField('Fecha de creación', null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    INCOMPLETE = 'In'
+    OK = 'OK' 
+    STATUS = (
+        (INCOMPLETE, 'Incompleto'),
+        (OK, 'Completo'),
+    )
+    status = models.CharField('Estado', max_length=2, choices=STATUS, default=INCOMPLETE)
     #######################################################
     # GLOBAL CONDITION
     #######################################################
     averageMassOfAPassanger = models.FloatField(null=True)
     annualTemperatureAverage = models.FloatField(null=True)
+
+    def metroLineQuantity(self):
+        return self.metroline_set.count()
+    metroLineQuantity.short_description = 'Cantidad de líneas'
+    metroLineQuantity =property(metroLineQuantity)
+
+    class Meta:
+        verbose_name = 'escenario'
+        verbose_name_plural = 'escenarios'
 
 class MetroLine(models.Model):
     ''' metro line '''
