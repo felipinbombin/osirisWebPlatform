@@ -90,3 +90,5 @@ myenv/
 .ropeproject
 
 osirisWebPlatform/keys/
+static
+bowerapp/static
