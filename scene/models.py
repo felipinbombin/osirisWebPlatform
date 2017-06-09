@@ -33,6 +33,9 @@ class Scene(models.Model):
         verbose_name = 'escenario'
         verbose_name_plural = 'escenarios'
 
+    def __str__(self):
+        return self.name
+
 class MetroLine(models.Model):
     ''' metro line '''
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)

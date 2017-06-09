@@ -20,7 +20,7 @@ from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     url(r'^$', login_required(TemplateView.as_view(template_name="base_site.html")), name="index"),
+    url(r'^admin/', include('scene.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^scene/', include('scene.urls')),
     url(r'^myadmin/', include('myadmin.urls')),
 ]
