@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from django.shortcuts import render
@@ -10,7 +11,7 @@ from django.views.generic import View
 
 from .forms import FirstStepForm, SecondStepForm, ThirdStepForm, FourthStepForm, FithStepForm, SixthStepForm
 
-class FirstStepView(View):
+class StepsView(View):
     ''' wizard form: first  '''
     def __init__(self):
         self.context = {}
@@ -30,7 +31,7 @@ class FirstStepView(View):
 
         return render(request, self.template, {'form': form})
 
-    def get(self, request):
+    def get(self, request, sceneId):
     # if a GET (or any other method) we'll create a blank form
         form = FirstStepForm()
 

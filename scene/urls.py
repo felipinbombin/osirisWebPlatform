@@ -1,7 +1,8 @@
 from django.conf.urls import url
-from .views import FirstStepView
+from .views import StepsView
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    url(r'^scene/scene/step1/(?P<sceneId>[0-9]+)$', FirstStepView.as_view()),
+    url(r'^scene/wizard/(?P<sceneId>[0-9]+)$', login_required(StepsView.as_view()), name='wizard'),
 #    url(r'^$', RoutePlanner.as_view()),
 ]

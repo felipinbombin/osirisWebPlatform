@@ -14,7 +14,7 @@ class SceneAdmin(admin.ModelAdmin):
         (None, {'fields': ('name',)}),
     )
     list_filter = []
-    list_display = ('name', 'timeCreation', 'metroLineQuantity', 'status')
+    list_display = ('name', 'timeCreation', 'status')
 
     def save_model(self, request, obj, form, change):
         obj.user = request.user
@@ -30,7 +30,7 @@ class SceneAdmin(admin.ModelAdmin):
         return super(SceneAdmin, self).add_view(request, form_url, extra_context)
 
     def response_add(self, request, obj, post_url_continue=None):
-        url = '/admin/scene/scene/step1/{}'.format(obj.id)
+        url = '/admin/scene/wizard/{}'.format(obj.id)
         return redirect(url)
         return super(SceneAdmin, self).response_add(request, ibj, post_url_continue)
 
