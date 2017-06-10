@@ -15,6 +15,24 @@
   {% endwith %}
   <link href="{% static "components/smartwizard/dist/css/smart_wizard.css" %}" rel="stylesheet" />
   <link href="{% static "components/smartwizard/dist/css/smart_wizard_theme_circles.css" %}" rel="stylesheet" />
+  <link href="{% static "components/smartwizard/dist/css/smart_wizard_theme_dots.css" %}" rel="stylesheet" />
+  <style>
+    .sw-theme-dots .step-content {
+      background-color: inherit;
+    }
+    .sw-theme-dots > ul.step-anchor > li.active > a {
+      color: #34495E;
+    }
+    .sw-theme-dots > ul.step-anchor > li.done > a {
+      color: #169F85;
+    }
+    .sw-theme-dots > ul.step-anchor > li.done > a:after {
+      background: #169F85;
+    }
+    .sw-theme-dots > ul.step-anchor > li.active > a:after {
+      background: #34495E;
+    }
+  </style>
 {% endblock %}
 
 {% block coltype %}colM{% endblock %}
@@ -27,6 +45,7 @@
 <div id="content-main" class="col-md-12 col-sm-12 col-xs-12">
   <div id="wizard">
     {% include 'scene/stepsHeader.html' %}
+    <div>
     <div id="step-1" style="display: none">
       {% include 'scene/step1.html' %}
     </div>
@@ -145,6 +164,7 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </div>
 {% endblock %}
@@ -162,8 +182,21 @@
       labelPrevious:'Anterior',
       labelFinish:'Finalizar',  
       autoAdjustHeight: false,
-      
-      buttonOrder: ['prev', 'next', 'finish']
+      theme: 'dots',
+      lang: {
+        next: 'Siguiente',
+        previous: 'Anterior',
+      },
+      toolbarSettings: {
+        toolbarPosition: 'top',
+      },
+      toolbarExtraButtons: [
+        $('<button></button>').text('Finalizar')
+          .addClass('btn btn-success')
+         .on('click', function(){ 
+           alert('Finsih button click');                            
+	 })
+      ],
     });
    
     $('.buttonNext').addClass('btn btn-success');
