@@ -1,0 +1,121 @@
+<!--
+<div class="x_panel">
+  <div class="x_title">
+    <h3>Variables topológicas</h3>
+    <div class="clearfix"></div>
+  </div>
+  <div class="x_content">
+    <p>Aquí va una breve explicación de lo que el usuario debe realizar al momento de agregar datos en este paso</p>
+  </div>
+</div>
+-->
+<div class="row">
+  <div class="col-md-6">
+    <div class="x_panel">
+      <div class="row x_title">
+        <div class="col-md-6">
+          <h2>Líneas de metro (<strong data-bind="text: linesQuantity"></strong>)</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="col-md-6">
+          <button type="submit" class="pull-right btn btn-success btn-sm" data-bind="click: openAddLineForm">
+            <i class="fa fa-plus" aria-hidden="true"></i> agregar
+          </button>
+        </div>
+      </div>
+      <div class="x_content">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <table class="table table-striped" data-bind="visible: lines().length>0">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th># estaciones</th>
+                <th>Editar estaciones</th>
+                <th>Eliminar línea</th>
+              </tr>
+            </thead>
+            <tbody data-bind="foreach: lines">
+              <tr>
+                <td data-bind="text: name"></td>
+                <td data-bind="text: stationsQuantity"></td>
+                <td><button type="button" class="btn btn-info btn-xs" data-bind="click: $parent.showStations">Editar</button></td>
+                <td><button type="button" class="btn btn-danger btn-xs" data-bind="click: $parent.removeLine">Eliminar</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="x_panel">
+      <div class="row x_title">
+        <div class="col-md-6">
+          <h2>Conexiones</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="col-md-6">
+          <button type="submit" class="pull-right btn btn-success btn-sm">
+            <i class="fa fa-plus" aria-hidden="true"></i> agregar
+          </button>
+        </div>
+      </div>
+      <div class="x_content">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+  
+        </div>
+      </div>
+    </div>
+
+    <div class="x_panel">
+      <div class="row x_title">
+        <div class="col-md-6">
+          <h2>Depósitos</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="col-md-6">
+          <button type="submit" class="pull-right btn btn-success btn-sm">
+            <i class="fa fa-plus" aria-hidden="true"></i> agregar
+          </button>
+        </div>
+      </div>
+      <div class="x_content">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+  
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- modal to add line -->
+<div class="modal fade" tabindex="-1" role="dialog" data-bind="modal: showDialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Agregar Línea</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-horizontal form-label-left">
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Nombre</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="text" class="form-control" data-bind="value: lineName">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12"># estaciones</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="text" class="form-control" data-bind="value: stationsQuantity">
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bind="click : addLine" autofocus>Crear</button>
+      </div>
+    </div>
+  </div>
+</div>
