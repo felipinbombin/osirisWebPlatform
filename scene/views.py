@@ -9,6 +9,10 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.views.generic import View
 
+from django.http import Http404
+
+from .models import Scene
+
 from .forms import FirstStepForm, SecondStepForm, ThirdStepForm, FourthStepForm, FithStepForm, SixthStepForm
 
 class StepsView(View):
@@ -32,7 +36,10 @@ class StepsView(View):
         return render(request, self.template, {'form': form})
 
     def get(self, request, sceneId):
-    # if a GET (or any other method) we'll create a blank form
-        form = FirstStepForm()
 
-        return render(request, self.template, {'form': form})
+        try:
+            self.context['scene'] = Scene.objects.get(user=request.user, id=sceneId)
+        except:
+            raise Http404
+
+        return render(request, self.template, self.context)

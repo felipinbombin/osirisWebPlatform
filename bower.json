@@ -16,6 +16,8 @@
     "tests"
   ],
   "dependencies": {
-    "gentelella": "^1.4.0"
+    "gentelella": "^1.4.0",
+    "knockout": "knockoutjs#^3.4.2",
+    "smartwizard": "^4.2.2"
   }
 }

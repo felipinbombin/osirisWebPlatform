@@ -11,9 +11,10 @@
   {{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />
   {% with "components/gentelella/vendors/" as gentelella_static %}
-    <link href="{% static gentelella_static|add:"jQuery-Smart-Wizard/styles/smart_wizard.css" %}" rel="stylesheet" />
     <link href="{% static gentelella_static|add:"dropzone/dist/min/dropzone.min.css" %}" rel="stylesheet" />
   {% endwith %}
+  <link href="{% static "components/smartwizard/dist/css/smart_wizard.css" %}" rel="stylesheet" />
+  <link href="{% static "components/smartwizard/dist/css/smart_wizard_theme_circles.css" %}" rel="stylesheet" />
 {% endblock %}
 
 {% block coltype %}colM{% endblock %}
@@ -24,147 +25,12 @@
 
 {% block content %}
 <div id="content-main" class="col-md-12 col-sm-12 col-xs-12">
-  <div id="wizard" class="form_wizard wizard_horizontal">
-    <ul class="wizard_steps">
-      <li>
-         <a href="#step-1">
-           <span class="step_no">1</span>
-           <span class="step_descr">
-             Variables <br />topológicas<br />
-             <small>Globales</small>
-           </span>
-         </a>
-       </li>
-       <li>
-         <a href="#step-2">
-          <span class="step_no">2</span>
-          <span class="step_descr">
-            Subir Archivo <br /> topológico<br />
-            <small>Detalle topológico</small>
-          </span>
-        </a>
-      </li>
-      <li>
-        <a href="#step-3">
-          <span class="step_no">3</span>
-          <span class="step_descr">
-             Variables <br />sistemicas<br />
-             <small>Globales</small>
-          </span>
-        </a>
-      </li>
-      <li>
-        <a href="#step-4">
-          <span class="step_no">4</span>
-          <span class="step_descr">
-            Subir Archivo <br />sistemico<br />
-            <small>Detalle sistemico</small>
-          </span>
-        </a>
-      </li>
-      <li>
-        <a href="#step-5">
-          <span class="step_no">5</span>
-          <span class="step_descr">
-            Variables <br />operacionales<br />
-            <small>Globales</small>
-          </span>
-        </a>
-      </li>
-      <li>
-        <a href="#step-6">
-          <span class="step_no">6</span>
-          <span class="step_descr">
-            Subir Archivo<br />operacional<br />
-            <small>Detalle</small>
-          </span>
-        </a>
-      </li>
-      <li>
-        <a href="#step-7">
-          <span class="step_no">7</span>
-          <span class="step_descr">
-            Subir Archivo<br />de Velocidades<br />
-            <small>Detalle</small>
-          </span>
-        </a>
-      </li>
-    </ul>
-    <div id="step-1">
-      <div class="x_panel">
-        <div class="x_title">
-          <h2>Variables topológicas</h2>
-          <div class="clearfix"></div>
-        </div>
-        <div class="x_content">
-          <div class="col-md-12 col-sm-12 col-xs-12">
-            <h2>Líneas de metro</h2>
-            <p>A continuación debe indicar las líneas presentes en el sistema, para lo cual debe definir un nombre y un número de estaciones.</p>
-            <form id="lineContainer" class="form-horizontal form-label-left input_mask">
-              <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                <input type="text" class="form-control has-feedback-left" id="lineName1" placeholder="Nombre de línea">
-                <span class="fa fa-ellipsis-h form-control-feedback left" aria-hidden="true"></span>
-              </div>
-              <div class="col-md-4 col-sm-4 col-xs-12 form-group has-feedback">
-                <input type="text" class="form-control has-feedback-left" id="stationQuantity1" placeholder="Número de estaciones">
-                <span class="fa fa-bank form-control-feedback left" aria-hidden="true"></span>
-              </div>
-              <div class="col-md-12 col-sm-12 col-xs-12">
-                <button type="submit" class="btn btn-success">agregar línea</button>
-              </div>
-            </form>
-          </div>
-          <div class="col-md-12 col-sm-12 col-xs-12">
-            <h2>Conexiones</h2>
-            <p>La conexión se realiza mediante la elección de la línea y estación </p>
-            <form id="lineContainer" class="form-horizontal form-label-left input_mask">
-              <div class="col-md-2 col-sm-3 col-xs-12 form-group">
-                <input type="text" class="form-control has-feedback-left" id="lineName1" placeholder="Nombre">
-                <span class="fa fa-exchange form-control-feedback left" aria-hidden="true"></span>
-              </div>
-              <div class="col-md-2 col-sm-2 col-xs-12 form-group has-feedback">
-                <select type="text" class="form-control has-feedback-left"  style="padding-right:0px" id="stationQuantity1" placeholder="Línea">
-                  <option>L1</option>
-                  <option>L2</option>
-                </select>
-                <span class="fa fa-ellipsis-h form-control-feedback left" aria-hidden="true"></span>
-              </div>
-              <div class="col-md-1 col-sm-2 col-xs-12 form-group has-feedback">
-                <select type="text" class="form-control"  style="padding-right:0px" id="stationQuantity1" placeholder="Estación">
-                  <option>S1</option>
-                  <option>S2</option>
-                </select>
-              </div>
-              <div class="col-md-2 col-sm-2 col-xs-12 form-group has-feedback">
-                <select type="text" class="form-control has-feedback-left"  style="padding-right:0px" id="stationQuantity1" placeholder="Línea">
-                  <option>L1</option>
-                  <option>L2</option>
-                </select>
-                <span class="fa fa-ellipsis-h form-control-feedback left" aria-hidden="true"></span>
-              </div>
-              <div class="col-md-1 col-sm-2 col-xs-12 form-group has-feedback">
-                <select type="text" class="form-control"  style="padding-right:0px" id="stationQuantity1" placeholder="Estación">
-                  <option>S1</option>
-                  <option>S2</option>
-                </select>
-              </div>
-              <div class="col-md-2 col-sm-2 col-xs-12 form-group has-feedback">
-                <input type="text" class="form-control has-feedback-left"  style="padding-right:0px" id="stationQuantity1" placeholder="Altura promedio">
-                <span class="fa fa-crop form-control-feedback left" aria-hidden="true"></span>
-              </div>
-              <div class="col-md-2 col-sm-2 col-xs-12 form-group has-feedback">
-                <input type="text" class="form-control has-feedback-left"  style="padding-right:0px" id="stationQuantity1" placeholder="Superficie promedio">
-                <span class="fa fa-cube form-control-feedback left" aria-hidden="true"></span>
-              </div>
-              <div class="col-md-12 col-sm-12 col-xs-12">
-                <button type="submit" class="btn btn-success">agregar conexión</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+  <div id="wizard">
+    {% include 'scene/stepsHeader.html' %}
+    <div id="step-1" style="display: none">
+      {% include 'scene/step1.html' %}
     </div>
-    <div id="step-2">
+    <div id="step-2" style="display: none">
       <div class="x_panel">
         <div class="x_title">
           <h2>Subir archivo topológico</h2>
@@ -187,7 +53,7 @@
         </div>
       </div>
     </div>
-    <div id="step-3">
+    <div id="step-3" style="display: none">
       <div class="x_panel">
         <div class="x_title">
           <h2>Variables sistemicas globales</h2>
@@ -197,7 +63,7 @@
         </div>
       </div>
     </div>
-    <div id="step-4">
+    <div id="step-4" style="display: none">
       <div class="x_panel">
         <div class="x_title">
           <h2>Subir archivo sistemico</h2>
@@ -220,7 +86,7 @@
         </div>
       </div>
     </div>
-    <div id="step-5">
+    <div id="step-5" style="display: none">
       <div class="x_panel">
         <div class="x_title">
           <h2>Variables operacionales globales</h2>
@@ -233,7 +99,7 @@
         </div>
       </div>
     </div>
-    <div id="step-6">
+    <div id="step-6" style="display: none">
       <div class="x_panel">
         <div class="x_title">
           <h2>Subir archivo operacional</h2>
@@ -256,7 +122,7 @@
         </div>
       </div>
     </div>
-    <div id="step-7">
+    <div id="step-7" style="display: none">
       <div class="x_panel">
         <div class="x_title">
           <h2>Subir archivo de velocidades</h2>
@@ -284,24 +150,123 @@
 {% endblock %}
 {% block extrajs %}
   {% with "components/gentelella/vendors/" as gentelella_static %}
-    <script src="{% static gentelella_static|add:"jQuery-Smart-Wizard/js/jquery.smartWizard.js" %}"></script>
     <script src="{% static gentelella_static|add:"dropzone/dist/min/dropzone.min.js" %}"></script>
   {% endwith %}
+    <script src="{% static "components/smartwizard/dist/js/jquery.smartWizard.min.js" %}"></script>
+  <script src="{% static "components/knockout/dist/knockout.debug.js" %}"></script>
   <script>
+  $(document).ready(function(){
+    // set wizard
     $('#wizard').smartWizard({
       labelNext:'Siguiente', 
       labelPrevious:'Anterior',
       labelFinish:'Finalizar',  
+      autoAdjustHeight: false,
+      
       buttonOrder: ['prev', 'next', 'finish']
     });
-
+   
     $('.buttonNext').addClass('btn btn-success');
     $('.buttonPrevious').addClass('btn btn-primary');
     $('.buttonFinish').addClass('btn btn-default');
 
-    $(document).ready(function(){
-      
-      let row = ''
-    });
+    //init_sidebar();
+    console.log({{ scene.lastSuccessfullStep }});
+
+    /**************************************************
+    * CUSTOM BINDING HANDLERS
+    ***************************************************/
+    ko.bindingHandlers.modal = {
+      init: function(element, valueAccessor){
+        $(element).modal({
+            show: false
+        });
+        
+        var value = valueAccessor();
+        if(typeof value === 'function'){
+          $(element).on('hide.bs.modal', function(){
+            value(false);
+          });
+        }
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function(){
+          $(element).modal("destroy");
+        });
+      },
+      update: function (element, valueAccessor) {
+        var value = valueAccessor();
+        if (ko.utils.unwrapObservable(value)) {
+          $(element).modal('show');
+        } else {
+          $(element).modal('hide');
+        }
+      }
+    };
+    /**************************************************
+    * STEP 1
+    ***************************************************/
+    let Station = function(name){
+      this.name = ko.observable(name);
+    };
+    let depot = function(){
+      this.name = ko.observable(name);
+    };
+    let Line = function(name){
+      let self = this;
+      self.name = ko.observable(name);
+      self.stations = ko.observableArray();
+      self.depots = ko.observableArray();
+      self.stationsQuantity = ko.computed(function() {
+        return self.stations().length;
+      });
+    };
+    let connection = function(name){
+      this.name = ko.observable(name);
+      this.stations = ko.observableArray();
+    };
+    let Step1ViewModel = function(){
+      let self = this;
+
+      self.lines = ko.observableArray();
+      self.linesQuantity = ko.computed(function() {
+        return self.lines().length;
+      });
+      self.connections = ko.observableArray();
+
+      /**************************************************
+      * FORM TO ADD LINE
+      ***************************************************/
+      self.showDialog = ko.observable(false);
+      self.lineName = ko.observable(null);
+      self.stationsQuantity = ko.observable(0);
+      self.openAddLineForm = function(){
+        const LINE_NAME_PREFIX = 'L';
+        let defaultLineName = LINE_NAME_PREFIX + (self.lines().length + 1);
+        self.lineName(defaultLineName);
+        self.stationsQuantity(1);
+        console.log(self.lineName());
+        console.log(self.stationsQuantity());
+        self.showDialog(true);
+      };
+      self.removeLine = function(){
+        self.lines.remove(this);
+      };
+      self.addLine = function(){
+        const STATION_NAME_PREFIX = 'S';
+        let line = new Line(self.lineName());
+        for(let i=0;i<self.stationsQuantity();i++){
+          let stationName = STATION_NAME_PREFIX + (i + 1);
+          let station = new Station(stationName);
+          line.stations.push(station);
+        }
+        self.lines.push(line);
+        self.showDialog(false);
+        $("#wizard").smartWizard("fixHeight");
+      }
+      self.showStations = function(){
+        
+      }
+    }
+    ko.applyBindings(new Step1ViewModel(), document.getElementById('step-1'));
+  });
   </script>
 {% endblock %}
