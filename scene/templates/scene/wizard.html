@@ -268,7 +268,7 @@
       /**************************************************
       * FORM TO ADD LINE
       ***************************************************/
-      self.showDialog = ko.observable(false);
+      self.showAddLineDialog = ko.observable(false);
       self.lineName = ko.observable(null);
       self.stationsQuantity = ko.observable(0);
       self.openAddLineForm = function(){
@@ -278,7 +278,7 @@
         self.stationsQuantity(1);
         console.log(self.lineName());
         console.log(self.stationsQuantity());
-        self.showDialog(true);
+        self.showAddLineDialog(true);
       };
       self.removeLine = function(){
         self.lines.remove(this);
@@ -292,11 +292,21 @@
           line.stations.push(station);
         }
         self.lines.push(line);
-        self.showDialog(false);
-        $("#wizard").smartWizard("fixHeight");
+        self.showAddLineDialog(false);
       }
-      self.showStations = function(){
-        
+      /**************************************************
+      * FORM TO EDIT STATIONS
+      ***************************************************/
+      self.showEditStationsDialog = ko.observable(false);
+      self.selectedLine = ko.observableArray();
+      self.openEditStationsForm = function(){
+        self.selectedLine.removeAll();
+        let stations = this.stations()
+	for(let i=0; i<stations.length; i++){
+          console.log(stations[0]);
+          self.selectedLine.push(stations[i]);
+        }
+        self.showEditStationsDialog(true);
       }
     }
     ko.applyBindings(new Step1ViewModel(), document.getElementById('step-1'));
