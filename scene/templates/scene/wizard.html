@@ -195,7 +195,7 @@
           .addClass('btn btn-success')
          .on('click', function(){ 
            alert('Finsih button click');                            
-	 })
+     })
       ],
     });
    
@@ -240,7 +240,7 @@
     let Station = function(name){
       this.name = ko.observable(name);
     };
-    let depot = function(){
+    let Depot = function(name){
       this.name = ko.observable(name);
     };
     let Line = function(name){
@@ -248,20 +248,48 @@
       self.name = ko.observable(name);
       self.stations = ko.observableArray();
       self.depots = ko.observableArray();
-      self.stationsQuantity = ko.computed(function() {
-        return self.stations().length;
+    };
+    let Union = function(){
+      let self = this;
+      self.line1 = ko.observable(null);
+      self.station1 = ko.observable(null);
+      self.line2 = ko.observable(null);
+      self.station2 = ko.observable(null);
+      self.avgHeight = ko.observable();
+      self.avgSurface = ko.observable();
+      self.name = ko.computed(function(){
+        try{
+          let prefix = self.line1().name() + '-' + self.station1().name();
+          let sufix = self.line2().name() + '-' + self.station2().name();
+          return '(' + prefix + '<->' + sufix + ')';
+        }catch(err){
+          return 'no name';
+        }
       });
     };
-    let connection = function(name){
-      this.name = ko.observable(name);
-      this.stations = ko.observableArray();
+    let Connection = function(name){
+      let self = this;
+      self.name = ko.observable(name);
+      self.unions = ko.observableArray();
+      self.unionsName = ko.computed(function(){
+        let name = '';
+        for(let i=0;i<self.unions().length;i++){
+          name += self.unions()[i].name();
+        }
+        return name;
+      });
     };
+
     let Step1ViewModel = function(){
       let self = this;
 
       self.lines = ko.observableArray();
-      self.linesQuantity = ko.computed(function() {
-        return self.lines().length;
+      self.depotsQuantity = ko.computed(function(){
+        let quantity = 0;
+        $.each(self.lines(), function(i, el){
+          quantity += el.depots().length;
+        });
+        return quantity;
       });
       self.connections = ko.observableArray();
 
@@ -276,8 +304,6 @@
         let defaultLineName = LINE_NAME_PREFIX + (self.lines().length + 1);
         self.lineName(defaultLineName);
         self.stationsQuantity(1);
-        console.log(self.lineName());
-        console.log(self.stationsQuantity());
         self.showAddLineDialog(true);
       };
       self.removeLine = function(){
@@ -298,18 +324,77 @@
       * FORM TO EDIT STATIONS
       ***************************************************/
       self.showEditStationsDialog = ko.observable(false);
-      self.selectedLine = ko.observableArray();
+      self.selectedStations = ko.observableArray();
       self.openEditStationsForm = function(){
-        self.selectedLine.removeAll();
-        let stations = this.stations()
-	for(let i=0; i<stations.length; i++){
-          console.log(stations[0]);
-          self.selectedLine.push(stations[i]);
+        self.selectedStations.removeAll();
+        let stations = this.stations();
+        for(let i=0; i<stations.length; i++){
+          self.selectedStations.push(stations[i]);
         }
         self.showEditStationsDialog(true);
       }
+      /**************************************************
+      * FORM TO ADD CONNECTIONS
+      ***************************************************/
+      self.showAddConnectionDialog = ko.observable(false);
+      self.connectionName = ko.observable();
+      self.unions = ko.observableArray();
+      self.openAddConnectionDialog = function(){
+        self.connectionName(null);
+        self.unions.removeAll();
+        self.showAddConnectionDialog(true);
+      };
+      self.addUnion = function(){
+        self.unions.push(new Union());
+      };
+      self.deleteUnion = function(){
+        self.unions.remove(this);
+      };
+      self.addConnection = function(){
+        let connection = new Connection(self.connectionName());
+        for(let i=0;i<self.unions().length;i++){
+          connection.unions.push(self.unions()[i]);
+        }
+        self.connections.push(connection);
+        self.showAddConnectionDialog(false);
+      };
+      self.removeConnection = function(){
+        self.connections.remove(this);
+      };
+      
+      /**************************************************
+      * FORM TO ADD DEPOTS
+      ***************************************************/
+      self.showAddDepotDialog = ko.observable(false);
+      self.depotName = ko.observable();
+      self.depotLine = ko.observable();
+      // each time line is updated
+      let updateDefaultDepotName = function(newLine){
+        let line = newLine || self.depotLine();
+        if(line === undefined) return;
+        const DEPOT_NAME_PREFIX = 'D';
+        let defaultDepotName = DEPOT_NAME_PREFIX + (line.depots().length + 1);
+        self.depotName(defaultDepotName);
+      }
+      self.depotLine.subscribe(function(newLineSelected) {
+        updateDefaultDepotName(newLineSelected);
+      });
+      self.addDepot = function(){
+        let depot = new Depot(self.depotName());
+        self.depotLine().depots.push(depot);
+        self.showAddDepotDialog(false);
+        updateDefaultDepotName();
+      };
+      self.removeDepot = function(){
+        let depot = this;
+        $.each(self.lines(), function() { 
+          this.depots.remove(depot) 
+        });
+        updateDefaultDepotName();
+      };
     }
-    ko.applyBindings(new Step1ViewModel(), document.getElementById('step-1'));
+    step1 = new Step1ViewModel();
+    ko.applyBindings(step1, document.getElementById('step-1'));
   });
   </script>
 {% endblock %}
