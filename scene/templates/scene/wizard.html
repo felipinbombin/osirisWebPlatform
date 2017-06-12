@@ -230,15 +230,17 @@
        switch(stepNumber){
          case 0:
            let url = '{% url "scene:validation" stepId=1 sceneId=scene.id %}';
-           let data = step1.serialize();
-           console.log(data);
-           $.post(url, data, function(answer){
-             // success
-             if(answer.status.code == 200){
-               $('#wizard').smartWizard('next');
-             }
-             showMessage(answer.status);
-           })
+
+           if(step1.isValid()){
+             let data = step1.serialize();
+             $.post(url, data, function(answer){
+               // success
+               if(answer.status.code == 200){
+                 $('#wizard').smartWizard('next');
+               }
+               showMessage(answer.status);
+             });
+           }
            break;
        }
        return false;
@@ -450,7 +452,25 @@
           connections: this.connections(),
         };
         return ko.toJSON(serialize);
-      }
+      };
+      self.isValid = function(){
+        let msg = {
+          message: '',
+          title: 'Error',
+          type: 'error'
+        };
+
+        // validation
+        if(self.lines().length == 0){
+          msg['message'] += 'Debe ingresar una o más líneas.<br />';
+        }
+
+        if(msg['message'] !== ''){
+          showMessage(msg);
+          return false;
+        }
+        return true;
+      };
     }
     step1 = new Step1ViewModel();
     ko.applyBindings(step1, document.getElementById('step-1'));

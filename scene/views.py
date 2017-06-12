@@ -61,15 +61,55 @@ class ValidationStepView(View):
     def post(self, request, stepId, sceneId):
         """ validate and update data in server """
 
-        print '==============='
-        print request.POST
-        print '==============='
+        stepId = int(stepId)
+        sceneId = int(sceneId)
+
+        scene = Scene.objects.get(user=request.user, id=sceneId)
+
         if stepId == 1:
            # global topologic variables
-           data = request.POST.get('data')
-           data = json.loads(data)
-           scene = Scene.objects.get(user=request.user, id=sceneId)
+           data = json.loads(request.body)
 
+           
+           for line in data['lines']:
+               name = line['name']
+               if line['id']:
+                   #update line name
+                   pass
+ 
+               else:
+                   # create line
+                   pass
+              
+               for station in line['stations']:
+                   print station
+                   if station['id']:
+                       # update station name
+                       pass
+                   else:
+                       # create station
+                       pass
+
+               for depot in line['depots']:
+                   print depot
+                   if station['id']:
+                       # update station name
+                       pass
+                   else:
+                       # create station
+                       pass
+
+           for connection in data['connections']:
+               # global connections
+               pass
+
+           # if everything ok
+           scene.status = Scene.OK
+           scene.save()
+
+        elif stepId == 2:
+            # upload topologic file
+            pass
 
         response = {}
         return JsonResponse(response, safe=False)
