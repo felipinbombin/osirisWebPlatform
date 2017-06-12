@@ -12,9 +12,11 @@
   <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />
   {% with "components/gentelella/vendors/" as gentelella_static %}
     <link href="{% static gentelella_static|add:"dropzone/dist/min/dropzone.min.css" %}" rel="stylesheet" />
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.css" %}" rel="stylesheet">
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.css" %}" rel="stylesheet">
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.css" %}" rel="stylesheet">
   {% endwith %}
   <link href="{% static "components/smartwizard/dist/css/smart_wizard.css" %}" rel="stylesheet" />
-  <link href="{% static "components/smartwizard/dist/css/smart_wizard_theme_circles.css" %}" rel="stylesheet" />
   <link href="{% static "components/smartwizard/dist/css/smart_wizard_theme_dots.css" %}" rel="stylesheet" />
   <style>
     .sw-theme-dots .step-content {
@@ -171,13 +173,36 @@
 {% block extrajs %}
   {% with "components/gentelella/vendors/" as gentelella_static %}
     <script src="{% static gentelella_static|add:"dropzone/dist/min/dropzone.min.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.js" %}"></script>
   {% endwith %}
     <script src="{% static "components/smartwizard/dist/js/jquery.smartWizard.min.js" %}"></script>
   <script src="{% static "components/knockout/dist/knockout.debug.js" %}"></script>
   <script>
   $(document).ready(function(){
+    // to show notification
+    function showMessage(status){
+      let message = status['message'];
+      let title = status['title'];
+      let type = status['type'];
+      new PNotify({
+        title: title,
+        type: type,
+        text: message,
+        nonblock: {
+          nonblock: true
+        },
+        styling: 'bootstrap3',
+        mouse_reset: false
+      }).get().click(function(){
+        this.remove();
+      });
+    }; 
+
     // set wizard
     $('#wizard').smartWizard({
+      selected: {{ scene.lastSuccessfullStep }},
       labelNext:'Siguiente', 
       labelPrevious:'Anterior',
       labelFinish:'Finalizar',  
@@ -189,21 +214,40 @@
       },
       toolbarSettings: {
         toolbarPosition: 'top',
+        toolbarExtraButtons: [
+          $('<button></button>').text('Finalizar')
+            .addClass('btn btn-dark')
+           .on('click', function(){ 
+             alert('Finish button click');
+             console.log(this);
+           })
+        ],
       },
-      toolbarExtraButtons: [
-        $('<button></button>').text('Finalizar')
-          .addClass('btn btn-success')
-         .on('click', function(){ 
-           alert('Finsih button click');                            
-     })
-      ],
     });
    
-    $('.buttonNext').addClass('btn btn-success');
-    $('.buttonPrevious').addClass('btn btn-primary');
-    $('.buttonFinish').addClass('btn btn-default');
-
-    //init_sidebar();
+    // Initialize the leaveStep event
+    $("#wizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
+       switch(stepNumber){
+         case 0:
+           let url = '{% url "scene:validation" stepId=1 sceneId=scene.id %}';
+           let data = step1.serialize();
+           console.log(data);
+           $.post(url, data, function(answer){
+             // success
+             if(answer.status.code == 200){
+               $('#wizard').smartWizard('next');
+             }
+             showMessage(answer.status);
+           })
+           break;
+       }
+       return false;
+    });
+      
+    // Initialize the showStep event
+    $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
+      alert("You are on step "+stepNumber+" now " + stepPosition);
+    });
     console.log({{ scene.lastSuccessfullStep }});
 
     /**************************************************
@@ -238,19 +282,25 @@
     * STEP 1
     ***************************************************/
     let Station = function(name){
-      this.name = ko.observable(name);
+      let self = this;
+      self.id = null;
+      self.name = ko.observable(name);
     };
     let Depot = function(name){
-      this.name = ko.observable(name);
+      let self = this;
+      self.id = null;
+      self.name = ko.observable(name);
     };
     let Line = function(name){
       let self = this;
+      self.id = null;
       self.name = ko.observable(name);
       self.stations = ko.observableArray();
       self.depots = ko.observableArray();
     };
     let Union = function(){
       let self = this;
+      self.id = null;
       self.line1 = ko.observable(null);
       self.station1 = ko.observable(null);
       self.line2 = ko.observable(null);
@@ -261,7 +311,8 @@
         try{
           let prefix = self.line1().name() + '-' + self.station1().name();
           let sufix = self.line2().name() + '-' + self.station2().name();
-          return '(' + prefix + '<->' + sufix + ')';
+          let arrow = '<i class="fa fa-arrows-h fa-lg" aria-hidden="true"></i>';
+          return '(' + prefix + arrow + sufix + ')';
         }catch(err){
           return 'no name';
         }
@@ -392,6 +443,14 @@
         });
         updateDefaultDepotName();
       };
+
+      self.serialize = function(){
+        let serialize = {
+          lines: this.lines(),
+          connections: this.connections(),
+        };
+        return ko.toJSON(serialize);
+      }
     }
     step1 = new Step1ViewModel();
     ko.applyBindings(step1, document.getElementById('step-1'));
