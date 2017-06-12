@@ -74,7 +74,7 @@
             <tbody data-bind="foreach: connections">
               <tr>
                 <td data-bind="text: name"></td>
-                <td data-bind="text: unionsName"></td>
+                <td data-bind="html: unionsName"></td>
                 <td><button type="button" class="btn btn-danger btn-xs" data-bind="click: $root.removeConnection">Eliminar</button></td>
               </tr>
             </tbody>
