@@ -182,7 +182,7 @@
   <script>
   $(document).ready(function(){
     // to show notification
-    function showMessage(status){
+    function showNotificationMessage(status){
       let message = status['message'];
       let title = status['title'];
       let type = status['type'];
@@ -230,15 +230,14 @@
        switch(stepNumber){
          case 0:
            let url = '{% url "scene:validation" stepId=1 sceneId=scene.id %}';
-
            if(step1.isValid()){
              let data = step1.serialize();
              $.post(url, data, function(answer){
                // success
                if(answer.status.code == 200){
-                 $('#wizard').smartWizard('next');
+                 //$('#wizard').smartWizard('next');
                }
-               showMessage(answer.status);
+               showNotificationMessage(answer.status);
              });
            }
            break;
@@ -307,8 +306,6 @@
       self.station1 = ko.observable(null);
       self.line2 = ko.observable(null);
       self.station2 = ko.observable(null);
-      self.avgHeight = ko.observable();
-      self.avgSurface = ko.observable();
       self.name = ko.computed(function(){
         try{
           let prefix = self.line1().name() + '-' + self.station1().name();
@@ -320,14 +317,28 @@
         }
       });
     };
+    let ConnectionStation = function(){
+      let self = this;
+      self.line = ko.observable();
+      self.station = ko.observable();
+      self.avgHeight = ko.observable();
+      self.avgSurface = ko.observable();
+    }
     let Connection = function(name){
       let self = this;
       self.name = ko.observable(name);
-      self.unions = ko.observableArray();
-      self.unionsName = ko.computed(function(){
+      self.stations = ko.observableArray();
+      self.avgHeight = ko.observable();
+      self.avgSurface = ko.observable();
+      self.description = ko.computed(function(){
         let name = '';
-        for(let i=0;i<self.unions().length;i++){
-          name += self.unions()[i].name();
+        let arrow = '<i class="fa fa-arrows-h fa-lg" aria-hidden="true"></i>';
+        let stationsNumber = self.stations().length;
+        for(let i=0;i<stationsNumber;i++){
+          name += self.stations()[i].line().name() + '-' + self.stations()[i].station().name();
+          if(i+1 !== stationsNumber){
+            name += arrow;
+          }
         }
         return name;
       });
@@ -350,29 +361,53 @@
       * FORM TO ADD LINE
       ***************************************************/
       self.showAddLineDialog = ko.observable(false);
-      self.lineName = ko.observable(null);
-      self.stationsQuantity = ko.observable(0);
+      let AddLineFormLogic = function(){
+        let self = this;
+        self.lineName = ko.observable(null);
+        self.stationsQuantity = ko.observable(0);
+      };
+      self.addLineFormLogic = new AddLineFormLogic();
       self.openAddLineForm = function(){
         const LINE_NAME_PREFIX = 'L';
         let defaultLineName = LINE_NAME_PREFIX + (self.lines().length + 1);
-        self.lineName(defaultLineName);
-        self.stationsQuantity(1);
+        self.addLineFormLogic.lineName(defaultLineName);
+        self.addLineFormLogic.stationsQuantity(1);
         self.showAddLineDialog(true);
-      };
-      self.removeLine = function(){
-        self.lines.remove(this);
       };
       self.addLine = function(){
         const STATION_NAME_PREFIX = 'S';
-        let line = new Line(self.lineName());
-        for(let i=0;i<self.stationsQuantity();i++){
-          let stationName = STATION_NAME_PREFIX + (i + 1);
-          let station = new Station(stationName);
-          line.stations.push(station);
+
+        if(self.isValidLineForm()){
+          let addForm = self.addLineFormLogic;
+          let line = new Line(addForm.lineName());
+          for(let i=0;i<addForm.stationsQuantity();i++){
+            let stationName = STATION_NAME_PREFIX + (i + 1);
+            let station = new Station(stationName);
+            line.stations.push(station);
+          }
+          self.lines.push(line);
+          self.showAddLineDialog(false);
         }
-        self.lines.push(line);
-        self.showAddLineDialog(false);
       }
+      self.removeLine = function(){
+        // delete connection if has an station of the line
+        let deleteConnection = false;
+        for(let i=0;i<self.connections().length; i++){
+          let connection = self.connections()[i];
+          for(let j=0; j<connection.stations().length; j++){
+            let station = connection.stations()[j];
+            if(station.line() === this){
+              deleteConnection = true;
+            }
+          }
+          if(deleteConnection){
+            self.connections.remove(connection);
+            break;
+          }
+        }
+        self.lines.remove(this);
+      };
+
       /**************************************************
       * FORM TO EDIT STATIONS
       ***************************************************/
@@ -390,62 +425,260 @@
       * FORM TO ADD CONNECTIONS
       ***************************************************/
       self.showAddConnectionDialog = ko.observable(false);
-      self.connectionName = ko.observable();
-      self.unions = ko.observableArray();
+      let addConnectionFormLogic = function(){
+        let self = this;
+        self.connectionName = ko.observable();
+        self.connectionStations = ko.observableArray();
+        self.avgHeight = ko.observable();
+        self.avgSurface = ko.observable();
+        self.addConnectionStation = function(){
+          self.connectionStations.push(new ConnectionStation())
+        };
+        self.deleteConnectionStation = function(){
+          self.connectionStations.remove(this);
+        };
+      };
+      self.addConnectionFormLogic = new addConnectionFormLogic();
       self.openAddConnectionDialog = function(){
-        self.connectionName(null);
-        self.unions.removeAll();
+        let addForm = self.addConnectionFormLogic;
+        addForm.connectionName('');
+        addForm.avgHeight('');
+        addForm.avgSurface('');
+        addForm.connectionStations.removeAll();
         self.showAddConnectionDialog(true);
       };
-      self.addUnion = function(){
-        self.unions.push(new Union());
-      };
-      self.deleteUnion = function(){
-        self.unions.remove(this);
-      };
       self.addConnection = function(){
-        let connection = new Connection(self.connectionName());
-        for(let i=0;i<self.unions().length;i++){
-          connection.unions.push(self.unions()[i]);
+        let addForm = self.addConnectionFormLogic;
+        if(self.isValidConnectionForm()){
+          let connection = new Connection(addForm.connectionName());
+          connection.avgHeight(addForm.avgHeight());
+          connection.avgSurface(addForm.avgSurface());
+          for(let i=0;i<addForm.connectionStations().length;i++){
+            connection.stations.push(addForm.connectionStations()[i]);
+          }
+
+          self.connections.push(connection);
+          self.showAddConnectionDialog(false);
         }
-        self.connections.push(connection);
-        self.showAddConnectionDialog(false);
       };
       self.removeConnection = function(){
         self.connections.remove(this);
       };
-      
+
+     
       /**************************************************
       * FORM TO ADD DEPOTS
       ***************************************************/
       self.showAddDepotDialog = ko.observable(false);
-      self.depotName = ko.observable();
-      self.depotLine = ko.observable();
-      // each time line is updated
-      let updateDefaultDepotName = function(newLine){
-        let line = newLine || self.depotLine();
-        if(line === undefined) return;
-        const DEPOT_NAME_PREFIX = 'D';
-        let defaultDepotName = DEPOT_NAME_PREFIX + (line.depots().length + 1);
-        self.depotName(defaultDepotName);
-      }
-      self.depotLine.subscribe(function(newLineSelected) {
-        updateDefaultDepotName(newLineSelected);
-      });
+      let addDepotFormLogic = function(){
+        let self = this;
+        self.name = ko.observable();
+        self.line = ko.observable();
+
+        self.updateDefaultDepotName = function(newLine){
+          let line = newLine || self.line();
+          if(line === undefined) return;
+          const DEPOT_NAME_PREFIX = 'D';
+          let defaultDepotName = DEPOT_NAME_PREFIX + (line.depots().length + 1);
+          self.name(defaultDepotName);
+        }
+        // each time line is updated
+        self.line.subscribe(self.updateDefaultDepotName);
+      };
+      self.addDepotFormLogic = new addDepotFormLogic();
       self.addDepot = function(){
-        let depot = new Depot(self.depotName());
-        self.depotLine().depots.push(depot);
-        self.showAddDepotDialog(false);
-        updateDefaultDepotName();
+        if(self.isValidDepotForm()){
+          let depot = new Depot(self.addDepotFormLogic.name());
+          self.addDepotFormLogic.line().depots.push(depot);
+          self.showAddDepotDialog(false);
+          self.addDepotFormLogic.updateDefaultDepotName();
+        }
       };
       self.removeDepot = function(){
         let depot = this;
         $.each(self.lines(), function() { 
           this.depots.remove(depot) 
         });
-        updateDefaultDepotName();
+        self.addDepotFormLogic.updateDefaultDepotName();
       };
 
+      /**************************************************
+      * FORMS VALIDATION
+      ***************************************************/
+      self.isValidLineForm = function(){
+        let addForm = self.addLineFormLogic;
+ 
+        let reasons = [];       
+        let isValidLineName = true;
+        let isValidStationNumber = true;
+
+        let name = addForm.lineName();
+        let stationNumber = addForm.stationsQuantity();
+
+        if(name == null || name == '' || !name.length){
+          reasons.push('El nombre no puede ser vacío.');
+          isValidLineName = false;
+        }
+        if(name !== null){
+          if(name.length > 50){
+            reasons.push('El nombre no puede tener un largo mayor a 50 caracteres.');
+            isValidLineName = false;
+          }
+
+          for(let i=0; i<self.lines().length; i++){
+            if(name === self.lines()[i].name()){
+              reasons.push('Ya existe una línea con ese nombre.');
+              isValidLineName = false;
+            }
+          }
+        }
+ 
+        if(isNaN(stationNumber) || stationNumber <= 0 || 200 < stationNumber){
+          reasons.push('El número de estaciones debe estar entre 1 y 200.');
+          isValidStationNumber = false;
+        }
+
+        if(isValidLineName && 
+           isValidStationNumber){
+          return true;
+        }
+
+        self.showWarningList(reasons);
+        return false;
+      };
+
+      self.isValidDepotForm = function(){
+        let addForm = self.addDepotFormLogic;
+
+        let reasons = [];
+        let isValidName = true;
+
+        let name = addForm.name();
+
+        if(name == null || name == '' || !name.length){
+          reasons.push('El nombre no puede ser vacío.');
+          isValidName = false;
+        }
+        if(name !== null){
+          if( name.length > 50){
+            reasons.push('El nombre no puede tener un largo mayor a 50 caracteres.');
+            isValidName = false;
+          }
+          for(let i=0; i<self.lines().length; i++){
+            if(addForm.line().name() === self.lines()[i].name()){
+              for(let j=0; j<self.lines()[i].depots().length; j++){
+                if(name === self.lines()[i].depots()[j].name()){
+                  reasons.push('Ya existe un depósito con ese nombre.');
+                  isValidName = false;
+                }
+              }
+            }
+          }
+        }
+
+        if(isValidName){
+          return true;
+        }
+
+        self.showWarningList(reasons);
+        return false;
+      };
+
+      self.isValidConnectionForm = function(){
+        let addForm = self.addConnectionFormLogic;
+
+        let reasons = [];
+        let isValidStationQuantity = true;
+        let isValidConnectionName = true;
+        let isValidAvgHeight = true;
+        let isValidAvgSurface = true;
+        let isValidLines = true;
+
+        let name = addForm.connectionName();
+        let stationNumber = addForm.connectionStations().length;
+        let avgHeight = addForm.avgHeight();
+        let avgSurface = addForm.avgSurface();
+        let stations = addForm.connectionStations();
+
+        if(name == null || name == '' || !name.length){
+          reasons.push('El nombre no puede ser vacío.');
+          isValidConnectionName = false;
+        }
+        if(name !== null){
+          if( name.length > 50){
+            reasons.push('El nombre no puede tener un largo mayor a 50 caracteres.');
+            isValidConnectionName = false;
+          }
+          for(let i=0; i<self.connections().length; i++){
+            if(name === self.connections()[i].name()){
+              reasons.push('Ya existe una conexión con ese nombre.');
+              isValidConnectionName = false;
+            }
+          }
+        }
+        
+        if(stationNumber < 2){
+          reasons.push('La conexión debe tener una o más estaciones.');
+          isValidStationQuantity = false;
+        }
+
+        if(isNaN(avgHeight) || avgHeight<0 && 1000<avgHeight){
+          reasons.push('La altura promedio debe ser un número entre 0 y 1.000 m.');
+          isValidAvgHeight = false;
+        }
+
+        if(isNaN(avgSurface) || avgSurface<0 && 1000000<avgSurface){
+          reasons.push('La altura promedio debe ser un número entre 0 y 1.000.000 m<sup>2</sup>.');
+          isValidAvgHeight = false;
+        }
+
+        let set = new Set();
+        for(let i=0;i<stations.length; i++){
+          set.add(stations[i].line().name());
+        }
+        if(set.size !== stationNumber){
+          reasons.push('Una línea no puede tener más de una estación en una conexión.');
+          isValidLines = false;
+        }
+
+        if(isValidConnectionName && 
+           isValidStationQuantity && 
+           isValidAvgHeight && 
+           isValidAvgSurface && 
+           isValidLines){
+          return true;
+        }
+
+        self.showWarningList(reasons);
+        return false;
+      }
+ 
+      /**************************************************
+      * VALIDATION LOGIC
+      ***************************************************/
+      self.showWarningList = function(reasons){
+        let message = 'Hemos detectado los siguientes problemas:';
+        message += '<ul>';
+        for(let i=0;i<reasons.length;i++){
+          message += '<li>' + reasons[i] + '</li>';
+        }
+        message += '</ul>';
+
+        self.showMessage(message, 'Advertencia', 'warning');
+      }
+
+      self.showMessage = function(message, title, type){
+        let msg = {
+          message: message,
+          title: title,
+          type: type
+        };
+        showNotificationMessage(msg);
+      };
+
+      /**************************************************
+      * EXTERNAL VALIDATION LOGIC
+      ***************************************************/
       self.serialize = function(){
         let serialize = {
           lines: this.lines(),
@@ -453,6 +686,7 @@
         };
         return ko.toJSON(serialize);
       };
+
       self.isValid = function(){
         let msg = {
           message: '',
@@ -460,13 +694,13 @@
           type: 'error'
         };
 
-        // validation
+        // exist lines
         if(self.lines().length == 0){
-          msg['message'] += 'Debe ingresar una o más líneas.<br />';
+          msg['message'] += '- Debe ingresar una o más líneas.<br />';
         }
 
         if(msg['message'] !== ''){
-          showMessage(msg);
+          showNotificationMessage(msg);
           return false;
         }
         return true;
