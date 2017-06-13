@@ -20,6 +20,12 @@
     <link href="{% static gentelella_static|add:"nprogress/nprogress.css" %}" rel="stylesheet">
     <!-- Custom Theme Style -->
     <link href="{% block stylesheet %}{% static gentelella_static|add:"../build/css/custom.min.css" %}{% endblock %}" rel="stylesheet">
+    <style>
+    sup {
+      font-size:xx-small; 
+      vertical-align:super;
+    }
+    </style>
     {% block extrastyle %}{% endblock %}
     {% block extrahead %}{% endblock %}
     {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}

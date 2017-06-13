@@ -21,7 +21,7 @@ class Scene(models.Model):
         (OK, 'Completo'),
     )
     status = models.CharField('Estado', max_length=2, choices=STATUS, default=INCOMPLETE)
-    lastSuccessfullStep = models.IntegerField(default=0)
+    lastSuccessfullStep = models.IntegerField('Paso pendiente', default=1)
     #######################################################
     # GLOBAL CONDITION
     #######################################################

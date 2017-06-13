@@ -112,6 +112,13 @@ class ValidationStepView(View):
             pass
 
         response = {}
+
+        response['status'] = {}
+        response['status']['code'] = 200
+        response['status']['message'] = 'Estructura topológica creada exitosamente.'
+        response['status']['type'] = 'success'
+        response['status']['title'] = 'Actualización exitosa'
+
         return JsonResponse(response, safe=False)
 
 

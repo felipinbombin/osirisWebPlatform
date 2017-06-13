@@ -14,7 +14,7 @@ class SceneAdmin(admin.ModelAdmin):
         (None, {'fields': ('name',)}),
     )
     list_filter = []
-    list_display = ('name', 'timeCreation', 'status')
+    list_display = ('name', 'timeCreation', 'status', 'lastSuccessfullStep')
 
     def save_model(self, request, obj, form, change):
         obj.user = request.user
