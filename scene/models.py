@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 
+import uuid
+
 # Create your models here.
 class Scene(models.Model):
     ''' group of parameter to run models '''
@@ -21,7 +23,7 @@ class Scene(models.Model):
         (OK, 'Completo'),
     )
     status = models.CharField('Estado', max_length=2, choices=STATUS, default=INCOMPLETE)
-    lastSuccessfullStep = models.IntegerField('Paso pendiente', default=1)
+    lastSuccessfullStep = models.IntegerField('Paso pendiente', default=0)
     #######################################################
     # GLOBAL CONDITION
     #######################################################
@@ -38,6 +40,8 @@ class Scene(models.Model):
 class MetroLine(models.Model):
     ''' metro line '''
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
+    externalId = models.UUIDField(default=uuid.uuid4());
+    ''' uses to track record in wizard form, this way i know if is new record or previous '''
     name = models.CharField(max_length=100)
     #######################################################
     # CONSUMPTION                                         
@@ -56,11 +60,25 @@ class MetroLine(models.Model):
     ''' unit:  '''
     powerLimitToFeed = models.FloatField(null=True);
     ''' unit:  '''
- 
+
+    def getDict(self):
+        ''' dict '''
+        dict = {}
+        dict['id'] = self.externalId
+        dict['name'] = self.name
+        dict['stations'] = []
+
+        for station in self.stations:
+            dict['stations'].append(station.getDict())
+
+        return dict
+
 
 class MetroStation(models.Model):
     ''' metro station'''
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
+    externalId = models.UUIDField(default=uuid.uuid4());
+    ''' uses to track record in wizard form, this way i know if is new record or previous '''
     name = models.CharField(max_length=100)
     length = models.FloatField(null=True)
     ''' length of the stations. Unit: meters '''
@@ -86,6 +104,45 @@ class MetroStation(models.Model):
     tau = models.FloatField(null=True);
     ''' unit:  '''
 
+    def getDict(self):
+        ''' dict structure '''
+        dict = {}
+        dict['id'] = self.externalId
+        dict['name'] = self.name
+
+        return dict
+
+
+class MetroConnection(models.Model):
+    ''' connection between metro stations fo different metro lines '''
+    scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
+    externalId = models.UUIDField(default=uuid.uuid4());
+    ''' uses to track record in wizard form, this way i know if is new record or previous '''
+    name = models.CharField(max_length=100)
+    stations = models.ManyToManyField(MetroStation)
+    avgHeight = models.FloatField(null=True);
+    ''' unit: meters '''
+    avgSurface = models.FloatField(null=True);
+    ''' unit: square meters '''
+    #######################################################
+    # CONSUMPTION                                         
+    #######################################################
+    consumption = models.FloatField(null=True);
+    ''' unit:  '''
+
+    def getDict(self):
+        ''' dict '''
+        dict = {}
+        dict['id'] = self.externalId
+        dict['name'] = self.name
+        dict['avgHeight'] = self.avgHeight
+        dict['avgSurface'] = self.avgSurface
+        dict['stations'] = []
+
+        for station in self.stations:
+            dict['stations'].append(station.getDict())
+
+        return dict
 
 class MetroTrack(models.Model):
     ''' connection between metro stations '''
@@ -108,25 +165,6 @@ class MetroTrack(models.Model):
     auxiliariesConsumption = models.FloatField(null=True);
     ''' unit:  '''
     ventilationConsumption = models.FloatField(null=True);
-    ''' unit:  '''
-
-class MetroConnection(models.Model):
-    ''' connection between metro stations fo different metro lines '''
-    name = models.CharField(max_length=100)
-    firstStation = models.ForeignKey(MetroStation, 
-        related_name= 'firststation', 
-        on_delete=models.CASCADE)
-    secondStation = models.ForeignKey(MetroStation, 
-        related_name= 'secondstation',
-        on_delete=models.CASCADE)
-    averageHeight = models.FloatField(null=True);
-    ''' unit: meters '''
-    surface = models.FloatField(null=True);
-    ''' unit: square meters '''
-    #######################################################
-    # CONSUMPTION                                         
-    #######################################################
-    consumption = models.FloatField(null=True);
     ''' unit:  '''
 
 

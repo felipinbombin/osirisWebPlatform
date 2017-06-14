@@ -200,55 +200,6 @@
       });
     }; 
 
-    // set wizard
-    $('#wizard').smartWizard({
-      selected: {{ scene.lastSuccessfullStep }},
-      labelNext:'Siguiente', 
-      labelPrevious:'Anterior',
-      labelFinish:'Finalizar',  
-      autoAdjustHeight: false,
-      theme: 'dots',
-      lang: {
-        next: 'Siguiente',
-        previous: 'Anterior',
-      },
-      toolbarSettings: {
-        toolbarPosition: 'top',
-        toolbarExtraButtons: [
-          $('<button></button>').text('Finalizar')
-            .addClass('btn btn-dark')
-           .on('click', function(){ 
-             alert('Finish button click');
-             console.log(this);
-           })
-        ],
-      },
-    });
-   
-    // Initialize the leaveStep event
-    $("#wizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
-       switch(stepNumber){
-         case 0:
-           let url = '{% url "scene:validation" stepId=1 sceneId=scene.id %}';
-           if(step1.isValid()){
-             let data = step1.serialize();
-             $.post(url, data, function(answer){
-               // success
-               if(answer.status.code == 200){
-                 //$('#wizard').smartWizard('next');
-               }
-               showNotificationMessage(answer.status);
-             });
-           }
-           break;
-       }
-       return false;
-    });
-      
-    // Initialize the showStep event
-    $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
-      alert("You are on step "+stepNumber+" now " + stepPosition);
-    });
     console.log({{ scene.lastSuccessfullStep }});
 
     /**************************************************
@@ -706,8 +657,134 @@
         return true;
       };
     }
-    step1 = new Step1ViewModel();
-    ko.applyBindings(step1, document.getElementById('step-1'));
+
+
+    /**************************************************
+    * WIZARD LOGIC
+    ***************************************************/
+
+    // viewModels to manage each step
+    let step1 = new Step1ViewModel();
+
+    // Initialize the showStep event
+    $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
+
+      console.log("You are on step "+stepNumber+" now " + stepPosition);
+
+      switch(stepNumber){
+        case 0:
+          step1DOM = document.getElementById('step-1');
+          if(ko.dataFor(step1DOM) === undefined){
+            ko.applyBindings(step1, step1DOM);
+          }
+          //retrieve data from server
+          const URL = '{{ url "scene:getStep1Data" sceneId=scene.id }}';
+          $.get(URL, function(data){
+            
+          });
+
+          break;
+      }
+    });
+ 
+    let nextLogic = function(){
+      let currentStep = parseInt(window.location.hash.split('-')[1]);
+
+      switch(currentStep){
+        case 1:
+          let url = '{% url "scene:validation" stepId=1 sceneId=scene.id %}';
+          if(step1.isValid()){
+            let data = step1.serialize();
+            $.post(url, data, function(answer){
+              // success
+              if(answer.status.code == 200){
+                setTimeout(function(){
+                  $('#wizard').smartWizard('next');
+                }, 2000);
+              }
+              showNotificationMessage(answer.status);
+            });
+          }
+          break;
+        case 2:
+          // ask to server if file was uploaded
+          break;
+        case 3:
+          break;
+        case 4:
+          // ask to server if file was uploaded
+          break;
+        case 5:
+          // ask to server if file was uploaded
+          break;
+        case 6:
+          // ask to server if file was uploaded
+          break;
+        case 7:
+          // ask to server if file was uploaded
+          break;
+      }
+    };
+    let finalButton = $('<button></button>').text('Finalizar')
+                      .addClass('btn btn-dark')
+                      .on('click', function(){ 
+                        alert('Finish button click');
+                        console.log(this);
+                      });
+    let prevButton = $('<button></button>').text('Anterior')
+                      .addClass('btn btn-default')
+                      .on('click', function(){ 
+                        $('#wizard').smartWizard('prev');
+                      });
+    let nextButton = $('<button></button>').text('Siguiente')
+                      .addClass('btn btn-default')
+                      .css('padding-right', '5px')
+                      .on('click', nextLogic);
+    // set wizard
+    $('#wizard').smartWizard({
+      selected: {{ scene.lastSuccessfullStep }},
+      autoAdjustHeight: false,
+      markAllPreviousStepsAsDone: true,
+      theme: 'dots',
+      toolbarSettings: {
+        showNextButton: false,
+        showPreviousButton: false,
+        toolbarPosition: 'top',
+        toolbarExtraButtons: [
+          prevButton,
+          nextButton,
+          finalButton
+        ],
+      },
+    });
+   
+    // Initialize the leaveStep event
+    $("#wizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
+       return true;
+    });
+
+    // Initialize the showStep event
+    $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
+
+      console.log("You are on step "+stepNumber+" now " + stepPosition);
+
+      switch(stepNumber){
+        case 0:
+          console.log('showing step ' + stepNumber);
+          let url = '{% url "scene:validation" stepId=1 sceneId=scene.id %}';
+          if(step1.isValid()){
+            let data = step1.serialize();
+            $.post(url, data, function(answer){
+              // success
+              if(answer.status.code == 200){
+                $('#wizard').smartWizard('next');
+              }
+              showNotificationMessage(answer.status);
+            });
+          }
+          break;
+      }
+    });
   });
   </script>
 {% endblock %}

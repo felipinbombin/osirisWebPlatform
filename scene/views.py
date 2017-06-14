@@ -17,6 +17,8 @@ from .models import Scene
 
 from .forms import FirstStepForm, SecondStepForm, ThirdStepForm, FourthStepForm, FithStepForm, SixthStepForm
 
+from .statusResponse import Status
+
 import json
 
 class StepsView(View):
@@ -122,5 +124,31 @@ class ValidationStepView(View):
         return JsonResponse(response, safe=False)
 
 
+class GetStep1DataView(View):
+    ''' get data of step 1 '''
 
+    def __init__(self):
+        self.context = {}
 
+    def get(self, request, sceneId):
+        """ return data of step 1 """
+
+        sceneId = int(sceneId)
+        scene = Scene.objects.prefetch_related('metroLine__metroStation').get(user=request.user, id=sceneId)
+        connections = MetroConnection.objects.prefetch_related('stations').filter(scene=scene)
+
+        lines = []
+        for line in scene.metroLine:
+            lines.append(line.getDict())
+        
+        connections = []
+        for connection in scene.metroLine:
+            connections.append(connnection.getDict())
+
+        response = {}
+        response['lines'] = lines
+        response['connections'] = connections
+
+        Status.getJsonStatus(Status.OK, response)
+
+        return JsonResponse(response, safe=False)
