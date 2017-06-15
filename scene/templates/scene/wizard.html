@@ -678,9 +678,9 @@
             ko.applyBindings(step1, step1DOM);
           }
           //retrieve data from server
-          const URL = '{{ url "scene:getStep1Data" sceneId=scene.id }}';
+          const URL = '{% url "scene:getStep1Data" sceneId=scene.id %}';
           $.get(URL, function(data){
-            
+            console.log(data);
           });
 
           break;

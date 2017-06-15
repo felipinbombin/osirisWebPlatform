@@ -113,6 +113,21 @@ class MetroStation(models.Model):
         return dict
 
 
+class MetroDepot(models.Model):
+    ''' train depot '''
+    metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    #######################################################
+    # CONSUMPTION                                         
+    #######################################################
+    auxConsumption = models.FloatField(null=True);
+    ''' unit:  '''
+    ventilationConsumption = models.FloatField(null=True);
+    ''' unit:  '''
+    dcConsumption = models.FloatField(null=True);
+    ''' unit:  '''
+    
+
 class MetroConnection(models.Model):
     ''' connection between metro stations fo different metro lines '''
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
@@ -168,20 +183,6 @@ class MetroTrack(models.Model):
     ''' unit:  '''
 
 
-class MetroDepot(models.Model):
-    ''' train depot '''
-    metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    #######################################################
-    # CONSUMPTION                                         
-    #######################################################
-    auxConsumption = models.FloatField(null=True);
-    ''' unit:  '''
-    ventilationConsumption = models.FloatField(null=True);
-    ''' unit:  '''
-    dcConsumption = models.FloatField(null=True);
-    ''' unit:  '''
-    
 class MetroLineMetric(models.Model):
     ''' metric defined by chunk '''
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
@@ -191,6 +192,7 @@ class MetroLineMetric(models.Model):
     value = models.FloatField(null=True)
     direction = models.CharField(max_length=50)
     ''' example: s0-sN|sN-s0  '''
+
     
 class OperationPeriod(models.Model):
     ''' operation period '''

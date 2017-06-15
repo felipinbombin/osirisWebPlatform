@@ -13,7 +13,7 @@ from django.utils.decorators import method_decorator
 from django.http import Http404
 from django.http import JsonResponse
 
-from .models import Scene
+from .models import Scene, MetroConnection, MetroLine, MetroStation, MetroDepot
 
 from .forms import FirstStepForm, SecondStepForm, ThirdStepForm, FourthStepForm, FithStepForm, SixthStepForm
 
@@ -60,58 +60,64 @@ class ValidationStepView(View):
     def dispatch(self, request, *args, **kwargs):
         return super(ValidationStepView, self).dispatch(request, *args, **kwargs)
 
+    def processStep1(self, request, scene):
+        ''' create or edit global topologic variables '''
+        data = json.loads(request.body)
+        response={}
+
+        for line in data['lines']:
+            externalId = line['id']
+            name = line['name']
+            if externalId:
+                lineObj = MetroLine.select_related('stations').filter(scene=scene, externalId=externalId)
+            else:
+                lineObj = MetroLine.objects.create(scene=scene, name=name)
+
+            for station in line['stations']:
+                if station['id']:
+                    MetroStation.objects.filter(metroLine=lineObj, externalId=station['id']).\
+                        update(name=station['name'])
+                else:
+                    MetroStation.objects.create(metroLine=lineObj, name=station['name'])
+              
+            for depot in line['depots']:
+                if station['id']:
+                    MetroDepot.objects.filter(metroLine=lineObj, externalId=depot[id]).\
+                        update(name)
+                else:
+                    MetroDepot.objects.create(metroLine=lineObj, name=depot['name'])
+
+        for connection in data['connections']:
+            # global connections
+            externalId = connection['id']
+            name = connection['name']
+            if externalId:
+                connectionObj = MetroConnection.objects.prefetch_related('stations').\
+                    get(scene=scene, externalId=externalId)
+            else:
+                connectionObj = MetroConnection.objects.create(scene=scene, name=name)
+
+        Status.getJsonStatus(Status.OK, response)
+        return response
+            
     def post(self, request, stepId, sceneId):
         """ validate and update data in server """
 
         stepId = int(stepId)
         sceneId = int(sceneId)
 
-        scene = Scene.objects.get(user=request.user, id=sceneId)
+        sceneObj = Scene.objects.get(user=request.user, id=sceneId)
 
         if stepId == 1:
            # global topologic variables
-           data = json.loads(request.body)
-
-           
-           for line in data['lines']:
-               name = line['name']
-               if line['id']:
-                   #update line name
-                   pass
- 
-               else:
-                   # create line
-                   pass
-              
-               for station in line['stations']:
-                   print station
-                   if station['id']:
-                       # update station name
-                       pass
-                   else:
-                       # create station
-                       pass
-
-               for depot in line['depots']:
-                   print depot
-                   if station['id']:
-                       # update station name
-                       pass
-                   else:
-                       # create station
-                       pass
-
-           for connection in data['connections']:
-               # global connections
-               pass
-
-           # if everything ok
-           scene.status = Scene.OK
-           scene.save()
-
+           response = self.processStep1(request, sceneObj)
         elif stepId == 2:
             # upload topologic file
             pass
+            # if everything ok
+            scene.status = Scene.OK
+            scene.save()
+
 
         response = {}
 
@@ -134,20 +140,20 @@ class GetStep1DataView(View):
         """ return data of step 1 """
 
         sceneId = int(sceneId)
-        scene = Scene.objects.prefetch_related('metroLine__metroStation').get(user=request.user, id=sceneId)
-        connections = MetroConnection.objects.prefetch_related('stations').filter(scene=scene)
+        scene = Scene.objects.prefetch_related('metroline_set').get(user=request.user, id=sceneId)
+        connections = MetroConnection.objects.all().prefetch_related('stations').filter(scene=scene)
 
         lines = []
-        for line in scene.metroLine:
+        for line in scene.metroline_set.all():
             lines.append(line.getDict())
         
-        connections = []
-        for connection in scene.metroLine:
-            connections.append(connnection.getDict())
+        connectionsDict = []
+        for connection in connections:
+            connectionsDict.append(connnection.getDict())
 
         response = {}
         response['lines'] = lines
-        response['connections'] = connections
+        response['connections'] = connectionsDict
 
         Status.getJsonStatus(Status.OK, response)
 
