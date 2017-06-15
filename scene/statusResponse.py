@@ -5,7 +5,7 @@ class Status():
     OK = 1
 
     statusDict = {
-        OK: {'status': 200, 'title': '', 'message': 'consulta exitosa', 'type': 'success'}
+        OK: {'code': 200, 'title': 'Consulta exitosa', 'message': ':-)', 'type': 'success'}
     }
 
     @staticmethod
@@ -17,6 +17,6 @@ class Status():
         if message != None:
             status['message'] = message
 
-        jsonObj.update(status)
+        jsonObj['status'] = status
  
         return jsonObj

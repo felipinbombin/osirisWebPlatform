@@ -33,6 +33,7 @@ class Scene(models.Model):
     class Meta:
         verbose_name = 'escenario'
         verbose_name_plural = 'escenarios'
+        unique_together = ('user', 'name',)
 
     def __str__(self):
         return self.name
@@ -40,8 +41,10 @@ class Scene(models.Model):
 class MetroLine(models.Model):
     ''' metro line '''
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
-    externalId = models.UUIDField(default=uuid.uuid4());
-    ''' uses to track record in wizard form, this way i know if is new record or previous '''
+    externalId = models.UUIDField(null=False, unique=True);
+    ''' used to track record in wizard form, this way i know if is new record or previous '''
+    isOld = models.BooleanField(default=False)
+    ''' used when topological variables are updated '''
     name = models.CharField(max_length=100)
     #######################################################
     # CONSUMPTION                                         
@@ -61,15 +64,22 @@ class MetroLine(models.Model):
     powerLimitToFeed = models.FloatField(null=True);
     ''' unit:  '''
 
+    class Meta:
+        unique_together = ('scene', 'name',)
+
     def getDict(self):
         ''' dict '''
         dict = {}
         dict['id'] = self.externalId
         dict['name'] = self.name
         dict['stations'] = []
+        dict['depots'] = []
 
-        for station in self.stations:
+        for station in self.metrostation_set.all():
             dict['stations'].append(station.getDict())
+
+        for depot in self.metrodepot_set.all():
+            dict['depots'].append(depot.getDict())
 
         return dict
 
@@ -77,8 +87,10 @@ class MetroLine(models.Model):
 class MetroStation(models.Model):
     ''' metro station'''
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
-    externalId = models.UUIDField(default=uuid.uuid4());
+    externalId = models.UUIDField(null=False, unique=True);
     ''' uses to track record in wizard form, this way i know if is new record or previous '''
+    isOld = models.BooleanField(default=False)
+    ''' used when topological variables are updated '''
     name = models.CharField(max_length=100)
     length = models.FloatField(null=True)
     ''' length of the stations. Unit: meters '''
@@ -104,6 +116,9 @@ class MetroStation(models.Model):
     tau = models.FloatField(null=True);
     ''' unit:  '''
 
+    class Meta:
+        unique_together = ('metroLine', 'name',)
+
     def getDict(self):
         ''' dict structure '''
         dict = {}
@@ -116,6 +131,10 @@ class MetroStation(models.Model):
 class MetroDepot(models.Model):
     ''' train depot '''
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
+    externalId = models.UUIDField(null=False, unique=True);
+    ''' uses to track record in wizard form, this way i know if is new record or previous '''
+    isOld = models.BooleanField(default=False)
+    ''' used when topological variables are updated '''
     name = models.CharField(max_length=100)
     #######################################################
     # CONSUMPTION                                         
@@ -126,15 +145,28 @@ class MetroDepot(models.Model):
     ''' unit:  '''
     dcConsumption = models.FloatField(null=True);
     ''' unit:  '''
-    
+
+    class Meta:
+        unique_together = ('metroLine', 'name',)
+
+    def getDict(self):
+        ''' dict '''
+        dict = {}
+        dict['id'] = self.externalId
+        dict['name'] = self.name
+
+        return dict
+   
 
 class MetroConnection(models.Model):
     ''' connection between metro stations fo different metro lines '''
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
-    externalId = models.UUIDField(default=uuid.uuid4());
-    ''' uses to track record in wizard form, this way i know if is new record or previous '''
+    externalId = models.UUIDField(null=False, unique=True);
+    ''' used to track record in wizard form, this way i know if is new record or previous '''
+    isOld = models.BooleanField(default=False)
+    ''' used when topological variables are updated '''
     name = models.CharField(max_length=100)
-    stations = models.ManyToManyField(MetroStation)
+    stations = models.ManyToManyField(MetroStation, through='MetroConnectionStation')
     avgHeight = models.FloatField(null=True);
     ''' unit: meters '''
     avgSurface = models.FloatField(null=True);
@@ -145,6 +177,9 @@ class MetroConnection(models.Model):
     consumption = models.FloatField(null=True);
     ''' unit:  '''
 
+    class meta:
+        unique_together = ('scene', 'name',)
+
     def getDict(self):
         ''' dict '''
         dict = {}
@@ -154,8 +189,25 @@ class MetroConnection(models.Model):
         dict['avgSurface'] = self.avgSurface
         dict['stations'] = []
 
-        for station in self.stations:
-            dict['stations'].append(station.getDict())
+        for connectionStation in self.metroconnectionstation_set.all():
+            dict['stations'].append(connectionStation.getDict())
+
+        return dict
+
+class MetroConnectionStation(models.Model):
+    ''' bridge between MetroStation and MetroConnection models '''
+    metroStation = models.ForeignKey(MetroStation)
+    metroConnection = models.ForeignKey(MetroConnection)
+    isOld = models.BooleanField(default=False)
+    ''' used when topological variables are updated '''
+    externalId = models.UUIDField(null=False, unique=True);
+    ''' used to track record in wizard form, this way i know if is new record or previous '''
+
+    def getDict(self):
+        ''' dict '''
+        dict = {}
+        dict['id'] = self.externalId
+        dict['station'] = self.metroStation.getDict()
 
         return dict
 

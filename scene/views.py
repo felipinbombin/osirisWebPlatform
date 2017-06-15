@@ -13,13 +13,14 @@ from django.utils.decorators import method_decorator
 from django.http import Http404
 from django.http import JsonResponse
 
-from .models import Scene, MetroConnection, MetroLine, MetroStation, MetroDepot
+from .models import Scene, MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation
 
 from .forms import FirstStepForm, SecondStepForm, ThirdStepForm, FourthStepForm, FithStepForm, SixthStepForm
 
 from .statusResponse import Status
 
 import json
+import uuid
 
 class StepsView(View):
     ''' wizard form: first  '''
@@ -65,37 +66,76 @@ class ValidationStepView(View):
         data = json.loads(request.body)
         response={}
 
+        # all records all old by default
+        MetroLine.objects.filter(scene=scene).update(isOld=True)
+        MetroStation.objects.filter(metroLine__scene=scene).update(isOld=True)
+        MetroDepot.objects.filter(metroLine__scene=scene).update(isOld=True)
+        MetroConnection.objects.filter(scene=scene).update(isOld=True)
+        MetroConnectionStation.objects.filter(metroConnection__scene=scene).update(isOld=True)
+
         for line in data['lines']:
             externalId = line['id']
             name = line['name']
             if externalId:
-                lineObj = MetroLine.select_related('stations').filter(scene=scene, externalId=externalId)
+                lineObj = MetroLine.objects.get(scene=scene, externalId=externalId)
+                lineObj.name = name
+                lineObj.isOld = False
+                lineObj.save()
             else:
-                lineObj = MetroLine.objects.create(scene=scene, name=name)
+                lineObj = MetroLine.objects.create(scene=scene, name=name, externalId=uuid.uuid4())
 
             for station in line['stations']:
                 if station['id']:
                     MetroStation.objects.filter(metroLine=lineObj, externalId=station['id']).\
-                        update(name=station['name'])
+                        update(name=station['name'], isOld=False)
                 else:
-                    MetroStation.objects.create(metroLine=lineObj, name=station['name'])
+                    MetroStation.objects.create(metroLine=lineObj, name=station['name'], externalId=uuid.uuid4())
               
             for depot in line['depots']:
-                if station['id']:
-                    MetroDepot.objects.filter(metroLine=lineObj, externalId=depot[id]).\
-                        update(name)
+                if depot['id']:
+                    MetroDepot.objects.filter(metroLine=lineObj, externalId=depot['id']).\
+                        update(name=depot['name'], isOld=False)
                 else:
-                    MetroDepot.objects.create(metroLine=lineObj, name=depot['name'])
+                    MetroDepot.objects.create(metroLine=lineObj, name=depot['name'], externalId=uuid.uuid4())
 
         for connection in data['connections']:
             # global connections
             externalId = connection['id']
-            name = connection['name']
+            avgHeight = float(connection['avgHeight'])
+            avgSurface = float(connection['avgSurface'])
             if externalId:
                 connectionObj = MetroConnection.objects.prefetch_related('stations').\
                     get(scene=scene, externalId=externalId)
+                connectionObj.name = connection['name']
+                connectionObj.avgHeight = avgHeight
+                connectionObj.avgSurface = avgSurface
+                connectionObj.isOld = False
+                connectionObj.save()
             else:
-                connectionObj = MetroConnection.objects.create(scene=scene, name=name)
+                connectionObj = MetroConnection.objects.create(scene=scene, name=connection['name'], 
+                    avgHeight=avgHeight, avgSurface=avgSurface, externalId=uuid.uuid4())
+
+            for connectionStation in connection['stations']:
+                station = connectionStation['station']
+                line = connectionStation['line']
+
+                if station['id']:
+                    stationObj = MetroStation.objects.get(metroLine__scene=scene, externalId=station['id'])
+                else:
+                    stationObj = MetroStation.objects.get(metroLine__name=line['name'], name=station['name'])
+
+                if connectionStation['id']:
+                    MetroConnectionStation.objects.filter(metroConnection=connectionObj, 
+                        externalId=connectionStation['id']).update(metroStation=stationObj, isOld=False)
+                else:
+                    MetroConnectionStation.objects.create(metroConnection=connectionObj, 
+                        metroStation=stationObj, externalId=uuid.uuid4())
+                
+        MetroLine.objects.filter(scene=scene, isOld=True).delete()
+        MetroStation.objects.filter(metroLine__scene=scene, isOld=True).delete()
+        MetroDepot.objects.filter(metroLine__scene=scene, isOld=True).delete()
+        MetroConnection.objects.filter(scene=scene, isOld=True).delete()
+        MetroConnectionStation.objects.filter(metroConnection__scene=scene, isOld=True).delete()
 
         Status.getJsonStatus(Status.OK, response)
         return response
@@ -140,8 +180,9 @@ class GetStep1DataView(View):
         """ return data of step 1 """
 
         sceneId = int(sceneId)
-        scene = Scene.objects.prefetch_related('metroline_set').get(user=request.user, id=sceneId)
-        connections = MetroConnection.objects.all().prefetch_related('stations').filter(scene=scene)
+        scene = Scene.objects.prefetch_related('metroline_set__metrostation_set', 'metroline_set__metrodepot_set').\
+            get(user=request.user, id=sceneId)
+        connections = MetroConnection.objects.prefetch_related('stations').filter(scene=scene)
 
         lines = []
         for line in scene.metroline_set.all():
@@ -149,7 +190,7 @@ class GetStep1DataView(View):
         
         connectionsDict = []
         for connection in connections:
-            connectionsDict.append(connnection.getDict())
+            connectionsDict.append(connection.getDict())
 
         response = {}
         response['lines'] = lines

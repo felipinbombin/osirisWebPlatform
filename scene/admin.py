@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.utils import timezone
 from django.shortcuts import redirect
-from models import Scene
+from models import Scene, MetroLine, MetroStation, MetroDepot, MetroConnection
 
 # Register your models here.
 class SceneAdmin(admin.ModelAdmin):
@@ -35,3 +35,7 @@ class SceneAdmin(admin.ModelAdmin):
         return super(SceneAdmin, self).response_add(request, ibj, post_url_continue)
 
 admin.site.register(Scene, SceneAdmin)
+admin.site.register(MetroLine)
+admin.site.register(MetroStation)
+admin.site.register(MetroDepot)
+admin.site.register(MetroConnection)

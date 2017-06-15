@@ -250,33 +250,15 @@
       self.stations = ko.observableArray();
       self.depots = ko.observableArray();
     };
-    let Union = function(){
-      let self = this;
-      self.id = null;
-      self.line1 = ko.observable(null);
-      self.station1 = ko.observable(null);
-      self.line2 = ko.observable(null);
-      self.station2 = ko.observable(null);
-      self.name = ko.computed(function(){
-        try{
-          let prefix = self.line1().name() + '-' + self.station1().name();
-          let sufix = self.line2().name() + '-' + self.station2().name();
-          let arrow = '<i class="fa fa-arrows-h fa-lg" aria-hidden="true"></i>';
-          return '(' + prefix + arrow + sufix + ')';
-        }catch(err){
-          return 'no name';
-        }
-      });
-    };
     let ConnectionStation = function(){
       let self = this;
+      self.id = null;
       self.line = ko.observable();
       self.station = ko.observable();
-      self.avgHeight = ko.observable();
-      self.avgSurface = ko.observable();
     }
     let Connection = function(name){
       let self = this;
+      self.id = null;
       self.name = ko.observable(name);
       self.stations = ko.observableArray();
       self.avgHeight = ko.observable();
@@ -286,7 +268,11 @@
         let arrow = '<i class="fa fa-arrows-h fa-lg" aria-hidden="true"></i>';
         let stationsNumber = self.stations().length;
         for(let i=0;i<stationsNumber;i++){
-          name += self.stations()[i].line().name() + '-' + self.stations()[i].station().name();
+          try{
+            name += self.stations()[i].line().name() + '-' + self.stations()[i].station().name();
+          }catch(err){
+            // nothing
+          }
           if(i+1 !== stationsNumber){
             name += arrow;
           }
@@ -656,8 +642,59 @@
         }
         return true;
       };
-    }
+    
+      self.update = function(data){
+        let lines = data['lines'];
+        let connections = data['connections'];
 
+        self.connections.removeAll();
+        self.lines.removeAll();
+        
+        let stationList = {};
+
+        lines.forEach(function(el, i){
+          let line = new Line();
+          line.name(el.name);
+          line.id = el.id;
+    
+          el.stations.forEach(function(el, i){
+            let station = new Station();
+            station.name(el.name);
+            station.id = el.id;
+            line.stations.push(station);
+
+            stationList[el.id] = {
+              line: line,
+              station: station
+            }
+          });
+          el.depots.forEach(function(el, i){
+            let depot = new Depot();
+            depot.name(el.name);
+            depot.id = el.id;
+            line.depots.push(depot);
+          });
+          self.lines.push(line);
+        });
+        
+        connections.forEach(function(el, i){
+          let connection = new Connection(el.name);
+          connection.id = el.id;
+          connection.avgHeight(el.avgHeight);
+          connection.avgSurface(el.avgSurface);
+
+          el.stations.forEach(function(connStation, i){
+            let connectionStation = new ConnectionStation();
+            connectionStation.id = connStation.id;
+            connectionStation.line(stationList[connStation.station.id].line);
+            connectionStation.station(stationList[connStation.station.id].station);
+
+            connection.stations.push(connectionStation);
+          });
+          self.connections.push(connection);
+        });
+      }
+    }
 
     /**************************************************
     * WIZARD LOGIC
@@ -666,6 +703,11 @@
     // viewModels to manage each step
     let step1 = new Step1ViewModel();
 
+    // Initialize the leaveStep event
+    $("#wizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
+       return true;
+    });
+
     // Initialize the showStep event
     $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
 
@@ -673,14 +715,17 @@
 
       switch(stepNumber){
         case 0:
-          step1DOM = document.getElementById('step-1');
-          if(ko.dataFor(step1DOM) === undefined){
+          let step1DOM = document.getElementById('step-1');
+          let viewModel = ko.dataFor(step1DOM);
+          if(viewModel === undefined){
             ko.applyBindings(step1, step1DOM);
+            viewModel = ko.dataFor(step1DOM);
           }
           //retrieve data from server
           const URL = '{% url "scene:getStep1Data" sceneId=scene.id %}';
           $.get(URL, function(data){
-            console.log(data);
+            viewModel.update(data);
+            console.log('data retrieved succesfully');
           });
 
           break;
@@ -698,9 +743,7 @@
             $.post(url, data, function(answer){
               // success
               if(answer.status.code == 200){
-                setTimeout(function(){
-                  $('#wizard').smartWizard('next');
-                }, 2000);
+                $('#wizard').smartWizard('next');
               }
               showNotificationMessage(answer.status);
             });
@@ -756,35 +799,7 @@
           finalButton
         ],
       },
-    });
-   
-    // Initialize the leaveStep event
-    $("#wizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
-       return true;
-    });
-
-    // Initialize the showStep event
-    $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
-
-      console.log("You are on step "+stepNumber+" now " + stepPosition);
-
-      switch(stepNumber){
-        case 0:
-          console.log('showing step ' + stepNumber);
-          let url = '{% url "scene:validation" stepId=1 sceneId=scene.id %}';
-          if(step1.isValid()){
-            let data = step1.serialize();
-            $.post(url, data, function(answer){
-              // success
-              if(answer.status.code == 200){
-                $('#wizard').smartWizard('next');
-              }
-              showNotificationMessage(answer.status);
-            });
-          }
-          break;
-      }
-    });
+    });  
   });
   </script>
 {% endblock %}
