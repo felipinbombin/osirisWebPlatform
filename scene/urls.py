@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import StepsView, ValidationStepView, GetStep1DataView
+from .views.defaults import StepsView, ValidationStepView, GetStep1DataView
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [

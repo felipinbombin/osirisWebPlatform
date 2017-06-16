@@ -3,8 +3,19 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 
 import uuid
+import os
+
+class OverwriteStorage(FileSystemStorage):
+
+    # This method is actually defined in Storage
+    def get_available_name(self, name, max_length):
+      if self.exists(name):
+          os.remove(os.path.join(settings.MEDIA_ROOT, name))
+      return name # simply returns the name passed
 
 # Create your models here.
 class Scene(models.Model):
@@ -24,6 +35,7 @@ class Scene(models.Model):
     )
     status = models.CharField('Estado', max_length=2, choices=STATUS, default=INCOMPLETE)
     lastSuccessfullStep = models.IntegerField('Paso pendiente', default=0)
+    step2Template = models.FileField(upload_to='step2Template/', null=True, storage=OverwriteStorage())
     #######################################################
     # GLOBAL CONDITION
     #######################################################
