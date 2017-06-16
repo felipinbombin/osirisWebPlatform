@@ -14,7 +14,7 @@
       <a href="{{ scene.step2Template.url }}" class="btn btn-info btn-lg btn-block"><i class="fa fa-file-excel-o fa-5x"></i><br />Descargar plantilla<br />Excel</a>   
     </div>
     <div class="col-md-6 col-sm-6 col-xs-12">
-      <form action='uploadTopologicFile' class="dropzone">
+      <form action='{% url "scene:uploadTopologicFile" sceneId=scene.id %}' class="dropzone">
       </form>
     </div>
   </div>
