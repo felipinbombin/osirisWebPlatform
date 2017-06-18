@@ -165,7 +165,7 @@ class Step2Excel(Excel):
     def createTopologicalFile(self):
         ''' create excel file based on scene data '''
 
-        for line in self.scene.metroline_set.all():
+        for line in self.scene.metroline_set.all().order_by('name'):
             worksheet = self.workbook.add_worksheet(line.name)
             self.makeStructureHeader(worksheet)
 
