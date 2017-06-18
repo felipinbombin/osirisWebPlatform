@@ -689,6 +689,7 @@
     // Initialize the showStep event
     $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
 
+      init_sidebar();
       console.log("You are on step "+stepNumber+" now " + stepPosition);
 
       switch(stepNumber){
