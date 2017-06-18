@@ -45,10 +45,11 @@ class Excel(object):
 
     def getFileName(self):
         ''' name of file '''
-        NAME = 'generic'
+        TYPE = 'generic'
         EXTENSION = 'xlsx'
+        NAME = self.scene.name.replace(' ', '_')
 
-        fileName = '{}_{}.{}'.format(self.scene.name, NAME, EXTENSION)
+        fileName = '{}_{}.{}'.format(NAME, TYPE, EXTENSION)
 
         return fileName
 
@@ -100,6 +101,8 @@ class Excel(object):
 
         localFile = open('{}/{}'.format(self.getMediaPath(), self.getFileName()))
         djangoFile = File(localFile)
+        # remove previous file saved
+        os.remove(os.path.join(settings.MEDIA_ROOT, fileField.name))
         fileField.save(self.getFileName(), djangoFile)
         localFile.close()
 
