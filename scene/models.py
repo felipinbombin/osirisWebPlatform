@@ -37,6 +37,13 @@ class Scene(models.Model):
     lastSuccessfullStep = models.IntegerField('Paso pendiente', default=0)
     step2Template = models.FileField(upload_to='step2Template/', null=True, storage=OverwriteStorage())
     step2File = models.FileField(upload_to='step2File/', null=True, storage=OverwriteStorage())
+    step4Template = models.FileField(upload_to='step4Template/', null=True, storage=OverwriteStorage())
+    step4File = models.FileField(upload_to='step4File/', null=True, storage=OverwriteStorage())
+    step6Template = models.FileField(upload_to='step6Template/', null=True, storage=OverwriteStorage())
+    step6File = models.FileField(upload_to='step6File/', null=True, storage=OverwriteStorage())
+    step7Template = models.FileField(upload_to='step7Template/', null=True, storage=OverwriteStorage())
+    step7File = models.FileField(upload_to='step7File/', null=True, storage=OverwriteStorage())
+    #######################################################
     #######################################################
     # GLOBAL CONDITION
     #######################################################
