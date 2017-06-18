@@ -8,19 +8,26 @@ from django.http import Http404
 
 from scene.models import Scene
 
-class DownloadStep2FileView(View):
-    ''' link to downlaod the most recent file uploaded by user in step 2  '''
-
-    def __init__(self):
-        self.context = {}
-
-    def get(self, request, sceneId):
-
+class DownloadStepFile(View):
+    ''' link to download the most recent file uploaded by user in step 2,4,6 or 7 '''
+    def get(self, request, stepId, sceneId):
         try:
-            scene = Scene.objects.get(user=request.user, 
-                id=sceneId)
+            scene = Scene.objects.get(user=request.user, id=sceneId)
         except:
             raise Http404
-
-        return redirect(scene.step2File.url)
+        
+        field = None
+        stepId = int(stepId)
+        if stepId == 2:
+            field = scene.step2File
+        elif stepId == 4:
+            field = scene.step4File
+        elif stepId == 6:
+            field = scene.step6File
+        elif stepId == 7:
+            field = scene.step7File
+        else:
+            raise Http404
+        
+        return redirect(field.url)
 

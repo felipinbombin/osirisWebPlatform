@@ -12,7 +12,7 @@
     </ul>
     {% if scene.step2File %}
     <div class="col-md-12 col-sm-12 col-xs-12">
-      <a href="{% url 'scene:downloadStep2File' sceneId=scene.id %}" class="btn btn-success btn-lg btn-block"><i class="fa fa-file-excel-o"></i> Descargar último archivo subido</a>
+      <a href="{% url 'scene:downloadStepFile' stepId=2 sceneId=scene.id %}" class="btn btn-success btn-lg btn-block"><i class="fa fa-file-excel-o"></i> Descargar último archivo subido</a>
     </div>
     {% endif %}
     <div class="col-md-6 col-sm-6 col-xs-12">
