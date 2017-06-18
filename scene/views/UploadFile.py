@@ -64,7 +64,11 @@ class UploadTopologicFileView(View):
             inMemoryUploadedFile = request.FILES['file']
             isValid, response = self.validateFile(inMemoryUploadedFile, response)
             if isValid:
-                # proces file
+                # process file
+ 
+                # validate data
+                # delete previous data
+                # insert new data
 
                 # delete previous file
                 if sceneObj.step2File:
@@ -72,7 +76,9 @@ class UploadTopologicFileView(View):
                         sceneObj.step2File.name))
                 fileName = inMemoryUploadedFile.name
                 sceneObj.step2File.save(fileName, inMemoryUploadedFile)
-                pass
+                
+                sceneObj.lastSuccessfullStep = 2
+                sceneObj.save()
         else:
             Status.getJsonStatus(Status.INVALID_STEP, response)
 

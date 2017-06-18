@@ -144,17 +144,13 @@ class ValidationStepView(View):
         scene.lastSuccessfullStep = 1
         scene.save()
 
-        self.generateTopologicalFile(scene)
-
-        Status.getJsonStatus(Status.OK, response)
-        return response
-
-    def generateTopologicalFile(self, scene):
-        ''' create excel file based on scene data '''
-
         step2Excel = Step2Excel(scene)
         step2Excel.createTopologicalFile()
-        
+
+        Status.getJsonStatus(Status.OK, response)
+
+        return response
+
     def post(self, request, stepId, sceneId):
         """ validate and update data in server """
 
@@ -164,25 +160,47 @@ class ValidationStepView(View):
         sceneObj = Scene.objects.prefetch_related('metroline_set__metrostation_set', 
                        'metroline_set__metrodepot_set').\
                        get(user=request.user, id=sceneId)
-
-        if stepId == 1:
-           # global topologic variables
-           response = self.processStep1(request, sceneObj)
-        elif stepId == 2:
-            # upload topologic file
-            pass
-            # if everything ok
-            scene.status = Scene.OK
-            scene.save()
-
-
         response = {}
+        if stepId == 1:
+            # global topologic variables
+            response = self.processStep1(request, sceneObj)
+            response['status']['title'] = 'Actualización exitosa'
+            response['status']['message'] = 'Estructura topológica creada exitosamente.'
+        elif stepId == 2:
+            # check if file was uploaded successfully
+            if sceneObj.lastSuccessfullStep >= 2:
+                Status.getJsonStatus(Status.OK, response)
+                response['status']['title'] = 'Actualización exitosa'
+                response['status']['message'] = 'Archivo subido exitosamente.'
+            else:
+                Status.getJsonStatus(Status.INVALID_STEP, response)
+        elif stepId == 3:
+            pass
+        elif stepId == 4:
+            # check if file was uploaded successfully
+            if sceneObj.lastSuccessfullStep >= 4:
+                response['status']['title'] = 'Actualización exitosa'
+                response['status']['message'] = 'Archivo subido exitosamente.'
+                Status.getJsonStatus(Status.OK, response)
+            else:
+                Status.getJsonStatus(Status.INVALID_STEP, response)
+        elif stepId == 5:
+            pass
+        elif stepId == 6:
+            # check if file was uploaded successfully
+            if sceneObj.lastSuccessfullStep >= 6:
+                Status.getJsonStatus(Status.OK, response)
+                response['status']['title'] = 'Actualización exitosa'
+                response['status']['message'] = 'Archivo subido exitosamente.'
+                sceneObj.status = Scene.OK
+                sceneObj.save()
+            else:
+                Status.getJsonStatus(Status.INVALID_STEP, response)
+        elif stepId == 7:
+            Status.getJsonStatus(Status.OK, response)
+            response['status']['title'] = 'Actualización exitosa'
+            response['status']['message'] = 'Archivo subido exitosamente.'
 
-        response['status'] = {}
-        response['status']['code'] = 200
-        response['status']['message'] = 'Estructura topológica creada exitosamente.'
-        response['status']['type'] = 'success'
-        response['status']['title'] = 'Actualización exitosa'
 
         return JsonResponse(response, safe=False)
 

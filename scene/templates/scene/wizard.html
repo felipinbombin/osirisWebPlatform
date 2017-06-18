@@ -714,12 +714,17 @@
     let nextLogic = function(){
       let currentStep = parseInt(window.location.hash.split('-')[1]);
 
+      let getUrl = function(stepId){
+          let sceneId = {{ scene.id }};
+          let url = '/admin/scene/wizard/validate/';
+
+          return url + stepId + '/' + sceneId;
+      }
       switch(currentStep){
         case 1:
-          let url = '{% url "scene:validation" stepId=1 sceneId=scene.id %}';
           if(step1.isValid()){
             let data = step1.serialize();
-            $.post(url, data, function(answer){
+            $.post(getUrl(1), data, function(answer){
               // success
               if(answer.status.code == 200){
                 $('#wizard').smartWizard('next');
@@ -730,20 +735,52 @@
           break;
         case 2:
           // ask to server if file was uploaded
+          $.post(getUrl(2), function(answer){
+            // success
+            if(answer.status.code == 200){
+              $('#wizard').smartWizard('next');
+            }else{
+              showNotificationMessage(answer.status);
+            }
+          });
           break;
         case 3:
           break;
         case 4:
           // ask to server if file was uploaded
+          $.post(getUrl(4), function(answer){
+            // success
+            if(answer.status.code == 200){
+              $('#wizard').smartWizard('next');
+            }else{
+              showNotificationMessage(answer.status);
+            }
+          });
           break;
         case 5:
           // ask to server if file was uploaded
           break;
         case 6:
           // ask to server if file was uploaded
+          $.post(getUrl(6), function(answer){
+            // success
+            if(answer.status.code == 200){
+              $('#wizard').smartWizard('next');
+            }else{
+              showNotificationMessage(answer.status);
+            }
+          });
           break;
         case 7:
           // ask to server if file was uploaded
+          $.post(getUrl(7), function(answer){
+            // success
+            if(answer.status.code == 200){
+              $('#wizard').smartWizard('next');
+            }else{
+              showNotificationMessage(answer.status);
+            }
+          });
           break;
       }
     };
