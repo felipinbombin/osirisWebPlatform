@@ -19,6 +19,7 @@ from scene.models import Scene, MetroConnection, MetroLine, MetroStation, MetroD
 from scene.statusResponse import Status
 
 import math
+import os
 
 class UploadTopologicFileView(View):
     ''' validate data from step '''
@@ -64,6 +65,13 @@ class UploadTopologicFileView(View):
             isValid, response = self.validateFile(inMemoryUploadedFile, response)
             if isValid:
                 # proces file
+
+                # delete previous file
+                if sceneObj.step2File:
+                    os.remove(os.path.join(settings.MEDIA_ROOT, 
+                        sceneObj.step2File.name))
+                fileName = inMemoryUploadedFile.name
+                sceneObj.step2File.save(fileName, inMemoryUploadedFile)
                 pass
         else:
             Status.getJsonStatus(Status.INVALID_STEP, response)
