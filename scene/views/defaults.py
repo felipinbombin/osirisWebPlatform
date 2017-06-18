@@ -217,16 +217,3 @@ class GetStep1DataView(View):
 
         return JsonResponse(response, safe=False)
 
-class UploadFileStep2View(View):
-    ''' upload excel file of step 2 '''
-
-    def __init__(self):
-        self.context = {}
-
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(ValidationStepView, self).dispatch(request, *args, **kwargs)
-
-    def post(self, request):
-        '''  '''
-

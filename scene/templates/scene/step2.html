@@ -11,10 +11,10 @@
       <li>Una vez completado, arrastrar el archivo al cuadro de la derecha</li>
     </ul>
     <div class="col-md-6 col-sm-6 col-xs-12">
-      <a href="{{ scene.step2Template.url }}" class="btn btn-info btn-lg btn-block"><i class="fa fa-file-excel-o fa-5x"></i><br />Descargar plantilla<br />Excel</a>   
+      <a href="{{ scene.step2Template.url }}" class="btn btn-info btn-lg btn-block btn-excel"><i class="fa fa-file-excel-o fa-5x"></i><br /><h1>Descargar plantilla Excel</h1></a>
     </div>
     <div class="col-md-6 col-sm-6 col-xs-12">
-      <form action='{% url "scene:uploadTopologicFile" sceneId=scene.id %}' class="dropzone">
+      <form id="step2form" action='{% url "scene:uploadTopologicFile" sceneId=scene.id %}' class="dropzone">
       </form>
     </div>
   </div>

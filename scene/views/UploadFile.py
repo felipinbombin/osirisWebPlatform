@@ -31,19 +31,20 @@ class UploadTopologicFileView(View):
         return super(UploadTopologicFileView, self).dispatch(request, *args, **kwargs)
 
     def validateFile(self, inMemoryUploadedFile, response):
-        fileSizeLimit = 2*math.pow(1, 6) # 2MB
+        fileSizeLimit = 2*math.pow(10, 6) # 2MB
         isValid = True
 
         if inMemoryUploadedFile.size > fileSizeLimit:
             Status.getJsonStatus(Status.INVALID_SIZE_FILE, response)
             isValid = False
             response['status']['message'] = 'El archivo no puede tener un tamaño superior a 2 MB.'
-        elif inMemoryUploadedFile.name.endsWith('.xlsx'):
+        elif not inMemoryUploadedFile.name.endswith('.xlsx'):
             Status.getJsonStatus(Status.INVALID_FORMAT_FILE, response)
             isValid = False
-            response['status']['message'] = 'El archivo no puede tener un tamaño superior a 2 MB.'
+            response['status']['message'] = 'El archivo debe tener formato Excel.'
         else:
             Status.getJsonStatus(Status.OK, response)
+            response['status']['message'] = 'Archivo topológico subido exitosamente.'
 
         return isValid, response
      
