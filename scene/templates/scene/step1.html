@@ -54,6 +54,46 @@
     <div class="x_panel">
       <div class="row x_title">
         <div class="col-md-6 col-sm-6 col-xs-12">
+          <h2>Depósitos (<strong data-bind="text: depotsQuantity"></strong>)</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <button type="submit" class="pull-right btn btn-success btn-sm" 
+            data-bind="click: showAddDepotDialog, enable: lines().length > 0">
+            <i class="fa fa-plus" aria-hidden="true"></i> agregar
+          </button>
+        </div>
+      </div>
+      <div class="x_content">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="table-responsive">
+          <table class="table table-striped" data-bind="visible: depotsQuantity()>0">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Línea</th>
+                <th>Eliminar</th>
+              </tr>
+            </thead>
+            <tbody data-bind="foreach: lines">
+              <!-- ko foreach: depots -->
+              <tr>
+                <td data-bind="text: name"></td>
+                <td data-bind="text: $parent.name"></td>
+                <td><button type="button" class="btn btn-danger btn-xs" data-bind="click: $root.removeDepot">Eliminar</button></td>
+              </tr>
+              <!-- /ko -->
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="row x_title">
+        <div class="col-md-6 col-sm-6 col-xs-12">
           <h2>Conexiones (<strong data-bind="text: connections().length"></strong>)</h2>
           <div class="clearfix"></div>
         </div>
@@ -91,46 +131,6 @@
         </div>
       </div>
     </div>
-
-    <div class="x_panel">
-      <div class="row x_title">
-        <div class="col-md-6 col-sm-6 col-xs-12">
-          <h2>Depósitos (<strong data-bind="text: depotsQuantity"></strong>)</h2>
-          <div class="clearfix"></div>
-        </div>
-        <div class="col-md-6 col-sm-6 col-xs-12">
-          <button type="submit" class="pull-right btn btn-success btn-sm" 
-            data-bind="click: showAddDepotDialog, enable: lines().length > 0">
-            <i class="fa fa-plus" aria-hidden="true"></i> agregar
-          </button>
-        </div>
-      </div>
-      <div class="x_content">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-          <div class="table-responsive">
-          <table class="table table-striped" data-bind="visible: depotsQuantity()>0">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Línea</th>
-                <th>Eliminar</th>
-              </tr>
-            </thead>
-            <tbody data-bind="foreach: lines">
-              <!-- ko foreach: depots -->
-              <tr>
-                <td data-bind="text: name"></td>
-                <td data-bind="text: $parent.name"></td>
-                <td><button type="button" class="btn btn-danger btn-xs" data-bind="click: $root.removeDepot">Eliminar</button></td>
-              </tr>
-              <!-- /ko -->
-            </tbody>
-          </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>
 <!-- modal to add line -->
