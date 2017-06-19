@@ -102,7 +102,9 @@ class Excel(object):
         localFile = open('{}/{}'.format(self.getMediaPath(), self.getFileName()))
         djangoFile = File(localFile)
         # remove previous file saved
-        os.remove(os.path.join(settings.MEDIA_ROOT, fileField.name))
+        path = os.path.join(settings.MEDIA_ROOT, fileField.name)
+        if os.path.isfile(path):
+            os.remove(path)
         fileField.save(self.getFileName(), djangoFile)
         localFile.close()
 

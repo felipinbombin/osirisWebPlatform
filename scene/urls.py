@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from .views.defaults import StepsView, ValidationStepView, GetStep1DataView
 from .views.UploadFile import UploadTopologicFileView
-from .views.DownloadFile import DownloadStepFile
+from .views.DownloadFile import DownloadStepFile, DownloadStepTemplate
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
@@ -15,4 +15,6 @@ urlpatterns = [
       login_required(UploadTopologicFileView.as_view()), name='uploadTopologicFile'),
     url(r'^scene/wizard/downloadStepFile/(?P<stepId>[0-9]+)/(?P<sceneId>[0-9]+)$', 
       login_required(DownloadStepFile.as_view()), name='downloadStepFile'),
+    url(r'^scene/wizard/downloadStepTemplate/(?P<stepId>[0-9]+)/(?P<sceneId>[0-9]+)$', 
+      login_required(DownloadStepTemplate.as_view()), name='downloadStepTemplate'),
 ]
