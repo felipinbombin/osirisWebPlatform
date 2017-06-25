@@ -1,0 +1,680 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+  {{ media }}
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  {% with "components/gentelella/vendors/" as gentelella_static %}
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.css" %}" rel="stylesheet">
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.css" %}" rel="stylesheet">
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.css" %}" rel="stylesheet">
+  {% endwith %}
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="col-md-12 col-sm-12 col-xs-12">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>{{ scene.name }}
+        <span class="dropdown">
+          <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <i class="fa fa-wrench" aria-hidden="true"></i>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a><i class="fa fa-header" aria-hidden="true"></i> Cambiar nombre</a></li>
+            <li><a><i class="fa fa-trash" aria-hidden="true"></i> Eliminar</a></li>
+          </ul>
+        </span>
+      </h1>
+    </div>
+    <div class="title_right">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Estado: Incompleto <small></small></h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <div class="row">
+            <div class="col-md-10 col-sm-10 col-sx-12">
+              <div class="progress">
+                <div class="progress-bar progress-bar-danger" 
+                   style="width: 45%;">
+                   FALTA COMPLETAR PASO 3
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 col-sm-2 col-sx-12">
+      <a href="{% url 'scene:wizard' sceneId=scene.id %}"type="button" class="pull-right btn btn-success btn-xs btn-block">
+        <i class="fa fa-edit" aria-hidden="true"></i> Editar escenario
+      </a>
+            </div>
+          </div>
+
+          <div class="" role="tabpanel" data-example-id="togglable-tabs">
+            <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+              <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Topología</a>
+              </li>
+              <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Sistémico</a>
+              </li>
+              <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Operación</a>
+               </li>
+             </ul>
+
+             <div id="myTabContent" class="tab-content">
+               <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+                 <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p>
+               </div>
+               <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+                 <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo
+                    booth letterpress, commodo enim craft beer mlkshk aliquip</p>
+               </div>
+               <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
+                 <p>xxFood truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo
+                    booth letterpress, commodo enim craft beer mlkshk </p>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="row x_title">
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <h2>Modelos</h2>
+          </div>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <div class="col-md-3 col-sm-3 col-xs-12">
+            <button class="btn btn-info btn-lg btn-block" disabled>
+              <i class="fa fa-play fa-3x"></i>
+              <br><h1>Velocidad</h1>
+            </button>
+            <button class="btn btn-success btn-block" disabled>
+              <h2><i class="fa fa-eye fa-lg"></i> Resultados</h2>
+            </button>
+          </div>
+          <div class="col-md-3 col-sm-3 col-xs-12">
+            <button class="btn btn-info btn-lg btn-block">
+              <i class="fa fa-play fa-3x"></i>
+              <br><h1>Energía</h1>
+            </button>
+            <button class="btn btn-success btn-block">
+              <h2><i class="fa fa-eye fa-lg"></i> Resultados</h2>
+            </button>
+          </div>
+          <div class="col-md-3 col-sm-3 col-xs-12">
+            <button class="btn btn-info btn-lg btn-block">
+              <i class="fa fa-play fa-3x"></i>
+              <br><h1>Temperatura</h1>
+            </button>
+            <button class="btn btn-success btn-block">
+              <h2><i class="fa fa-eye fa-lg"></i> Resultados</h2>
+            </button>
+          </div>
+          <div class="col-md-3 col-sm-3 col-xs-12">
+            <button class="btn btn-danger btn-lg btn-block">
+              <span class="fa-stack fa-2x">
+                <i class="fa fa-stop fa-stack-1x"></i>
+                <i class="fa fa-circle-o-notch fa-spin fa-stack-2x"></i>
+              </span>
+              <br><h2>Detener</h2>
+            </button>
+            <button class="btn btn-success btn-block" disabled>
+              <h2><i class="fa fa-eye fa-lg"></i> Resultados</h2>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extrajs %}
+  {% with "components/gentelella/vendors/" as gentelella_static %}
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.js" %}"></script>
+  {% endwith %}
+    <script src="{% static "components/smartwizard/dist/js/jquery.smartWizard.min.js" %}"></script>
+  <script src="{% static "components/knockout/dist/knockout.debug.js" %}"></script>
+  <script>
+  $(document).ready(function(){
+    /**************************************************
+    * USER NOTIFICATION 
+    ***************************************************/
+    function showNotificationMessage(status){
+      let message = status['message'];
+      let title = status['title'];
+      let type = status['type'];
+      new PNotify({
+        title: title,
+        type: type,
+        text: message,
+        nonblock: {
+          nonblock: true
+        },
+        styling: 'bootstrap3',
+        mouse_reset: false
+      }).get().click(function(){
+        this.remove();
+      });
+    }; 
+
+    console.log({{ scene.lastSuccessfullStep }});
+
+    /**************************************************
+    * CUSTOM BINDING HANDLERS
+    ***************************************************/
+    ko.bindingHandlers.modal = {
+      init: function(element, valueAccessor){
+        $(element).modal({
+            show: false
+        });
+        
+        var value = valueAccessor();
+        if(typeof value === 'function'){
+          $(element).on('hide.bs.modal', function(){
+            value(false);
+          });
+        }
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function(){
+          $(element).modal("destroy");
+        });
+      },
+      update: function (element, valueAccessor) {
+        var value = valueAccessor();
+        if (ko.utils.unwrapObservable(value)) {
+          $(element).modal('show');
+        } else {
+          $(element).modal('hide');
+        }
+      }
+    };
+    /**************************************************
+    * STEP 1
+    ***************************************************/
+    let Station = function(name){
+      let self = this;
+      self.id = null;
+      self.name = ko.observable(name);
+    };
+    let Depot = function(name){
+      let self = this;
+      self.id = null;
+      self.name = ko.observable(name);
+    };
+    let Line = function(name){
+      let self = this;
+      self.id = null;
+      self.name = ko.observable(name);
+      self.stations = ko.observableArray();
+      self.depots = ko.observableArray();
+    };
+    let ConnectionStation = function(){
+      let self = this;
+      self.id = null;
+      self.line = ko.observable();
+      self.station = ko.observable();
+    }
+    let Connection = function(name){
+      let self = this;
+      self.id = null;
+      self.name = ko.observable(name);
+      self.stations = ko.observableArray();
+      self.avgHeight = ko.observable();
+      self.avgSurface = ko.observable();
+      self.description = ko.computed(function(){
+        let name = '';
+        let arrow = '<i class="fa fa-arrows-h fa-lg" aria-hidden="true"></i>';
+        let stationsNumber = self.stations().length;
+        for(let i=0;i<stationsNumber;i++){
+          try{
+            name += self.stations()[i].line().name() + '-' + self.stations()[i].station().name();
+          }catch(err){
+            // nothing
+          }
+          if(i+1 !== stationsNumber){
+            name += arrow;
+          }
+        }
+        return name;
+      });
+    };
+
+    let Step1ViewModel = function(){
+      let self = this;
+
+      self.lines = ko.observableArray();
+      self.depotsQuantity = ko.computed(function(){
+        let quantity = 0;
+        $.each(self.lines(), function(i, el){
+          quantity += el.depots().length;
+        });
+        return quantity;
+      });
+      self.connections = ko.observableArray();
+
+      /**************************************************
+      * FORM TO ADD LINE
+      ***************************************************/
+      self.showAddLineDialog = ko.observable(false);
+      let AddLineFormLogic = function(){
+        let self = this;
+        self.lineName = ko.observable(null);
+        self.stationsQuantity = ko.observable(0);
+      };
+      self.addLineFormLogic = new AddLineFormLogic();
+      self.openAddLineForm = function(){
+        const LINE_NAME_PREFIX = 'L';
+        let defaultLineName = LINE_NAME_PREFIX + (self.lines().length + 1);
+        self.addLineFormLogic.lineName(defaultLineName);
+        self.addLineFormLogic.stationsQuantity(1);
+        self.showAddLineDialog(true);
+      };
+      self.addLine = function(){
+        const STATION_NAME_PREFIX = 'S';
+
+        if(self.isValidLineForm()){
+          let addForm = self.addLineFormLogic;
+          let line = new Line(addForm.lineName());
+          for(let i=0;i<addForm.stationsQuantity();i++){
+            let stationName = STATION_NAME_PREFIX + (i + 1);
+            let station = new Station(stationName);
+            line.stations.push(station);
+          }
+          self.lines.push(line);
+          self.showAddLineDialog(false);
+        }
+      }
+      self.removeLine = function(){
+        // delete connection if has an station of the line
+        let deleteConnection = false;
+        for(let i=0;i<self.connections().length; i++){
+          let connection = self.connections()[i];
+          for(let j=0; j<connection.stations().length; j++){
+            let station = connection.stations()[j];
+            if(station.line() === this){
+              deleteConnection = true;
+            }
+          }
+          if(deleteConnection){
+            self.connections.remove(connection);
+            break;
+          }
+        }
+        self.lines.remove(this);
+      };
+
+      /**************************************************
+      * FORM TO EDIT STATIONS
+      ***************************************************/
+      self.showEditStationsDialog = ko.observable(false);
+      self.selectedStations = ko.observableArray();
+      self.openEditStationsForm = function(){
+        self.selectedStations.removeAll();
+        let stations = this.stations();
+        for(let i=0; i<stations.length; i++){
+          self.selectedStations.push(stations[i]);
+        }
+        self.showEditStationsDialog(true);
+      }
+      /**************************************************
+      * FORM TO ADD CONNECTIONS
+      ***************************************************/
+      self.showAddConnectionDialog = ko.observable(false);
+      let addConnectionFormLogic = function(){
+        let self = this;
+        self.connectionName = ko.observable();
+        self.connectionStations = ko.observableArray();
+        self.avgHeight = ko.observable();
+        self.avgSurface = ko.observable();
+        self.addConnectionStation = function(){
+          self.connectionStations.push(new ConnectionStation())
+        };
+        self.deleteConnectionStation = function(){
+          self.connectionStations.remove(this);
+        };
+      };
+      self.addConnectionFormLogic = new addConnectionFormLogic();
+      self.openAddConnectionDialog = function(){
+        let addForm = self.addConnectionFormLogic;
+        addForm.connectionName('');
+        addForm.avgHeight('');
+        addForm.avgSurface('');
+        addForm.connectionStations.removeAll();
+        self.showAddConnectionDialog(true);
+      };
+      self.addConnection = function(){
+        let addForm = self.addConnectionFormLogic;
+        if(self.isValidConnectionForm()){
+          let connection = new Connection(addForm.connectionName());
+          connection.avgHeight(addForm.avgHeight());
+          connection.avgSurface(addForm.avgSurface());
+          for(let i=0;i<addForm.connectionStations().length;i++){
+            connection.stations.push(addForm.connectionStations()[i]);
+          }
+
+          self.connections.push(connection);
+          self.showAddConnectionDialog(false);
+        }
+      };
+      self.removeConnection = function(){
+        self.connections.remove(this);
+      };
+
+     
+      /**************************************************
+      * FORM TO ADD DEPOTS
+      ***************************************************/
+      self.showAddDepotDialog = ko.observable(false);
+      let addDepotFormLogic = function(){
+        let self = this;
+        self.name = ko.observable();
+        self.line = ko.observable();
+
+        self.updateDefaultDepotName = function(newLine){
+          let line = newLine || self.line();
+          if(line === undefined) return;
+          const DEPOT_NAME_PREFIX = 'D';
+          let defaultDepotName = DEPOT_NAME_PREFIX + (line.depots().length + 1);
+          self.name(defaultDepotName);
+        }
+        // each time line is updated
+        self.line.subscribe(self.updateDefaultDepotName);
+      };
+      self.addDepotFormLogic = new addDepotFormLogic();
+      self.addDepot = function(){
+        if(self.isValidDepotForm()){
+          let depot = new Depot(self.addDepotFormLogic.name());
+          self.addDepotFormLogic.line().depots.push(depot);
+          self.showAddDepotDialog(false);
+          self.addDepotFormLogic.updateDefaultDepotName();
+        }
+      };
+      self.removeDepot = function(){
+        let depot = this;
+        $.each(self.lines(), function() { 
+          this.depots.remove(depot) 
+        });
+        self.addDepotFormLogic.updateDefaultDepotName();
+      };
+
+      /**************************************************
+      * FORMS VALIDATION
+      ***************************************************/
+      self.isValidLineForm = function(){
+        let addForm = self.addLineFormLogic;
+ 
+        let reasons = [];       
+        let isValidLineName = true;
+        let isValidStationNumber = true;
+
+        let name = addForm.lineName();
+        let stationNumber = addForm.stationsQuantity();
+
+        if(name == null || name == '' || !name.length){
+          reasons.push('El nombre no puede ser vacío.');
+          isValidLineName = false;
+        }
+        if(name !== null){
+          if(name.length > 50){
+            reasons.push('El nombre no puede tener un largo mayor a 50 caracteres.');
+            isValidLineName = false;
+          }
+
+          for(let i=0; i<self.lines().length; i++){
+            if(name === self.lines()[i].name()){
+              reasons.push('Ya existe una línea con ese nombre.');
+              isValidLineName = false;
+            }
+          }
+        }
+ 
+        if(isNaN(stationNumber) || stationNumber <= 0 || 200 < stationNumber){
+          reasons.push('El número de estaciones debe estar entre 1 y 200.');
+          isValidStationNumber = false;
+        }
+
+        if(isValidLineName && 
+           isValidStationNumber){
+          return true;
+        }
+
+        self.showWarningList(reasons);
+        return false;
+      };
+
+      self.isValidDepotForm = function(){
+        let addForm = self.addDepotFormLogic;
+
+        let reasons = [];
+        let isValidName = true;
+
+        let name = addForm.name();
+
+        if(name == null || name == '' || !name.length){
+          reasons.push('El nombre no puede ser vacío.');
+          isValidName = false;
+        }
+        if(name !== null){
+          if( name.length > 50){
+            reasons.push('El nombre no puede tener un largo mayor a 50 caracteres.');
+            isValidName = false;
+          }
+          for(let i=0; i<self.lines().length; i++){
+            if(addForm.line().name() === self.lines()[i].name()){
+              for(let j=0; j<self.lines()[i].depots().length; j++){
+                if(name === self.lines()[i].depots()[j].name()){
+                  reasons.push('Ya existe un depósito con ese nombre.');
+                  isValidName = false;
+                }
+              }
+            }
+          }
+        }
+
+        if(isValidName){
+          return true;
+        }
+
+        self.showWarningList(reasons);
+        return false;
+      };
+
+      self.isValidConnectionForm = function(){
+        let addForm = self.addConnectionFormLogic;
+
+        let reasons = [];
+        let isValidStationQuantity = true;
+        let isValidConnectionName = true;
+        let isValidAvgHeight = true;
+        let isValidAvgSurface = true;
+        let isValidLines = true;
+
+        let name = addForm.connectionName();
+        let stationNumber = addForm.connectionStations().length;
+        let avgHeight = addForm.avgHeight();
+        let avgSurface = addForm.avgSurface();
+        let stations = addForm.connectionStations();
+
+        if(name == null || name == '' || !name.length){
+          reasons.push('El nombre no puede ser vacío.');
+          isValidConnectionName = false;
+        }
+        if(name !== null){
+          if( name.length > 50){
+            reasons.push('El nombre no puede tener un largo mayor a 50 caracteres.');
+            isValidConnectionName = false;
+          }
+          for(let i=0; i<self.connections().length; i++){
+            if(name === self.connections()[i].name()){
+              reasons.push('Ya existe una conexión con ese nombre.');
+              isValidConnectionName = false;
+            }
+          }
+        }
+        
+        if(stationNumber < 2){
+          reasons.push('La conexión debe tener una o más estaciones.');
+          isValidStationQuantity = false;
+        }
+
+        if(isNaN(avgHeight) || avgHeight<0 && 1000<avgHeight){
+          reasons.push('La altura promedio debe ser un número entre 0 y 1.000 m.');
+          isValidAvgHeight = false;
+        }
+
+        if(isNaN(avgSurface) || avgSurface<0 && 1000000<avgSurface){
+          reasons.push('La altura promedio debe ser un número entre 0 y 1.000.000 m<sup>2</sup>.');
+          isValidAvgHeight = false;
+        }
+
+        let set = new Set();
+        for(let i=0;i<stations.length; i++){
+          set.add(stations[i].line().name());
+        }
+        if(set.size !== stationNumber){
+          reasons.push('Una línea no puede tener más de una estación en una conexión.');
+          isValidLines = false;
+        }
+
+        if(isValidConnectionName && 
+           isValidStationQuantity && 
+           isValidAvgHeight && 
+           isValidAvgSurface && 
+           isValidLines){
+          return true;
+        }
+
+        self.showWarningList(reasons);
+        return false;
+      }
+ 
+      /**************************************************
+      * VALIDATION LOGIC
+      ***************************************************/
+      self.showWarningList = function(reasons){
+        let message = 'Hemos detectado los siguientes problemas:';
+        message += '<ul>';
+        for(let i=0;i<reasons.length;i++){
+          message += '<li>' + reasons[i] + '</li>';
+        }
+        message += '</ul>';
+
+        self.showMessage(message, 'Advertencia', 'warning');
+      }
+
+      self.showMessage = function(message, title, type){
+        let msg = {
+          message: message,
+          title: title,
+          type: type
+        };
+        showNotificationMessage(msg);
+      };
+
+      /**************************************************
+      * EXTERNAL VALIDATION LOGIC
+      ***************************************************/
+      self.serialize = function(){
+        let serialize = {
+          lines: this.lines(),
+          connections: this.connections(),
+        };
+        return ko.toJSON(serialize);
+      };
+
+      self.isValid = function(){
+        let msg = {
+          message: '',
+          title: 'Error',
+          type: 'error'
+        };
+
+        // exist lines
+        if(self.lines().length == 0){
+          msg['message'] += '- Debe ingresar una o más líneas.<br />';
+        }
+
+        if(msg['message'] !== ''){
+          showNotificationMessage(msg);
+          return false;
+        }
+        return true;
+      };
+    
+      self.update = function(data){
+        let lines = data['lines'];
+        let connections = data['connections'];
+
+        self.connections.removeAll();
+        self.lines.removeAll();
+        
+        let stationList = {};
+
+        lines.forEach(function(el, i){
+          let line = new Line();
+          line.name(el.name);
+          line.id = el.id;
+    
+          el.stations.forEach(function(el, i){
+            let station = new Station();
+            station.name(el.name);
+            station.id = el.id;
+            line.stations.push(station);
+
+            stationList[el.id] = {
+              line: line,
+              station: station
+            }
+          });
+          el.depots.forEach(function(el, i){
+            let depot = new Depot();
+            depot.name(el.name);
+            depot.id = el.id;
+            line.depots.push(depot);
+          });
+          self.lines.push(line);
+        });
+        
+        connections.forEach(function(el, i){
+          let connection = new Connection(el.name);
+          connection.id = el.id;
+          connection.avgHeight(el.avgHeight);
+          connection.avgSurface(el.avgSurface);
+
+          el.stations.forEach(function(connStation, i){
+            let connectionStation = new ConnectionStation();
+            connectionStation.id = connStation.id;
+            connectionStation.line(stationList[connStation.station.id].line);
+            connectionStation.station(stationList[connStation.station.id].station);
+
+            connection.stations.push(connectionStation);
+          });
+          self.connections.push(connection);
+        });
+      }
+    }
+
+    // viewModels to manage each step
+    let step1 = new Step1ViewModel();
+  </script>
+{% endblock %}
