@@ -811,7 +811,7 @@
                       .on('click', nextLogic);
     // set wizard
     $('#wizard').smartWizard({
-      selected: {{ scene.lastSuccessfullStep }},
+      selected: {{ scene.lastSuccessfullStep }}-1,
       autoAdjustHeight: false,
       markAllPreviousStepsAsDone: true,
       theme: 'dots',

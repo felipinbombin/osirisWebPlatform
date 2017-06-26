@@ -141,8 +141,9 @@ class ValidationStepView(View):
         MetroConnection.objects.filter(scene=scene, isOld=True).delete()
         MetroConnectionStation.objects.filter(metroConnection__scene=scene, isOld=True).delete()
 
-        scene.lastSuccessfullStep = 1
-        scene.save()
+        if not scene.lastSuccessfullStep > 1:
+            scene.lastSuccessfullStep = 1
+            scene.save()
 
         step2Excel = Step2Excel(scene)
         step2Excel.createTopologicalFile()
