@@ -1,15 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-
 # Create your views here.
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.views.generic import View
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.core.files import File
 
