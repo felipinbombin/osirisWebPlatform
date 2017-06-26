@@ -94,28 +94,6 @@
   <script>
   $(document).ready(function(){
     /**************************************************
-    * AJAX CONFIGURATION
-    ***************************************************/
-    /*
-    function csrfSafeMethod(method) {
-      // these HTTP methods do not require CSRF protection
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-    let csrf = Cookies.get('csrftoken');
-    $.ajaxSetup({
-      headers: {
-        'X-CSRFToken': csrf
-      },
-      beforeSend: function(xhr, settings) {
-        console.log('wena wena');
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          // get cookie variable csrf
-          xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-      }
-    });*/
-
-    /**************************************************
     * DROPZONE CONFIGURATION
     ***************************************************/
     // Disable auto discover for all elements:

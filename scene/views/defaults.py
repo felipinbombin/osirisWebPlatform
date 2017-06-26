@@ -179,9 +179,9 @@ class ValidationStepView(View):
         elif stepId == 4:
             # check if file was uploaded successfully
             if sceneObj.lastSuccessfullStep >= 4:
+                Status.getJsonStatus(Status.OK, response)
                 response['status']['title'] = 'Actualización exitosa'
                 response['status']['message'] = 'Archivo subido exitosamente.'
-                Status.getJsonStatus(Status.OK, response)
             else:
                 Status.getJsonStatus(Status.INVALID_STEP, response)
         elif stepId == 5:

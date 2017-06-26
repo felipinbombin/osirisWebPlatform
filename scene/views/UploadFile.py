@@ -52,53 +52,64 @@ class UploadFile(View):
             inMemoryUploadedFile = request.FILES['file']
             response = self.validateFile(inMemoryUploadedFile, response)
             
-            if response['status']['code'] == 200:
+            if response['status']['code'] == Status.OK:
                 # process file
-                response = self.processFile(inMemoryUploadedFile)
-                if response['status']['code'] == 200:
-                    # delete previous file
-                    if sceneObj.step2File:
-                        os.remove(os.path.join(settings.MEDIA_ROOT, 
-                            sceneObj.step2File.name))
-                    fileName = inMemoryUploadedFile.name
-                    sceneObj.step2File.save(fileName, inMemoryUploadedFile)
-                    
-                    sceneObj.lastSuccessfullStep = 2
-                    sceneObj.save()
+                response = self.processFile(sceneObj, inMemoryUploadedFile)
         else:
             Status.getJsonStatus(Status.INVALID_STEP, response)
 
         return JsonResponse(response, safe=False)
 
+    def updateSuccessfulStep(self, scene, fileField, uploadedFile, newStep):
+        # delete previous file
+        if fileField:
+            os.remove(os.path.join(settings.MEDIA_ROOT, 
+                fileField.name))
+        fileName = uploadedFile.name
+        fileField.save(fileName, uploadedFile)
+
+        if(scene.lastSuccessfullStep < newStep):
+            scene.lastSuccessfullStep = newStep
+            scene.save()
+
     @abstractmethod
-    def processFile(self, inMemoryFile):
+    def processFile(self, scene, inMemoryFile):
         pass
         # validate data
         # delete previous data
         # insert new data
+        # save file
 
 
 class UploadTopologicFile(UploadFile):
     ''' validate data from step 4 '''
 
-    def processFile(self, inMemoryFile):
-         
+    def processFile(self, scene, inMemoryFile):
         # validate data
         # delete previous data
         # insert new data
+
+        # save file
+        self.updateSuccessfulStep(scene, scene.step2File, inMemoryFile, 2)
+
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = 'Archivo topológico subido exitosamente.'
 
         return response
 
+
 class UploadSystemicFile(UploadFile):
     ''' validate data from stepa 4 '''
 
-    def processFile(self, inMemoryFile):
+    def processFile(self, scene, inMemoryFile):
           
         # validate data
         # delete previous data
         # insert new data
+
+        # save file
+        self.updateSuccessfulStep(scene, scene.step4File, inMemoryFile, 4)
+
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = 'Archivo sistémico subido exitosamente.'
 
@@ -108,11 +119,15 @@ class UploadSystemicFile(UploadFile):
 class UploadOperationalFile(UploadFile):
     ''' validate data from stepa 6 '''
 
-    def processFile(self, inMemoryFile):
+    def processFile(self, scene, inMemoryFile):
            
         # validate data
         # delete previous data
         # insert new data
+
+        # save file
+        self.updateSuccessfulStep(scene, scene.step6File, inMemoryFile, 6)
+
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = 'Archivo operacional subido exitosamente.'
 
@@ -122,11 +137,15 @@ class UploadOperationalFile(UploadFile):
 class UploadVelocityFile(UploadFile):
     ''' validate data from stepa 7 '''
 
-    def processFile(self, inMemoryFile):
+    def processFile(self, scene, inMemoryFile):
             
         # validate data
         # delete previous data
         # insert new data
+
+        # save file
+        self.updateSuccessfulStep(scene, scene.step7File, inMemoryFile, 7)
+
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = 'Archivo de velocidades subido exitosamente.'
 
