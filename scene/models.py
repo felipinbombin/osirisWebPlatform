@@ -44,7 +44,6 @@ class Scene(models.Model):
     step7Template = models.FileField(upload_to='step7Template/', null=True, storage=OverwriteStorage())
     step7File = models.FileField(upload_to='step7File/', null=True, storage=OverwriteStorage())
     #######################################################
-    #######################################################
     # GLOBAL CONDITION
     #######################################################
     averageMassOfAPassanger = models.FloatField(null=True)

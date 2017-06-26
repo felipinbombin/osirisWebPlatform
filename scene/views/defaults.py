@@ -20,7 +20,7 @@ from scene.forms import FirstStepForm, SecondStepForm, ThirdStepForm, FourthStep
 
 from scene.statusResponse import Status
 
-from .Excel import Step2Excel
+from .Excel import Step2Excel, Step4Excel
 
 import json
 import uuid
@@ -146,7 +146,10 @@ class ValidationStepView(View):
             scene.save()
 
         step2Excel = Step2Excel(scene)
-        step2Excel.createTopologicalFile()
+        step2Excel.createTemplateFile()
+
+        step4Excel = Step4Excel(scene)
+        step4Excel.createTemplateFile()
 
         Status.getJsonStatus(Status.OK, response)
 
