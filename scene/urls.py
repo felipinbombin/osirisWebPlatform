@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from .views.defaults import StepsView, ValidationStepView, GetStep1DataView
 from .views.Panel import ScenePanel, ScenePanelData
-from .views.UploadFile import UploadTopologicFileView
+from .views.UploadFile import UploadTopologicFile, UploadSystemicFile, UploadOperationalFile, UploadVelocityFile
 from .views.DownloadFile import DownloadStepFile, DownloadStepTemplate
 from django.contrib.auth.decorators import login_required
 
@@ -17,7 +17,13 @@ urlpatterns = [
     url(r'^scene/wizard/getStep1Data/(?P<sceneId>[0-9]+)$', 
       login_required(GetStep1DataView.as_view()), name='getStep1Data'),
     url(r'^scene/wizard/uploadTopologicFile/(?P<sceneId>[0-9]+)$', 
-      login_required(UploadTopologicFileView.as_view()), name='uploadTopologicFile'),
+      login_required(UploadTopologicFile.as_view()), name='uploadTopologicFile'),
+    url(r'^scene/wizard/uploadSystemicFile/(?P<sceneId>[0-9]+)$', 
+      login_required(UploadSystemicFile.as_view()), name='uploadSystemicFile'),
+    url(r'^scene/wizard/uploadOperationalFile/(?P<sceneId>[0-9]+)$', 
+      login_required(UploadOperationalFile.as_view()), name='uploadOperationalFile'),
+    url(r'^scene/wizard/uploadVelocityFile/(?P<sceneId>[0-9]+)$', 
+      login_required(UploadVelocityFile.as_view()), name='uploadVelocityFile'),
     url(r'^scene/wizard/downloadStepFile/(?P<stepId>[0-9]+)/(?P<sceneId>[0-9]+)$', 
       login_required(DownloadStepFile.as_view()), name='downloadStepFile'),
     url(r'^scene/wizard/downloadStepTemplate/(?P<stepId>[0-9]+)/(?P<sceneId>[0-9]+)$', 

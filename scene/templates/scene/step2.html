@@ -10,11 +10,9 @@
       <li>Completar el archivo descargado en el paso anterior respetando la estructura que allí se presenta</li>
       <li>Una vez completado, arrastrar el archivo al cuadro de la derecha</li>
     </ul>
-    {% if scene.step2File %}
     <div class="col-md-12 col-sm-12 col-xs-12">
       <a href="{% url 'scene:downloadStepFile' stepId=2 sceneId=scene.id %}" class="btn btn-success btn-lg btn-block"><i class="fa fa-file-excel-o"></i> Descargar último archivo subido</a>
     </div>
-    {% endif %}
     <div class="col-md-6 col-sm-6 col-xs-12">
       <a href="{% url 'scene:downloadStepTemplate' stepId=2 sceneId=scene.id %}" class="btn btn-info btn-lg btn-block btn-excel"><i class="fa fa-file-excel-o fa-5x"></i><br /><h1>Descargar plantilla</h1></a>
     </div>

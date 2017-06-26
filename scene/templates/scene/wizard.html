@@ -88,10 +88,33 @@
     <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.js" %}"></script>
     <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.js" %}"></script>
   {% endwith %}
-    <script src="{% static "components/smartwizard/dist/js/jquery.smartWizard.min.js" %}"></script>
+  <script src="{% static "components/smartwizard/dist/js/jquery.smartWizard.min.js" %}"></script>
   <script src="{% static "components/knockout/dist/knockout.debug.js" %}"></script>
+  <script src="{% static "components/js-cookie/src/js.cookie.js" %}"></script>
   <script>
   $(document).ready(function(){
+    /**************************************************
+    * AJAX CONFIGURATION
+    ***************************************************/
+    /*
+    function csrfSafeMethod(method) {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    let csrf = Cookies.get('csrftoken');
+    $.ajaxSetup({
+      headers: {
+        'X-CSRFToken': csrf
+      },
+      beforeSend: function(xhr, settings) {
+        console.log('wena wena');
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          // get cookie variable csrf
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });*/
+
     /**************************************************
     * DROPZONE CONFIGURATION
     ***************************************************/
@@ -147,15 +170,22 @@
       });
     };
 
+    let csrf = Cookies.get('csrftoken');
     let dropzoneOpts = {
       maxFiles: 1,
       acceptedFiles: '.xlsx',
       maxFilesize: 2, 
       init: init,
+      headers: {
+        'X-CSRFToken': csrf,
+      },
     };
     $.extend(dropzoneOpts, dropzoneDict);
     // create dropzone instance
     $("#step2form").dropzone(dropzoneOpts);
+    $("#step4form").dropzone(dropzoneOpts);
+    $("#step6form").dropzone(dropzoneOpts);
+    $("#step7form").dropzone(dropzoneOpts);
 
     /**************************************************
     * USER NOTIFICATION 
@@ -745,6 +775,7 @@
           });
           break;
         case 3:
+          $('#wizard').smartWizard('next');
           break;
         case 4:
           // ask to server if file was uploaded
@@ -759,6 +790,7 @@
           break;
         case 5:
           // ask to server if file was uploaded
+          $('#wizard').smartWizard('next');
           break;
         case 6:
           // ask to server if file was uploaded
