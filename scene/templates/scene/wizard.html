@@ -186,7 +186,7 @@
       });
     }; 
 
-    console.log({{ scene.lastSuccessfullStep }});
+    console.log({{ scene.currentStep }});
 
     /**************************************************
     * CUSTOM BINDING HANDLERS
@@ -720,7 +720,7 @@
     });
  
     let nextLogic = function(){
-      let currentStep = parseInt(window.location.hash.split('-')[1]);
+      let currentStep = parseInt(window.location.hash.split('-')[1])-1;
 
       let getUrl = function(stepId){
           let sceneId = {{ scene.id }};
@@ -729,10 +729,10 @@
           return url + stepId + '/' + sceneId;
       }
       switch(currentStep){
-        case 1:
+        case 0:
           if(step1.isValid()){
             let data = step1.serialize();
-            $.post(getUrl(1), data, function(answer){
+            $.post(getUrl(0), data, function(answer){
               // success
               if(answer.status.code == 200){
                 $('#wizard').smartWizard('next');
@@ -741,9 +741,9 @@
             });
           }
           break;
-        case 2:
+        case 1:
           // ask to server if file was uploaded
-          $.post(getUrl(2), function(answer){
+          $.post(getUrl(1), function(answer){
             // success
             if(answer.status.code == 200){
               $('#wizard').smartWizard('next');
@@ -752,12 +752,27 @@
             }
           });
           break;
-        case 3:
+        case 2:
           $('#wizard').smartWizard('next');
+          break;
+        case 3:
+          // ask to server if file was uploaded
+          $.post(getUrl(3), function(answer){
+            // success
+            if(answer.status.code == 200){
+              $('#wizard').smartWizard('next');
+            }else{
+              showNotificationMessage(answer.status);
+            }
+          });
           break;
         case 4:
           // ask to server if file was uploaded
-          $.post(getUrl(4), function(answer){
+          $('#wizard').smartWizard('next');
+          break;
+        case 5:
+          // ask to server if file was uploaded
+          $.post(getUrl(5), function(answer){
             // success
             if(answer.status.code == 200){
               $('#wizard').smartWizard('next');
@@ -765,25 +780,10 @@
               showNotificationMessage(answer.status);
             }
           });
-          break;
-        case 5:
-          // ask to server if file was uploaded
-          $('#wizard').smartWizard('next');
           break;
         case 6:
           // ask to server if file was uploaded
           $.post(getUrl(6), function(answer){
-            // success
-            if(answer.status.code == 200){
-              $('#wizard').smartWizard('next');
-            }else{
-              showNotificationMessage(answer.status);
-            }
-          });
-          break;
-        case 7:
-          // ask to server if file was uploaded
-          $.post(getUrl(7), function(answer){
             // success
             if(answer.status.code == 200){
               $('#wizard').smartWizard('next');
@@ -811,7 +811,7 @@
                       .on('click', nextLogic);
     // set wizard
     $('#wizard').smartWizard({
-      selected: {{ scene.lastSuccessfullStep }}-1,
+      selected: {{ scene.currentStep }},
       autoAdjustHeight: false,
       markAllPreviousStepsAsDone: true,
       theme: 'dots',

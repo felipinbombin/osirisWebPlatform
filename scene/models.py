@@ -34,7 +34,7 @@ class Scene(models.Model):
         (OK, 'Completo'),
     )
     status = models.CharField('Estado', max_length=2, choices=STATUS, default=INCOMPLETE)
-    lastSuccessfullStep = models.IntegerField('Paso pendiente', default=0)
+    currentStep = models.IntegerField('Paso actual', default=0)
     step2Template = models.FileField(upload_to='step2Template/', null=True, storage=OverwriteStorage())
     step2File = models.FileField(upload_to='step2File/', null=True, storage=OverwriteStorage())
     step4Template = models.FileField(upload_to='step4Template/', null=True, storage=OverwriteStorage())

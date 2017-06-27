@@ -126,7 +126,8 @@ class ValidationStepView(View):
                 if station['id']:
                     stationObj = MetroStation.objects.get(metroLine__scene=scene, externalId=station['id'])
                 else:
-                    stationObj = MetroStation.objects.get(metroLine__name=line['name'], name=station['name'])
+                    stationObj = MetroStation.objects.get(metroLine__name=line['name'], 
+                                     metroLine__scene=scene, name=station['name'])
 
                 if connectionStation['id']:
                     MetroConnectionStation.objects.filter(metroConnection=connectionObj, 
@@ -141,8 +142,9 @@ class ValidationStepView(View):
         MetroConnection.objects.filter(scene=scene, isOld=True).delete()
         MetroConnectionStation.objects.filter(metroConnection__scene=scene, isOld=True).delete()
 
-        if not scene.lastSuccessfullStep > 1:
-            scene.lastSuccessfullStep = 1
+        # move to next step
+        if scene.currentStep == 0:
+            scene.currentStep = 1
             scene.save()
 
         step2Excel = Step2Excel(scene)
@@ -165,34 +167,34 @@ class ValidationStepView(View):
                        'metroline_set__metrodepot_set').\
                        get(user=request.user, id=sceneId)
         response = {}
-        if stepId == 1:
+        if stepId == 0:
             # global topologic variables
             response = self.processStep1(request, sceneObj)
             response['status']['title'] = 'Actualización exitosa'
             response['status']['message'] = 'Estructura topológica creada exitosamente.'
+        elif stepId == 1:
+            # check if file was uploaded successfully
+            if sceneObj.currentStep >= 1:
+                Status.getJsonStatus(Status.OK, response)
+                response['status']['title'] = 'Actualización exitosa'
+                response['status']['message'] = 'Archivo subido exitosamente.'
+            else:
+                Status.getJsonStatus(Status.INVALID_STEP, response)
         elif stepId == 2:
-            # check if file was uploaded successfully
-            if sceneObj.lastSuccessfullStep >= 2:
-                Status.getJsonStatus(Status.OK, response)
-                response['status']['title'] = 'Actualización exitosa'
-                response['status']['message'] = 'Archivo subido exitosamente.'
-            else:
-                Status.getJsonStatus(Status.INVALID_STEP, response)
+            pass
         elif stepId == 3:
-            pass
-        elif stepId == 4:
             # check if file was uploaded successfully
-            if sceneObj.lastSuccessfullStep >= 4:
+            if sceneObj.currentStep >= 3:
                 Status.getJsonStatus(Status.OK, response)
                 response['status']['title'] = 'Actualización exitosa'
                 response['status']['message'] = 'Archivo subido exitosamente.'
             else:
                 Status.getJsonStatus(Status.INVALID_STEP, response)
-        elif stepId == 5:
+        elif stepId == 4:
             pass
-        elif stepId == 6:
+        elif stepId == 5:
             # check if file was uploaded successfully
-            if sceneObj.lastSuccessfullStep >= 6:
+            if sceneObj.currentStep >= 5:
                 Status.getJsonStatus(Status.OK, response)
                 response['status']['title'] = 'Actualización exitosa'
                 response['status']['message'] = 'Archivo subido exitosamente.'
@@ -200,7 +202,7 @@ class ValidationStepView(View):
                 sceneObj.save()
             else:
                 Status.getJsonStatus(Status.INVALID_STEP, response)
-        elif stepId == 7:
+        elif stepId == 6:
             Status.getJsonStatus(Status.OK, response)
             response['status']['title'] = 'Actualización exitosa'
             response['status']['message'] = 'Archivo subido exitosamente.'

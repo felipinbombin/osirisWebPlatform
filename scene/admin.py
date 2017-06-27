@@ -21,7 +21,7 @@ class SceneAdmin(admin.ModelAdmin):
         (None, {'fields': ('name',)}),
     )
     list_filter = []
-    list_display = ('name', 'timeCreation', 'status', 'lastSuccessfullStep')
+    list_display = ('name', 'timeCreation', 'status', 'currentStep')
 
     def get_changelist(self, request, **kwargs):
         return SceneChangeList

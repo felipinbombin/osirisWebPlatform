@@ -128,7 +128,7 @@ class Excel(object):
         row += 1
 
         if printDirection:
-            stationNameList = metroLine.metrostation_set.values_list('name', flat=True)
+            stationNameList = metroLine.metrostation_set.values_list('name', flat=True).order_by('id')
             firstStation = stationNameList[0]
             lastStation = stationNameList[len(stationNameList)-1]
             firstDirection = '{}-{}'.format(firstStation, lastStation)
@@ -137,7 +137,7 @@ class Excel(object):
             self.makeTitleCell(worksheet, (row, 0), firstDirection, subTitleNumber-1)
             if bothDirections:
                 self.makeTitleCell(worksheet, (row, subTitleNumber), 
-                    firstDirection, subTitleNumber-1)
+                    secondDirection, subTitleNumber-1)
             row += 1
 
         col = 0
@@ -248,7 +248,7 @@ class Step2Excel(Excel):
 
             lastRow = self.makeStructureHeader(worksheet)
 
-            stationNameList = line.metrostation_set.values_list('name', flat=True)
+            stationNameList = line.metrostation_set.values_list('name', flat=True).order_by('id')
             height = self.makeHorizontalGrid(worksheet, (lastRow + 1, 0), 
                          stationNameList, 5)
 
@@ -369,7 +369,7 @@ class Step4Excel(Excel):
 
             lastRow = self.makeStructureHeader(worksheet)
 
-            stationNameList = line.metrostation_set.values_list('name', flat=True)
+            stationNameList = line.metrostation_set.values_list('name', flat=True).order_by('id')
             stationHeight = self.makeHorizontalGrid(worksheet, (lastRow + 1, 0),
                          stationNameList, 5)
 

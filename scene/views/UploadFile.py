@@ -48,7 +48,7 @@ class UploadFile(View):
 
         response = {}
 
-        if sceneObj.lastSuccessfullStep >= 1:
+        if sceneObj.currentStep > 0:
             inMemoryUploadedFile = request.FILES['file']
             response = self.validateFile(inMemoryUploadedFile, response)
             
@@ -60,7 +60,7 @@ class UploadFile(View):
 
         return JsonResponse(response, safe=False)
 
-    def updateSuccessfulStep(self, scene, fileField, uploadedFile, newStep):
+    def updateCurrentStep(self, scene, fileField, uploadedFile, newStep):
         # delete previous file
         if fileField:
             os.remove(os.path.join(settings.MEDIA_ROOT, 
@@ -68,8 +68,8 @@ class UploadFile(View):
         fileName = uploadedFile.name
         fileField.save(fileName, uploadedFile)
 
-        if(scene.lastSuccessfullStep < newStep):
-            scene.lastSuccessfullStep = newStep
+        if(scene.currentStep < newStep):
+            scene.currentStep = newStep
             scene.save()
 
     @abstractmethod
@@ -90,7 +90,7 @@ class UploadTopologicFile(UploadFile):
         # insert new data
 
         # save file
-        self.updateSuccessfulStep(scene, scene.step2File, inMemoryFile, 2)
+        self.updateCurrentStep(scene, scene.step2File, inMemoryFile, 1)
 
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = 'Archivo topológico subido exitosamente.'
@@ -108,7 +108,7 @@ class UploadSystemicFile(UploadFile):
         # insert new data
 
         # save file
-        self.updateSuccessfulStep(scene, scene.step4File, inMemoryFile, 4)
+        self.updateCurrentStep(scene, scene.step4File, inMemoryFile, 3)
 
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = 'Archivo sistémico subido exitosamente.'
@@ -126,7 +126,7 @@ class UploadOperationalFile(UploadFile):
         # insert new data
 
         # save file
-        self.updateSuccessfulStep(scene, scene.step6File, inMemoryFile, 6)
+        self.updateCurrentStep(scene, scene.step6File, inMemoryFile, 5)
 
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = 'Archivo operacional subido exitosamente.'
@@ -144,7 +144,7 @@ class UploadVelocityFile(UploadFile):
         # insert new data
 
         # save file
-        self.updateSuccessfulStep(scene, scene.step7File, inMemoryFile, 7)
+        self.updateCurrentStep(scene, scene.step7File, inMemoryFile, 6)
 
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = 'Archivo de velocidades subido exitosamente.'
