@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import os
 # Create your views here.
 from abc import ABCMeta, abstractmethod
+from StringIO import StringIO
+from django.core.files.base import ContentFile
 
 import xlsxwriter
-from django.conf import settings
-from django.core.files import File
 
 SEPARATION_HEIGHT = 3
-
-
 # row between blocks in worksheet
 
 
@@ -23,7 +20,8 @@ class Excel(object):
 
         scene.refresh_from_db()
         self.scene = scene
-        self.workbook = xlsxwriter.Workbook('{}/{}'.format(self.getMediaPath(), self.getFileName()))
+        self.stringIO = StringIO()
+        self.workbook = xlsxwriter.Workbook(self.stringIO, {'in_memory': True})
 
         self.cellTitleFormat = self.workbook.add_format({
             'bold': 1,
@@ -41,12 +39,6 @@ class Excel(object):
         })
 
         self.widths = []
-
-    def getMediaPath(self):
-        ''' path where files are saved '''
-        PATH = os.path.join(settings.MEDIA_ROOT, 'step2Template')
-
-        return PATH
 
     def getFileName(self):
         ''' name of file '''
@@ -163,17 +155,8 @@ class Excel(object):
 
     def save(self, fileField):
         ''' save file in scene field '''
-
         self.workbook.close()
-
-        localFile = open(os.path.join(self.getMediaPath(), self.getFileName()))
-        djangoFile = File(localFile)
-        # remove previous file saved
-        path = os.path.join(settings.MEDIA_ROOT, fileField.name)
-        if os.path.isfile(path):
-            os.remove(path)
-        fileField.save(self.getFileName(), djangoFile)
-        localFile.close()
+        fileField.save(self.getFileName(), ContentFile(self.stringIO.getvalue()))
 
     @abstractmethod
     def createTemplateFile(self):

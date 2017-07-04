@@ -93,3 +93,5 @@ osirisWebPlatform/keys/
 static
 bowerapp/static
 media/
+
+.idea/
