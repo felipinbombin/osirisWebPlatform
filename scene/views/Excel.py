@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
 # Create your views here.
 from abc import ABCMeta, abstractmethod
 
+import xlsxwriter
 from django.conf import settings
 from django.core.files import File
 
-from scene.models import Scene, MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation
-
-import xlsxwriter
-import os
-
 SEPARATION_HEIGHT = 3
+
+
 # row between blocks in worksheet
+
 
 class Excel(object):
     ''' to manage excel files '''
@@ -72,8 +72,8 @@ class Excel(object):
         ''' write a comment on cell'''
         worksheet.write_comment(row, col, text)
 
-    def makeTextCell(self, worksheet, upperLeftCorner, text, width=0, 
-            height=0, cellFormat=None):
+    def makeTextCell(self, worksheet, upperLeftCorner, text, width=0,
+                     height=0, cellFormat=None):
         ''' merge cells and put text '''
         upperRow = upperLeftCorner[0]
         leftColumn = upperLeftCorner[1]
@@ -86,17 +86,17 @@ class Excel(object):
             self.fitColumnWidth(worksheet, leftColumn, text)
         else:
             worksheet.merge_range(upperRow, leftColumn, lowerRow, rightColumn,
-                text, cellFormat)
+                                  text, cellFormat)
 
     def makeTitleCell(self, worksheet, upperLeftCorner, text, width=0, height=0):
         ''' merge cells and give title format '''
-        self.makeTextCell(worksheet, upperLeftCorner, text, width, 
-            height, self.cellTitleFormat)
+        self.makeTextCell(worksheet, upperLeftCorner, text, width,
+                          height, self.cellTitleFormat)
 
     def makeBlankCell(self, worksheet, upperLeftCorner):
         ''' merge cells and give blank cell format '''
-        self.makeTextCell(worksheet, upperLeftCorner, '', 0, 0, 
-            self.cellFormat)
+        self.makeTextCell(worksheet, upperLeftCorner, '', 0, 0,
+                          self.cellFormat)
 
     def makeHorizontalGrid(self, worksheet, upperLeftCorner, nameList, blankWidth):
         ''' make grid where firt value is in the first column and next columns are blanks'''
@@ -108,21 +108,22 @@ class Excel(object):
         for name in nameList:
             self.makeTitleCell(worksheet, (currentRow, leftColumn), name)
             # apply format to empty cells
-            for col in range(leftColumn+1, rightColumn+1):
+            for col in range(leftColumn + 1, rightColumn + 1):
                 self.makeBlankCell(worksheet, (currentRow, col))
             currentRow += 1
-   
+
         usedRows = len(nameList)
         return usedRows
 
-    def makeParamHeader(self, worksheet, metroLine, firstRow, title, subTitleList, printDirection=True, bothDirections=True, blankRows=0):
+    def makeParamHeader(self, worksheet, metroLine, firstRow, title, subTitleList, printDirection=True,
+                        bothDirections=True, blankRows=0):
 
         subTitleNumber = len(subTitleList)
         row = firstRow
-        titleWidth = subTitleNumber -1
+        titleWidth = subTitleNumber - 1
 
         if printDirection and bothDirections:
-            titleWidth = 2*subTitleNumber - 1
+            titleWidth = 2 * subTitleNumber - 1
 
         self.makeTitleCell(worksheet, (row, 0), title, titleWidth)
         row += 1
@@ -130,29 +131,29 @@ class Excel(object):
         if printDirection:
             stationNameList = metroLine.metrostation_set.values_list('name', flat=True).order_by('id')
             firstStation = stationNameList[0]
-            lastStation = stationNameList[len(stationNameList)-1]
+            lastStation = stationNameList[len(stationNameList) - 1]
             firstDirection = '{}-{}'.format(firstStation, lastStation)
             secondDirection = '{}-{}'.format(lastStation, firstStation)
 
-            self.makeTitleCell(worksheet, (row, 0), firstDirection, subTitleNumber-1)
+            self.makeTitleCell(worksheet, (row, 0), firstDirection, subTitleNumber - 1)
             if bothDirections:
-                self.makeTitleCell(worksheet, (row, subTitleNumber), 
-                    secondDirection, subTitleNumber-1)
+                self.makeTitleCell(worksheet, (row, subTitleNumber),
+                                   secondDirection, subTitleNumber - 1)
             row += 1
 
         col = 0
         for subTitle in subTitleList:
             self.makeTitleCell(worksheet, (row, col), subTitle)
             if printDirection and bothDirections:
-                self.makeTitleCell(worksheet, (row, subTitleNumber + col), 
-                    subTitle)
+                self.makeTitleCell(worksheet, (row, subTitleNumber + col),
+                                   subTitle)
             col += 1
 
         row += 1
         for index in range(blankRows):
             length = subTitleNumber
             if printDirection and bothDirections:
-                length = 2*subTitleNumber
+                length = 2 * subTitleNumber
             for col in range(0, length):
                 self.makeBlankCell(worksheet, (row, col))
             row += 1
@@ -165,7 +166,7 @@ class Excel(object):
 
         self.workbook.close()
 
-        localFile = open('{}/{}'.format(self.getMediaPath(), self.getFileName()))
+        localFile = open(os.path.join(self.getMediaPath(), self.getFileName()))
         djangoFile = File(localFile)
         # remove previous file saved
         path = os.path.join(settings.MEDIA_ROOT, fileField.name)
@@ -178,6 +179,7 @@ class Excel(object):
     def createTemplateFile(self):
         pass
 
+
 class Step2Excel(Excel):
     ''' create excel file for step 2 '''
 
@@ -189,9 +191,9 @@ class Step2Excel(Excel):
         fileName = super(self.__class__, self).getFileName()
         NAME = 'topologico'
         fileName = fileName.replace('generic', NAME)
-        
+
         return fileName
-    
+
     def makeStructureHeader(self, worksheet):
 
         STRUCTURE_TITLE = 'Características físicas de estaciones y túneles'
@@ -214,7 +216,7 @@ class Step2Excel(Excel):
         worksheet.write('D3', STRUCTURE_STATION_PERIMETER_TITLE, self.cellTitleFormat)
         worksheet.write('E3', STRUCTURE_2ND_LEVEL_AVG_HEIGHT_TITLE, self.cellTitleFormat)
         worksheet.write('F3', STRUCTURE_2ND_LEVEL_AVG_SURFACE_TITLE, self.cellTitleFormat)
-             
+
         worksheet.write('H3', STRUCTURE_STATION_SEGMENT_TITLE, self.cellTitleFormat)
         worksheet.write('I3', STRUCTURE_STATION_LENGTH_TITLE, self.cellTitleFormat)
         worksheet.write('J3', STRUCTURE_STATION_SURFACE_TITLE, self.cellTitleFormat)
@@ -249,13 +251,13 @@ class Step2Excel(Excel):
             lastRow = self.makeStructureHeader(worksheet)
 
             stationNameList = line.metrostation_set.values_list('name', flat=True).order_by('id')
-            height = self.makeHorizontalGrid(worksheet, (lastRow + 1, 0), 
-                         stationNameList, 5)
+            height = self.makeHorizontalGrid(worksheet, (lastRow + 1, 0),
+                                             stationNameList, 5)
 
             trackNameList = []
             trackName = '{}-'.format(stationNameList[0])
             for name in stationNameList[1:]:
-                trackName += name 
+                trackName += name
                 trackNameList.append(trackName)
                 trackName = '{}-'.format(name)
             self.makeHorizontalGrid(worksheet, (lastRow + 1, 7), trackNameList, 3)
@@ -263,7 +265,7 @@ class Step2Excel(Excel):
             lastRow += height + SEPARATION_HEIGHT
 
             # additionHeaders
-            titles = ['Pendiente', 'Radio de curvatura', 'Límite de velocidad', 
+            titles = ['Pendiente', 'Radio de curvatura', 'Límite de velocidad',
                       'Nivel (1: sobre tierra, 0: bajo tierra)']
             subTitles = [
                 ['Inicio de segmento [m]', 'Fin de segmento [m]', 'Pendiente [%]'],
@@ -272,14 +274,15 @@ class Step2Excel(Excel):
                 ['Inicio de segmento [m]', 'Fin de segmento [m]', 'Nivel']
             ]
             bothDirections = [True, True, True, False]
-            
+
             for index, title in enumerate(titles):
-                height = self.makeParamHeader(worksheet, line, lastRow+1, title, 
-                    subTitles[index], blankRows=1,
-                    bothDirections=bothDirections[index])
+                height = self.makeParamHeader(worksheet, line, lastRow + 1, title,
+                                              subTitles[index], blankRows=1,
+                                              bothDirections=bothDirections[index])
                 lastRow += height + SEPARATION_HEIGHT
 
         self.save(self.scene.step2Template)
+
 
 class Step4Excel(Excel):
     ''' create excel file for step 4 '''
@@ -292,9 +295,9 @@ class Step4Excel(Excel):
         fileName = super(self.__class__, self).getFileName()
         NAME = 'sistemico'
         fileName = fileName.replace('generic', NAME)
-        
+
         return fileName
-    
+
     def makeStructureHeader(self, worksheet):
 
         TITLE = 'Consumo energético de estaciones, túneles y depósitos'
@@ -328,7 +331,7 @@ class Step4Excel(Excel):
         worksheet.write('D3', STATION_MIN_HVAC_CONSUMPTION_TITLE, self.cellTitleFormat)
         worksheet.write('E3', STATION_MAX_HVAC_CONSUMPTION_TITLE, self.cellTitleFormat)
         worksheet.write('F3', STATION_TAU_TITLE, self.cellTitleFormat)
-        
+
         worksheet.write('H3', TRACK_SEGMENT_TITLE, self.cellTitleFormat)
         worksheet.write('I3', TRACK_AUX_CONSUMPTION_TITLE, self.cellTitleFormat)
         worksheet.write('J3', TRACK_VENTILATION_CONSUMPTION_TITLE, self.cellTitleFormat)
@@ -371,7 +374,7 @@ class Step4Excel(Excel):
 
             stationNameList = line.metrostation_set.values_list('name', flat=True).order_by('id')
             stationHeight = self.makeHorizontalGrid(worksheet, (lastRow + 1, 0),
-                         stationNameList, 5)
+                                                    stationNameList, 5)
 
             trackNameList = []
             trackName = '{}-'.format(stationNameList[0])
@@ -383,21 +386,21 @@ class Step4Excel(Excel):
 
             depotNameList = line.metrodepot_set.values_list('name', flat=True)
             depotHeight = self.makeHorizontalGrid(worksheet, (lastRow + 1, 11),
-                         depotNameList, 3)
+                                                  depotNameList, 3)
 
             lastRow += max(stationHeight, depotHeight) + SEPARATION_HEIGHT
 
             # additionHeaders
             title = 'Características SESS de la línea'
-            self.makeTitleCell(worksheet, (lastRow+1, 0), title, 1)
+            self.makeTitleCell(worksheet, (lastRow + 1, 0), title, 1)
 
             subTitles = [
-                'Usable energy content [Wh]:', 
-                'Charging Efficiency [%]:', 
-                'Discharging Efficiency [%]:', 
-                'Peak power [W]:', 
-                'Maximum energy saving possible per hour [W]:', 
-                'Energy saving mode (1 = true / 0 = false):', 
+                'Usable energy content [Wh]:',
+                'Charging Efficiency [%]:',
+                'Discharging Efficiency [%]:',
+                'Peak power [W]:',
+                'Maximum energy saving possible per hour [W]:',
+                'Energy saving mode (1 = true / 0 = false):',
                 'Power limit to feed [W]:'
             ]
             self.makeHorizontalGrid(worksheet, (lastRow + 2, 0), subTitles, 1)

@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from abc import ABCMeta, abstractmethod
-
-# Create your views here.
-from django.views.generic import View
-from django.http import JsonResponse
-from django.conf import settings
-
-from scene.models import Scene, MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation
-
-from scene.statusResponse import Status
-
 import math
 import os
+from abc import ABCMeta, abstractmethod
+
+from django.conf import settings
+from django.http import JsonResponse
+# Create your views here.
+from django.views.generic import View
+
+from scene.models import Scene
+from scene.statusResponse import Status
+
 
 class UploadFile(View):
     ''' general upload file behavior '''
@@ -68,7 +67,7 @@ class UploadFile(View):
         fileName = uploadedFile.name
         fileField.save(fileName, uploadedFile)
 
-        if(scene.currentStep < newStep):
+        if scene.currentStep < newStep:
             scene.currentStep = newStep
             scene.save()
 

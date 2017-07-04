@@ -176,9 +176,8 @@
       }).get().click(function(){
         this.remove();
       });
-    }; 
-
-    console.log({{ scene.currentStep }});
+    }
+      console.log({{ scene.currentStep }});
 
     /**************************************************
     * CUSTOM BINDING HANDLERS
@@ -233,7 +232,7 @@
       self.id = null;
       self.line = ko.observable();
       self.station = ko.observable();
-    }
+    };
     let Connection = function(name){
       let self = this;
       self.id = null;
@@ -303,7 +302,7 @@
           self.lines.push(line);
           self.showAddLineDialog(false);
         }
-      }
+      };
       self.removeLine = function(){
         // delete connection if has an station of the line
         let deleteConnection = false;
@@ -335,7 +334,7 @@
           self.selectedStations.push(stations[i]);
         }
         self.showEditStationsDialog(true);
-      }
+      };
       /**************************************************
       * FORM TO ADD CONNECTIONS
       ***************************************************/
@@ -396,7 +395,7 @@
           const DEPOT_NAME_PREFIX = 'D';
           let defaultDepotName = DEPOT_NAME_PREFIX + (line.depots().length + 1);
           self.name(defaultDepotName);
-        }
+        };
         // each time line is updated
         self.line.subscribe(self.updateDefaultDepotName);
       };
@@ -566,7 +565,7 @@
 
         self.showWarningList(reasons);
         return false;
-      }
+      };
  
       /**************************************************
       * VALIDATION LOGIC
@@ -580,7 +579,7 @@
         message += '</ul>';
 
         self.showMessage(message, 'Advertencia', 'warning');
-      }
+      };
 
       self.showMessage = function(message, title, type){
         let msg = {
@@ -597,7 +596,7 @@
       self.serialize = function(){
         let serialize = {
           lines: this.lines(),
-          connections: this.connections(),
+          connections: this.connections()
         };
         return ko.toJSON(serialize);
       };
@@ -672,7 +671,7 @@
           self.connections.push(connection);
         });
       }
-    }
+    };
 
     // viewModels to manage each step
     let step1 = new Step1ViewModel();

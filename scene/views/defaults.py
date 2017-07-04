@@ -1,30 +1,23 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-
-# Create your views here.
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.views.generic import View
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.http import Http404
-from django.http import JsonResponse
-from django.conf import settings
-
-from scene.models import Scene, MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation
-
-from scene.forms import FirstStepForm, SecondStepForm, ThirdStepForm, FourthStepForm, FithStepForm, SixthStepForm
-
-from scene.statusResponse import Status
-
-from .Excel import Step2Excel, Step4Excel
-
 import json
 import uuid
-import xlsxwriter
+
+from django.http import Http404
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse
+# Create your views here.
+from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import View
+
+from scene.forms import FirstStepForm
+from scene.models import Scene, MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation
+from scene.statusResponse import Status
+from .Excel import Step2Excel, Step4Excel
+
 
 class StepsView(View):
     ''' wizard form: first  '''
@@ -233,9 +226,7 @@ class GetStep1DataView(View):
         for connection in connections:
             connectionsDict.append(connection.getDict())
 
-        response = {}
-        response['lines'] = lines
-        response['connections'] = connectionsDict
+        response = {'lines': lines, 'connections': connectionsDict}
 
         Status.getJsonStatus(Status.OK, response)
 

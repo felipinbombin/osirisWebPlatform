@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models
+import os
+
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
-from django.conf import settings
+from django.db import models
 
-import uuid
-import os
 
 class OverwriteStorage(FileSystemStorage):
 
@@ -60,7 +60,7 @@ class Scene(models.Model):
 class MetroLine(models.Model):
     ''' metro line '''
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
-    externalId = models.UUIDField(null=False, unique=True);
+    externalId = models.UUIDField(null=False, unique=True)
     ''' used to track record in wizard form, this way i know if is new record or previous '''
     isOld = models.BooleanField(default=False)
     ''' used when topological variables are updated '''
@@ -68,19 +68,19 @@ class MetroLine(models.Model):
     #######################################################
     # CONSUMPTION                                         
     #######################################################
-    usableEnergyContent = models.FloatField(null=True);
+    usableEnergyContent = models.FloatField(null=True)
     ''' unit:  '''
-    chargingEfficiency = models.FloatField(null=True);
+    chargingEfficiency = models.FloatField(null=True)
     ''' unit:  '''
-    dischargingEfficiency = models.FloatField(null=True);
+    dischargingEfficiency = models.FloatField(null=True)
     ''' unit:  '''
-    peakPower = models.FloatField(null=True);
+    peakPower = models.FloatField(null=True)
     ''' unit:  '''
-    maximumEnergySavingPossiblePerHour = models.FloatField(null=True);
+    maximumEnergySavingPossiblePerHour = models.FloatField(null=True)
     ''' unit:  '''
-    energySavingMode = models.FloatField(null=True);
+    energySavingMode = models.FloatField(null=True)
     ''' unit:  '''
-    powerLimitToFeed = models.FloatField(null=True);
+    powerLimitToFeed = models.FloatField(null=True)
     ''' unit:  '''
 
     class Meta:
@@ -88,11 +88,7 @@ class MetroLine(models.Model):
 
     def getDict(self):
         ''' dict '''
-        dict = {}
-        dict['id'] = self.externalId
-        dict['name'] = self.name
-        dict['stations'] = []
-        dict['depots'] = []
+        dict = {'id': self.externalId, 'name': self.name, 'stations': [], 'depots': []}
 
         for station in self.metrostation_set.all():
             dict['stations'].append(station.getDict())
@@ -106,7 +102,7 @@ class MetroLine(models.Model):
 class MetroStation(models.Model):
     ''' metro station'''
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
-    externalId = models.UUIDField(null=False, unique=True);
+    externalId = models.UUIDField(null=False, unique=True)
     ''' uses to track record in wizard form, this way i know if is new record or previous '''
     isOld = models.BooleanField(default=False)
     ''' used when topological variables are updated '''
@@ -124,15 +120,15 @@ class MetroStation(models.Model):
     #######################################################
     # CONSUMPTION                                         
     #######################################################
-    minAuxConsumption = models.FloatField(null=True);
+    minAuxConsumption = models.FloatField(null=True)
     ''' unit:  '''
-    maxAuxConsumption = models.FloatField(null=True);
+    maxAuxConsumption = models.FloatField(null=True)
     ''' unit:  '''
-    minHVACConsumption = models.FloatField(null=True);
+    minHVACConsumption = models.FloatField(null=True)
     ''' unit:  '''
-    maxHVACConsumption = models.FloatField(null=True);
+    maxHVACConsumption = models.FloatField(null=True)
     ''' unit:  '''
-    tau = models.FloatField(null=True);
+    tau = models.FloatField(null=True)
     ''' unit:  '''
 
     class Meta:
@@ -140,9 +136,7 @@ class MetroStation(models.Model):
 
     def getDict(self):
         ''' dict structure '''
-        dict = {}
-        dict['id'] = self.externalId
-        dict['name'] = self.name
+        dict = {'id': self.externalId, 'name': self.name}
 
         return dict
 
@@ -150,7 +144,7 @@ class MetroStation(models.Model):
 class MetroDepot(models.Model):
     ''' train depot '''
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
-    externalId = models.UUIDField(null=False, unique=True);
+    externalId = models.UUIDField(null=False, unique=True)
     ''' uses to track record in wizard form, this way i know if is new record or previous '''
     isOld = models.BooleanField(default=False)
     ''' used when topological variables are updated '''
@@ -158,11 +152,11 @@ class MetroDepot(models.Model):
     #######################################################
     # CONSUMPTION                                         
     #######################################################
-    auxConsumption = models.FloatField(null=True);
+    auxConsumption = models.FloatField(null=True)
     ''' unit:  '''
-    ventilationConsumption = models.FloatField(null=True);
+    ventilationConsumption = models.FloatField(null=True)
     ''' unit:  '''
-    dcConsumption = models.FloatField(null=True);
+    dcConsumption = models.FloatField(null=True)
     ''' unit:  '''
 
     class Meta:
@@ -170,9 +164,7 @@ class MetroDepot(models.Model):
 
     def getDict(self):
         ''' dict '''
-        dict = {}
-        dict['id'] = self.externalId
-        dict['name'] = self.name
+        dict = {'id': self.externalId, 'name': self.name}
 
         return dict
    
@@ -180,20 +172,20 @@ class MetroDepot(models.Model):
 class MetroConnection(models.Model):
     ''' connection between metro stations fo different metro lines '''
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
-    externalId = models.UUIDField(null=False, unique=True);
+    externalId = models.UUIDField(null=False, unique=True)
     ''' used to track record in wizard form, this way i know if is new record or previous '''
     isOld = models.BooleanField(default=False)
     ''' used when topological variables are updated '''
     name = models.CharField(max_length=100)
     stations = models.ManyToManyField(MetroStation, through='MetroConnectionStation')
-    avgHeight = models.FloatField(null=True);
+    avgHeight = models.FloatField(null=True)
     ''' unit: meters '''
-    avgSurface = models.FloatField(null=True);
+    avgSurface = models.FloatField(null=True)
     ''' unit: square meters '''
     #######################################################
     # CONSUMPTION                                         
     #######################################################
-    consumption = models.FloatField(null=True);
+    consumption = models.FloatField(null=True)
     ''' unit:  '''
 
     class meta:
@@ -201,12 +193,8 @@ class MetroConnection(models.Model):
 
     def getDict(self):
         ''' dict '''
-        dict = {}
-        dict['id'] = self.externalId
-        dict['name'] = self.name
-        dict['avgHeight'] = self.avgHeight
-        dict['avgSurface'] = self.avgSurface
-        dict['stations'] = []
+        dict = {'id': self.externalId, 'name': self.name, 'avgHeight': self.avgHeight, 'avgSurface': self.avgSurface,
+                'stations': []}
 
         for connectionStation in self.metroconnectionstation_set.all():
             dict['stations'].append(connectionStation.getDict())
@@ -219,14 +207,12 @@ class MetroConnectionStation(models.Model):
     metroConnection = models.ForeignKey(MetroConnection)
     isOld = models.BooleanField(default=False)
     ''' used when topological variables are updated '''
-    externalId = models.UUIDField(null=False, unique=True);
+    externalId = models.UUIDField(null=False, unique=True)
     ''' used to track record in wizard form, this way i know if is new record or previous '''
 
     def getDict(self):
         ''' dict '''
-        dict = {}
-        dict['id'] = self.externalId
-        dict['station'] = self.metroStation.getDict()
+        dict = {'id': self.externalId, 'station': self.metroStation.getDict()}
 
         return dict
 
@@ -248,9 +234,9 @@ class MetroTrack(models.Model):
     #######################################################
     # CONSUMPTION                                         
     #######################################################
-    auxiliariesConsumption = models.FloatField(null=True);
+    auxiliariesConsumption = models.FloatField(null=True)
     ''' unit:  '''
-    ventilationConsumption = models.FloatField(null=True);
+    ventilationConsumption = models.FloatField(null=True)
     ''' unit:  '''
 
 

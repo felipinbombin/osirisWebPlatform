@@ -42,7 +42,7 @@ class SceneAdmin(admin.ModelAdmin):
     def response_add(self, request, obj, post_url_continue=None):
         url = '/admin/scene/wizard/{}'.format(obj.id)
         return redirect(url)
-        return super(SceneAdmin, self).response_add(request, ibj, post_url_continue)
+        #return super(SceneAdmin, self).response_add(request, ibj, post_url_continue)
 
 admin.site.register(Scene, SceneAdmin)
 admin.site.register(MetroLine)

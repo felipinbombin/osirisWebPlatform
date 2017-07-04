@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.http import JsonResponse
 
-class Status():
+class Status:
     OK = 200
     INVALID_SIZE_FILE = 401
     INVALID_STEP = 402
@@ -34,9 +33,9 @@ class Status():
     def getJsonStatus(code, jsonObj, title=None, message=None):
         """ return json with status and message related to code """
         status = Status.statusDict[code]
-        if title != None:
+        if title is not None:
             status['title'] = title
-        if message != None:
+        if message is not None:
             status['message'] = message
 
         jsonObj['status'] = status

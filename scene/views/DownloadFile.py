@@ -8,6 +8,7 @@ from django.http import Http404
 
 from scene.models import Scene
 
+
 class DownloadStepFile(View):
     ''' link to download the most recent file uploaded by user in step 2,4,6 or 7 '''
     def get(self, request, stepId, sceneId):
@@ -30,6 +31,7 @@ class DownloadStepFile(View):
             raise Http404
         
         return redirect(field.url)
+
 
 class DownloadStepTemplate(View):
     ''' link to download the most recent file uploaded by user in step 2,4,6 or 7 '''

@@ -2530,7 +2530,7 @@ if (typeof NProgress != 'undefined') {
             {
               extend: "print",
               className: "btn-sm"
-            },
+            }
             ],
             responsive: true
           });

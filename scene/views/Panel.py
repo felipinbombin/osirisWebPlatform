@@ -1,20 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.views.generic import View
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from django.http import Http404
 from django.http import JsonResponse
-from django.conf import settings
+# Create your views here.
+from django.shortcuts import render
+from django.views.generic import View
 
-from scene.models import Scene, MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation
-
+from scene.models import Scene, MetroConnection
 from scene.statusResponse import Status
 
 
@@ -57,9 +50,7 @@ class ScenePanelData(View):
         for connection in connections:
             connectionsDict.append(connection.getDict())
 
-        response = {}
-        response['lines'] = lines
-        response['connections'] = connectionsDict
+        response = {'lines': lines, 'connections': connectionsDict}
 
         Status.getJsonStatus(Status.OK, response)
 
