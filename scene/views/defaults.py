@@ -5,7 +5,6 @@ import json
 import uuid
 
 from django.http import Http404
-from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 # Create your views here.
 from django.shortcuts import render
@@ -13,7 +12,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
-from scene.forms import FirstStepForm
 from scene.models import Scene, MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation
 from scene.statusResponse import Status
 from .Excel import Step2Excel, Step4Excel
@@ -25,28 +23,14 @@ class StepsView(View):
         self.context = {}
         self.template = 'scene/wizard.html'
 
-    def post(self, request):
-        # if this is a POST request we need to process the form data
-
-        # create a form instance and populate it with data from the request:
-        form = FirstStepForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            return HttpResponseRedirect('/thanks/')
-
-        return render(request, self.template, {'form': form})
-
     def get(self, request, sceneId):
-
         try:
             self.context['scene'] = Scene.objects.get(user=request.user, id=sceneId)
         except:
             raise Http404
 
         return render(request, self.template, self.context)
+
 
 class ValidationStepView(View):
     ''' validate data from step '''
@@ -202,33 +186,3 @@ class ValidationStepView(View):
 
 
         return JsonResponse(response, safe=False)
-
-
-class GetStep1DataView(View):
-    ''' get data of step 1 '''
-
-    def __init__(self):
-        self.context = {}
-
-    def get(self, request, sceneId):
-        """ return data of step 1 """
-
-        sceneId = int(sceneId)
-        scene = Scene.objects.prefetch_related('metroline_set__metrostation_set', 'metroline_set__metrodepot_set').\
-            get(user=request.user, id=sceneId)
-        connections = MetroConnection.objects.prefetch_related('stations').filter(scene=scene)
-
-        lines = []
-        for line in scene.metroline_set.all():
-            lines.append(line.getDict())
-        
-        connectionsDict = []
-        for connection in connections:
-            connectionsDict.append(connection.getDict())
-
-        response = {'lines': lines, 'connections': connectionsDict}
-
-        Status.getJsonStatus(Status.OK, response)
-
-        return JsonResponse(response, safe=False)
-
