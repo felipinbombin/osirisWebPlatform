@@ -90,634 +90,67 @@
   <script src="{% static "components/smartwizard/dist/js/jquery.smartWizard.min.js" %}"></script>
   <script src="{% static "components/knockout/dist/knockout.debug.js" %}"></script>
   <script src="{% static "components/js-cookie/src/js.cookie.js" %}"></script>
+  <script src="{% static "js/user.notification.js" %}"></script>
+  <script src="{% static "js/dropzone.conf.js" %}"></script>
+  <script src="{% static "js/wizard.step0.js" %}"></script>
+  <script src="{% static "js/wizard.step2.js" %}"></script>
   <script>
   $(document).ready(function(){
-    /**************************************************
-    * DROPZONE CONFIGURATION
-    ***************************************************/
-    // Disable auto discover for all elements:
-    Dropzone.autoDiscover = false;
+      console.log({{ scene.currentStep }});
 
-    let dropzoneDict = {
-      dictDefaultMessage: '<h1>Arrastra tu archivo topológico aquí.</h1>',
-      dictFallbackMessage: '<h1>Tu navegador no acepta el arrastre de archivos. Haz clic aquí</h1>',
-      dictFileTooBig: 'Archivo con tamaño mayor a {{maxFilesize}}MiB.',
-      dictInvalidFileType: 'No puedes subir archivos de este tipo.',
-      dictMaxFilesExceeded: 'No puedes subir más archivos.',
-      dictRemoveFile: 'Quitar archivo',
-      dictCancelUpload: 'Cancelar',
-      dictCancelUploadConfirmation: '¿Estás seguro que quieres cancelar la carga del archivo?'
-    };
-    function init(){
-      this.on("success", function(file, serverResponse) {
-        console.log('success event');
-        let status = serverResponse['status'];
-        showNotificationMessage(status);
-        if(status.code !== 200){
-          this.removeFile(file);
-          console.log('file removed');
-        }
-      });
-      this.on("addedfile", function (file) {
-        let status = {
-          title: 'Error',
-          message: '',
-          type: 'error',
-        };
-        console.log(file);
-        if(file.size > 2*Math.pow(10, 6)){
-          status['message'] = 'Archivo debe tener un tamaño inferior a 2MB.';
-          showNotificationMessage(status);
-          this.removeFile(file);
-        }else if(!file.name.endsWith('.xlsx')){
-          status['message'] = 'Archivo debe tener formato Excel.';
-          showNotificationMessage(status);
-          this.removeFile(file);
-        }else if(this.files.length > 1){
-          let response = confirm('El nuevo archivo reemplazará al anterior ¿está seguro?');
-          if(response){
-            this.removeFile(this.files[0]);
-          }else{
-            this.removeFile(file);
-          }
-        }
-        let url = 'http://icons.iconarchive.com/icons/carlosjj/microsoft-office-2013/128/Excel-icon.png';
-        $(file.previewElement).find(".dz-image img").attr("src", url);
-        console.log('addedfile');
-      });
-    };
+/**************************************************
+* WIZARD LOGIC
+***************************************************/
 
-    let csrf = Cookies.get('csrftoken');
-    let dropzoneOpts = {
-      maxFiles: 1,
-      acceptedFiles: '.xlsx',
-      maxFilesize: 2, 
-      init: init,
-      headers: {
-        'X-CSRFToken': csrf,
-      },
-    };
-    $.extend(dropzoneOpts, dropzoneDict);
-    // create dropzone instance
-    $("#step2form").dropzone(dropzoneOpts);
-    $("#step4form").dropzone(dropzoneOpts);
-    $("#step6form").dropzone(dropzoneOpts);
-    $("#step7form").dropzone(dropzoneOpts);
+// viewModels to manage each step
+let step0ViewModel = new Step0ViewModel();
+let step2ViewModel = new Step2ViewModel();
 
-    /**************************************************
-    * USER NOTIFICATION 
-    ***************************************************/
-    function showNotificationMessage(status){
-      let message = status['message'];
-      let title = status['title'];
-      let type = status['type'];
-      new PNotify({
-        title: title,
-        type: type,
-        text: message,
-        nonblock: {
-          nonblock: true
-        },
-        styling: 'bootstrap3',
-        mouse_reset: false
-      }).get().click(function(){
-        this.remove();
-      });
-    }; 
+// Initialize the leaveStep event
+$("#wizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
+    return true;
+});
 
-    console.log({{ scene.currentStep }});
+// Initialize the showStep event
+$("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
 
-    /**************************************************
-    * CUSTOM BINDING HANDLERS
-    ***************************************************/
-    ko.bindingHandlers.modal = {
-      init: function(element, valueAccessor){
-        $(element).modal({
-            show: false
-        });
-        
-        let value = valueAccessor();
-        if(typeof value === 'function'){
-          $(element).on('hide.bs.modal', function(){
-            value(false);
-          });
-        }
-        ko.utils.domNodeDisposal.addDisposeCallback(element, function(){
-          $(element).modal("destroy");
-        });
-      },
-      update: function (element, valueAccessor) {
-        let value = valueAccessor();
-        if (ko.utils.unwrapObservable(value)) {
-          $(element).modal('show');
-        } else {
-          $(element).modal('hide');
-        }
-      }
-    };
-    /**************************************************
-    * STEP 1
-    ***************************************************/
-    let Station = function(name){
-      let self = this;
-      self.id = null;
-      self.name = ko.observable(name);
-    };
-    let Depot = function(name){
-      let self = this;
-      self.id = null;
-      self.name = ko.observable(name);
-    };
-    let Line = function(name){
-      let self = this;
-      self.id = null;
-      self.name = ko.observable(name);
-      self.stations = ko.observableArray();
-      self.depots = ko.observableArray();
-    };
-    let ConnectionStation = function(){
-      let self = this;
-      self.id = null;
-      self.line = ko.observable();
-      self.station = ko.observable();
-    };
-    let Connection = function(name){
-      let self = this;
-      self.id = null;
-      self.name = ko.observable(name);
-      self.stations = ko.observableArray();
-      self.avgHeight = ko.observable();
-      self.avgSurface = ko.observable();
-      self.description = ko.computed(function(){
-        let name = '';
-        let arrow = '<i class="fa fa-arrows-h fa-lg" aria-hidden="true"></i>';
-        let stationsNumber = self.stations().length;
-        for(let i=0;i<stationsNumber;i++){
-          try{
-            name += self.stations()[i].line().name() + '-' + self.stations()[i].station().name();
-          }catch(err){
-            // nothing
-          }
-          if(i+1 !== stationsNumber){
-            name += arrow;
-          }
-        }
-        return name;
-      });
-    };
+    init_sidebar();
+    console.log("You are on step " + stepNumber + " now " + stepPosition);
 
-    let Step1ViewModel = function(){
-      let self = this;
+    const URLS = [
+        '{% url "scene:getStep0Data" sceneId=scene.id %}',
+        '{% url "scene:getStep2Data" sceneId=scene.id %}',
+        '{% url "scene:getStep4Data" sceneId=scene.id %}'
+    ];
 
-      self.lines = ko.observableArray();
-      self.depotsQuantity = ko.computed(function(){
-        let quantity = 0;
-        $.each(self.lines(), function(i, el){
-          quantity += el.depots().length;
-        });
-        return quantity;
-      });
-      self.connections = ko.observableArray();
-
-      /**************************************************
-      * FORM TO ADD LINE
-      ***************************************************/
-      self.showAddLineDialog = ko.observable(false);
-      let AddLineFormLogic = function(){
-        let self = this;
-        self.lineName = ko.observable(null);
-        self.stationsQuantity = ko.observable(0);
-      };
-      self.addLineFormLogic = new AddLineFormLogic();
-      self.openAddLineForm = function(){
-        const LINE_NAME_PREFIX = 'L';
-        let defaultLineName = LINE_NAME_PREFIX + (self.lines().length + 1);
-        self.addLineFormLogic.lineName(defaultLineName);
-        self.addLineFormLogic.stationsQuantity(1);
-        self.showAddLineDialog(true);
-      };
-      self.addLine = function(){
-        const STATION_NAME_PREFIX = 'S';
-
-        if(self.isValidLineForm()){
-          let addForm = self.addLineFormLogic;
-          let line = new Line(addForm.lineName());
-          for(let i=0;i<addForm.stationsQuantity();i++){
-            let stationName = STATION_NAME_PREFIX + (i + 1);
-            let station = new Station(stationName);
-            line.stations.push(station);
-          }
-          self.lines.push(line);
-          self.showAddLineDialog(false);
-        }
-      };
-      self.removeLine = function(){
-        // delete connection if has an station of the line
-        let deleteConnection = false;
-        for(let i=0;i<self.connections().length; i++){
-          let connection = self.connections()[i];
-          for(let j=0; j<connection.stations().length; j++){
-            let station = connection.stations()[j];
-            if(station.line() === this){
-              deleteConnection = true;
-            }
-          }
-          if(deleteConnection){
-            self.connections.remove(connection);
-            break;
-          }
-        }
-        self.lines.remove(this);
-      };
-
-      /**************************************************
-      * FORM TO EDIT STATIONS
-      ***************************************************/
-      self.showEditStationsDialog = ko.observable(false);
-      self.selectedStations = ko.observableArray();
-      self.openEditStationsForm = function(){
-        self.selectedStations.removeAll();
-        let stations = this.stations();
-        for(let i=0; i<stations.length; i++){
-          self.selectedStations.push(stations[i]);
-        }
-        self.showEditStationsDialog(true);
-      };
-      /**************************************************
-      * FORM TO ADD CONNECTIONS
-      ***************************************************/
-      self.showAddConnectionDialog = ko.observable(false);
-      let addConnectionFormLogic = function(){
-        let self = this;
-        self.connectionName = ko.observable();
-        self.connectionStations = ko.observableArray();
-        self.avgHeight = ko.observable();
-        self.avgSurface = ko.observable();
-        self.addConnectionStation = function(){
-          self.connectionStations.push(new ConnectionStation())
-        };
-        self.deleteConnectionStation = function(){
-          self.connectionStations.remove(this);
-        };
-      };
-      self.addConnectionFormLogic = new addConnectionFormLogic();
-      self.openAddConnectionDialog = function(){
-        let addForm = self.addConnectionFormLogic;
-        addForm.connectionName('');
-        addForm.avgHeight('');
-        addForm.avgSurface('');
-        addForm.connectionStations.removeAll();
-        self.showAddConnectionDialog(true);
-      };
-      self.addConnection = function(){
-        let addForm = self.addConnectionFormLogic;
-        if(self.isValidConnectionForm()){
-          let connection = new Connection(addForm.connectionName());
-          connection.avgHeight(addForm.avgHeight());
-          connection.avgSurface(addForm.avgSurface());
-          for(let i=0;i<addForm.connectionStations().length;i++){
-            connection.stations.push(addForm.connectionStations()[i]);
-          }
-
-          self.connections.push(connection);
-          self.showAddConnectionDialog(false);
-        }
-      };
-      self.removeConnection = function(){
-        self.connections.remove(this);
-      };
-
-     
-      /**************************************************
-      * FORM TO ADD DEPOTS
-      ***************************************************/
-      self.showAddDepotDialog = ko.observable(false);
-      let addDepotFormLogic = function(){
-        let self = this;
-        self.name = ko.observable();
-        self.line = ko.observable();
-
-        self.updateDefaultDepotName = function(newLine){
-          let line = newLine || self.line();
-          if(line === undefined) return;
-          const DEPOT_NAME_PREFIX = 'D';
-          let defaultDepotName = DEPOT_NAME_PREFIX + (line.depots().length + 1);
-          self.name(defaultDepotName);
-        };
-        // each time line is updated
-        self.line.subscribe(self.updateDefaultDepotName);
-      };
-      self.addDepotFormLogic = new addDepotFormLogic();
-      self.addDepot = function(){
-        if(self.isValidDepotForm()){
-          let depot = new Depot(self.addDepotFormLogic.name());
-          self.addDepotFormLogic.line().depots.push(depot);
-          self.showAddDepotDialog(false);
-          self.addDepotFormLogic.updateDefaultDepotName();
-        }
-      };
-      self.removeDepot = function(){
-        let depot = this;
-        $.each(self.lines(), function() { 
-          this.depots.remove(depot) 
-        });
-        self.addDepotFormLogic.updateDefaultDepotName();
-      };
-
-      /**************************************************
-      * FORMS VALIDATION
-      ***************************************************/
-      self.isValidLineForm = function(){
-        let addForm = self.addLineFormLogic;
- 
-        let reasons = [];       
-        let isValidLineName = true;
-        let isValidStationNumber = true;
-
-        let name = addForm.lineName();
-        let stationNumber = addForm.stationsQuantity();
-
-        if(name === null || name === '' || !name.length){
-          reasons.push('El nombre no puede ser vacío.');
-          isValidLineName = false;
-        }
-        if(name !== null){
-          if(name.length > 50){
-            reasons.push('El nombre no puede tener un largo mayor a 50 caracteres.');
-            isValidLineName = false;
-          }
-
-          for(let i=0; i<self.lines().length; i++){
-            if(name === self.lines()[i].name()){
-              reasons.push('Ya existe una línea con ese nombre.');
-              isValidLineName = false;
-            }
-          }
-        }
- 
-        if(isNaN(stationNumber) || stationNumber <= 0 || 200 < stationNumber){
-          reasons.push('El número de estaciones debe estar entre 1 y 200.');
-          isValidStationNumber = false;
-        }
-
-        if(isValidLineName && 
-           isValidStationNumber){
-          return true;
-        }
-
-        self.showWarningList(reasons);
-        return false;
-      };
-
-      self.isValidDepotForm = function(){
-        let addForm = self.addDepotFormLogic;
-
-        let reasons = [];
-        let isValidName = true;
-
-        let name = addForm.name();
-
-        if(name === null || name === '' || !name.length){
-          reasons.push('El nombre no puede ser vacío.');
-          isValidName = false;
-        }
-        if(name !== null){
-          if( name.length > 50){
-            reasons.push('El nombre no puede tener un largo mayor a 50 caracteres.');
-            isValidName = false;
-          }
-          for(let i=0; i<self.lines().length; i++){
-            if(addForm.line().name() === self.lines()[i].name()){
-              for(let j=0; j<self.lines()[i].depots().length; j++){
-                if(name === self.lines()[i].depots()[j].name()){
-                  reasons.push('Ya existe un depósito con ese nombre.');
-                  isValidName = false;
-                }
-              }
-            }
-          }
-        }
-
-        if(isValidName){
-          return true;
-        }
-
-        self.showWarningList(reasons);
-        return false;
-      };
-
-      self.isValidConnectionForm = function(){
-        let addForm = self.addConnectionFormLogic;
-
-        let reasons = [];
-        let isValidStationQuantity = true;
-        let isValidConnectionName = true;
-        let isValidAvgHeight = true;
-        let isValidAvgSurface = true;
-        let isValidLines = true;
-
-        let name = addForm.connectionName();
-        let stationNumber = addForm.connectionStations().length;
-        let avgHeight = addForm.avgHeight();
-        let avgSurface = addForm.avgSurface();
-        let stations = addForm.connectionStations();
-
-        if(name === null || name === '' || !name.length){
-          reasons.push('El nombre no puede ser vacío.');
-          isValidConnectionName = false;
-        }
-        if(name !== null){
-          if( name.length > 50){
-            reasons.push('El nombre no puede tener un largo mayor a 50 caracteres.');
-            isValidConnectionName = false;
-          }
-          for(let i=0; i<self.connections().length; i++){
-            if(name === self.connections()[i].name()){
-              reasons.push('Ya existe una conexión con ese nombre.');
-              isValidConnectionName = false;
-            }
-          }
-        }
-        
-        if(stationNumber < 2){
-          reasons.push('La conexión debe tener una o más estaciones.');
-          isValidStationQuantity = false;
-        }
-
-        if(isNaN(avgHeight) || avgHeight<0 && 1000<avgHeight){
-          reasons.push('La altura promedio debe ser un número entre 0 y 1.000 m.');
-          isValidAvgHeight = false;
-        }
-
-        if(isNaN(avgSurface) || avgSurface<0 && 1000000<avgSurface){
-          reasons.push('La altura promedio debe ser un número entre 0 y 1.000.000 m<sup>2</sup>.');
-          isValidAvgHeight = false;
-        }
-
-        let set = new Set();
-        for(let i=0;i<stations.length; i++){
-          set.add(stations[i].line().name());
-        }
-        if(set.size !== stationNumber){
-          reasons.push('Una línea no puede tener más de una estación en una conexión.');
-          isValidLines = false;
-        }
-
-        if(isValidConnectionName && 
-           isValidStationQuantity && 
-           isValidAvgHeight && 
-           isValidAvgSurface && 
-           isValidLines){
-          return true;
-        }
-
-        self.showWarningList(reasons);
-        return false;
-      };
- 
-      /**************************************************
-      * VALIDATION LOGIC
-      ***************************************************/
-      self.showWarningList = function(reasons){
-        let message = 'Hemos detectado los siguientes problemas:';
-        message += '<ul>';
-        for(let i=0;i<reasons.length;i++){
-          message += '<li>' + reasons[i] + '</li>';
-        }
-        message += '</ul>';
-
-        self.showMessage(message, 'Advertencia', 'warning');
-      };
-
-      self.showMessage = function(message, title, type){
-        let msg = {
-          message: message,
-          title: title,
-          type: type
-        };
-        showNotificationMessage(msg);
-      };
-
-      /**************************************************
-      * EXTERNAL VALIDATION LOGIC
-      ***************************************************/
-      self.serialize = function(){
-        let serialize = {
-          lines: this.lines(),
-          connections: this.connections(),
-        };
-        return ko.toJSON(serialize);
-      };
-
-      self.isValid = function(){
-        let msg = {
-          message: '',
-          title: 'Error',
-          type: 'error'
-        };
-
-        // exist lines
-        if(self.lines().length === 0){
-          msg['message'] += '- Debe ingresar una o más líneas.<br />';
-        }
-
-        if(msg['message'] !== ''){
-          showNotificationMessage(msg);
-          return false;
-        }
-        return true;
-      };
-    
-      self.update = function(data){
-        let lines = data['lines'];
-        let connections = data['connections'];
-
-        self.connections.removeAll();
-        self.lines.removeAll();
-        
-        let stationList = {};
-
-        lines.forEach(function(el, i){
-          let line = new Line();
-          line.name(el.name);
-          line.id = el.id;
-    
-          el.stations.forEach(function(el, i){
-            let station = new Station();
-            station.name(el.name);
-            station.id = el.id;
-            line.stations.push(station);
-
-            stationList[el.id] = {
-              line: line,
-              station: station
-            }
-          });
-          el.depots.forEach(function(el, i){
-            let depot = new Depot();
-            depot.name(el.name);
-            depot.id = el.id;
-            line.depots.push(depot);
-          });
-          self.lines.push(line);
-        });
-        
-        connections.forEach(function(el, i){
-          let connection = new Connection(el.name);
-          connection.id = el.id;
-          connection.avgHeight(el.avgHeight);
-          connection.avgSurface(el.avgSurface);
-
-          el.stations.forEach(function(connStation, i){
-            let connectionStation = new ConnectionStation();
-            connectionStation.id = connStation.id;
-            connectionStation.line(stationList[connStation.station.id].line);
-            connectionStation.station(stationList[connStation.station.id].station);
-
-            connection.stations.push(connectionStation);
-          });
-          self.connections.push(connection);
-        });
-      }
-    };
-
-    /**************************************************
-    * WIZARD LOGIC
-    ***************************************************/
-
-    // viewModels to manage each step
-    let step1 = new Step1ViewModel();
-
-    // Initialize the leaveStep event
-    $("#wizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
-       return true;
-    });
-
-    // Initialize the showStep event
-    $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
-
-      init_sidebar();
-      console.log("You are on step "+stepNumber+" now " + stepPosition);
-
-      switch(stepNumber){
+    switch (stepNumber) {
         case 0:
-          let step1DOM = document.getElementById('step-1');
-          let viewModel = ko.dataFor(step1DOM);
-          if(viewModel === undefined){
-            ko.applyBindings(step1, step1DOM);
-            viewModel = ko.dataFor(step1DOM);
-          }
-          //retrieve data from server
-          const URL = '{% url "scene:getStep1Data" sceneId=scene.id %}';
-          $.get(URL, function(data){
-            viewModel.update(data);
-            console.log('data retrieved succesfully');
-          });
+            let step0DOM = document.getElementById('step-1');
+            let existsStep1Model = ko.dataFor(step0DOM);
+            if (existsStep1Model === undefined) {
+                ko.applyBindings(step0ViewModel, step0DOM);
+            }
+            //retrieve data from server
+            $.get(URLS[0], function (data) {
+                step0ViewModel.update(data);
+                console.log('data of step 0 retrieved succesfully');
+            });
+            break;
+        case 2:
+            let step2DOM = document.getElementById('step-3');
+            let existsStep2Model = ko.dataFor(step2DOM);
+            if (existsStep2Model === undefined) {
+                ko.applyBindings(step2ViewModel, step2DOM);
+            }
+            //retrieve data from server
+            $.get(URLS[1], function (data) {
+                step2ViewModel.update(data);
+                console.log('data of step 2 retrieved succesfully');
+            });
+            break;
+    }
+});
 
-          break;
-      }
-    });
- 
     let nextLogic = function(){
       let currentStep = parseInt(window.location.hash.split('-')[1])-1;
 
@@ -729,9 +162,9 @@
       };
       switch(currentStep){
         case 0:
-          if(step1.isValid()){
-            let data = step1.serialize();
-            $.post(getUrl(0), data, function(answer){
+          if(step0ViewModel.isValid()){
+            let data = step0ViewModel.serialize();
+            $.post(getUrl(currentStep), data, function(answer){
               // success
               if(answer.status.code === 200){
                 $('#wizard').smartWizard('next');
@@ -740,49 +173,28 @@
             });
           }
           break;
-        case 1:
-          // ask to server if file was uploaded
-          $.post(getUrl(1), function(answer){
-            // success
-            if(answer.status.code === 200){
-              $('#wizard').smartWizard('next');
-            }else{
-              showNotificationMessage(answer.status);
-            }
-          });
-          break;
         case 2:
-          $('#wizard').smartWizard('next');
-          break;
-        case 3:
-          // ask to server if file was uploaded
-          $.post(getUrl(3), function(answer){
-            // success
-            if(answer.status.code === 200){
-              $('#wizard').smartWizard('next');
-            }else{
+          if(step2ViewModel.isValid()){
+            let data = step2ViewModel.serialize();
+            $.post(getUrl(currentStep), data, function(answer){
+              // success
+              if(answer.status.code === 200){
+                $('#wizard').smartWizard('next');
+              }
               showNotificationMessage(answer.status);
-            }
-          });
+            });
+          }
           break;
         case 4:
           // ask to server if file was uploaded
           $('#wizard').smartWizard('next');
           break;
+        case 1:
+        case 3:
         case 5:
-          // ask to server if file was uploaded
-          $.post(getUrl(5), function(answer){
-            // success
-            if(answer.status.code === 200){
-              $('#wizard').smartWizard('next');
-            }else{
-              showNotificationMessage(answer.status);
-            }
-          });
-          break;
         case 6:
           // ask to server if file was uploaded
-          $.post(getUrl(6), function(answer){
+          $.post(getUrl(currentStep), function(answer){
             // success
             if(answer.status.code === 200){
               $('#wizard').smartWizard('next');
