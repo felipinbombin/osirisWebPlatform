@@ -270,3 +270,79 @@ class OperationPeriod(models.Model):
     ''' unit:  '''
     sunElevationAngle = models.FloatField()
     ''' unit:  '''
+
+
+class SystemicParams(models.Model):
+    ''' global systemic params '''
+    scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
+    #######################################################
+    # TRAIN FORCES
+    #######################################################
+    mass = models.FloatField(null=False)
+    inercialMass = models.FloatField(null=False)
+    maxAccelerationAllowed = models.FloatField(null=False)
+    maxStartingForceAllowed = models.FloatField(null=False)
+    maxBrakingForceAllowed = models.FloatField(null=False)
+    speedOfMotorRegimeChange = models.FloatField(null=False)
+    maxPower = models.FloatField(null=False)
+    maxSpeedAllowed = models.FloatField(null=False)
+
+    davisParameterA = models.FloatField(null=False)
+    davisParameterB = models.FloatField(null=False)
+    davisParameterC = models.FloatField(null=False)
+    davisParameterD = models.FloatField(null=False)
+    davisParameterE = models.FloatField(null=False)
+
+    #######################################################
+    # TRAIN TRACTION
+    #######################################################
+    tractionSystemEfficiency = models.FloatField(null=False)
+    brakingSystemEfficiency = models.FloatField(null=False)
+    electricalBrakeTreshold = models.FloatField(null=False)
+    electroMechanicalBrakeThreshold = models.FloatField(null=False)
+
+    #######################################################
+    # TRAIN STRUCTURE
+    #######################################################
+    length = models.FloatField(null=False)
+    numberOfCars = models.FloatField(null=False)
+    carWidth = models.FloatField(null=False)
+    carHeight = models.FloatField(null=False)
+    vehicleWallThickness = models.FloatField(null=False)
+    heatConductivityOfTheVehicleWall = models.FloatField(null=False)
+    cabinVolumeFactor = models.FloatField(null=False)
+    trainPassengerCapacity = models.FloatField(null=False)
+
+    point1Tin = models.FloatField(null=False)
+    point2Tin = models.FloatField(null=False)
+    point3Tin = models.FloatField(null=False)
+    point4Tin = models.FloatField(null=False)
+    point5Tin = models.FloatField(null=False)
+    point1Tout = models.FloatField(null=False)
+    point2Tout = models.FloatField(null=False)
+    point3Tout = models.FloatField(null=False)
+    point4Tout = models.FloatField(null=False)
+    point5Tout = models.FloatField(null=False)
+
+    hrsExtraPower = models.FloatField(null=False)
+    onBoardEnergyStorageSystem = models.FloatField(null=False)
+    storageCapacityWeighting = models.FloatField(null=False)
+
+    #######################################################
+    # TRAIN CMM TRACTION MODEL
+    #######################################################
+    obessChargeEfficiency = models.FloatField(null=False)
+    obessDischargeEfficiency = models.FloatField(null=False)
+    obessUsableEnergyContent = models.FloatField(null=False)
+    maxDischargePower = models.FloatField(null=False)
+    maxEnergySavingPossiblePerHour = models.FloatField(null=False)
+    powerLimitToFeed = models.FloatField(null=False)
+
+    #######################################################
+    # TRAIN ENERGY
+    #######################################################
+    hvacConsumption = models.FloatField(null=False)
+    auxiliariesConsumption = models.FloatField(null=False)
+    trainsTerminalResistance = models.FloatField(null=False)
+    voltageDCTrainsTerminals = models.FloatField(null=False)
+
