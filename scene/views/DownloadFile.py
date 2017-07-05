@@ -29,7 +29,10 @@ class DownloadStepFile(View):
             field = scene.step7File
         else:
             raise Http404
-        
+
+        if field == '':
+            raise Http404
+
         return redirect(field.url)
 
 
