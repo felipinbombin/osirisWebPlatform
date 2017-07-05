@@ -55,25 +55,25 @@
   <div id="wizard">
     {% include 'scene/stepsHeader.html' %}
     <div>
-    <div id="step-0" style="display: none">
+    <div id="step-1" style="display: none">
       {% include 'scene/step0.html' %}
     </div>
-    <div id="step-1" style="display: none">
+    <div id="step-2" style="display: none">
       {% include 'scene/step1.html' %}
     </div>
-    <div id="step-2" style="display: none">
+    <div id="step-3" style="display: none">
       {% include 'scene/step2.html' %}
     </div>
-    <div id="step-3" style="display: none">
+    <div id="step-4" style="display: none">
       {% include 'scene/step3.html' %}
     </div>
-    <div id="step-4" style="display: none">
+    <div id="step-5" style="display: none">
       {% include 'scene/step4.html' %}
     </div>
-    <div id="step-5" style="display: none">
+    <div id="step-6" style="display: none">
       {% include 'scene/step5.html' %}
     </div>
-    <div id="step-6" style="display: none">
+    <div id="step-7" style="display: none">
       {% include 'scene/step6.html' %}
     </div>
     </div>
@@ -144,7 +144,7 @@ $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection,
             }
             //retrieve data from server
             $.get(URLS[1], function (data) {
-                step2ViewModel.update(data);
+                //step2ViewModel.update(data);
                 console.log('data of step 2 retrieved succesfully');
             });
             break;
@@ -152,7 +152,7 @@ $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection,
 });
 
     let nextLogic = function(){
-      let currentStep = parseInt(window.location.hash.split('-')[1]);
+      let currentStep = parseInt(window.location.hash.split('-')[1]) - 1;
 
       let getUrl = function(stepId){
           let sceneId = {{ scene.id }};

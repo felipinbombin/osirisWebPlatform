@@ -1,14 +1,4 @@
 <br />
-<!--
-<div class="x_panel">
-  <div class="x_title">
-    <h2>Variables sistemicas globales</h2>
-    <div class="clearfix"></div>
-  </div>
-  <div class="x_content">
-  </div>
-</div>
--->
 
 <div class="form-horizontal form-label-left">
 <div class="row">
@@ -18,332 +8,48 @@
         <h2>Características de tren: <strong>Fuerzas</strong></h2>
         <div class="clearfix"></div>
       </div>
-      <div class="x_content">
+      <div class="x_content" data-bind="with: trainForces">
         <div class="col-md-12 col-sm-12 col-xs-12">
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Masa</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: mass">
-                <span class="input-group-addon">Kg</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Masa Inercial</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: inercialMass">
-                <span class="input-group-addon">Kg</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Máxima aceleración permitida</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: maxAccelerationAllowed">
-                <span class="input-group-addon">m/s<sup>2</sup></span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Máxima fuerza inicial permitida</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: maxAccelerationAllowed">
-                <span class="input-group-addon">N</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Máxima fuerza de frenado permitida</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: maxAccelerationAllowed">
-                <span class="input-group-addon">N</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Velocidad de cambio de regimen del motor</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: maxAccelerationAllowed">
-                <span class="input-group-addon">m/s</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Potencia máxima</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: maxAccelerationAllowed">
-                <span class="input-group-addon">W</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Velocidad máxima permitida</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: maxAccelerationAllowed">
-                <span class="input-group-addon">m/s</span>
-              </div>
-            </div>
-          </div>
+          <field-form params="value: mass, label: 'Masa', unit: 'Kg'"></field-form>
+          <field-form params="value: inercialMass, label: 'Masa inercial', unit: 'Kg'"></field-form>
+          <field-form params="value: maxAccelerationAllowed, label: 'Máxima aceleración permitida', unit: 'm/s<sup>2</sup>'"></field-form>
+          <field-form params="value: maxStartingForceAllowed, label: 'Máxima fuerza inicial permitida', unit: 'N'"></field-form>
+          <field-form params="value: maxBrakingForceAllowed, label: 'Máxima fuerza de frenado permitida', unit: 'N'"></field-form>
+          <field-form params="value: speedOfMotorRegimeChange, label: 'Velocidad de cambio de regimen del motor', unit: 'm/s'"></field-form>
+          <field-form params="value: maxPower, label: 'Potencia máxima', unit: 'W'"></field-form>
+          <field-form params="value: maxSpeedAllowed, label: 'Velocidad máxima permitida', unit: 'm/s'"></field-form>
 
           <hr>
           <h4>Parámetros de davis</h4>
 
-          <div class="form-group">
-            <label class="control-label col-md-1 col-sm-1 col-xs-4">A</label>
-            <div class="col-md-3 col-sm-3 col-xs-8">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: davisA">
-                <span class="input-group-addon"></span>
-              </div>
-            </div>
-
-            <label class="control-label col-md-1 col-sm-1 col-xs-4">B</label>
-            <div class="col-md-3 col-sm-3 col-xs-8">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: davisB">
-                <span class="input-group-addon"></span>
-              </div>
-            </div>
-
-            <label class="control-label col-md-1 col-sm-1 col-xs-4">C</label>
-            <div class="col-md-3 col-sm-3 col-xs-8">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: davisC">
-                <span class="input-group-addon"></span>
-              </div>
-            </div>
-
-            <label class="control-label col-md-1 col-sm-1 col-xs-4">D</label>
-            <div class="col-md-3 col-sm-3 col-xs-8">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: davisD">
-                <span class="input-group-addon"></span>
-              </div>
-            </div>
-
-            <label class="control-label col-md-1 col-sm-1 col-xs-4">E</label>
-            <div class="col-md-3 col-sm-3 col-xs-8">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: davisE">
-                <span class="input-group-addon"></span>
-              </div>
-            </div>
-
-          </div>
+          <div class="form-group" data-bind="component: {
+               name: 'small-fields-form',
+               params: {fields:[
+                 {value: davisParameterA, label: 'A'},
+                 {value: davisParameterB, label: 'B'},
+                 {value: davisParameterC, label: 'C'},
+                 {value: davisParameterD, label: 'D'},
+                 {value: davisParameterE, label: 'E'}
+               ]}}"></div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="col-md-6 col-sm-6 col-xs-12">
-    <div class="x_panel">
-      <div class="row x_title">
-        <h2>Características de tren: <strong>Tracción</strong></h2>
-        <div class="clearfix"></div>
-      </div>
-      <div class="x_content">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Eficiencia del sistema de tracción</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">%</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Eficiencia del sistema de frenos</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">%</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Umbral de freno eléctrico</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">km/h</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Umbral de freno electromecánico</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">km/h</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="x_panel">
-      <div class="row x_title">
-        <h2>Características de tren: <strong>Energía</strong></h2>
-        <div class="clearfix"></div>
-      </div>
-      <div class="x_content">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Consumo HVAC</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">W</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Consumo de auxiliares</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">W</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Resistencia del terminal de trenes</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">ohm</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Votaje DC de terminal de trenes</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">V</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-6 col-sm-6 col-xs-12">
     <div class="x_panel">
       <div class="row x_title">
         <h2>Características de tren: <strong>Estructura</strong></h2>
         <div class="clearfix"></div>
       </div>
-      <div class="x_content">
+      <div class="x_content" data-bind="with: trainStructure">
         <div class="col-md-12 col-sm-12 col-xs-12">
+          <field-form params="value: length, label: 'Largo', unit: 'm'"></field-form>
+          <field-form params="value: numberOfCars, label: 'Número de carros'"></field-form>
+          <field-form params="value: carWidth, label: 'Ancho de carro', unit: 'm'"></field-form>
+          <field-form params="value: carHeight, label: 'Altura de carro', unit: 'm'"></field-form>
+          <field-form params="value: vehicleWallThickness, label: 'Espesor de paredes del carro', unit: 'm'"></field-form>
+          <field-form params="value: heatConductivityOfTheVehicleWall, label: 'Conductividad térmica de pared del carro', unit: 'W/m/K'"></field-form>
+          <field-form params="value: cabinVolumeFactor, label: 'Cabin Volume Factor'"></field-form>
+          <field-form params="value: trainPassengerCapacity, label: 'Capacidad de pasajeros del tren'"></field-form>
 
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Largo</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">m</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Número de carros</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon"></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Ancho de carro</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">m</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Altura de carro</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">m</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Espesor de paredes del carro</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">m</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Conductividad térmica de pared del carro</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">W/m/K</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Conductividad térmica de pared del carro</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">W/m/K</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Cabin Volume Factor</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon"></span>
-              </div>
-            </div>
-          </div>
- 
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Capacidad de pasajeros del tren</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon"></span>
-              </div>
-            </div>
-          </div>
- 
           <hr>
           <h4>Conjunto de puntos HVAC</h4>
 
@@ -355,94 +61,68 @@
           <div class="form-group">
             <label class="control-label col-md-4 col-sm-4 col-xs-12">Punto 1</label>
             <div class="col-md-4 col-sm-4 col-xs-4">
-              <input type="number" class="form-control text-center" 
-                data-bind="value: ">
+              <input type="number" class="form-control text-center"
+                data-bind="value: point1Tin">
             </div>
             <div class="col-md-4 col-sm-4 col-xs-4">
-              <input type="number" class="form-control text-center" 
-                data-bind="value: ">
+              <input type="number" class="form-control text-center"
+                data-bind="value: point1Tout">
             </div>
           </div>
 
           <div class="form-group">
             <label class="control-label col-md-4 col-sm-4 col-xs-12">Punto 2</label>
             <div class="col-md-4 col-sm-4 col-xs-4">
-              <input type="number" class="form-control text-center" 
-                data-bind="value: ">
+              <input type="number" class="form-control text-center"
+                data-bind="value: point2Tin">
             </div>
             <div class="col-md-4 col-sm-4 col-xs-4">
-              <input type="number" class="form-control text-center" 
-                data-bind="value: ">
+              <input type="number" class="form-control text-center"
+                data-bind="value: point2Tout">
             </div>
           </div>
 
           <div class="form-group">
             <label class="control-label col-md-4 col-sm-4 col-xs-12">Punto 3</label>
             <div class="col-md-4 col-sm-4 col-xs-4">
-              <input type="number" class="form-control text-center" 
-                data-bind="value: ">
+              <input type="number" class="form-control text-center"
+                data-bind="value: point3Tin">
             </div>
             <div class="col-md-4 col-sm-4 col-xs-4">
-              <input type="number" class="form-control text-center" 
-                data-bind="value: ">
+              <input type="number" class="form-control text-center"
+                data-bind="value: point3Tout">
             </div>
           </div>
 
           <div class="form-group">
             <label class="control-label col-md-4 col-sm-4 col-xs-12">Punto 4</label>
             <div class="col-md-4 col-sm-4 col-xs-4">
-              <input type="number" class="form-control text-center" 
-                data-bind="value: ">
+              <input type="number" class="form-control text-center"
+                data-bind="value: point4Tin">
             </div>
             <div class="col-md-4 col-sm-4 col-xs-4">
-              <input type="number" class="form-control text-center" 
-                data-bind="value: ">
+              <input type="number" class="form-control text-center"
+                data-bind="value: point4Tout">
             </div>
           </div>
 
           <div class="form-group">
             <label class="control-label col-md-4 col-sm-4 col-xs-12">Punto 5</label>
             <div class="col-md-4 col-sm-4 col-xs-4">
-              <input type="number" class="form-control text-center" 
-                data-bind="value: ">
+              <input type="number" class="form-control text-center"
+                data-bind="value: point5Tin">
             </div>
             <div class="col-md-4 col-sm-4 col-xs-4">
-              <input type="number" class="form-control text-center" 
-                data-bind="value: ">
+              <input type="number" class="form-control text-center"
+                data-bind="value: point5Tout">
             </div>
           </div>
- 
+
           <hr>
- 
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">HRS Extra Power</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">W</span>
-              </div>
-            </div>
-          </div>
 
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">On Board Energy Storage System</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">[0 o 1]</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Storage Capacity Weighting</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">[0 a 2]</span>
-              </div>
-            </div>
-          </div>
+          <field-form params="value: hrsExtraPower, label: 'HRS Extra Power', unit: 'W'"></field-form>
+          <field-form params="value: onBoardEnergyStorageSystem, label: 'On Board Energy Storage System', unit: '[0 o 1]'"></field-form>
+          <field-form params="value: storageCapacityWeighting, label: 'Storage Capacity Weighting', unit: '[0 a 2]'"></field-form>
 
         </div>
       </div>
@@ -451,67 +131,45 @@
   <div class="col-md-6 col-sm-6 col-xs-12">
     <div class="x_panel">
       <div class="row x_title">
+        <h2>Características de tren: <strong>Tracción</strong></h2>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content" data-bind="with: trainTraction">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <field-form params="value: tractionSystemEfficiency, label: 'Eficiencia del sistema de tracción', unit: '%'"></field-form>
+          <field-form params="value: brakingSystemEfficiency, label: 'Eficiencia del sistema de frenos', unit: '%'"></field-form>
+          <field-form params="value: electricalBrakeTreshold, label: 'Umbral de freno eléctrico', unit: 'km/h'"></field-form>
+          <field-form params="value: electroMechanicalBrakeThreshold, label: 'Umbral de freno electromecánico', unit: 'km/h'"></field-form>
+        </div>
+      </div>
+    </div>
+    <div class="x_panel">
+      <div class="row x_title">
+        <h2>Características de tren: <strong>Energía</strong></h2>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content" data-bind="with: trainEnergy">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <field-form params="value: hvacConsumption, label: 'Consumo HVAC', unit: 'W'"></field-form>
+          <field-form params="value: auxiliariesConsumption, label: 'Consumo de auxiliares', unit: 'W'"></field-form>
+          <field-form params="value: trainsTerminalResistance, label: 'Resistencia del terminal de trenes', unit: 'ohm'"></field-form>
+          <field-form params="value: voltageDCTrainsTerminals, label: 'Votaje DC de terminal de trenes', unit: 'V'"></field-form>
+        </div>
+      </div>
+    </div>
+    <div class="x_panel">
+      <div class="row x_title">
         <h2>Características de tren: <strong>Modelo de tracción CMM</strong></h2>
         <div class="clearfix"></div>
       </div>
-      <div class="x_content">
+      <div class="x_content" data-bind="with: trainCMMTractionModel">
         <div class="col-md-12 col-sm-12 col-xs-12">
- 
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">OBESS charge efficiency</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">%</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">OBESS discharge efficiency</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">%</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">OBESS Usable energy content</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">kWh</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Maximun discharge power</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">W</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Maximum energy saving possible per hour</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">W</span>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">Power limit to feed</label>
-            <div class="col-md-8 col-sm-8 col-xs-12">
-              <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
-                <span class="input-group-addon">W</span>
-              </div>
-            </div>
-          </div>
-
+          <field-form params="value: obessChargeEfficiency, label: 'OBESS charge efficiency', unit: '%'"></field-form>
+          <field-form params="value: obessDischargeEfficiency, label: 'OBESS discharge efficiency', unit: '%'"></field-form>
+          <field-form params="value: obessUsableEnergyContent, label: 'OBESS Usable energy content', unit: 'kWh'"></field-form>
+          <field-form params="value: maxDischargePower, label: 'Maximun discharge power', unit: 'W'"></field-form>
+          <field-form params="value: maxEnergySavingPossiblePerHour, label: 'Maximum energy saving possible per hour', unit: 'W'"></field-form>
+          <field-form params="value: powerLimitToFeed, label: 'Power limit to feed', unit: 'W'"></field-form>
         </div>
       </div>
     </div>
@@ -522,15 +180,17 @@
       </div>
       <div class="x_content">
         <div class="col-md-12 col-sm-12 col-xs-12">
+          <!-- ko foreach: connections -->
           <div class="form-group">
-            <label class="control-label col-md-4 col-sm-4 col-xs-12">L1-S1--L2-S2</label>
+            <label class="control-label col-md-4 col-sm-4 col-xs-12" data-bind="text: description"></label>
             <div class="col-md-8 col-sm-8 col-xs-12">
               <div class="input-group">
-                <input type="number" class="form-control" data-bind="value: ">
+                <input type="number" class="form-control" data-bind="value: consumption">
                 <span class="input-group-addon">W</span>
               </div>
             </div>
           </div>
+          <!-- /ko -->
         </div>
       </div>
     </div>

@@ -23,7 +23,7 @@ class GetStep0Data(View):
         connections = MetroConnection.objects.prefetch_related('stations').filter(scene=scene)
 
         lines = []
-        for line in scene.metroline_set.all():
+        for line in scene.metroline_set.all().order_by('id'):
             lines.append(line.getDict())
         
         connectionsDict = []
@@ -52,7 +52,7 @@ class GetStep2Data(View):
         connections = MetroConnection.objects.prefetch_related('stations').filter(scene=scene)
 
         lines = []
-        for line in scene.metroline_set.all():
+        for line in scene.metroline_set.all().order_by('id'):
             lines.append(line.getDict())
 
         connectionsDict = []
@@ -81,7 +81,7 @@ class GetStep4Data(View):
         connections = MetroConnection.objects.prefetch_related('stations').filter(scene=scene)
 
         lines = []
-        for line in scene.metroline_set.all():
+        for line in scene.metroline_set.all().order_by('id'):
             lines.append(line.getDict())
 
         connectionsDict = []
