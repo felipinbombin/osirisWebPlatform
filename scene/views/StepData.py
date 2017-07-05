@@ -5,7 +5,7 @@ from django.http import JsonResponse
 # Create your views here.
 from django.views.generic import View
 
-from scene.models import Scene, MetroConnection
+from scene.models import Scene, MetroConnection, SystemicParams
 from scene.statusResponse import Status
 
 class GetStep0Data(View):
@@ -47,19 +47,15 @@ class GetStep2Data(View):
         """ return data of step 3 """
 
         sceneId = int(sceneId)
-        scene = Scene.objects.prefetch_related('metroline_set__metrostation_set', 'metroline_set__metrodepot_set'). \
-            get(user=request.user, id=sceneId)
+        scene = Scene.objects.get(user=request.user, id=sceneId)
         connections = MetroConnection.objects.prefetch_related('stations').filter(scene=scene)
-
-        lines = []
-        for line in scene.metroline_set.all().order_by('id'):
-            lines.append(line.getDict())
+        systemicParams, _ = SystemicParams.objects.get_or_create(scene=scene)
 
         connectionsDict = []
         for connection in connections:
             connectionsDict.append(connection.getDict())
 
-        response = {'lines': lines, 'connections': connectionsDict}
+        response = {'systemicParams': systemicParams.getDict(), 'connections': connectionsDict}
 
         Status.getJsonStatus(Status.OK, response)
 

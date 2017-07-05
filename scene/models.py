@@ -136,7 +136,7 @@ class MetroStation(models.Model):
 
     def getDict(self):
         ''' dict structure '''
-        dict = {'id': self.externalId, 'name': self.name}
+        dict = {'id': self.externalId, 'name': self.name, 'lineName': self.metroLine.name}
 
         return dict
 
@@ -194,7 +194,7 @@ class MetroConnection(models.Model):
     def getDict(self):
         ''' dict '''
         dict = {'id': self.externalId, 'name': self.name, 'avgHeight': self.avgHeight, 'avgSurface': self.avgSurface,
-                'stations': []}
+                'consumption': self.consumption, 'stations': []}
 
         for connectionStation in self.metroconnectionstation_set.all().order_by('id'):
             dict['stations'].append(connectionStation.getDict())
@@ -278,71 +278,137 @@ class SystemicParams(models.Model):
     #######################################################
     # TRAIN FORCES
     #######################################################
-    mass = models.FloatField(null=False)
-    inercialMass = models.FloatField(null=False)
-    maxAccelerationAllowed = models.FloatField(null=False)
-    maxStartingForceAllowed = models.FloatField(null=False)
-    maxBrakingForceAllowed = models.FloatField(null=False)
-    speedOfMotorRegimeChange = models.FloatField(null=False)
-    maxPower = models.FloatField(null=False)
-    maxSpeedAllowed = models.FloatField(null=False)
+    mass = models.FloatField(null=True)
+    inercialMass = models.FloatField(null=True)
+    maxAccelerationAllowed = models.FloatField(null=True)
+    maxStartingForceAllowed = models.FloatField(null=True)
+    maxBrakingForceAllowed = models.FloatField(null=True)
+    speedOfMotorRegimeChange = models.FloatField(null=True)
+    maxPower = models.FloatField(null=True)
+    maxSpeedAllowed = models.FloatField(null=True)
 
-    davisParameterA = models.FloatField(null=False)
-    davisParameterB = models.FloatField(null=False)
-    davisParameterC = models.FloatField(null=False)
-    davisParameterD = models.FloatField(null=False)
-    davisParameterE = models.FloatField(null=False)
+    davisParameterA = models.FloatField(null=True)
+    davisParameterB = models.FloatField(null=True)
+    davisParameterC = models.FloatField(null=True)
+    davisParameterD = models.FloatField(null=True)
+    davisParameterE = models.FloatField(null=True)
 
     #######################################################
     # TRAIN TRACTION
     #######################################################
-    tractionSystemEfficiency = models.FloatField(null=False)
-    brakingSystemEfficiency = models.FloatField(null=False)
-    electricalBrakeTreshold = models.FloatField(null=False)
-    electroMechanicalBrakeThreshold = models.FloatField(null=False)
+    tractionSystemEfficiency = models.FloatField(null=True)
+    brakingSystemEfficiency = models.FloatField(null=True)
+    electricalBrakeTreshold = models.FloatField(null=True)
+    electroMechanicalBrakeThreshold = models.FloatField(null=True)
 
     #######################################################
     # TRAIN STRUCTURE
     #######################################################
-    length = models.FloatField(null=False)
-    numberOfCars = models.FloatField(null=False)
-    carWidth = models.FloatField(null=False)
-    carHeight = models.FloatField(null=False)
-    vehicleWallThickness = models.FloatField(null=False)
-    heatConductivityOfTheVehicleWall = models.FloatField(null=False)
-    cabinVolumeFactor = models.FloatField(null=False)
-    trainPassengerCapacity = models.FloatField(null=False)
+    length = models.FloatField(null=True)
+    numberOfCars = models.FloatField(null=True)
+    carWidth = models.FloatField(null=True)
+    carHeight = models.FloatField(null=True)
+    vehicleWallThickness = models.FloatField(null=True)
+    heatConductivityOfTheVehicleWall = models.FloatField(null=True)
+    cabinVolumeFactor = models.FloatField(null=True)
+    trainPassengerCapacity = models.FloatField(null=True)
 
-    point1Tin = models.FloatField(null=False)
-    point2Tin = models.FloatField(null=False)
-    point3Tin = models.FloatField(null=False)
-    point4Tin = models.FloatField(null=False)
-    point5Tin = models.FloatField(null=False)
-    point1Tout = models.FloatField(null=False)
-    point2Tout = models.FloatField(null=False)
-    point3Tout = models.FloatField(null=False)
-    point4Tout = models.FloatField(null=False)
-    point5Tout = models.FloatField(null=False)
+    point1Tin = models.FloatField(null=True)
+    point2Tin = models.FloatField(null=True)
+    point3Tin = models.FloatField(null=True)
+    point4Tin = models.FloatField(null=True)
+    point5Tin = models.FloatField(null=True)
+    point1Tout = models.FloatField(null=True)
+    point2Tout = models.FloatField(null=True)
+    point3Tout = models.FloatField(null=True)
+    point4Tout = models.FloatField(null=True)
+    point5Tout = models.FloatField(null=True)
 
-    hrsExtraPower = models.FloatField(null=False)
-    onBoardEnergyStorageSystem = models.FloatField(null=False)
-    storageCapacityWeighting = models.FloatField(null=False)
+    hrsExtraPower = models.FloatField(null=True)
+    onBoardEnergyStorageSystem = models.FloatField(null=True)
+    storageCapacityWeighting = models.FloatField(null=True)
 
     #######################################################
     # TRAIN CMM TRACTION MODEL
     #######################################################
-    obessChargeEfficiency = models.FloatField(null=False)
-    obessDischargeEfficiency = models.FloatField(null=False)
-    obessUsableEnergyContent = models.FloatField(null=False)
-    maxDischargePower = models.FloatField(null=False)
-    maxEnergySavingPossiblePerHour = models.FloatField(null=False)
-    powerLimitToFeed = models.FloatField(null=False)
+    obessChargeEfficiency = models.FloatField(null=True)
+    obessDischargeEfficiency = models.FloatField(null=True)
+    obessUsableEnergyContent = models.FloatField(null=True)
+    maxDischargePower = models.FloatField(null=True)
+    maxEnergySavingPossiblePerHour = models.FloatField(null=True)
+    powerLimitToFeed = models.FloatField(null=True)
 
     #######################################################
     # TRAIN ENERGY
     #######################################################
-    hvacConsumption = models.FloatField(null=False)
-    auxiliariesConsumption = models.FloatField(null=False)
-    trainsTerminalResistance = models.FloatField(null=False)
-    voltageDCTrainsTerminals = models.FloatField(null=False)
+    hvacConsumption = models.FloatField(null=True)
+    auxiliariesConsumption = models.FloatField(null=True)
+    trainsTerminalResistance = models.FloatField(null=True)
+    voltageDCTrainsTerminals = models.FloatField(null=True)
 
+    def getDict(self):
+        ''' dict '''
+        dict = {}
+
+        # TRAIN FORCES
+        dict['mass'] = self.mass
+        dict['inercialMass'] = self.inercialMass
+        dict['maxAccelerationAllowed'] = self.maxAccelerationAllowed
+        dict['maxStartingForceAllowed'] = self.maxStartingForceAllowed
+        dict['maxBrakingForceAllowed'] = self.maxBrakingForceAllowed
+        dict['speedOfMotorRegimeChange'] = self.speedOfMotorRegimeChange
+        dict['maxPower'] = self.maxPower
+        dict['maxSpeedAllowed'] = self.maxSpeedAllowed
+
+        dict['davisParameterA'] = self.davisParameterA
+        dict['davisParameterB'] = self.davisParameterB
+        dict['davisParameterC'] = self.davisParameterC
+        dict['davisParameterD'] = self.davisParameterD
+        dict['davisParameterE'] = self.davisParameterE
+
+        # TRAIN TRACTION
+        dict['tractionSystemEfficiency'] = self.tractionSystemEfficiency
+        dict['brakingSystemEfficiency'] = self.brakingSystemEfficiency
+        dict['electricalBrakeTreshold'] = self.electricalBrakeTreshold
+        dict['electroMechanicalBrakeThreshold'] = self.electroMechanicalBrakeThreshold
+
+        # TRAIN STRUCTURE
+        dict['length'] = self.length
+        dict['numberOfCars'] = self.numberOfCars
+        dict['carWidth'] = self.carWidth
+        dict['carHeight'] = self.carHeight
+        dict['vehicleWallThickness'] = self.vehicleWallThickness
+        dict['heatConductivityOfTheVehicleWall'] = self.heatConductivityOfTheVehicleWall
+        dict['cabinVolumeFactor'] = self.cabinVolumeFactor
+        dict['trainPassengerCapacity'] = self.trainPassengerCapacity
+
+        dict['point1Tin'] = self.point1Tin
+        dict['point2Tin'] = self.point2Tin
+        dict['point3Tin'] = self.point3Tin
+        dict['point4Tin'] = self.point4Tin
+        dict['point5Tin'] = self.point5Tin
+        dict['point1Tout'] = self.point1Tout
+        dict['point2Tout'] = self.point2Tout
+        dict['point3Tout'] = self.point3Tout
+        dict['point4Tout'] = self.point4Tout
+        dict['point5Tout'] = self.point5Tout
+
+        dict['hrsExtraPower'] = self.hrsExtraPower
+        dict['onBoardEnergyStorageSystem'] = self.onBoardEnergyStorageSystem
+        dict['storageCapacityWeighting'] = self.storageCapacityWeighting
+
+        # TRAIN CMM TRACTION
+        dict['obessChargeEfficiency'] = self.obessChargeEfficiency
+        dict['obessDischargeEfficiency'] = self.obessDischargeEfficiency
+        dict['obessUsableEnergyContent'] = self.obessUsableEnergyContent
+        dict['maxDischargePower'] = self.maxDischargePower
+        dict['maxEnergySavingPossiblePerHour'] = self.maxEnergySavingPossiblePerHour
+        dict['powerLimitToFeed'] = self.powerLimitToFeed
+
+        # TRAIN ENERGY
+        dict['hvacConsumption'] = self.hvacConsumption
+        dict['auxiliariesConsumption'] = self.auxiliariesConsumption
+        dict['trainsTerminalResistance'] = self.trainsTerminalResistance
+        dict['voltageDCTrainsTerminals'] = self.voltageDCTrainsTerminals
+
+        return dict
