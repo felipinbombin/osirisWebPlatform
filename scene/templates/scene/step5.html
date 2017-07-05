@@ -1,12 +1,25 @@
 <div class="x_panel">
   <div class="x_title">
-    <h2>Variables operacionales globales</h2>
+    <h2>Subir archivo operacional</h2>
     <div class="clearfix"></div>
   </div>
   <div class="x_content">
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-     Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    </p>
+    <p>En este paso debe realizar las siguientes tareas:</p>
+    <ul>
+      <li>Descargar el archivo de detalle operacional (botón "Descargar plantilla Excel")</li>
+      <li>Completar el archivo descargado en el paso anterior respetando la estructura que allí se presenta</li>
+      <li>Una vez completado, arrastrar el archivo al cuadro de la derecha</li>
+    </ul>
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <a href="{% url 'scene:downloadStepFile' stepId=6 sceneId=scene.id %}" class="btn btn-success btn-lg btn-block"><i class="fa fa-file-excel-o"></i> Descargar último archivo subido</a>
+    </div>
+    <div class="col-md-6 col-sm-6 col-xs-12">
+      <a href="{% url 'scene:downloadStepTemplate' stepId=6 sceneId=scene.id %}" class="btn btn-info btn-lg btn-block btn-excel"><i class="fa fa-file-excel-o fa-5x"></i><br /><h1>Descargar plantilla</h1></a>
+    </div>
+    <div class="col-md-6 col-sm-6 col-xs-12">
+      <form id="step6form" action='{% url "scene:uploadOperationalFile" sceneId=scene.id %}' class="dropzone">
+      </form>
+    </div>
   </div>
 </div>
 

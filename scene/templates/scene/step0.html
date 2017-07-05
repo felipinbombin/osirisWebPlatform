@@ -1,0 +1,306 @@
+<br />
+<!--
+<div class="x_panel">
+  <div class="x_title">
+    <h3>Variables topológicas</h3>
+    <div class="clearfix"></div>
+  </div>
+  <div class="x_content">
+    <p>Aquí va una breve explicación de lo que el usuario debe realizar al momento de agregar datos en este paso</p>
+  </div>
+</div>
+-->
+<div class="row">
+  <div class="col-md-6 col-sm-6 col-xs-12">
+    <div class="x_panel">
+      <div class="row x_title">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <h2>Líneas de metro (<strong data-bind="text: lines().length"></strong>)</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <button type="submit" class="pull-right btn btn-success btn-sm" data-bind="click: openAddLineForm">
+            <i class="fa fa-plus" aria-hidden="true"></i> agregar
+          </button>
+        </div>
+      </div>
+      <div class="x_content">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="table-responsive">
+          <table class="table table-striped" data-bind="visible: lines().length>0">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th># estaciones</th>
+                <th>Editar estaciones</th>
+                <th>Eliminar línea</th>
+              </tr>
+            </thead>
+            <tbody data-bind="foreach: lines">
+              <tr>
+                <td data-bind="text: name"></td>
+                <td data-bind="text: stations().length"></td>
+                <td><button type="button" class="btn btn-info btn-xs" data-bind="click: $parent.openEditStationsForm">Editar</button></td>
+                <td><button type="button" class="btn btn-danger btn-xs" data-bind="click: $parent.removeLine">Eliminar</button></td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-sm-6 col-xs-12">
+    <div class="x_panel">
+      <div class="row x_title">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <h2>Depósitos (<strong data-bind="text: depotsQuantity"></strong>)</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <button type="submit" class="pull-right btn btn-success btn-sm" 
+            data-bind="click: showAddDepotDialog, enable: lines().length > 0">
+            <i class="fa fa-plus" aria-hidden="true"></i> agregar
+          </button>
+        </div>
+      </div>
+      <div class="x_content">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="table-responsive">
+          <table class="table table-striped" data-bind="visible: depotsQuantity()>0">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Línea</th>
+                <th>Eliminar</th>
+              </tr>
+            </thead>
+            <tbody data-bind="foreach: lines">
+              <!-- ko foreach: depots -->
+              <tr>
+                <td data-bind="text: name"></td>
+                <td data-bind="text: $parent.name"></td>
+                <td><button type="button" class="btn btn-danger btn-xs" data-bind="click: $root.removeDepot">Eliminar</button></td>
+              </tr>
+              <!-- /ko -->
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="row x_title">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <h2>Conexiones (<strong data-bind="text: connections().length"></strong>)</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <button type="submit" class="pull-right btn btn-success btn-sm" 
+            data-bind="click: openAddConnectionDialog, enable: lines().length > 0">
+            <i class="fa fa-plus" aria-hidden="true"></i> agregar
+          </button>
+        </div>
+      </div>
+      <div class="x_content">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="table-responsive">
+          <table class="table table-striped" data-bind="visible: connections().length>0">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Estaciones</th>
+                <th>Alt. prom.(m)</th>
+                <th>Sup. prom.(m<sup>2</sup>)</th>
+                <th>Eliminar</th>
+              </tr>
+            </thead>
+            <tbody data-bind="foreach: connections">
+              <tr>
+                <td data-bind="text: name"></td>
+                <td data-bind="html: description"></td>
+                <td data-bind="text: avgHeight"></td>
+                <td data-bind="text: avgSurface"></td>
+                <td><button type="button" class="btn btn-danger btn-xs" data-bind="click: $root.removeConnection">Eliminar</button></td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modal to add line -->
+<div class="modal fade" tabindex="-1" role="dialog" data-bind="modal: showAddLineDialog">
+  <div class="modal-dialog">
+    <div class="modal-content" data-bind="with: addLineFormLogic">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Agregar Línea</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-horizontal form-label-left">
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Nombre</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="text" class="form-control" data-bind="value: lineName">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12"># estaciones</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="text" class="form-control" data-bind="value: stationsQuantity">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bind="click : $root.addLine" autofocus>Crear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal to edit stations -->
+<div class="modal fade" tabindex="-1" role="dialog" data-bind="modal: showEditStationsDialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Editar estaciones</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-horizontal form-label-left" data-bind="foreach: selectedStations">
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12"><strong data-bind="text: ($index()+1)"></strong> - Nombre:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="text" class="form-control" data-bind="textInput: name">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal to add connections -->
+<div class="modal fade" tabindex="-1" role="dialog" data-bind="modal: showAddConnectionDialog">
+  <div class="modal-dialog modal-lg" data-bind="with: addConnectionFormLogic">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Agregar Conexión</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-horizontal form-label-left">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Nombre:</label>
+            <div class="col-md-10 col-sm-10 col-xs-12">
+              <input type="text" class="form-control" data-bind="value: connectionName">
+            </div>
+          </div>
+          <hr />
+          <div class="row">
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="panel panel-info">
+              <div class="panel-heading">
+                Estaciones participantes:
+                <button type="button" class="btn btn-success btn-xs pull-right" 
+                  data-bind="click : addConnectionStation">
+                  <i class="fa fa-plus" aria-hidden="true"></i> Agregar estación
+                </button>
+              </div>
+              <div class="panel-body" data-bind="foreach: connectionStations">
+                <div class="row">
+                  <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                    <select class="form-control" 
+                      data-bind="options: $root.lines, 
+                                 optionsText: 'name', 
+                                 value: line">
+                    </select>
+                  </div>
+                  <!-- ko with : line -->
+                  <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                    <select class="form-control" 
+                      data-bind="options: stations,
+                                 optionsText: 'name',
+                                 value: $parent.station">
+                    </select>
+                  </div>
+                  <!-- /ko  -->
+                  <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                    <button type="button" class="btn btn-danger btn-block" 
+                      data-bind="click: $parent.deleteConnectionStation">Eliminar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="form-group">
+              <label class="control-label col-md-4 col-sm-4 col-xs-12">Altura promedio</label>
+              <div class="col-md-8 col-sm-8 col-xs-12">
+                <div class="input-group demo2 colorpicker-element">
+                  <input type="number" class="form-control" data-bind="value: avgHeight">
+                  <span class="input-group-addon">m</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-md-4 col-sm-4 col-xs-12">Superifcie promedio</label>
+              <div class="col-md-8 col-sm-8 col-xs-12">
+                <div class="input-group demo2 colorpicker-element">
+                  <input type="number" class="form-control" data-bind="value: avgSurface">
+                  <span class="input-group-addon">m<sup>2</sup></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bind="click : $parent.addConnection" autofocus>Crear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal to add depots -->
+<div class="modal fade" tabindex="-1" role="dialog" data-bind="modal: showAddDepotDialog">
+  <div class="modal-dialog">
+    <div class="modal-content" data-bind="with: addDepotFormLogic">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Agregar Depósito</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-horizontal form-label-left">
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Línea</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <select class="form-control" data-bind="options: $root.lines, 
+                                                      optionsText: 'name', 
+                                                      value: line">
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Nombre</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="text" class="form-control" data-bind="value: name">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bind="click : $root.addDepot" autofocus>Crear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
