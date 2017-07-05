@@ -90,10 +90,10 @@ class MetroLine(models.Model):
         ''' dict '''
         dict = {'id': self.externalId, 'name': self.name, 'stations': [], 'depots': []}
 
-        for station in self.metrostation_set.all():
+        for station in self.metrostation_set.all().order_by('id'):
             dict['stations'].append(station.getDict())
 
-        for depot in self.metrodepot_set.all():
+        for depot in self.metrodepot_set.all().order_by('id'):
             dict['depots'].append(depot.getDict())
 
         return dict
@@ -196,7 +196,7 @@ class MetroConnection(models.Model):
         dict = {'id': self.externalId, 'name': self.name, 'avgHeight': self.avgHeight, 'avgSurface': self.avgSurface,
                 'stations': []}
 
-        for connectionStation in self.metroconnectionstation_set.all():
+        for connectionStation in self.metroconnectionstation_set.all().order_by('id'):
             dict['stations'].append(connectionStation.getDict())
 
         return dict
