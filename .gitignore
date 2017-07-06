@@ -90,7 +90,7 @@ myenv/
 .ropeproject
 
 osirisWebPlatform/keys/
-static
+static/*
 bowerapp/static
 media/
 
