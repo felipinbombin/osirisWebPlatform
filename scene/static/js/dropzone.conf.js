@@ -6,7 +6,7 @@ $(document).ready(function() {
     Dropzone.autoDiscover = false;
 
     let dropzoneDict = {
-        dictDefaultMessage: "<h1>Arrastra tu archivo topológico aquí.</h1>",
+        dictDefaultMessage: "<h1>Arrastra tu archivo aquí.</h1>",
         dictFallbackMessage: "<h1>Tu navegador no acepta el arrastre de archivos. Haz clic aquí</h1>",
         dictFileTooBig: "Archivo con tamaño mayor a {{maxFilesize}}MiB.",
         dictInvalidFileType: "No puedes subir archivos de este tipo.",
