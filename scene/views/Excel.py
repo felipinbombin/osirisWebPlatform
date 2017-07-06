@@ -163,7 +163,7 @@ class Excel(object):
         pass
 
 
-class Step2Excel(Excel):
+class Step1Excel(Excel):
     ''' create excel file for step 2 '''
 
     def __init__(self, scene):
@@ -267,7 +267,7 @@ class Step2Excel(Excel):
         self.save(self.scene.step2Template)
 
 
-class Step4Excel(Excel):
+class Step3Excel(Excel):
     ''' create excel file for step 4 '''
 
     def __init__(self, scene):
