@@ -3,7 +3,7 @@ import uuid
 
 from abc import ABCMeta, abstractmethod
 from .Excel import Step1Excel, Step3Excel
-from scene.models import MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation
+from scene.models import MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation, SystemicParams
 
 
 class StepSaver:
@@ -17,9 +17,11 @@ class StepSaver:
 
     @abstractmethod
     def validate(self, data):
+        # if found an error throw an exception with user message
         pass
 
     def save(self, data):
+        # validate data before saved
         self.validate(data)
 
 
@@ -27,7 +29,7 @@ class Step0Saver(StepSaver):
     """
     logic to save step 0 data
     """
-    def validate(self, request):
+    def validate(self, data):
         return True
 
     def save(self, data):
@@ -129,12 +131,18 @@ class Step2Saver(StepSaver):
     logic to save step 2 data
     """
 
-    def validate(self, request):
+    def validate(self, data):
         return True
 
     def save(self, data):
-        super(Step0Saver, self).save(data)
-        print data
+        super(Step2Saver, self).save(data)
+        systemicParamsData = data['systemicParams']
+        connections = data['connections']
+
+        SystemicParams.objects.filter(scene=self.scene).update(**systemicParamsData)
+        for connection in connections:
+            MetroConnection.objects.filter(scene=self.scene, externalId=connection['id'])\
+                .update(consumption=connection['consumption'])
 
         return True
 
@@ -143,8 +151,8 @@ class Step5Saver(StepSaver):
     logic to save step 5 data
     """
 
-    def validate(self, request):
+    def validate(self, data):
         return True
 
     def save(self, data):
-        super(Step0Saver, self).save(data)
+        super(Step5Saver, self).save(data)

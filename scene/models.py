@@ -186,7 +186,7 @@ class MetroConnection(models.Model):
     # CONSUMPTION                                         
     #######################################################
     consumption = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: Watts '''
 
     class meta:
         unique_together = ('scene', 'name',)
