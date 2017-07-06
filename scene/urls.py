@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from .views.defaults import StepsView, ValidationStepView
-from .views.StepData import GetStep0Data, GetStep2Data, GetStep4Data
+from .views.SceneData import GetSceneData
 from .views.Panel import ScenePanel, ScenePanelData
 from .views.UploadFile import UploadTopologicFile, UploadSystemicFile, UploadOperationalFile, UploadVelocityFile
 from .views.DownloadFile import DownloadStepFile, DownloadStepTemplate
@@ -17,12 +17,9 @@ urlpatterns = [
     url(r'^scene/wizard/validate/(?P<stepId>[0-9]+)/(?P<sceneId>[0-9]+)$', 
       login_required(ValidationStepView.as_view()), name='validation'),
 
-    url(r'^scene/wizard/getStep0Data/(?P<sceneId>[0-9]+)$',
-      login_required(GetStep0Data.as_view()), name='getStep0Data'),
-    url(r'^scene/wizard/getStep2Data/(?P<sceneId>[0-9]+)$',
-        login_required(GetStep2Data.as_view()), name='getStep2Data'),
-    url(r'^scene/wizard/getStep4Data/(?P<sceneId>[0-9]+)$',
-        login_required(GetStep4Data.as_view()), name='getStep4Data'),
+    # get data for scene id
+    url(r'^scene/wizard/getSceneData/(?P<sceneId>[0-9]+)$',
+      login_required(GetSceneData.as_view()), name='getSceneData'),
 
     # step 1
     url(r'^scene/wizard/uploadTopologicFile/(?P<sceneId>[0-9]+)$', 
