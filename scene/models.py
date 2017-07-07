@@ -281,7 +281,7 @@ class OperationPeriod(models.Model):
     def getDict(self):
         ''' dict '''
         dict = {}
-        dict['externalId'] = self.externalId
+        dict['id'] = self.externalId
         dict['name'] = self.name
         dict['start'] = self.start
         dict['end'] = self.end

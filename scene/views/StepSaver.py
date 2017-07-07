@@ -3,7 +3,8 @@ import uuid
 
 from abc import ABCMeta, abstractmethod
 from .Excel import Step1Excel, Step3Excel
-from scene.models import MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation, SystemicParams
+from scene.models import MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation, SystemicParams, \
+    OperationPeriod
 
 
 class StepSaver:
@@ -146,13 +147,51 @@ class Step2Saver(StepSaver):
 
         return True
 
-class Step5Saver(StepSaver):
+class Step4Saver(StepSaver):
     """
-    logic to save step 5 data
+    logic to save step 4 data
     """
 
     def validate(self, data):
         return True
 
     def save(self, data):
-        super(Step5Saver, self).save(data)
+        super(Step4Saver, self).save(data)
+
+        self.scene.averageMassOfAPassanger = data['averageMassOfAPassanger']
+        self.scene.annualTemperatureAverage = data['annualTemperatureAverage']
+        self.scene.save()
+
+        OperationPeriod.objects.filter(scene=self.scene).update(isOld=True)
+
+        for operationPeriod in data['operationPeriods']:
+            if operationPeriod["id"]:
+                OperationPeriod.objects.filter(scene=self.scene, externalId=operationPeriod["id"]).update(
+                    name=operationPeriod["name"],
+                    start=operationPeriod["start"],
+                    end=operationPeriod["end"],
+                    temperature=operationPeriod["temperature"],
+                    humidity=operationPeriod["humidity"],
+                    co2Concentration=operationPeriod["co2Concentration"],
+                    solarRadiation=operationPeriod["solarRadiation"],
+                    sunElevationAngle=operationPeriod["sunElevationAngle"],
+                    isOld=False
+                )
+            else:
+                OperationPeriod.objects.create(
+                    scene=self.scene,
+                    externalId=uuid.uuid4(),
+                    name=operationPeriod["name"],
+                    start=operationPeriod["start"],
+                    end=operationPeriod["end"],
+                    temperature=operationPeriod["temperature"],
+                    humidity=operationPeriod["humidity"],
+                    co2Concentration=operationPeriod["co2Concentration"],
+                    solarRadiation=operationPeriod["solarRadiation"],
+                    sunElevationAngle=operationPeriod["sunElevationAngle"]
+                )
+        OperationPeriod.objects.filter(scene=self.scene, isOld=True).delete()
+
+        return True
+
+

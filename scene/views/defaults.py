@@ -13,7 +13,7 @@ from django.views.generic import View
 
 from scene.models import Scene
 from scene.statusResponse import Status
-from StepSaver import Step0Saver, Step2Saver, Step5Saver
+from StepSaver import Step0Saver, Step2Saver, Step4Saver
 
 
 class StepsView(View):
@@ -94,7 +94,16 @@ class ValidationStepView(View):
             else:
                 Status.getJsonStatus(Status.INVALID_STEP, response)
         elif stepId == 4:
-            pass
+            # global operational variables
+            data = json.loads(request.body)
+
+            step4Saver = Step4Saver(sceneObj)
+            step4Saver.save(data)
+
+            response = Status.getJsonStatus(Status.OK, response)
+            response['status']['title'] = 'Actualización exitosa'
+            response['status']['message']
+
         elif stepId == 5:
             # check if file was uploaded successfully
             if sceneObj.currentStep >= 5:

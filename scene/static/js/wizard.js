@@ -55,6 +55,7 @@ $(document).ready(function(){
             case 4:
                 //retrieve data from server
                 $.get(sceneDataURL, function (data) {
+                    console.log(data);
                     currentStepViewModel.update(data);
                     console.log("data of step " + stepNumber + " retrieved successfully");
                 });
@@ -83,8 +84,7 @@ $(document).ready(function(){
                 currentStepViewModel = getViewModel(currentStep, Step2ViewModel);
                 break;
             case 4:
-                // ask to server if file was uploaded
-                $("#wizard").smartWizard("next");
+                currentStepViewModel = getViewModel(currentStep, Step4ViewModel);
                 break;
             case 1:
             case 3:
