@@ -5,7 +5,7 @@ from django.http import JsonResponse
 # Create your views here.
 from django.views.generic import View
 
-from scene.models import Scene, MetroConnection, SystemicParams
+from scene.models import Scene, MetroConnection, SystemicParams, OperationPeriod
 from scene.statusResponse import Status
 
 class GetSceneData(View):
@@ -31,10 +31,18 @@ class GetSceneData(View):
             connectionsDict.append(connection.getDict())
 
         systemicParams, _ = SystemicParams.objects.get_or_create(scene=scene)
+        operationPeriods = map(lambda obj: obj.getDict(), OperationPeriod.objects.filter(scene=scene))
+
+        operation = {
+            'averageMassOfAPassanger': scene.averageMassOfAPassanger,
+            'annualTemperatureAverage': scene.annualTemperatureAverage,
+            'periods': operationPeriods
+        }
 
         response = {'lines': lines,
                     'connections': connectionsDict,
                     'systemicParams': systemicParams.getDict(),
+                    'operation': operation,
                     'currentStep': scene.currentStep}
 
         Status.getJsonStatus(Status.OK, response)
