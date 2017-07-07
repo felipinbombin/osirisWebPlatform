@@ -35,14 +35,14 @@ class Scene(models.Model):
     )
     status = models.CharField('Estado', max_length=2, choices=STATUS, default=INCOMPLETE)
     currentStep = models.IntegerField('Paso actual', default=0)
-    step2Template = models.FileField(upload_to='step2Template/', null=True, storage=OverwriteStorage())
-    step2File = models.FileField(upload_to='step2File/', null=True, storage=OverwriteStorage())
-    step4Template = models.FileField(upload_to='step4Template/', null=True, storage=OverwriteStorage())
-    step4File = models.FileField(upload_to='step4File/', null=True, storage=OverwriteStorage())
-    step6Template = models.FileField(upload_to='step6Template/', null=True, storage=OverwriteStorage())
-    step6File = models.FileField(upload_to='step6File/', null=True, storage=OverwriteStorage())
-    step7Template = models.FileField(upload_to='step7Template/', null=True, storage=OverwriteStorage())
-    step7File = models.FileField(upload_to='step7File/', null=True, storage=OverwriteStorage())
+    step1Template = models.FileField(upload_to='step1Template/', null=True, storage=OverwriteStorage())
+    step1File = models.FileField(upload_to='step1File/', null=True, storage=OverwriteStorage())
+    step3Template = models.FileField(upload_to='step3Template/', null=True, storage=OverwriteStorage())
+    step3File = models.FileField(upload_to='step3File/', null=True, storage=OverwriteStorage())
+    step5Template = models.FileField(upload_to='step5Template/', null=True, storage=OverwriteStorage())
+    step5File = models.FileField(upload_to='step5File/', null=True, storage=OverwriteStorage())
+    step6Template = models.FileField(upload_to='step5Template/', null=True, storage=OverwriteStorage())
+    step6File = models.FileField(upload_to='step5File/', null=True, storage=OverwriteStorage())
     #######################################################
     # GLOBAL CONDITION
     #######################################################

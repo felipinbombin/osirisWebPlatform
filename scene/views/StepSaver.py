@@ -2,7 +2,7 @@
 import uuid
 
 from abc import ABCMeta, abstractmethod
-from .Excel import Step1Excel, Step3Excel
+from .Excel import Step1Excel, Step3Excel, Step5Excel
 from scene.models import MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation, SystemicParams, \
     OperationPeriod
 
@@ -191,6 +191,10 @@ class Step4Saver(StepSaver):
                     sunElevationAngle=operationPeriod["sunElevationAngle"]
                 )
         OperationPeriod.objects.filter(scene=self.scene, isOld=True).delete()
+
+        # create template file for step 5
+        step5Excel = Step5Excel(self.scene)
+        step5Excel.createTemplateFile()
 
         return True
 

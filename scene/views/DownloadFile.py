@@ -19,13 +19,13 @@ class DownloadStepFile(View):
         
         field = None
         stepId = int(stepId)
-        if stepId == 2:
+        if stepId == 1:
             field = scene.step2File
-        elif stepId == 4:
+        elif stepId == 3:
             field = scene.step4File
-        elif stepId == 6:
+        elif stepId == 5:
             field = scene.step6File
-        elif stepId == 7:
+        elif stepId == 6:
             field = scene.step7File
         else:
             raise Http404
@@ -46,14 +46,14 @@ class DownloadStepTemplate(View):
         
         field = None
         stepId = int(stepId)
-        if stepId == 2:
-            field = scene.step2Template
-        elif stepId == 4:
-            field = scene.step4Template
+        if stepId == 1:
+            field = scene.step1Template
+        elif stepId == 3:
+            field = scene.step3Template
+        elif stepId == 5:
+            field = scene.step5Template
         elif stepId == 6:
             field = scene.step6Template
-        elif stepId == 7:
-            field = scene.step7Template
         else:
             raise Http404
         

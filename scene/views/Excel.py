@@ -389,3 +389,61 @@ class Step3Excel(Excel):
             self.makeHorizontalGrid(worksheet, (lastRow + 2, 0), subTitles, 1)
 
         self.save(self.scene.step4Template)
+
+
+class Step5Excel(Excel):
+    ''' create excel file for step 5 '''
+
+    def __init__(self, scene):
+        super(self.__class__, self).__init__(scene)
+
+    def getFileName(self):
+        ''' name of file '''
+        fileName = super(self.__class__, self).getFileName()
+        NAME = 'operación'
+        fileName = fileName.replace('generic', NAME)
+
+        return fileName
+
+    def createTemplateFile(self):
+        ''' create excel file based on scene data '''
+
+        for line in self.scene.metroline_set.all().order_by('name'):
+            worksheet = self.workbook.add_worksheet(line.name)
+
+            lastRow = 0
+
+            stationNameList = line.metrostation_set.values_list('name', flat=True).order_by('id')
+            stationHeight = self.makeHorizontalGrid(worksheet, (lastRow + 1, 0),
+                                                    stationNameList, 5)
+
+            trackNameList = []
+            trackName = '{}-'.format(stationNameList[0])
+            for name in stationNameList[1:]:
+                trackName += name
+                trackNameList.append(trackName)
+                trackName = '{}-'.format(name)
+            self.makeHorizontalGrid(worksheet, (lastRow + 1, 7), trackNameList, 2)
+
+            depotNameList = line.metrodepot_set.values_list('name', flat=True)
+            depotHeight = self.makeHorizontalGrid(worksheet, (lastRow + 1, 11),
+                                                  depotNameList, 3)
+
+            lastRow += max(stationHeight, depotHeight) + SEPARATION_HEIGHT
+
+            # additionHeaders
+            title = 'Características SESS de la línea'
+            self.makeTitleCell(worksheet, (lastRow + 1, 0), title, 1)
+
+            subTitles = [
+                'Usable energy content [Wh]:',
+                'Charging Efficiency [%]:',
+                'Discharging Efficiency [%]:',
+                'Peak power [W]:',
+                'Maximum energy saving possible per hour [W]:',
+                'Energy saving mode (1 = true / 0 = false):',
+                'Power limit to feed [W]:'
+            ]
+            self.makeHorizontalGrid(worksheet, (lastRow + 2, 0), subTitles, 1)
+
+        self.save(self.scene.step4Template)
