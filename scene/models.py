@@ -254,6 +254,11 @@ class MetroLineMetric(models.Model):
 class OperationPeriod(models.Model):
     ''' operation period '''
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
+    isOld = models.BooleanField(default=False)
+    ''' used when topological variables are updated '''
+    externalId = models.UUIDField(null=False, unique=True)
+    ''' used to track record in wizard form, this way i know if is new record or previous '''
+
     name = models.CharField(max_length=100)
     start = models.TimeField()
     end = models.TimeField()
@@ -261,15 +266,30 @@ class OperationPeriod(models.Model):
     # AMBIENT CONDITION
     #######################################################
     temperature = models.FloatField()
-    ''' unit:  '''
+    ''' unit: °C '''
     humidity = models.FloatField()
-    ''' unit:  '''
+    ''' unit: % '''
     co2Concentration = models.FloatField()
-    ''' unit:  '''
+    ''' unit: ppm '''
     solarRadiation = models.FloatField()
-    ''' unit:  '''
+    ''' unit: W/m2 '''
     sunElevationAngle = models.FloatField()
-    ''' unit:  '''
+    ''' unit: ° '''
+
+    def getDict(self):
+        ''' dict '''
+        dict = {}
+        dict['externalId'] = self.externalId
+        dict['name'] = self.name
+        dict['start'] = self.start
+        dict['end'] = self.end
+        dict['temperature'] = self.temperature
+        dict['humidity'] = self.humidity
+        dict['co2Concentration'] = self.co2Concentration
+        dict['solarRadiation'] = self.solarRadiation
+        dict['sunElevationAngle'] = self.sunElevationAngle
+
+        return dict
 
 
 class SystemicParams(models.Model):
