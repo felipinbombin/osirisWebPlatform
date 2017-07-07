@@ -47,7 +47,9 @@ class Scene(models.Model):
     # GLOBAL CONDITION
     #######################################################
     averageMassOfAPassanger = models.FloatField(null=True)
+    ''' unit: Kg '''
     annualTemperatureAverage = models.FloatField(null=True)
+    ''' unit: °C '''
 
     class Meta:
         verbose_name = 'escenario'
