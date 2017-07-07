@@ -52,7 +52,7 @@ class ValidationStepView(View):
         sceneId = int(sceneId)
 
         sceneObj = Scene.objects.prefetch_related('metroline_set__metrostation_set', 
-                       'metroline_set__metrodepot_set').\
+                       'metroline_set__metrodepot_set', 'operationperiod_set').\
                        get(user=request.user, id=sceneId)
         response = {}
         if stepId == 0:

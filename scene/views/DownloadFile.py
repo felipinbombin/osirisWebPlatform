@@ -20,13 +20,13 @@ class DownloadStepFile(View):
         field = None
         stepId = int(stepId)
         if stepId == 1:
-            field = scene.step2File
+            field = scene.step1File
         elif stepId == 3:
-            field = scene.step4File
+            field = scene.step3File
         elif stepId == 5:
-            field = scene.step6File
+            field = scene.step5File
         elif stepId == 6:
-            field = scene.step7File
+            field = scene.step6File
         else:
             raise Http404
 

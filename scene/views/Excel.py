@@ -264,7 +264,7 @@ class Step1Excel(Excel):
                                               bothDirections=bothDirections[index])
                 lastRow += height + SEPARATION_HEIGHT
 
-        self.save(self.scene.step2Template)
+        self.save(self.scene.step1Template)
 
 
 class Step3Excel(Excel):
@@ -388,7 +388,7 @@ class Step3Excel(Excel):
             ]
             self.makeHorizontalGrid(worksheet, (lastRow + 2, 0), subTitles, 1)
 
-        self.save(self.scene.step4Template)
+        self.save(self.scene.step3Template)
 
 
 class Step5Excel(Excel):
@@ -405,17 +405,41 @@ class Step5Excel(Excel):
 
         return fileName
 
+    def makeHeader(self, worksheet, stationNameList, periodsNameList, upperLeftCorner, title, header):
+
+        firstSubTitle = stationNameList[0] + "-" + stationNameList[-1]
+        secondSubTitle = stationNameList[-1] + "-" + stationNameList[0]
+
+        width = len(periodsNameList)
+        upperRow = upperLeftCorner[0]
+        leftColumn = upperLeftCorner[1]
+
+        self.makeTitleCell(worksheet, upperLeftCorner, title, 2*width + 1)
+        # subtitle
+        self.makeTitleCell(worksheet, (upperRow + 1, leftColumn), firstSubTitle, width)
+        self.makeTitleCell(worksheet, (upperRow + 1, leftColumn + width + 1), secondSubTitle, width)
+
+        # headers
+        self.makeTitleCell(worksheet, (upperRow + 2, leftColumn), header)
+        for index, periodName in enumerate(periodsNameList):
+            self.makeTitleCell(worksheet, (upperRow + 2, leftColumn + 1 + index), periodName)
+
+        self.makeTitleCell(worksheet, (upperRow + 2, leftColumn + len(periodsNameList) + 1), header)
+        for index, periodName in enumerate(periodsNameList):
+            self.makeTitleCell(worksheet, (upperRow + 2, leftColumn + len(periodsNameList) + 2 + index), periodName)
+
+        usedRows = 3
+        return usedRows
+
     def createTemplateFile(self):
         ''' create excel file based on scene data '''
 
+        operationPeriods = self.scene.operationperiod_set.all().order_by('id')
+        periodsNameList = self.scene.operationperiod_set.values_list('name', flat=True).order_by('id')
+
         for line in self.scene.metroline_set.all().order_by('name'):
             worksheet = self.workbook.add_worksheet(line.name)
-
-            lastRow = 0
-
-            stationNameList = line.metrostation_set.values_list('name', flat=True).order_by('id')
-            stationHeight = self.makeHorizontalGrid(worksheet, (lastRow + 1, 0),
-                                                    stationNameList, 5)
+            stationNameList = list(line.metrostation_set.values_list('name', flat=True).order_by('id'))
 
             trackNameList = []
             trackName = '{}-'.format(stationNameList[0])
@@ -423,27 +447,30 @@ class Step5Excel(Excel):
                 trackName += name
                 trackNameList.append(trackName)
                 trackName = '{}-'.format(name)
-            self.makeHorizontalGrid(worksheet, (lastRow + 1, 7), trackNameList, 2)
 
-            depotNameList = line.metrodepot_set.values_list('name', flat=True)
-            depotHeight = self.makeHorizontalGrid(worksheet, (lastRow + 1, 11),
-                                                  depotNameList, 3)
+            lastRow = 0
 
-            lastRow += max(stationHeight, depotHeight) + SEPARATION_HEIGHT
+            title = "Pasajeros viajando entre estaciones"
+            header = "Túnel / Período"
+            lastRow += self.makeHeader(worksheet, stationNameList, periodsNameList, (lastRow, 0), title, header)
+            self.makeHorizontalGrid(worksheet, (lastRow, 0), trackNameList, len(periodsNameList))
+            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 1+ len(periodsNameList)), trackNameList[::-1], len(periodsNameList))
 
-            # additionHeaders
-            title = 'Características SESS de la línea'
-            self.makeTitleCell(worksheet, (lastRow + 1, 0), title, 1)
+            lastRow += SEPARATION_HEIGHT
 
-            subTitles = [
-                'Usable energy content [Wh]:',
-                'Charging Efficiency [%]:',
-                'Discharging Efficiency [%]:',
-                'Peak power [W]:',
-                'Maximum energy saving possible per hour [W]:',
-                'Energy saving mode (1 = true / 0 = false):',
-                'Power limit to feed [W]:'
-            ]
-            self.makeHorizontalGrid(worksheet, (lastRow + 2, 0), subTitles, 1)
+            title = "Máximo tiempo permitido de viaje entre dos estaciones [s]"
+            header = "Túnel / Período"
+            lastRow += self.makeHeader(worksheet, stationNameList, periodsNameList, (lastRow, 0), title, header)
+            self.makeHorizontalGrid(worksheet, (lastRow, 0), trackNameList, len(periodsNameList))
+            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 1+ len(periodsNameList)), trackNameList[::-1], len(periodsNameList))
 
-        self.save(self.scene.step4Template)
+            lastRow += SEPARATION_HEIGHT
+
+            title = "Tiempo de permanencia entre estaciones [s]"
+            header = "Estación / Período"
+            lastRow += self.makeHeader(worksheet, stationNameList, periodsNameList, (lastRow, 0), title, header)
+            self.makeHorizontalGrid(worksheet, (lastRow, 0), stationNameList, len(periodsNameList))
+            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 1+ len(periodsNameList)), stationNameList[::-1], len(periodsNameList))
+
+
+        self.save(self.scene.step5Template)
