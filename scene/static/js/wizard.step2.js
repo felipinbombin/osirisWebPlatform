@@ -6,20 +6,21 @@
 
 let TrainForces = function () {
     let self = this;
-    self.mass = null;
-    self.inercialMass = null;
-    self.maxAccelerationAllowed = null;
-    self.maxStartingForceAllowed = null;
-    self.maxBrakingForceAllowed = null;
-    self.speedOfMotorRegimeChange = null;
-    self.maxPower = null;
-    self.maxSpeedAllowed = null;
 
-    self.davisParameterA = null;
-    self.davisParameterB = null;
-    self.davisParameterC = null;
-    self.davisParameterD = null;
-    self.davisParameterE = null;
+    self.mass = ko.observable();
+    self.inercialMass = ko.observable();
+    self.maxAccelerationAllowed = ko.observable();
+    self.maxStartingForceAllowed = ko.observable();
+    self.maxBrakingForceAllowed = ko.observable();
+    self.speedOfMotorRegimeChange = ko.observable();
+    self.maxPower = ko.observable();
+    self.maxSpeedAllowed = ko.observable();
+
+    self.davisParameterA = ko.observable();
+    self.davisParameterB = ko.observable();
+    self.davisParameterC = ko.observable();
+    self.davisParameterD = ko.observable();
+    self.davisParameterE = ko.observable();
 };
 
 let TrainTraction = function(){
@@ -138,32 +139,21 @@ let Step2ViewModel = function () {
         let connections = data['connections'];
         let sysParams = data['systemicParams'];
 
-        let trainForces = new TrainForces();
-        for(let attr in trainForces){
-            trainForces[attr] = sysParams[attr];
+        for(let attr in self.trainForces){
+            self.trainForces[attr](sysParams[attr]);
         }
-        let trainTraction = new TrainTraction();
-        for(let attr in trainTraction){
-            trainTraction[attr](sysParams[attr]);
+        for(let attr in self.trainTraction){
+            self.trainTraction[attr](sysParams[attr]);
         }
-        let trainStructure = new TrainStructure();
-        for(let attr in trainStructure){
-            trainStructure[attr](sysParams[attr])
+        for(let attr in self.trainStructure){
+            self.trainStructure[attr](sysParams[attr])
         }
-        let trainCMMTractionModel = new TrainCMMTractionModel();
-        for(let attr in trainCMMTractionModel){
-            trainCMMTractionModel[attr](sysParams[attr])
+        for(let attr in self.trainCMMTractionModel){
+            self.trainCMMTractionModel[attr](sysParams[attr])
         }
-        let trainEnergy = new TrainEnergy();
-        for(let attr in trainEnergy){
-            trainEnergy[attr](sysParams[attr])
+        for(let attr in self.trainEnergy){
+            self.trainEnergy[attr](sysParams[attr])
         }
-
-        self.trainForces = trainForces;
-        self.trainTraction = trainTraction;
-        self.trainStructure = trainStructure;
-        self.trainCMMTractionModel = trainCMMTractionModel;
-        self.trainEnergy = trainEnergy;
 
         self.connections.removeAll();
         connections.forEach(function (el) {
