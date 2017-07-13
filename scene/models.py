@@ -117,7 +117,7 @@ class MetroStation(models.Model):
     ''' unit: square meters '''
     platformSection = models.FloatField(null=True)
     ''' unit: square meters '''
-    platformAveragePermiter = models.FloatField(null=True)
+    platformAveragePerimeter = models.FloatField(null=True)
     ''' unit: meters '''
     #######################################################
     # CONSUMPTION                                         
