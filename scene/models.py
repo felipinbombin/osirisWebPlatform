@@ -220,7 +220,7 @@ class MetroConnectionStation(models.Model):
 
 class MetroTrack(models.Model):
     ''' connection between metro stations '''
-    scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
+    metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
     isOld = models.BooleanField(default=False)
     ''' used when topological variables are updated '''
     name = models.CharField(max_length=100)
