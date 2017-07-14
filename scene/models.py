@@ -391,7 +391,6 @@ class OperationPeriodForMetroTrack(models.Model):
         return dict
 
 
-
 class SystemicParams(models.Model):
     ''' global systemic params '''
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)

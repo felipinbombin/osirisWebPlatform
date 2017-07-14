@@ -7,12 +7,10 @@ from StringIO import StringIO
 from django.core.files.base import ContentFile
 
 import ExcelWriter
-from ..models import MetroTrack, MetroLineMetric
+from ..models import MetroTrack, MetroLineMetric, OperationPeriodForMetroLine, OperationPeriodForMetroStation, OperationPeriodForMetroTrack
 
 import xlrd
 
-GOING = "going"
-REVERSE = "reverse"
 
 class ExcelReader(object):
     ''' to manage excel files '''
@@ -43,9 +41,9 @@ class Step1ExcelReader(ExcelReader):
 
         for line in self.scene.metroline_set.all().order_by('id'):
             stations = line.metrostation_set.all().order_by('id')
-            depots = line.metrodepot_set.all().order_by('id')
 
             worksheet = workbook.sheet_by_name(line.name)
+
             firstRow = 3
             currentRow = firstRow
             for index, station in enumerate(stations):
@@ -74,7 +72,7 @@ class Step1ExcelReader(ExcelReader):
                         metroTrack.endStation = nextStation
                     metroTrack.length = worksheet.cell_value(currentRow, 8)
                     metroTrack.crossSection = worksheet.cell_value(currentRow, 9)
-                    metroTrack.averageParameter = worksheet.cell_value(currentRow, 10)
+                    metroTrack.averagePerimeter = worksheet.cell_value(currentRow, 10)
                     metroTrack.isOld = False
                     metroTrack.save()
 
@@ -119,239 +117,295 @@ class Step1ExcelReader(ExcelReader):
                                                        start=worksheet.cell_value(row, 0),
                                                        end=worksheet.cell_value(row, 1),
                                                        value=worksheet.cell_value(row, 2),
-                                                       direction=GOING)
+                                                       direction=MetroLineMetric.GOING)
                         MetroLineMetric.objects.create(metroLine=line,
                                                        metric=metrics[currentArray],
                                                        start=worksheet.cell_value(row, 3),
                                                        end=worksheet.cell_value(row, 4),
                                                        value=worksheet.cell_value(row, 5),
-                                                       direction=REVERSE)
+                                                       direction=MetroLineMetric.REVERSE)
                 row += 1
 
         MetroTrack.objects.filter(metroLine__scene=self.scene, isOld=True).delete()
 
-class Step3Excel(ExcelReader):
-    ''' create excel file for step 4 '''
+class Step3ExcelReader(ExcelReader):
+    ''' read excel file uploaded in step 3 '''
 
     def __init__(self, scene):
         super(self.__class__, self).__init__(scene)
 
-    def getFileName(self):
-        ''' name of file '''
-        fileName = super(self.__class__, self).getFileName()
-        NAME = 'sistemico'
-        fileName = fileName.replace('generic', NAME)
+    def processFile(self, inMemoryFile):
+        ''' read excel file and retrieve data '''
+        workbook = xlrd.open_workbook(file_contents=inMemoryFile.read())
 
-        return fileName
+        for line in self.scene.metroline_set.all().order_by('id'):
+            stations = line.metrostation_set.all().order_by('id')
+            depots = line.metrodepot_set.all().order_by('id')
 
-    def makeStructureHeader(self, worksheet):
+            worksheet = workbook.sheet_by_name(line.name)
 
-        TITLE = 'Consumo energético de estaciones, túneles y depósitos'
-        STATION_TITLE = 'Estaciones'
-        TUNNEL_TITLE = 'Túneles'
-        DEPOT_TITLE = 'Depósitos'
+            firstRow = 3
+            currentRow = firstRow
+            for index, station in enumerate(stations):
+                station.minAuxConsumption = worksheet.cell_value(currentRow, 1)
+                station.maxAuxConsumption = worksheet.cell_value(currentRow, 2)
+                station.minHVACConsumption = worksheet.cell_value(currentRow, 3)
+                station.maxHVACConsumption = worksheet.cell_value(currentRow, 4)
+                station.tau = worksheet.cell_value(currentRow, 5)
+                station.save()
 
-        STATION_SEGMENT_TITLE = 'Estación:'
-        STATION_MIN_AUX_CONSUMPTION_TITLE = 'Consumo auxiliar mín [W]:'
-        STATION_MAX_AUX_CONSUMPTION_TITLE = 'Consumo auxiliar máx [W]:'
-        STATION_MIN_HVAC_CONSUMPTION_TITLE = 'Consumo HVAC mín [W]:'
-        STATION_MAX_HVAC_CONSUMPTION_TITLE = 'Consumo HVAC máx [W]:'
-        STATION_TAU_TITLE = 'Tau:'
+                # create tracks
+                if index < len(stations)-1:
+                    nextStation = stations[index+1]
+                    name = station.name + "-" + nextStation.name
+                    metroTrack = MetroTrack.objects.get(metroLine=line, name=name)
+                    metroTrack.auxiliariesConsumption = worksheet.cell_value(currentRow, 8)
+                    metroTrack.ventilationConsumption = worksheet.cell_value(currentRow, 9)
+                    metroTrack.save()
 
-        TRACK_SEGMENT_TITLE = 'Túnel:'
-        TRACK_AUX_CONSUMPTION_TITLE = 'Consumo de auxiliares [W]:'
-        TRACK_VENTILATION_CONSUMPTION_TITLE = 'Consumo de ventilación [W]:'
+                currentRow += 1
 
-        DEPOT_SEGMENT_TITLE = 'Depósito:'
-        DEPOT_AUX_CONSUMPTION_TITLE = 'Consumo de auxiliares [W]:'
-        DEPOT_VENTILATION_CONSUMPTION_TITLE = 'Consumo de ventilación [W]:'
-        DEPOT_DC_CONSUMPTION_TITLE = 'Consumo DC [W]:'
+            currentRow = firstRow
+            for depot in depots:
+                depot.auxConsumption = worksheet.cell_value(currentRow, 12) 
+                depot.ventilationConsumption = worksheet.cell_value(currentRow, 13)
+                depot.dcConsumption = worksheet.cell_value(currentRow, 14)
+                depot.save()
 
-        worksheet.merge_range('A1:O1', TITLE, self.cellTitleFormat)
-        worksheet.merge_range('A2:F2', STATION_TITLE, self.cellTitleFormat)
-        worksheet.merge_range('H2:J2', TUNNEL_TITLE, self.cellTitleFormat)
-        worksheet.merge_range('L2:O2', DEPOT_TITLE, self.cellTitleFormat)
-        worksheet.write('A3', STATION_SEGMENT_TITLE, self.cellTitleFormat)
-        worksheet.write('B3', STATION_MIN_AUX_CONSUMPTION_TITLE, self.cellTitleFormat)
-        worksheet.write('C3', STATION_MAX_AUX_CONSUMPTION_TITLE, self.cellTitleFormat)
-        worksheet.write('D3', STATION_MIN_HVAC_CONSUMPTION_TITLE, self.cellTitleFormat)
-        worksheet.write('E3', STATION_MAX_HVAC_CONSUMPTION_TITLE, self.cellTitleFormat)
-        worksheet.write('F3', STATION_TAU_TITLE, self.cellTitleFormat)
+            currentRow = 3 + len(stations) + ExcelWriter.SEPARATION_HEIGHT + 1
 
-        worksheet.write('H3', TRACK_SEGMENT_TITLE, self.cellTitleFormat)
-        worksheet.write('I3', TRACK_AUX_CONSUMPTION_TITLE, self.cellTitleFormat)
-        worksheet.write('J3', TRACK_VENTILATION_CONSUMPTION_TITLE, self.cellTitleFormat)
-        worksheet.write('L3', DEPOT_SEGMENT_TITLE, self.cellTitleFormat)
-        worksheet.write('M3', DEPOT_AUX_CONSUMPTION_TITLE, self.cellTitleFormat)
-        worksheet.write('N3', DEPOT_VENTILATION_CONSUMPTION_TITLE, self.cellTitleFormat)
-        worksheet.write('O3', DEPOT_DC_CONSUMPTION_TITLE, self.cellTitleFormat)
-
-        # fit witdh 
-        texts = [
-            STATION_SEGMENT_TITLE,
-            STATION_MIN_AUX_CONSUMPTION_TITLE,
-            STATION_MAX_AUX_CONSUMPTION_TITLE,
-            STATION_MIN_HVAC_CONSUMPTION_TITLE,
-            STATION_MAX_HVAC_CONSUMPTION_TITLE,
-            STATION_TAU_TITLE,
-            'space',
-            TRACK_SEGMENT_TITLE,
-            TRACK_AUX_CONSUMPTION_TITLE,
-            TRACK_VENTILATION_CONSUMPTION_TITLE,
-            'space',
-            DEPOT_SEGMENT_TITLE,
-            DEPOT_AUX_CONSUMPTION_TITLE,
-            DEPOT_VENTILATION_CONSUMPTION_TITLE,
-            DEPOT_DC_CONSUMPTION_TITLE
-        ]
-        for index, text in enumerate(texts):
-            self.fitColumnWidth(worksheet, index, text)
-
-        usedRows = 2
-        return usedRows
-
-    def createTemplateFile(self):
-        ''' create excel file based on scene data '''
-
-        for line in self.scene.metroline_set.all().order_by('name'):
-            worksheet = self.workbook.add_worksheet(line.name)
-
-            lastRow = self.makeStructureHeader(worksheet)
-
-            stationNameList = line.metrostation_set.values_list('name', flat=True).order_by('id')
-            stationHeight = self.makeHorizontalGrid(worksheet, (lastRow + 1, 0),
-                                                    stationNameList, 5)
-
-            trackNameList = []
-            trackName = '{}-'.format(stationNameList[0])
-            for name in stationNameList[1:]:
-                trackName += name
-                trackNameList.append(trackName)
-                trackName = '{}-'.format(name)
-            self.makeHorizontalGrid(worksheet, (lastRow + 1, 7), trackNameList, 2)
-
-            depotNameList = line.metrodepot_set.values_list('name', flat=True)
-            depotHeight = self.makeHorizontalGrid(worksheet, (lastRow + 1, 11),
-                                                  depotNameList, 3)
-
-            lastRow += max(stationHeight, depotHeight) + SEPARATION_HEIGHT
-
-            # additionHeaders
-            title = 'Características SESS de la línea'
-            self.makeTitleCell(worksheet, (lastRow + 1, 0), title, 1)
-
-            subTitles = [
-                'Usable energy content [Wh]:',
-                'Charging Efficiency [%]:',
-                'Discharging Efficiency [%]:',
-                'Peak power [W]:',
-                'Maximum energy saving possible per hour [W]:',
-                'Energy saving mode (1 = true / 0 = false):',
-                'Power limit to feed [W]:'
-            ]
-            self.makeHorizontalGrid(worksheet, (lastRow + 2, 0), subTitles, 1)
-
-        self.save(self.scene.step3Template)
+            line.usableEnergyContent = worksheet.cell_value(currentRow, 1)
+            currentRow += 1
+            line.chargingEfficiency = worksheet.cell_value(currentRow, 1)
+            currentRow += 1
+            line.dischargingEfficiency = worksheet.cell_value(currentRow, 1)
+            currentRow += 1
+            line.peakPower = worksheet.cell_value(currentRow, 1)
+            currentRow += 1
+            line.maximumEnergySavingPossiblePerHour = worksheet.cell_value(currentRow, 1)
+            currentRow += 1
+            line.energySavingMode = worksheet.cell_value(currentRow, 1)
+            currentRow += 1
+            line.powerLimitToFeed = worksheet.cell_value(currentRow, 1)
+            line.save()
 
 
-class Step5Excel(ExcelReader):
+class Step5ExcelReader(ExcelReader):
     ''' create excel file for step 5 '''
 
     def __init__(self, scene):
         super(self.__class__, self).__init__(scene)
 
-    def getFileName(self):
-        ''' name of file '''
-        fileName = super(self.__class__, self).getFileName()
-        NAME = 'operación'
-        fileName = fileName.replace('generic', NAME)
+    def processFile(self, inMemoryFile):
+        ''' read excel file and retrieve data '''
+        workbook = xlrd.open_workbook(file_contents=inMemoryFile.read())
 
-        return fileName
+        # delete previous data of the line
+        OperationPeriodForMetroLine.objects.filter(metroLine__scene=self.scene).delete()
+        OperationPeriodForMetroStation.objects.filter(
+            metroStation__metroLine__scene=self.scene).delete()
+        OperationPeriodForMetroTrack.objects.filter(
+            metroTrack__metroLine__scene=self.scene).delete()
 
-    def createTemplateFile(self):
-        ''' create excel file based on scene data '''
+        periods = self.scene.operationperiod_set.all().order_by('id')
 
-        periodsNameList = list(self.scene.operationperiod_set.values_list('name', flat=True).order_by('id'))
+        for line in self.scene.metroline_set.all().order_by('id'):
+            stations = line.metrostation_set.all().order_by('id')
+            tracks = line.metrotrack_set.all().order_by('id')
 
-        for line in self.scene.metroline_set.all().order_by('name'):
-            worksheet = self.workbook.add_worksheet(line.name)
-            stationNameList = list(line.metrostation_set.values_list('name', flat=True).order_by('id'))
+            worksheet = workbook.sheet_by_name(line.name)
 
-            trackNameList = []
-            trackName = '{}-'.format(stationNameList[0])
-            for name in stationNameList[1:]:
-                trackName += name
-                trackNameList.append(trackName)
-                trackName = '{}-'.format(name)
+            firstRow = 3
+            currentRow = firstRow
+            currentColumn = 1
 
-            lastRow = 0
+            for station in stations:
+                for period in periods:
+                    OperationPeriodForMetroStation.objects.create(
+                        operationPeriod=period,
+                        metroStation=station,
+                        metric=OperationPeriodForMetroStation.PASSENGERS_IN_STATION,
+                        value=worksheet.cell_value(currentRow, currentColumn),
+                        direction=MetroLineMetric.GOING)
+                    OperationPeriodForMetroStation.objects.create(
+                        operationPeriod=period,
+                        metroStation=station,
+                        metric=OperationPeriodForMetroStation.PASSENGERS_IN_STATION,
+                        value=worksheet.cell_value(currentRow, currentColumn + 3),
+                        direction=MetroLineMetric.REVERSE)
+                    currentColumn += 1
+                currentRow += 1
+                currentColumn = 1
 
-            title = "Pasajeros en estación"
-            columnTitleList = ["Estación/período"] + periodsNameList
-            lastRow += self.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList)
-            self.makeHorizontalGrid(worksheet, (lastRow, 0), stationNameList, len(periodsNameList))
-            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 1+ len(periodsNameList)), stationNameList[::-1], len(periodsNameList))
+            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentColumn = 1
 
-            lastRow += SEPARATION_HEIGHT
+            for track in tracks:
+                for period in periods:
+                    OperationPeriodForMetroTrack.objects.create(
+                        operationPeriod=period,
+                        metroTrack=track,
+                        metric=OperationPeriodForMetroTrack.PASSENGERS_TRAVELING_BETWEEN_STATION,
+                        value=worksheet.cell_value(currentRow, currentColumn),
+                        direction=MetroLineMetric.GOING)
+                    OperationPeriodForMetroTrack.objects.create(
+                        operationPeriod=period,
+                        metroTrack=track,
+                        metric=OperationPeriodForMetroTrack.PASSENGERS_TRAVELING_BETWEEN_STATION,
+                        value=worksheet.cell_value(currentRow, currentColumn + 3),
+                        direction=MetroLineMetric.REVERSE)
+                    currentColumn += 1
+                currentRow += 1
+                currentColumn = 1
 
-            title = "Pasajeros viajando entre estaciones"
-            columnTitleList = ["Túnel / Período"] + periodsNameList
-            lastRow += self.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList)
-            self.makeHorizontalGrid(worksheet, (lastRow, 0), trackNameList, len(periodsNameList))
-            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 1+ len(periodsNameList)), trackNameList[::-1], len(periodsNameList))
+            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentColumn = 1
 
-            lastRow += SEPARATION_HEIGHT
+            for track in tracks:
+                for period in periods:
+                    OperationPeriodForMetroTrack.objects.create(
+                        operationPeriod=period,
+                        metroTrack=track,
+                        metric=OperationPeriodForMetroTrack.MAX_TRAVEL_TIME_BETWEEN_STATION,
+                        value=worksheet.cell_value(currentRow, currentColumn),
+                        direction=MetroLineMetric.GOING)
+                    OperationPeriodForMetroTrack.objects.create(
+                        operationPeriod=period,
+                        metroTrack=track,
+                        metric=OperationPeriodForMetroTrack.MAX_TRAVEL_TIME_BETWEEN_STATION,
+                        value=worksheet.cell_value(currentRow, currentColumn + 3),
+                        direction=MetroLineMetric.REVERSE)
+                    currentColumn += 1
+                currentRow += 1
+                currentColumn = 1
 
-            title = "Máximo tiempo permitido de viaje entre dos estaciones [s]"
-            columnTitleList = ["Túnel / Período"] + periodsNameList
-            lastRow += self.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList)
-            self.makeHorizontalGrid(worksheet, (lastRow, 0), trackNameList, len(periodsNameList))
-            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 1+ len(periodsNameList)), trackNameList[::-1], len(periodsNameList))
+            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentColumn = 1
 
-            lastRow += SEPARATION_HEIGHT
+            for station in stations:
+                for period in periods:
+                    OperationPeriodForMetroStation.objects.create(
+                        operationPeriod=period,
+                        metroStation=station,
+                        metric=OperationPeriodForMetroStation.DWELL_TIME,
+                        value=worksheet.cell_value(currentRow, currentColumn),
+                        direction=MetroLineMetric.GOING)
+                    OperationPeriodForMetroStation.objects.create(
+                        operationPeriod=period,
+                        metroStation=station,
+                        metric=OperationPeriodForMetroStation.DWELL_TIME,
+                        value=worksheet.cell_value(currentRow, currentColumn + 3),
+                        direction=MetroLineMetric.REVERSE)
+                    currentColumn += 1
+                currentRow += 1
+                currentColumn = 1
 
-            title = "Tiempo de permanencia entre estaciones [s]"
-            columnTitleList = ["Estación / Período"] + periodsNameList
-            lastRow += self.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList)
-            self.makeHorizontalGrid(worksheet, (lastRow, 0), stationNameList, len(periodsNameList))
-            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 1+ len(periodsNameList)), stationNameList[::-1], len(periodsNameList))
+            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentColumn = 1
 
-            lastRow += SEPARATION_HEIGHT
+            for period in periods:
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.FREQUENCY,
+                    value=worksheet.cell_value(currentRow, currentColumn),
+                    direction=MetroLineMetric.GOING)
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.FREQUENCY,
+                    value=worksheet.cell_value(currentRow, currentColumn + 3),
+                    direction=MetroLineMetric.REVERSE)
+                currentColumn += 1
+            currentRow += 1
 
-            title = "Frecuencia de trenes"
-            columnTitleList = ["Período:"] + periodsNameList
-            frequency_list = ["Frecuencia [trenes/hora]"]
-            lastRow += self.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList)
-            self.makeHorizontalGrid(worksheet, (lastRow, 0), frequency_list, len(periodsNameList))
-            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 1+ len(periodsNameList)), frequency_list, len(periodsNameList))
+            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentColumn = 1
 
-            lastRow += SEPARATION_HEIGHT
+            previousRow = currentRow
+            for period in periods:
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.PERC_DC_DISTRIBUTION_LOSSES,
+                    value=worksheet.cell_value(currentRow, currentColumn),
+                    direction=MetroLineMetric.GOING)
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.PERC_DC_DISTRIBUTION_LOSSES,
+                    value=worksheet.cell_value(currentRow, currentColumn + 3),
+                    direction=MetroLineMetric.REVERSE)
+                currentRow += 1
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.PERC_AC_SUBSTATION_LOSSES_FEED_ENTIRE_SYSTEM,
+                    value=worksheet.cell_value(currentRow, currentColumn),
+                    direction=MetroLineMetric.GOING)
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.PERC_AC_SUBSTATION_LOSSES_FEED_ENTIRE_SYSTEM,
+                    value=worksheet.cell_value(currentRow, currentColumn + 3),
+                    direction=MetroLineMetric.REVERSE)
+                currentRow += 1
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.PERC_AC_SUBSTATION_LOSSES_FEED_AC_ELEMENTS,
+                    value=worksheet.cell_value(currentRow, currentColumn),
+                    direction=MetroLineMetric.GOING)
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.PERC_AC_SUBSTATION_LOSSES_FEED_AC_ELEMENTS,
+                    value=worksheet.cell_value(currentRow, currentColumn + 3),
+                    direction=MetroLineMetric.REVERSE)
+                currentRow += 1
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.PERC_DC_SUBSTATION_LOSSES,
+                    value=worksheet.cell_value(currentRow, currentColumn),
+                    direction=MetroLineMetric.GOING)
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.PERC_DC_SUBSTATION_LOSSES,
+                    value=worksheet.cell_value(currentRow, currentColumn + 3),
+                    direction=MetroLineMetric.REVERSE)
 
-            title = "Porcentaje de perdida"
-            columnTitleList = ["Período:"] + periodsNameList
-            paramList = ["Percentage DC distribution Losses:",
-                         "Percentage AC substation Losses (feed entire system):",
-                         "Percentage AC substation Losses (feed AC elements):",
-                         "Percentage DC substation Losses:"]
-            lastRow += self.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList)
-            self.makeHorizontalGrid(worksheet, (lastRow, 0), paramList, len(periodsNameList))
-            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 1+ len(periodsNameList)), paramList,
-                                               len(periodsNameList))
+                currentColumn += 1
+                currentRow = previousRow
 
-            lastRow += SEPARATION_HEIGHT
+            currentRow += 4 + ExcelWriter.SEPARATION_HEIGHT + 2
+            currentColumn = 1
+            
+            for period in periods:
+                OperationPeriodForMetroLine.objects.create(
+                    operationPeriod=period,
+                    metroLine=line,
+                    metric=OperationPeriodForMetroLine.RECEPTIVITY,
+                    value=worksheet.cell_value(currentRow, currentColumn),
+                    direction=None)
+                currentColumn += 1
+           
+            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentColumn = 1
 
-            title = "Receptivity of the line [%]:"
-            columnTitleList = ["Período:"] + periodsNameList
-            lastRow += self.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList,
-                                            print_direction=False)
-            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 0), ["Receptivity [%]"], len(periodsNameList))
+            for station in stations:
+                for period in periods:
+                    OperationPeriodForMetroStation.objects.create(
+                        operationPeriod=period,
+                        metroStation=station,
+                        metric=OperationPeriodForMetroStation.VENTILATION_FLOW,
+                        value=worksheet.cell_value(currentRow, currentColumn),
+                        direction=None)
+                    currentColumn += 1
+                    # TODO: check if period is need or not
+                    break
+                currentRow += 1
+                currentColumn = 1
 
-            lastRow += SEPARATION_HEIGHT
 
-            title = "Flujo de ventilación"
-            columnTitleList = ["Estación", "Flujo [m^3/s]"]
-            lastRow += self.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList,
-                                            print_direction=False)
-            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 0), stationNameList, 1)
-
-        self.save(self.scene.step5Template)

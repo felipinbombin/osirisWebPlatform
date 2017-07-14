@@ -13,7 +13,7 @@ from django.views.generic import View
 from scene.models import Scene
 from scene.statusResponse import Status
 
-from ExcelReader import Step1ExcelReader
+from ExcelReader import Step1ExcelReader, Step3ExcelReader, Step5ExcelReader
 
 MESSAGE = {
     "FILE_TOO_BIG": "El archivo no puede tener un tamaño superior a 2 MB.",
@@ -52,7 +52,9 @@ class UploadFile(View):
 
         sceneObj = Scene.objects.\
                        prefetch_related('metroline_set__metrostation_set', 
-                       'metroline_set__metrodepot_set').\
+                       'metroline_set__metrodepot_set', 
+                       'metroline_set__metrotrack_set', 
+                       'operationperiod_set').\
                        get(user=request.user, id=sceneId)
 
         response = {}
@@ -95,14 +97,10 @@ class UploadFile(View):
 
 
 class UploadTopologicFile(UploadFile):
-    ''' validate data from step 4 '''
+    ''' validate data from step 1 '''
 
     def processFile(self, scene, inMemoryFile):
-        # validate data
-
-        # delete previous data
-
-        # insert new data
+        # validate, update and insert new data
         Step1ExcelReader(scene).processFile(inMemoryFile)
 
         # save file
@@ -115,13 +113,11 @@ class UploadTopologicFile(UploadFile):
 
 
 class UploadSystemicFile(UploadFile):
-    ''' validate data from stepa 4 '''
+    ''' validate data from stepa 3 '''
 
     def processFile(self, scene, inMemoryFile):
-          
-        # validate data
-        # delete previous data
-        # insert new data
+        # validate, update and insert new data
+        Step3ExcelReader(scene).processFile(inMemoryFile)
 
         # save file
         self.updateCurrentStep(scene, scene.step3File, inMemoryFile, 3)
@@ -133,14 +129,11 @@ class UploadSystemicFile(UploadFile):
 
 
 class UploadOperationalFile(UploadFile):
-    ''' validate data from stepa 6 '''
+    ''' validate data from stepa 5 '''
 
     def processFile(self, scene, inMemoryFile):
-           
-        # validate data
-        # delete previous data
-        # insert new data
-
+        # validate, update and insert new data
+        Step5ExcelReader(scene).processFile(inMemoryFile)
         # save file
         self.updateCurrentStep(scene, scene.step5File, inMemoryFile, 5)
 
