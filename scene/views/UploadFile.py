@@ -13,6 +13,16 @@ from django.views.generic import View
 from scene.models import Scene
 from scene.statusResponse import Status
 
+from ExcelReader import Step1ExcelReader
+
+MESSAGE = {
+    "FILE_TOO_BIG": "El archivo no puede tener un tamaño superior a 2 MB.",
+    "FILE_WRONG_FORMAT": "El archivo debe tener formato Excel.",
+    "FILE_STEP1_UPLOADED_SUCCESSFULLY": "Archivo topológico subido exitosamente.",
+    "FILE_STEP3_UPLOADED_SUCCESSFULLY": "Archivo sistémico subido exitosamente.",
+    "FILE_STEP5_UPLOADED_SUCCESSFULLY": "Archivo operacional subido exitosamente.",
+    "FILE_STEP6_UPLOADED_SUCCESSFULLY": "Archivo de velocidades subido exitosamente.",
+}
 
 class UploadFile(View):
     ''' general upload file behavior '''
@@ -26,10 +36,10 @@ class UploadFile(View):
 
         if inMemoryUploadedFile.size > fileSizeLimit:
             Status.getJsonStatus(Status.INVALID_SIZE_FILE, response)
-            response['status']['message'] = 'El archivo no puede tener un tamaño superior a 2 MB.'
+            response['status']['message'] = MESSAGE["FILE_TOO_BIG"]
         elif not inMemoryUploadedFile.name.endswith('.xlsx'):
             Status.getJsonStatus(Status.INVALID_FORMAT_FILE, response)
-            response['status']['message'] = 'El archivo debe tener formato Excel.'
+            response['status']['message'] = MESSAGE["FILE_WRONG_FORMAT"]
         else:
             Status.getJsonStatus(Status.OK, response)
 
@@ -49,11 +59,15 @@ class UploadFile(View):
 
         if sceneObj.currentStep > 0:
             inMemoryUploadedFile = request.FILES['file']
+            #try:
             response = self.validateFile(inMemoryUploadedFile, response)
-            
+
             if response['status']['code'] == Status.OK:
                 # process file
                 response = self.processFile(sceneObj, inMemoryUploadedFile)
+            #except Exception as e:
+            #    Status.getJsonStatus(Status.EXCEL_ERROR, response)
+            #    response['status']['message'] = str(e)
         else:
             Status.getJsonStatus(Status.INVALID_STEP, response)
 
@@ -85,14 +99,17 @@ class UploadTopologicFile(UploadFile):
 
     def processFile(self, scene, inMemoryFile):
         # validate data
+
         # delete previous data
+
         # insert new data
+        Step1ExcelReader(scene).processFile(inMemoryFile)
 
         # save file
-        self.updateCurrentStep(scene, scene.step2File, inMemoryFile, 1)
+        self.updateCurrentStep(scene, scene.step1File, inMemoryFile, 1)
 
         response = Status.getJsonStatus(Status.OK, {})
-        response['status']['message'] = 'Archivo topológico subido exitosamente.'
+        response['status']['message'] = MESSAGE["FILE_STEP1_UPLOADED_SUCCESSFULLY"]
 
         return response
 
@@ -107,10 +124,10 @@ class UploadSystemicFile(UploadFile):
         # insert new data
 
         # save file
-        self.updateCurrentStep(scene, scene.step4File, inMemoryFile, 3)
+        self.updateCurrentStep(scene, scene.step3File, inMemoryFile, 3)
 
         response = Status.getJsonStatus(Status.OK, {})
-        response['status']['message'] = 'Archivo sistémico subido exitosamente.'
+        response['status']['message'] = MESSAGE["FILE_STEP3_UPLOADED_SUCCESSFULLY"]
 
         return response
 
@@ -125,10 +142,10 @@ class UploadOperationalFile(UploadFile):
         # insert new data
 
         # save file
-        self.updateCurrentStep(scene, scene.step6File, inMemoryFile, 5)
+        self.updateCurrentStep(scene, scene.step5File, inMemoryFile, 5)
 
         response = Status.getJsonStatus(Status.OK, {})
-        response['status']['message'] = 'Archivo operacional subido exitosamente.'
+        response['status']['message'] = MESSAGE["FILE_STEP5_UPLOADED_SUCCESSFULLY"]
 
         return response
 
@@ -143,10 +160,10 @@ class UploadVelocityFile(UploadFile):
         # insert new data
 
         # save file
-        self.updateCurrentStep(scene, scene.step7File, inMemoryFile, 6)
+        self.updateCurrentStep(scene, scene.step6File, inMemoryFile, 6)
 
         response = Status.getJsonStatus(Status.OK, {})
-        response['status']['message'] = 'Archivo de velocidades subido exitosamente.'
+        response['status']['message'] = MESSAGE["FILE_STEP6_UPLOADED_SUCCESSFULLY"]
 
         return response
 

@@ -5,6 +5,7 @@ class Status:
     INVALID_SIZE_FILE = 401
     INVALID_STEP = 402
     INVALID_FORMAT_FILE = 403
+    EXCEL_ERROR = 404
 
     statusDict = {
         OK: {
@@ -26,6 +27,11 @@ class Status:
           'code': INVALID_FORMAT_FILE, 
           'title': 'Formato de archivo no válido', 
           'message': 'El archivo debe tener formato Excel.', 'type': 'error'
+        },
+        EXCEL_ERROR: {
+          'code': EXCEL_ERROR,
+          'title': 'Error al procesar archivo',
+          'message': 'error description', 'type': 'error'
         },
     }
 
