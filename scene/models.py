@@ -71,19 +71,19 @@ class MetroLine(models.Model):
     # CONSUMPTION                                         
     #######################################################
     usableEnergyContent = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
     chargingEfficiency = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: % '''
     dischargingEfficiency = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: % '''
     peakPower = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
     maximumEnergySavingPossiblePerHour = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
     energySavingMode = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: Boolean '''
     powerLimitToFeed = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
 
     class Meta:
         unique_together = ('scene', 'name',)
@@ -123,15 +123,15 @@ class MetroStation(models.Model):
     # CONSUMPTION                                         
     #######################################################
     minAuxConsumption = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
     maxAuxConsumption = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
     minHVACConsumption = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
     maxHVACConsumption = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
     tau = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: none '''
 
     class Meta:
         unique_together = ('metroLine', 'name',)
@@ -155,11 +155,11 @@ class MetroDepot(models.Model):
     # CONSUMPTION                                         
     #######################################################
     auxConsumption = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
     ventilationConsumption = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
     dcConsumption = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
 
     class Meta:
         unique_together = ('metroLine', 'name',)
@@ -240,9 +240,9 @@ class MetroTrack(models.Model):
     # CONSUMPTION                                         
     #######################################################
     auxiliariesConsumption = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
     ventilationConsumption = models.FloatField(null=True)
-    ''' unit:  '''
+    ''' unit: W '''
 
 
 class MetroLineMetric(models.Model):
@@ -263,7 +263,13 @@ class MetroLineMetric(models.Model):
     end = models.FloatField(null=True)
     start = models.FloatField(null=True)
     value = models.FloatField(null=True)
-    direction = models.CharField(max_length=50, null=True)
+    GOING = 'g'
+    REVERSE = 'r'
+    DIRECTION_CHOICES = (
+        (GOING, ''),
+        (REVERSE, '')
+    )
+    direction = models.CharField(max_length=50, null=True, choices=DIRECTION_CHOICES)
     ''' example: s0-sN|sN-s0  '''
 
     
@@ -306,6 +312,84 @@ class OperationPeriod(models.Model):
         dict['sunElevationAngle'] = self.sunElevationAngle
 
         return dict
+
+class OperationPeriodForMetroLine(models.Model):
+    ''' bridge between OperationPeriod and MetroLine models '''
+    operationPeriod = models.ForeignKey(OperationPeriod)
+    metroLine = models.ForeignKey(MetroLine)
+    FREQUENCY = 'frequency'
+    RECEPTIVITY = 'receptivity'
+    PERC_DC_DISTRIBUTION_LOSSES = 'percentageDCDistributionLosses'
+    PERC_AC_SUBSTATION_LOSSES_FEED_ENTIRE_SYSTEM = 'PercentageACSubstationLossesFeedEntireSystem'
+    PERC_AC_SUBSTATION_LOSSES_FEED_AC_ELEMENTS = 'PercentageACSubstationLossesFeedACElements)'
+    PERC_DC_SUBSTATION_LOSSES = 'PercentageDCSubstationLosses'
+    METRIC_CHOICES = (
+        (FREQUENCY, 'trains/hour'),
+        (RECEPTIVITY, '%'),
+        (PERC_DC_DISTRIBUTION_LOSSES, '%'),
+        (PERC_AC_SUBSTATION_LOSSES_FEED_ENTIRE_SYSTEM, ''),
+        (PERC_AC_SUBSTATION_LOSSES_FEED_ENTIRE_SYSTEM, ''),
+        (PERC_DC_SUBSTATION_LOSSES, ''),
+    )
+    metric = models.CharField(max_length=50, null=True, 
+                                 choices=METRIC_CHOICES)
+    value = models.FloatField(null=True)
+    ''' unit: depends of metric '''
+    direction = models.CharField(max_length=50, null=True, 
+                                 choices=MetroLineMetric.DIRECTION_CHOICES)
+
+    def getDict(self):
+        ''' dict '''
+        dict = {'metric': self.metric, 'value': self.value, 'direction': self.direction}
+
+        return dict
+
+class OperationPeriodForMetroStation(models.Model):
+    ''' bridge between OperationPeriod and MetroStation models '''
+    operationPeriod = models.ForeignKey(OperationPeriod)
+    metroStation = models.ForeignKey(MetroStation)
+    VENTILATION_FLOW = 'ventilationFlow'
+    DWELL_TIME = 'dwellTime'
+    PASSENGERS_IN_STATION= 'PassengersInStations'
+    METRIC_CHOICES = (
+        (VENTILATION_FLOW, 'm^3/s'),
+        (DWELL_TIME, 'seg'),
+        (PASSENGERS_IN_STATION, '')
+    )
+    metric = models.CharField(max_length=50, null=True, choices=METRIC_CHOICES)
+    value = models.FloatField(null=True)
+    ''' unit: depends of metric '''
+    direction = models.CharField(max_length=50, null=True, 
+                                 choices=MetroLineMetric.DIRECTION_CHOICES)
+
+    def getDict(self):
+        ''' dict '''
+        dict = {'metric': self.metric, 'value': self.value, 'direction': self.direction}
+
+        return dict
+
+class OperationPeriodForMetroTrack(models.Model):
+    ''' bridge between OperationPeriod and MetroTrack models '''
+    operationPeriod = models.ForeignKey(OperationPeriod)
+    metroTrack = models.ForeignKey(MetroTrack)
+    PASSENGERS_TRAVELING_BETWEEN_STATION = 'PassengersTravelingBetweenStations'
+    MAX_TRAVEL_TIME_BETWEEN_STATION = 'MaxTravelTimeBetweenStations'
+    METRIC_CHOICES = (
+        (PASSENGERS_TRAVELING_BETWEEN_STATION, ''),
+        (MAX_TRAVEL_TIME_BETWEEN_STATION, 'seg')
+    )
+    metric = models.CharField(max_length=50, null=True, choices=METRIC_CHOICES)
+    value = models.FloatField(null=True)
+    ''' unit: depends of metric '''
+    direction = models.CharField(max_length=50, null=True, 
+                                 choices=MetroLineMetric.DIRECTION_CHOICES)
+
+    def getDict(self):
+        ''' dict '''
+        dict = {'metric': self.metric, 'value': self.value, 'direction': self.direction}
+
+        return dict
+
 
 
 class SystemicParams(models.Model):
