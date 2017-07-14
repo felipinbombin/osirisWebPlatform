@@ -248,7 +248,18 @@ class MetroTrack(models.Model):
 class MetroLineMetric(models.Model):
     ''' metric defined by chunk '''
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
-    metric = models.CharField(max_length=50)
+    # metric
+    SLOPE = 'S'
+    CURVE_RADIUS = 'CR'
+    SPEED_LIMIT = 'SL'
+    GROUND = 'G'
+    METRIC_CHOICES = (
+        (SLOPE, ''),
+        (CURVE_RADIUS, ''),
+        (SPEED_LIMIT, ''),
+        (GROUND, '')
+    )
+    metric = models.CharField(max_length=50, choices=METRIC_CHOICES)
     end = models.FloatField(null=True)
     start = models.FloatField(null=True)
     value = models.FloatField(null=True)
