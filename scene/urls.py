@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from .views.defaults import StepsView, ValidationStepView
 from .views.SceneData import GetSceneData
-from .views.Panel import ScenePanel, ScenePanelData
+from .views.Panel import ScenePanel, ScenePanelData, InputModelData
 from .views.UploadFile import UploadTopologicFile, UploadSystemicFile, UploadOperationalFile, UploadVelocityFile
 from .views.DownloadFile import DownloadStepFile, DownloadStepTemplate
 from django.contrib.auth.decorators import login_required
@@ -11,6 +11,8 @@ urlpatterns = [
       login_required(ScenePanel.as_view()), name='panel'),
     url(r'^scene/panel/data/(?P<sceneId>[0-9]+)$',
       login_required(ScenePanelData.as_view()), name='panelData'),
+    url(r'^scene/panel/data/inputModel/(?P<sceneId>[0-9]+)$',
+      login_required(InputModelData.as_view()), name='inputModelData'),
 
     url(r'^scene/wizard/(?P<sceneId>[0-9]+)$',
       login_required(StepsView.as_view()), name='wizard'),

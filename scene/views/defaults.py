@@ -41,10 +41,6 @@ class ValidationStepView(View):
     def dispatch(self, request, *args, **kwargs):
         return super(ValidationStepView, self).dispatch(request, *args, **kwargs)
 
-    def processStep1(self, request, scene):
-        ''' create or edit global topologic variables '''
-
-
     def post(self, request, stepId, sceneId):
         """ validate and update data in server """
 
@@ -102,7 +98,7 @@ class ValidationStepView(View):
 
             response = Status.getJsonStatus(Status.OK, response)
             response['status']['title'] = 'Actualización exitosa'
-            response['status']['message']
+            response['status']['message'] = 'Los datos han sido guardados'
 
         elif stepId == 5:
             # check if file was uploaded successfully

@@ -38,19 +38,48 @@ class ScenePanelData(View):
         """ return data of step 1 """
 
         sceneId = int(sceneId)
-        scene = Scene.objects.prefetch_related('metroline_set__metrostation_set', 'metroline_set__metrodepot_set').\
+        scene = Scene.objects.prefetch_related('metroline_set__metrostation_set', 'metroline_set__metrodepot_set', 'metroconnection_set__stations').\
             get(user=request.user, id=sceneId)
-        connections = MetroConnection.objects.prefetch_related('stations').filter(scene=scene)
 
         lines = []
         for line in scene.metroline_set.all():
             lines.append(line.getDict())
         
         connectionsDict = []
-        for connection in connections:
+        for connection in scene.connection_set.all():
             connectionsDict.append(connection.getDict())
 
         response = {'lines': lines, 'connections': connectionsDict}
+
+        Status.getJsonStatus(Status.OK, response)
+
+        return JsonResponse(response, safe=False)
+
+class InputModelData(View):
+    ''' get input model data '''
+
+    def __init__(self):
+        self.context = {}
+
+    def get(self, request, sceneId):
+        """ return data to run models """
+
+        sceneId = int(sceneId)
+        scene = Scene.objects.prefetch_related('metroline_set__metrostation_set', 'metroline_set__metrodepot_set', 'metroconnection_set').\
+            get(user=request.user, id=sceneId)
+
+        inputModel = {'oper':{},'top':{},'sist':{}}
+
+        inputModel['top']['nLines'] = len(scene.metroline_set.all())
+        inputModel['top']['nConnections'] = len(scene.metroconnection_set.all())
+
+        inputModel['top']['nStations'] = []
+        inputModel['top']['nDepots'] = []
+        for line in scene.metroline_set.all().order_by('id'):
+            inputModel['top']['nStations'].append(len(line.metrostation_set.all()))
+            inputModel['top']['nDepots'].append(len(line.metrodepot_set.all()))
+
+        response = {'inputModel': inputModel}
 
         Status.getJsonStatus(Status.OK, response)
 
