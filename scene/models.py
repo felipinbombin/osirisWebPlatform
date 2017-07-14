@@ -263,7 +263,7 @@ class MetroLineMetric(models.Model):
     end = models.FloatField(null=True)
     start = models.FloatField(null=True)
     value = models.FloatField(null=True)
-    direction = models.CharField(max_length=50)
+    direction = models.CharField(max_length=50, null=True)
     ''' example: s0-sN|sN-s0  '''
 
     
