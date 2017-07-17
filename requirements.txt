@@ -2,3 +2,4 @@ xlsxwriter
 coverage>4.0
 Django>=1.11
 psycopg2>=2.7.1
+xlrd>=1.0.0
