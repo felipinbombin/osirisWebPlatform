@@ -13,7 +13,7 @@ from django.views.generic import View
 from scene.models import Scene
 from scene.statusResponse import Status
 
-from ExcelReader import Step1ExcelReader, Step3ExcelReader, Step5ExcelReader
+from .ExcelReader import Step1ExcelReader, Step3ExcelReader, Step5ExcelReader
 
 MESSAGE = {
     "FILE_TOO_BIG": "El archivo no puede tener un tamaño superior a 2 MB.",

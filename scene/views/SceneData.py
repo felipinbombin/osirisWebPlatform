@@ -31,7 +31,7 @@ class GetSceneData(View):
             connectionsDict.append(connection.getDict())
 
         systemicParams, _ = SystemicParams.objects.get_or_create(scene=scene)
-        operationPeriods = map(lambda obj: obj.getDict(), OperationPeriod.objects.filter(scene=scene).order_by('id'))
+        operationPeriods = list(map(lambda obj: obj.getDict(), OperationPeriod.objects.filter(scene=scene).order_by('id')))
 
         operation = {
             'averageMassOfAPassanger': scene.averageMassOfAPassanger,

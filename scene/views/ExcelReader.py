@@ -3,11 +3,10 @@ from __future__ import unicode_literals
 
 # Create your views here.
 from abc import ABCMeta, abstractmethod
-from StringIO import StringIO
-from django.core.files.base import ContentFile
 
-import ExcelWriter
-from ..models import MetroTrack, MetroLineMetric, OperationPeriodForMetroLine, OperationPeriodForMetroStation, OperationPeriodForMetroTrack
+from .ExcelWriter import SEPARATION_HEIGHT
+from ..models import MetroTrack, MetroLineMetric, OperationPeriodForMetroLine, OperationPeriodForMetroStation, \
+    OperationPeriodForMetroTrack
 
 import xlrd
 
@@ -78,7 +77,7 @@ class Step1ExcelReader(ExcelReader):
 
                 currentRow += 1
 
-            firstRow = 3 + len(stations) + ExcelWriter.SEPARATION_HEIGHT + 3
+            firstRow = 3 + len(stations) + SEPARATION_HEIGHT + 3
 
             # delete previous metrics
             MetroLineMetric.objects.filter(metroLine=line).delete()
@@ -172,7 +171,7 @@ class Step3ExcelReader(ExcelReader):
                 depot.dcConsumption = worksheet.cell_value(currentRow, 14)
                 depot.save()
 
-            currentRow = 3 + len(stations) + ExcelWriter.SEPARATION_HEIGHT + 1
+            currentRow = 3 + len(stations) + SEPARATION_HEIGHT + 1
 
             line.usableEnergyContent = worksheet.cell_value(currentRow, 1)
             currentRow += 1
@@ -237,7 +236,7 @@ class Step5ExcelReader(ExcelReader):
                 currentRow += 1
                 currentColumn = 1
 
-            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentRow += SEPARATION_HEIGHT + 3
             currentColumn = 1
 
             for track in tracks:
@@ -258,7 +257,7 @@ class Step5ExcelReader(ExcelReader):
                 currentRow += 1
                 currentColumn = 1
 
-            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentRow += SEPARATION_HEIGHT + 3
             currentColumn = 1
 
             for track in tracks:
@@ -279,7 +278,7 @@ class Step5ExcelReader(ExcelReader):
                 currentRow += 1
                 currentColumn = 1
 
-            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentRow += SEPARATION_HEIGHT + 3
             currentColumn = 1
 
             for station in stations:
@@ -300,7 +299,7 @@ class Step5ExcelReader(ExcelReader):
                 currentRow += 1
                 currentColumn = 1
 
-            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentRow += SEPARATION_HEIGHT + 3
             currentColumn = 1
 
             for period in periods:
@@ -319,7 +318,7 @@ class Step5ExcelReader(ExcelReader):
                 currentColumn += 1
             currentRow += 1
 
-            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentRow += SEPARATION_HEIGHT + 3
             currentColumn = 1
 
             previousRow = currentRow
@@ -379,7 +378,7 @@ class Step5ExcelReader(ExcelReader):
                 currentColumn += 1
                 currentRow = previousRow
 
-            currentRow += 4 + ExcelWriter.SEPARATION_HEIGHT + 2
+            currentRow += 4 + SEPARATION_HEIGHT + 2
             currentColumn = 1
             
             for period in periods:
@@ -391,7 +390,7 @@ class Step5ExcelReader(ExcelReader):
                     direction=None)
                 currentColumn += 1
            
-            currentRow += ExcelWriter.SEPARATION_HEIGHT + 3
+            currentRow += SEPARATION_HEIGHT + 3
             currentColumn = 1
 
             for station in stations:
