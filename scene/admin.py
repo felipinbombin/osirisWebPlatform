@@ -6,7 +6,7 @@ from django.contrib.admin.utils import quote
 from django.contrib import admin
 from django.utils import timezone
 from django.shortcuts import redirect
-from models import Scene, MetroLine, MetroStation, MetroDepot, MetroConnection, SystemicParams
+from .models import Scene, MetroLine, MetroStation, MetroDepot, MetroConnection, SystemicParams
 
 class SceneChangeList(ChangeList):
     def url_for_result(self, result):
