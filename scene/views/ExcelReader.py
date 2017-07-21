@@ -402,8 +402,6 @@ class Step5ExcelReader(ExcelReader):
                         value=worksheet.cell_value(currentRow, currentColumn),
                         direction=None)
                     currentColumn += 1
-                    # TODO: check if period is need or not
-                    break
                 currentRow += 1
                 currentColumn = 1
 

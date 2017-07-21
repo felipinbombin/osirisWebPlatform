@@ -475,7 +475,7 @@ class Step5ExcelWriter(ExcelWriter):
 
             lastRow += SEPARATION_HEIGHT
 
-            title = "Tiempo de permanencia entre estaciones [s]"
+            title = "Tiempo de permanencia en estación [s]"
             columnTitleList = ["Estación / Período"] + periodsNameList
             lastRow += self.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList)
             self.makeHorizontalGrid(worksheet, (lastRow, 0), stationNameList, len(periodsNameList))
@@ -513,10 +513,10 @@ class Step5ExcelWriter(ExcelWriter):
 
             lastRow += SEPARATION_HEIGHT
 
-            title = "Flujo de ventilación"
-            columnTitleList = ["Estación", "Flujo [m^3/s]"]
+            title = "Flujo de ventilación [m^3/s]"
+            columnTitleList = ["Estación / Período"] +  periodsNameList
             lastRow += self.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList,
                                             print_direction=False)
-            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 0), stationNameList, 1)
+            lastRow += self.makeHorizontalGrid(worksheet, (lastRow, 0), stationNameList, len(periodsNameList))
 
         self.save(self.scene.step5Template)
