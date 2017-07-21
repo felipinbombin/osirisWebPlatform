@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 # Create your views here.
 from abc import ABCMeta, abstractmethod
-from StringIO import StringIO
+from io import BytesIO
 from django.core.files.base import ContentFile
 
 import xlsxwriter
@@ -20,7 +20,7 @@ class ExcelWriter(object):
 
         scene.refresh_from_db()
         self.scene = scene
-        self.stringIO = StringIO()
+        self.stringIO = BytesIO()
         self.workbook = xlsxwriter.Workbook(self.stringIO, {'in_memory': True})
 
         self.cellTitleFormat = self.workbook.add_format({
