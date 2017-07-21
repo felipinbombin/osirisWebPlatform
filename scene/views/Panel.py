@@ -94,17 +94,16 @@ class InputModelData(View):
         inputModel['top']['nConnections'] = connectionNumber
 
         inputModel['top']['nStations'] = np.empty([lineNumber, 1])
+        inputModel['top']['nDepots'] = np.empty([lineNumber, 1])
         for index, line in enumerate(metroLines):
             inputModel['top']['nStations'][index] = len(line.metrostation_set.all())
             inputModel['top']['nDepots'][index] = len(line.metrodepot_set.all())
 
-
         if connectionNumber:
             conStations = [[None], [None]] * connectionNumber
-            # TODO: Tiene que ser generalizado, pablo lo define
             for i in range(0, connectionNumber):
-                for i, metroConnectionStation in enumerate(metroConnections[i].metroconnectionstation_set.all().order_by('id')):
-                    conStations[i][i] = metroConnectionStation.metroStation.name
+                for j, metroConnectionStation in enumerate(metroConnections[i].metroconnectionstation_set.all().order_by('id')):
+                    conStations[j][i] = metroConnectionStation.metroStation.name
             inputModel['top']['connections.stations'] = conStations
 
             inputModel['top']['connections.avHeight'] = np.empty([connectionNumber, 1])
@@ -124,23 +123,23 @@ class InputModelData(View):
 
             metrics = defaultdict(list)
             for metric in metroLine.metrolinemetric_set.all().order_by('id'):
-                metricId = metric.metric + metric.direction
+                metricId = metric.metric + str(metric.direction)
                 metrics[metricId].append([metric.start, metric.end, metric.value])
 
 
             slopeLRId = MetroLineMetric.SLOPE + MetroLineMetric.GOING
             slopeLR = np.zeros([len(metrics[slopeLRId]), 3])
             for i in range(len(metrics[slopeLRId])):
-                slopeLR[i, 0] = metrics[slopeLRId][0] # start
-                slopeLR[i, 1] = metrics[slopeLRId][1] # end
-                slopeLR[i, 2] = metrics[slopeLRId][2] # value
+                slopeLR[i, 0] = metrics[slopeLRId][i][0] # start
+                slopeLR[i, 1] = metrics[slopeLRId][i][1] # end
+                slopeLR[i, 2] = metrics[slopeLRId][i][2] # value
 
             slopeRLId = MetroLineMetric.SLOPE + MetroLineMetric.REVERSE
             slopeRL = np.zeros([len(metrics[slopeRLId]), 3])
             for i in range(len(metrics[slopeRLId])):
-                slopeRL[i, 0] = metrics[slopeRLId][0] # start
-                slopeRL[i, 1] = metrics[slopeRLId][1] # end
-                slopeRL[i, 2] = metrics[slopeRLId][2] # value
+                slopeRL[i, 0] = metrics[slopeRLId][i][0] # start
+                slopeRL[i, 1] = metrics[slopeRLId][i][1] # end
+                slopeRL[i, 2] = metrics[slopeRLId][i][2] # value
 
             inputModel['top']['lines'][index]['geometry']['slopeLR'] = slopeLR
             inputModel['top']['lines'][index]['geometry']['slopeRL'] = slopeRL
@@ -149,16 +148,16 @@ class InputModelData(View):
             curveLRId = MetroLineMetric.CURVE_RADIUS + MetroLineMetric.GOING
             curveLR = np.zeros([len(metrics[curveLRId]), 3])
             for i in range(len(metrics[curveLRId])):
-                curveLR[i, 0] = metrics[curveLRId][0]  # start
-                curveLR[i, 1] = metrics[curveLRId][1]  # end
-                curveLR[i, 2] = metrics[curveLRId][2]  # value
+                curveLR[i, 0] = metrics[curveLRId][i][0]  # start
+                curveLR[i, 1] = metrics[curveLRId][i][1]  # end
+                curveLR[i, 2] = metrics[curveLRId][i][2]  # value
 
             curveRLId = MetroLineMetric.CURVE_RADIUS + MetroLineMetric.REVERSE
             curveRL = np.zeros([len(metrics[curveRLId]), 3])
             for i in range(len(metrics[curveRLId])):
-                curveRL[i, 0] = metrics[curveRLId][0]  # start
-                curveRL[i, 1] = metrics[curveRLId][1]  # end
-                curveRL[i, 2] = metrics[curveRLId][2]  # value
+                curveRL[i, 0] = metrics[curveRLId][i][0]  # start
+                curveRL[i, 1] = metrics[curveRLId][i][1]  # end
+                curveRL[i, 2] = metrics[curveRLId][i][2]  # value
 
             inputModel['top']['lines'][index]['geometry']['curvLR'] = curveLR
             inputModel['top']['lines'][index]['geometry']['curvRL'] = curveRL
@@ -167,27 +166,27 @@ class InputModelData(View):
             speedLimitLRId = MetroLineMetric.SPEED_LIMIT + MetroLineMetric.GOING
             speedLimitLR = np.zeros([len(metrics[speedLimitLRId]), 3])
             for i in range(len(metrics[speedLimitLRId])):
-                speedLimitLR[i, 0] = metrics[speedLimitLRId][0]  # start
-                speedLimitLR[i, 1] = metrics[speedLimitLRId][1]  # end
-                speedLimitLR[i, 2] = metrics[speedLimitLRId][2]  # value
+                speedLimitLR[i, 0] = metrics[speedLimitLRId][i][0]  # start
+                speedLimitLR[i, 1] = metrics[speedLimitLRId][i][1]  # end
+                speedLimitLR[i, 2] = metrics[speedLimitLRId][i][2]  # value
 
             speedLimitRLId = MetroLineMetric.SPEED_LIMIT + MetroLineMetric.REVERSE
             speedLimitRL = np.zeros([len(metrics[speedLimitRLId]), 3])
             for i in range(len(metrics[speedLimitRLId])):
-                speedLimitRL[i, 0] = metrics[speedLimitRLId][0]  # start
-                speedLimitRL[i, 1] = metrics[speedLimitRLId][1]  # end
-                speedLimitRL[i, 2] = metrics[speedLimitRLId][2]  # value
+                speedLimitRL[i, 0] = metrics[speedLimitRLId][i][0]  # start
+                speedLimitRL[i, 1] = metrics[speedLimitRLId][i][1]  # end
+                speedLimitRL[i, 2] = metrics[speedLimitRLId][i][2]  # value
 
             inputModel['top']['lines'][index]['geometry']['spBoundsLR'] = speedLimitLR
             inputModel['top']['lines'][index]['geometry']['spBoundsRL'] = speedLimitRL
 
 
-            groundId = MetroLineMetric.GROUND
+            groundId = MetroLineMetric.GROUND + "None"
             grounds = np.zeros([len(metrics[groundId]), 3])
             for i in range(len(metrics[groundId])):
-                grounds[i, 0] = metrics[groundId][0]  # start
-                grounds[i, 1] = metrics[groundId][1]  # end
-                grounds[i, 2] = metrics[groundId][2]  # value
+                grounds[i, 0] = metrics[groundId][i][0]  # start
+                grounds[i, 1] = metrics[groundId][i][1]  # end
+                grounds[i, 2] = metrics[groundId][i][2]  # value
 
             groundByMeter = np.empty([int(grounds[-1][1]), 2])
             for ground in grounds:
@@ -337,7 +336,7 @@ class InputModelData(View):
             metroTracks = metroLine.metrotrack_set.all().order_by('id')
             inputModel['sist']['lines'][index]['tracksAuxConsumption'] = np.empty(len(metroTracks))
             inputModel['sist']['lines'][index]['tracksVentConsumption'] = np.empty(len(metroTracks))
-            for i, metroTrack in metroTracks:
+            for i, metroTrack in enumerate(metroTracks):
                 inputModel['sist']['lines'][index]['tracksAuxConsumption'][i] = metroTracks[i].auxiliariesConsumption
                 inputModel['sist']['lines'][index]['tracksVentConsumption'][i] = metroTracks[i].ventilationConsumption
 
@@ -407,22 +406,20 @@ class InputModelData(View):
 
                 metrics = defaultdict(list)
                 for metric in opMetrics:
-                    metricId = metric.metric + metric.direction
+                    metricId = metric.metric + str(metric.direction)
                     metrics[metricId].append(metric.value)
 
                 dwellLRId = OperationPeriodForMetroStation.DWELL_TIME + MetroLineMetric.GOING
                 dwellRLId = OperationPeriodForMetroStation.DWELL_TIME + MetroLineMetric.REVERSE
                 passStLRId = OperationPeriodForMetroStation.PASSENGERS_IN_STATION + MetroLineMetric.GOING
                 passStRLId = OperationPeriodForMetroStation.PASSENGERS_IN_STATION + MetroLineMetric.REVERSE
-                ventFlLRId = OperationPeriodForMetroStation.VENTILATION_FLOW + MetroLineMetric.GOING
-                ventFlRLId = OperationPeriodForMetroStation.VENTILATION_FLOW + MetroLineMetric.REVERSE
+                ventFlLRId = OperationPeriodForMetroStation.VENTILATION_FLOW + "None"
 
                 inputModel['oper']['lines'][i]['dwellLR'][j] = metrics[dwellLRId]
                 inputModel['oper']['lines'][i]['dwellRL'][j] = metrics[dwellRLId]
                 inputModel['oper']['lines'][i]['passStLR'][j] = metrics[passStLRId]
                 inputModel['oper']['lines'][i]['passStRL'][j] = metrics[passStRLId]
                 inputModel['oper']['lines'][i]['ventFlLR'][j] = metrics[ventFlLRId]
-                inputModel['oper']['lines'][i]['ventFlRL'][j] = metrics[ventFlRLId]
 
             for j, metroTrack in enumerate(metroTracks):
                 opMetrics = metroTrack.operationperiodformetrotrack_set.all().order_by('id')
@@ -444,7 +441,7 @@ class InputModelData(View):
 
             metrics = defaultdict(list)
             for metric in metroLine.operationperiodformetroline_set.all().order_by('operationPeriod_id'):
-                metricId = metric.metric + metric.direction
+                metricId = metric.metric + str(metric.direction)
                 metrics[metricId].append(metric.value)
 
             frecLRId = OperationPeriodForMetroLine.FREQUENCY + MetroLineMetric.GOING
@@ -457,7 +454,7 @@ class InputModelData(View):
             percACSubstationLossesACSystemRLId = OperationPeriodForMetroLine.PERC_AC_SUBSTATION_LOSSES_FEED_AC_ELEMENTS + MetroLineMetric.REVERSE
             percDCSubstationLossesLRId = OperationPeriodForMetroLine.PERC_DC_SUBSTATION_LOSSES + MetroLineMetric.GOING
             percDCSubstationLossesRLId = OperationPeriodForMetroLine.PERC_DC_SUBSTATION_LOSSES + MetroLineMetric.REVERSE
-            receptivityId = OperationPeriodForMetroLine.RECEPTIVITY
+            receptivityId = OperationPeriodForMetroLine.RECEPTIVITY + "None"
 
             inputModel['oper']['lines'][i]['frecLR'] = metrics[frecLRId]
             inputModel['oper']['lines'][i]['frecRL'] = metrics[frecRLId]
@@ -486,7 +483,6 @@ class InputModelData(View):
                 elif isinstance(obj, np.ndarray):
                     return obj.tolist()
                 elif isinstance(obj, datetime.time):
-                    print(str(obj))
                     return str(obj)
                 else:
                     return super(MyEncoder, self).default(obj)
