@@ -144,16 +144,17 @@ $(document).ready(function(){
             selected: data.currentStep,
             autoAdjustHeight: false,
             markAllPreviousStepsAsDone: true,
+            keyNavigation: false,
             theme: "dots",
             toolbarSettings: {
-            showNextButton: false,
-            showPreviousButton: false,
-            toolbarPosition: "top",
-            toolbarExtraButtons: [
-              prevButton,
-              nextButton,
-              finalButton
-            ],
+                showNextButton: false,
+                showPreviousButton: false,
+                toolbarPosition: "top",
+                toolbarExtraButtons: [
+                    prevButton,
+                    nextButton,
+                    finalButton
+                ],
             },
         });
     });
