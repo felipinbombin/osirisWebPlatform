@@ -13,7 +13,7 @@ from django.views.generic import View
 
 from scene.models import Scene
 from scene.statusResponse import Status
-from StepSaver import Step0Saver, Step2Saver, Step4Saver
+from .StepSaver import Step0Saver, Step2Saver, Step4Saver
 
 
 class StepsView(View):
@@ -53,7 +53,7 @@ class ValidationStepView(View):
         response = {}
         if stepId == 0:
             # global topologic variables
-            data = json.loads(request.body)
+            data = json.loads(request.body.decode('UTF-8'))
 
             step0Saver = Step0Saver(sceneObj)
             step0Saver.save(data)
@@ -72,7 +72,7 @@ class ValidationStepView(View):
                 Status.getJsonStatus(Status.INVALID_STEP, response)
         elif stepId == 2:
             # global systemic variables
-            data = json.loads(request.body)
+            data = json.loads(request.body.decode('utf-8'))
 
             step2Saver = Step2Saver(sceneObj)
             step2Saver.save(data)
@@ -91,7 +91,7 @@ class ValidationStepView(View):
                 Status.getJsonStatus(Status.INVALID_STEP, response)
         elif stepId == 4:
             # global operational variables
-            data = json.loads(request.body)
+            data = json.loads(request.body.decode('utf-8'))
 
             step4Saver = Step4Saver(sceneObj)
             step4Saver.save(data)
