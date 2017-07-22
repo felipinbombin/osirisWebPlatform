@@ -94,7 +94,7 @@ class InputModelData(View):
         inputModel['top']['nConnections'] = connectionNumber
 
         inputModel['top']['nStations'] = np.empty([lineNumber, 1])
-        inputModel['top']['nDepots'] = np.empty([lineNumber, 1])
+        inputModel['top']['nDepots'] = [0]*lineNumber #np.empty([lineNumber, 1])
         for index, line in enumerate(metroLines):
             inputModel['top']['nStations'][index] = len(line.metrostation_set.all())
             inputModel['top']['nDepots'][index] = len(line.metrodepot_set.all())
@@ -243,8 +243,8 @@ class InputModelData(View):
         inputModel['sist']['Davis']['D'] = sys.davisParameterD
         inputModel['sist']['Davis']['E'] = sys.davisParameterE
 
-        inputModel['sist']['tractEff'] = sys.tractionSystemEfficiency
-        inputModel['sist']['brakeEff'] = sys.brakingSystemEfficiency
+        inputModel['sist']['tractEff'] = sys.tractionSystemEfficiency / 100
+        inputModel['sist']['brakeEff'] = sys.brakingSystemEfficiency / 100
         # inputModel['sist']['receptivity'] = fslc(15+1,1) 
         inputModel['sist']['electBrakeT.p1'] = sys.electricalBrakeTreshold
         inputModel['sist']['electBrakeT.p2'] = sys.electroMechanicalBrakeThreshold
@@ -283,8 +283,8 @@ class InputModelData(View):
         inputModel['sist']['OBESScapacity'] = sys.storageCapacityWeighting
 
         ####CMM traction####
-        inputModel['sist']['charge_eff'] = sys.obessChargeEfficiency
-        inputModel['sist']['discharge_eff'] = sys.obessDischargeEfficiency
+        inputModel['sist']['charge_eff'] = sys.obessChargeEfficiency / 100
+        inputModel['sist']['discharge_eff'] = sys.obessDischargeEfficiency / 100
         inputModel['sist']['OBESS_usable'] = sys.obessUsableEnergyContent
         inputModel['sist']['OBESS_peak_power'] = sys.maxDischargePower
         inputModel['sist']['OBESS_max_saving'] = sys.maxEnergySavingPossiblePerHour
@@ -376,8 +376,7 @@ class InputModelData(View):
             ntra = len(metroTracks)
             nhours = inputModel['oper']['numberHours']
 
-            inputModel['oper']['lines'][i]['ventFlLR'] = np.empty([nsta, nhours])
-            inputModel['oper']['lines'][i]['ventFlRL'] = np.empty([nsta, nhours])
+            inputModel['oper']['lines'][i]['ventFl'] = np.empty([nsta, nhours])
             inputModel['oper']['lines'][i]['passStLR'] = np.empty([nsta, nhours])
             inputModel['oper']['lines'][i]['passStRL'] = np.empty([nsta, nhours])
             inputModel['oper']['lines'][i]['dwellLR'] = np.empty([nsta, nhours])
@@ -413,13 +412,13 @@ class InputModelData(View):
                 dwellRLId = OperationPeriodForMetroStation.DWELL_TIME + MetroLineMetric.REVERSE
                 passStLRId = OperationPeriodForMetroStation.PASSENGERS_IN_STATION + MetroLineMetric.GOING
                 passStRLId = OperationPeriodForMetroStation.PASSENGERS_IN_STATION + MetroLineMetric.REVERSE
-                ventFlLRId = OperationPeriodForMetroStation.VENTILATION_FLOW + "None"
+                ventFlId = OperationPeriodForMetroStation.VENTILATION_FLOW + "None"
 
                 inputModel['oper']['lines'][i]['dwellLR'][j] = metrics[dwellLRId]
                 inputModel['oper']['lines'][i]['dwellRL'][j] = metrics[dwellRLId]
                 inputModel['oper']['lines'][i]['passStLR'][j] = metrics[passStLRId]
                 inputModel['oper']['lines'][i]['passStRL'][j] = metrics[passStRLId]
-                inputModel['oper']['lines'][i]['ventFlLR'][j] = metrics[ventFlLRId]
+                inputModel['oper']['lines'][i]['ventFl'][j] = metrics[ventFlId]
 
             for j, metroTrack in enumerate(metroTracks):
                 opMetrics = metroTrack.operationperiodformetrotrack_set.all().order_by('id')
@@ -434,10 +433,10 @@ class InputModelData(View):
                 maxTimeLRId = OperationPeriodForMetroTrack.MAX_TRAVEL_TIME_BETWEEN_STATION + MetroLineMetric.GOING
                 maxTimeRLId = OperationPeriodForMetroTrack.MAX_TRAVEL_TIME_BETWEEN_STATION + MetroLineMetric.REVERSE
 
-                inputModel['oper']['lines'][i]['passLR'][i] = metrics[passLRId]
-                inputModel['oper']['lines'][i]['passRL'][i] = metrics[passRLId]
-                inputModel['oper']['lines'][i]['maxTimeLR'][i] = metrics[maxTimeLRId]
-                inputModel['oper']['lines'][i]['maxTimeRL'][i] = metrics[maxTimeRLId]
+                inputModel['oper']['lines'][i]['passLR'][j] = metrics[passLRId]
+                inputModel['oper']['lines'][i]['passRL'][j] = metrics[passRLId]
+                inputModel['oper']['lines'][i]['maxTimeLR'][j] = metrics[maxTimeLRId]
+                inputModel['oper']['lines'][i]['maxTimeRL'][j] = metrics[maxTimeRLId]
 
             metrics = defaultdict(list)
             for metric in metroLine.operationperiodformetroline_set.all().order_by('operationPeriod_id'):
@@ -456,19 +455,22 @@ class InputModelData(View):
             percDCSubstationLossesRLId = OperationPeriodForMetroLine.PERC_DC_SUBSTATION_LOSSES + MetroLineMetric.REVERSE
             receptivityId = OperationPeriodForMetroLine.RECEPTIVITY + "None"
 
-            inputModel['oper']['lines'][i]['frecLR'] = metrics[frecLRId]
-            inputModel['oper']['lines'][i]['frecRL'] = metrics[frecRLId]
+            for j in range(nhours):
+                inputModel['oper']['lines'][i]['frecLR'][j] = metrics[frecLRId][j]
+                inputModel['oper']['lines'][i]['frecRL'][j] = metrics[frecRLId][j]
 
-            inputModel['oper']['lines'][i]['percentajeDCDistLossesLR'] = metrics[percDCDistLossesLRId]
-            inputModel['oper']['lines'][i]['percentajeDCDistLossesRL'] = metrics[percDCDistLossesRLId]
-            inputModel['oper']['lines'][i]['percentajeACSubstationLossesEntireSystemLR'] = metrics[percACSubstationLossesEntireSystemLRId]
-            inputModel['oper']['lines'][i]['percentajeACSubstationLossesEntireSystemRL'] =  metrics[percACSubstationLossesEntireSystemRLId]
-            inputModel['oper']['lines'][i]['percentajeACSubstationLossesACSystemLR'] =  metrics[percACSubstationLossesACSystemLRId]
-            inputModel['oper']['lines'][i]['percentajeACSubstationLossesACSystemRL'] =  metrics[percACSubstationLossesACSystemRLId]
-            inputModel['oper']['lines'][i]['percentajeDCSubstationLossesLR'] =  metrics[percDCSubstationLossesLRId]
-            inputModel['oper']['lines'][i]['percentajeDCSubstationLossesRL'] =  metrics[percDCSubstationLossesRLId]
+                inputModel['oper']['lines'][i]['percentajeDCDistLossesLR'][j] = metrics[percDCDistLossesLRId][j] / 100
+                inputModel['oper']['lines'][i]['percentajeDCDistLossesRL'][j] = metrics[percDCDistLossesRLId][j] / 100
+                inputModel['oper']['lines'][i]['percentajeACSubstationLossesEntireSystemLR'][j] = metrics[
+                                                                                                   percACSubstationLossesEntireSystemLRId][j] / 100
+                inputModel['oper']['lines'][i]['percentajeACSubstationLossesEntireSystemRL'][j] = metrics[
+                                                                                                   percACSubstationLossesEntireSystemRLId][j] / 100
+                inputModel['oper']['lines'][i]['percentajeACSubstationLossesACSystemLR'][j] = metrics[percACSubstationLossesACSystemLRId][j] / 100
+                inputModel['oper']['lines'][i]['percentajeACSubstationLossesACSystemRL'][j] =  metrics[percACSubstationLossesACSystemRLId][j] / 100
+                inputModel['oper']['lines'][i]['percentajeDCSubstationLossesLR'][j] =  metrics[percDCSubstationLossesLRId][j] / 100
+                inputModel['oper']['lines'][i]['percentajeDCSubstationLossesRL'][j] =  metrics[percDCSubstationLossesRLId][j] / 100
 
-            inputModel['oper']['lines'][i]['receptivity'] =  metrics[receptivityId]
+                inputModel['oper']['lines'][i]['receptivity'][j] =  metrics[receptivityId][j] / 100
 
         response = {'inputModel': inputModel}
         Status.getJsonStatus(Status.OK, response)
@@ -488,5 +490,13 @@ class InputModelData(View):
                     return super(MyEncoder, self).default(obj)
         response = json.dumps(response, ensure_ascii=False, cls=MyEncoder)
         response = json.loads(response)
+        """
+        a = json.dumps(response["inputModel"]["top"], ensure_ascii=False, cls=MyEncoder)
+        b = json.dumps(response["inputModel"]["sist"], ensure_ascii=False, cls=MyEncoder)
+        c = json.dumps(response["inputModel"]["oper"], ensure_ascii=False, cls=MyEncoder)
+        print(a)
+        print(b)
+        print(c)
+        """
 
         return JsonResponse(response, safe=False)
