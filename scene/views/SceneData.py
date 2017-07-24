@@ -20,17 +20,11 @@ class GetSceneData(View):
         sceneId = int(sceneId)
         scene = Scene.objects.prefetch_related('metroline_set__metrostation_set', 'metroline_set__metrodepot_set').\
             get(user=request.user, id=sceneId)
-        connections = MetroConnection.objects.prefetch_related('stations').filter(scene=scene)
 
-        lines = []
-        for line in scene.metroline_set.all().order_by('id'):
-            lines.append(line.getDict())
-        
-        connectionsDict = []
-        for connection in connections:
-            connectionsDict.append(connection.getDict())
-
-        systemicParams, _ = SystemicParams.objects.get_or_create(scene=scene)
+        lines = list(map(lambda obj: obj.getDict(), scene.metroline_set.all().order_by('id')))
+        connections = list(map(lambda obj: obj.getDict(), MetroConnection.objects.prefetch_related('stations').\
+                               filter(scene=scene)))
+        systemicParams = SystemicParams.objects.get_or_create(scene=scene)[0].getDict()
         operationPeriods = list(map(lambda obj: obj.getDict(), OperationPeriod.objects.filter(scene=scene).order_by('id')))
 
         operation = {
@@ -40,8 +34,8 @@ class GetSceneData(View):
         }
 
         response = {'lines': lines,
-                    'connections': connectionsDict,
-                    'systemicParams': systemicParams.getDict(),
+                    'connections': connections,
+                    'systemicParams': systemicParams,
                     'operation': operation,
                     'currentStep': scene.currentStep}
 
