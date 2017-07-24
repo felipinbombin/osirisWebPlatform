@@ -58,7 +58,7 @@ let Step0ViewModel = function () {
     self.lines = ko.observableArray();
     self.depotsQuantity = ko.computed(function () {
         let quantity = 0;
-        $.each(self.lines(), function (i, el) {
+        self.lines().forEach(function(el) {
             quantity += el.depots().length;
         });
         return quantity;
@@ -204,8 +204,8 @@ let Step0ViewModel = function () {
     };
     self.removeDepot = function () {
         let depot = this;
-        $.each(self.lines(), function () {
-            this.depots.remove(depot)
+        self.lines().forEach(function(el) {
+            el.depots.remove(depot)
         });
         self.addDepotFormLogic.updateDefaultDepotName();
     };
