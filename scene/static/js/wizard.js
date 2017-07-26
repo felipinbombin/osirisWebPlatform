@@ -132,7 +132,7 @@ $(document).ready(function(){
                       .on("click", function(){
                         $("#wizard").smartWizard("prev");
                       });
-    let nextButton = $("<button></button>").text("Siguiente")
+    let nextButton = $("<button></button>").text("Guardar y avanzar")
                       .addClass("btn btn-default")
                       .css("padding-right", "5px")
                       .on("click", nextLogic);
