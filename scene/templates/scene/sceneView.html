@@ -173,16 +173,43 @@
     <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.js" %}"></script>
     <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.js" %}"></script>
   {% endwith %}
-    <script src="{% static "components/smartwizard/dist/js/jquery.smartWizard.min.js" %}"></script>
   <script src="{% static "components/knockout/dist/knockout.debug.js" %}"></script>
   <script>
   $(document).ready(function(){
-    var sceneId = 5;
-    var url = '/admin/scene/panel/data/inputModel/' + sceneId;
-    $.get(url, function(data){
+    const PATH_NAME = window.location.pathname.split("/");
+    const SCENE_ID = parseInt(PATH_NAME[PATH_NAME.length-1]);
+    const URL = '/admin/scene/wizard/getSceneData/' + SCENE_ID;
+
+    // knockout scene object
+    let Scene = function() {
+      let self = this;
+
+      self.lines = ko.observable();
+      self.connections = ko.observable();
+      self.operation = ko.observable();
+      self.systemicParams = ko.observable();
+
+      self.name = ko.observable();
+      self.currentStep = ko.observable();
+
+      self.data = null;
+      // load scene data
+      $.get(URL, function(data){
+          console.log(data);
+        self.lines(data["lines"]);
+        self.connections(data["connections"]);
+        self.operation(data["operation"]);
+        self.systemicParams(data["systemicParams"]);
+        self.name(data["name"]);
+        self.currentStep(data["currentStep"]);
+      });
+    };
+    let scene = new Scene();
+    /* show input for first model
+    $.get(URL, function(data){
       console.log(data);
       $('.well').html(JSON.stringify(data['inputModel'], null, '  '));
-    });
+    });*/
   });
   </script>
 {% endblock %}

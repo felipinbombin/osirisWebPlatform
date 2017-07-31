@@ -37,7 +37,8 @@ class GetSceneData(View):
                     'connections': connections,
                     'systemicParams': systemicParams,
                     'operation': operation,
-                    'currentStep': scene.currentStep}
+                    'currentStep': scene.currentStep,
+                    'name': scene.name}
 
         Status.getJsonStatus(Status.OK, response)
 
