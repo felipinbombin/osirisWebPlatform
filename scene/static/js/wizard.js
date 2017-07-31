@@ -4,8 +4,8 @@ $(document).ready(function(){
     /**************************************************
     * WIZARD LOGIC
     ***************************************************/
-    let pathname = window.location.pathname.split("/");
-    const sceneId = parseInt(pathname[pathname.length-1]);
+    const pathName = window.location.pathname.split("/");
+    const sceneId = parseInt(pathName[pathName.length-1]);
     const sceneDataURL = "/admin/scene/wizard/getSceneData/" + sceneId;
 
     /**
@@ -30,11 +30,22 @@ $(document).ready(function(){
         return true;
     });
 
+    let spinnerOpt = {
+        scale: 4,
+        color: "#169F85",
+        top: "80px"
+    };
+    let spinnerParentDOM = $("#content-main")[0];
+    let spinner = new Spinner(spinnerOpt).spin(spinnerParentDOM);
+
     // Initialize the showStep event
     wizard.on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
 
         init_sidebar();
         console.log("You are on step " + stepNumber + " now " + stepPosition);
+
+        // activate spinjs
+        spinner.spin(spinnerParentDOM);
 
         let currentStepViewModel = null;
         switch (stepNumber) {
@@ -58,12 +69,19 @@ $(document).ready(function(){
                     console.log(data);
                     currentStepViewModel.update(data);
                     console.log("data of step " + stepNumber + " retrieved successfully");
+                    // deactivate spinjs
+                    spinner.stop();
                 });
                 break;
+            default:
+                spinner.stop();
         }
     });
 
     let nextLogic = function(){
+
+        // activate spinjs
+        spinner.spin(spinnerParentDOM);
 
         let getUrl = function(stepId){
             const validateURL = "/admin/scene/wizard/validate/";
@@ -92,6 +110,7 @@ $(document).ready(function(){
             case 6:
                 // ask to server if file was uploaded
                 $.post(getUrl(currentStep), function(answer){
+                    spinner.stop();
                     // success
                     if(answer.status.code === 200){
                         $("#wizard").smartWizard("next");
@@ -111,6 +130,7 @@ $(document).ready(function(){
                     let data = currentStepViewModel.serialize();
                     console.log(data);
                     $.post(getUrl(currentStep), data, function(answer){
+                        spinner.stop();
                         // success
                         if(answer.status.code === 200){
                             $("#wizard").smartWizard("next");
