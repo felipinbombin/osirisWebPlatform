@@ -52,6 +52,10 @@ let Step4ViewModel = function () {
         for(let attr in self.record){
             self.record[attr](null);
         }
+        let periodsNumber = self.operationPeriods().length;
+        if(periodsNumber){
+            self.record["start"](self.operationPeriods()[periodsNumber-1]["end"]());
+        }
         self.dialogButton("Crear");
         self.showDialog(true);
     };

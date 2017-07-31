@@ -11,11 +11,11 @@ ko.components.register("field-form", {
         "<label class='control-label col-md-4 col-sm-4 col-xs-12' data-bind='html: label'></label>" +
         "<div class='col-md-8 col-sm-8 col-xs-12'>" +
             "<!-- ko ifnot: unit -->" +
-              "<input class='form-control' data-bind='value: source, attr: { type: type }' />" +
+              "<input class='form-control' data-bind='value: source, attr: { type: type, placeholder: placeholder }' />" +
             "<!-- /ko -->" +
             "<!-- ko if: unit -->" +
             "<div class='input-group'>" +
-                "<input class='form-control' data-bind='value: source, attr: { type: type }' />" +
+                "<input class='form-control' data-bind='value: source, attr: { type: type, placeholder:placeholder }' />" +
                 "<span class='input-group-addon' data-bind='visible: unit, html: unit'></span>" +
             "</div>" +
             "<!-- /ko -->" +
@@ -27,6 +27,7 @@ ko.components.register("field-form", {
         self.label = params.label;
         self.type = params.type || "number";
         self.unit = params.unit || "";
+        self.placeholder = params.placeholder || "";
     }
 });
 ko.components.register("small-fields-form", {
