@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 # Create your views here.
 from abc import ABCMeta, abstractmethod
+from django.utils import timezone
 
 from .ExcelWriter import SEPARATION_HEIGHT
 from ..models import MetroTrack, MetroLineMetric, OperationPeriodForMetroLine, OperationPeriodForMetroStation, \
@@ -46,17 +47,11 @@ class Step1ExcelReader(ExcelReader):
             firstRow = 3
             currentRow = firstRow
             for index, station in enumerate(stations):
-                length = worksheet.cell_value(currentRow, 1)
-                platformSection = worksheet.cell_value(currentRow, 2)
-                platformAveragePerimeter = worksheet.cell_value(currentRow, 3)
-                secondLevelAverageHeight = worksheet.cell_value(currentRow, 4)
-                secondLevelFloorSurface = worksheet.cell_value(currentRow, 5)
-
-                station.length = length
-                station.platformSection = platformSection
-                station.platformAveragePerimeter = platformAveragePerimeter
-                station.secondLevelAverageHeight = secondLevelAverageHeight
-                station.secondLevelFloorSurface = secondLevelFloorSurface
+                station.length = worksheet.cell_value(currentRow, 1)
+                station.platformSection = worksheet.cell_value(currentRow, 2)
+                station.platformAveragePerimeter = worksheet.cell_value(currentRow, 3)
+                station.secondLevelAverageHeight = worksheet.cell_value(currentRow, 4)
+                station.secondLevelFloorSurface = worksheet.cell_value(currentRow, 5)
                 station.save()
 
                 # create tracks
@@ -126,6 +121,8 @@ class Step1ExcelReader(ExcelReader):
                 row += 1
 
         MetroTrack.objects.filter(metroLine__scene=self.scene, isOld=True).delete()
+        self.scene.timeStampStep1File = timezone.now()
+        self.scene.save()
 
 class Step3ExcelReader(ExcelReader):
     ''' read excel file uploaded in step 3 '''
@@ -188,6 +185,8 @@ class Step3ExcelReader(ExcelReader):
             line.powerLimitToFeed = worksheet.cell_value(currentRow, 1)
             line.save()
 
+        self.scene.timeStampStep3File = timezone.now()
+        self.scene.save()
 
 class Step5ExcelReader(ExcelReader):
     ''' create excel file for step 5 '''
@@ -405,4 +404,5 @@ class Step5ExcelReader(ExcelReader):
                 currentRow += 1
                 currentColumn = 1
 
-
+        self.scene.timeStampStep5File = timezone.now()
+        self.scene.save()
