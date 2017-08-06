@@ -11,7 +11,10 @@
       <li>Una vez completado, arrastrar el archivo al cuadro de la derecha</li>
     </ul>
     <div class="col-md-12 col-sm-12 col-xs-12">
-      <a href="{% url 'scene:downloadStepFile' stepId=7 sceneId=scene.id %}" class="btn btn-success btn-lg btn-block"><i class="fa fa-file-excel-o"></i> Descargar último archivo subido</a>
+      <a href="{% url 'scene:downloadStepFile' stepId=6 sceneId=scene.id %}" class="btn btn-success btn-lg btn-block">
+          <i class="fa fa-file-excel-o"></i> Descargar último archivo subido
+          (<span id="timestamp6">{% if scene.timeStampStep6File %}{{ scene.timeStampStep6File }}{% endif %}</span>)
+      </a>
     </div>
     <div class="col-md-6 col-sm-6 col-xs-12">
       <a href="{% url 'scene:downloadStepTemplate' stepId=7 sceneId=scene.id %}" class="btn btn-info btn-lg btn-block btn-excel"><i class="fa fa-file-excel-o fa-5x"></i><br /><h1>Descargar plantilla</h1></a>
