@@ -37,12 +37,16 @@ class Scene(models.Model):
     currentStep = models.IntegerField('Paso actual', default=0)
     step1Template = models.FileField(upload_to='step1Template/', null=True, storage=OverwriteStorage())
     step1File = models.FileField(upload_to='step1File/', null=True, storage=OverwriteStorage())
+    timeStampStep1File = models.DateTimeField(null=True)
     step3Template = models.FileField(upload_to='step3Template/', null=True, storage=OverwriteStorage())
     step3File = models.FileField(upload_to='step3File/', null=True, storage=OverwriteStorage())
+    timeStampStep3File = models.DateTimeField(null=True)
     step5Template = models.FileField(upload_to='step5Template/', null=True, storage=OverwriteStorage())
     step5File = models.FileField(upload_to='step5File/', null=True, storage=OverwriteStorage())
+    timeStampStep5File = models.DateTimeField(null=True)
     step6Template = models.FileField(upload_to='step5Template/', null=True, storage=OverwriteStorage())
     step6File = models.FileField(upload_to='step5File/', null=True, storage=OverwriteStorage())
+    timeStampStep6File = models.DateTimeField(null=True)
     #######################################################
     # GLOBAL CONDITION
     #######################################################
