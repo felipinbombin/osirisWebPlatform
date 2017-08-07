@@ -397,6 +397,16 @@ class OperationPeriodForMetroTrack(models.Model):
 
 class SystemicParams(models.Model):
     ''' global systemic params '''
+    """
+    scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
+    group = models.CharField(max_length=30, null=False)
+    order = models.IntegerFi(null=False)
+    modelName = models.CharField(max_length=50, null=False)
+    value = models.FloatField(null=True)
+    unit = models.FloatField(max_length=10, null=False)
+    label = models.CharField(max_length=100, null=False)
+    """
+
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
     #######################################################
     # TRAIN FORCES
