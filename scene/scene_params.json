@@ -1,0 +1,64 @@
+{
+  "scene": {
+    "metro_line_params": [
+      {"modelName": "usableEnergyContent", "unit": "W", "label": {"es": ""}},
+      {"modelName": "chargingEfficiency", "unit": "%", "label": {"es": ""}},
+      {"modelName": "dischargingEfficiency", "unit": "%", "label": {"es": ""}},
+      {"modelName": "peakPower", "unit": "W", "label": {"es": ""}},
+      {"modelName": "maximumEnergySavingPossiblePerHour", "unit": "W", "label": {"es": ""}},
+      {"modelName": "energySavingMode", "unit": "Boolean", "label": {"es": ""}},
+      {"modelName": "powerLimitToFeed", "unit": "W", "label": {"es": ""}}
+    ],
+    "metro_station_params": [
+      {"modelName": "length", "unit": "mts", "label": {"es": ""}},
+      {"modelName": "secondLevelAverageHeight", "unit": "mts", "label": {"es": ""}},
+      {"modelName": "secondLevelFloorSurface", "unit": "m<sup>2</sup>", "label": {"es": ""}},
+      {"modelName": "platformSection", "unit": "m<sup>2</sup>", "label": {"es": ""}},
+      {"modelName": "platformAveragePerimeter", "unit": "mts", "label": {"es": ""}},
+      // consumption
+      {"modelName": "minAuxConsumption", "unit": "W", "label": {"es": ""}},
+      {"modelName": "maxAuxConsumption", "unit": "W", "label": {"es": ""}},
+      {"modelName": "minHVACConsumption", "unit": "W", "label": {"es": ""}},
+      {"modelName": "maxHVACConsumption", "unit": "W", "label": {"es": ""}},
+      {"modelName": "tau", "unit": "[0,1]", "label": {"es": ""}}
+    ],
+    "metro_track_params": [
+      {"modelName": "crossSection", "unit": "m<sup>2</sup>", "label": {"es": ""}},
+      {"modelName": "averagePerimeter", "unit": "mts", "label": {"es": ""}},
+      {"modelName": "length", "unit": "mts", "label": {"es": ""}},
+      // consumption
+      {"modelName": "auxiliariesConsumption", "unit": "W", "label": {"es": ""}},
+      {"modelName": "ventilationConsumption", "unit": "W", "label": {"es": ""}},
+      {"modelName": "", "unit": "", "label": {"es": ""}}
+    ],
+    "metro_depot_params": [
+      {"modelName": "auxConsumption", "unit": "W", "label": {"es": ""}},
+      {"modelName": "ventilationConsumption", "unit": "W", "label": {"es": ""}},
+      {"modelName": "dcConsumption", "unit": "W", "label": {"es": ""}}
+    ],
+    "metro_connection_params": [
+      {"modelName": "avgHeight", "label": {"es": "Altura promedio"}, "unit": "m"},
+      {"modelName": "avgSurface", "label": {"es": "Superficie promedio"}, "unit": "m<sup>2</sup>"},
+      {"modelName": "consumption", "label": {"es": "Consumo"}, "unit": "W"}
+    ],
+    "operation_global_params": [
+      {"modelName": "averageMassOfAPassanger", "label": {"es": "Masa promedio de pasajero"}, "unit": "Kg"},
+      {"modelName": "annualTemperatureAverage", "label": {"es": "Temperatura anual promedio"}, "unit": "°C"}
+    ],
+    "operation_params": [
+      {}
+    ],
+    "operation_metroline_params": [
+      {}
+    ],
+    "operation_metrostation_params": [
+      {}
+    ],
+    "operation_metrotrack_params": [
+      {}
+    ],
+    "systemic_params": [
+      {}
+    ]
+  }
+}
