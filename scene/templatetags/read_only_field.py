@@ -17,4 +17,4 @@ def read_only_field(label, value, unit):
        </div>
      </div>
         """
-    return format_html(field, label, value, unit)
+    return format_html(field, label.encode('UTF-8'), value, unit.encode('UTF-8'))

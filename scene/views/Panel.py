@@ -30,7 +30,7 @@ class ScenePanel(View):
             scene = Scene.objects.get(user=request.user, id=sceneId)
             self.context['scene'] = scene
             self.context['data'] = GetSceneData().getData(request, sceneId)
-            self.context['barWidth'] = int(scene.currentStep / 7 * 100)
+            self.context['barWidth'] = int(float(scene.currentStep) / 7 * 100)
         except:
             raise Http404
 
