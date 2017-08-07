@@ -28,8 +28,8 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <li><a><i class="fa fa-header" aria-hidden="true"></i> Cambiar nombre</a></li>
-            <li><a><i class="fa fa-trash" aria-hidden="true"></i> Eliminar</a></li>
+            <li><a><i class="fa fa-header" aria-hidden="true"></i> {% trans "Cambiar nombre" %}</a></li>
+            <li><a><i class="fa fa-trash" aria-hidden="true"></i> {% trans "Eliminar" %}</a></li>
           </ul>
         </span>
       </h1>
@@ -42,7 +42,7 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
       <div class="x_panel">
         <div class="x_title">
-          <h2>Estado: {{ scene.status }} <small></small></h2>
+          <h2>{% trans "Estado" %}: {{ scene.status }} <small></small></h2>
           <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -52,29 +52,29 @@
                 <div class="progress-bar progress-bar-{% if scene.currentStep < 6 %}danger{% else %}success{% endif %}"
                    style="width: {{ barWidth }}%;">
                    {% if scene.currentStep < 6 %}
-                   FALTA COMPLETAR PASO {{ scene.currentStep|add:1 }}
+                   {% trans "FALTA COMPLETAR PASO" %} {{ scene.currentStep|add:1 }}
                    {% else %}
-                   COMPLETADO
+                   {% trans "COMPLETADO" %}
                    {% endif %}
                 </div>
               </div>
             </div>
             <div class="col-md-2 col-sm-2 col-sx-12">
       <a href="{% url 'scene:wizard' sceneId=scene.id %}"type="button" class="pull-right btn btn-success btn-xs btn-block">
-        <i class="fa fa-edit" aria-hidden="true"></i> Editar escenario
+        <i class="fa fa-edit" aria-hidden="true"></i> {% trans "Editar escenario" %}
       </a>
             </div>
           </div>
 
           <div class="" role="tabpanel" data-example-id="togglable-tabs">
             <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-              <li role="presentation" class="active"><a href="#tab_content1" id="tab1" role="tab" data-toggle="tab" aria-expanded="true">Topología</a>
+              <li role="presentation" class="active"><a href="#tab_content1" id="tab1" role="tab" data-toggle="tab" aria-expanded="true">{% trans "Topología" %}</a>
               </li>
-              <li role="presentation" class=""><a href="#tab_content2" role="tab" id="tab2" data-toggle="tab" aria-expanded="false">Sistémico</a>
+              <li role="presentation" class=""><a href="#tab_content2" role="tab" id="tab2" data-toggle="tab" aria-expanded="false">{% trans "Sistémico" %}</a>
               </li>
-              <li role="presentation" class=""><a href="#tab_content3" role="tab" id="tab3" data-toggle="tab" aria-expanded="false">Operación</a>
+              <li role="presentation" class=""><a href="#tab_content3" role="tab" id="tab3" data-toggle="tab" aria-expanded="false">{% trans "Operación" %}</a>
                </li>
-              <li role="presentation" class=""><a href="#tab_content4" role="tab" id="tab4" data-toggle="tab" aria-expanded="false">Velocidad</a>
+              <li role="presentation" class=""><a href="#tab_content4" role="tab" id="tab4" data-toggle="tab" aria-expanded="false">{% trans "Velocidad" %}</a>
                </li>
              </ul>
 
@@ -83,16 +83,16 @@
                  {% download_file_button stepId=1 scene=scene %}
                  <div class="panel panel-default">
                    <!-- Default panel contents -->
-                     <div class="panel-heading">Líneas</div>
+                     <div class="panel-heading">{% trans "Líneas" %}</div>
                    <!-- Table -->
                    <table class="table table-striped">
                      <thead>
                        <tr>
                          <th>#</th>
-                         <th>Nombre</th>
-                         <th>N° Estaciones</th>
-                         <th>Estaciones</th>
-                         <th>Depósitos</th>
+                         <th>{% trans "Nombre" %}</th>
+                         <th>{% trans "N° Estaciones" %}</th>
+                         <th>{% trans "Estaciones" %}</th>
+                         <th>{% trans "Depósitos" %}</th>
                        </tr>
                      </thead>
                      <tbody>
@@ -111,16 +111,16 @@
 
                  <div class="panel panel-default">
                    <!-- Default panel contents -->
-                   <div class="panel-heading">Conexiones</div>
+                   <div class="panel-heading">{% trans "Conexiones" %}</div>
                    <!-- Table -->
                    <table class="table table-striped">
                      <thead>
                        <tr>
                          <th>#</th>
-                         <th>Nombre</th>
-                         <th>Estaciones</th>
-                         <th>Alt. prom. (m)</th>
-                         <th>Sup. prom. (m<sup>2</sup>)</th>
+                         <th>{% trans "Nombre" %}</th>
+                         <th>{% trans "Estaciones" %}</th>
+                         <th>{% trans "Alt. prom." %} (m)</th>
+                         <th>{% trans "Sup. prom." %} (m<sup>2</sup>)</th>
                        </tr>
                      </thead>
                      <tbody>
@@ -139,7 +139,6 @@
                </div>
                <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
                    {% download_file_button stepId=3 scene=scene %}
-                   <p>{{ data.systemicParams }}</p>
                    <ul>
                     {% for key, value in data.systemicParams.items %}
                         <li>{{ key }}: {{ value }}</li>
@@ -150,30 +149,32 @@
                    {% download_file_button stepId=5 scene=scene %}
                  <div class="panel panel-default">
                    <!-- Default panel contents -->
-                   <div class="panel-heading">Variables globales</div>
+                   <div class="panel-heading">{% trans "Variables globales" %}</div>
                    <div class="panel-body">
                        <div class="col-md-6 col-sm-6 col-sx-12">
-                           {% read_only_field "Masa promedio de pasajero" data.operation.averageMassOfAPassanger "Kg" %}
+                           {% trans "Masa promedio de pasajero" as label %}
+                           {% read_only_field label data.operation.averageMassOfAPassanger "Kg" %}
                        </div>
                        <div class="col-md-6 col-sm-6 col-sx-12">
-                           {% read_only_field "Temperatura anual promedio" data.operation.annualTemperatureAverage "°C" %}
+                           {% trans "Temperatura anual promedio" as label %}
+                           {% read_only_field label data.operation.annualTemperatureAverage "°C" %}
                        </div>
                    </div>
                  </div>
                  <div class="panel panel-default">
-                   <div class="panel-heading">Períodos</div>
+                   <div class="panel-heading">{% trans "Períodos" %}</div>
                    <!-- Table -->
                    <table class="table table-striped">
                      <thead>
                        <tr>
                          <th>#</th>
-                         <th>Nombre</th>
-                         <th>Inicio</th>
-                         <th>Fin</th>
-                         <th>Temperatura</th>
-                         <th>Humedad</th>
-                         <th>Concentración CO<sub>2</sub></th>
-                         <th>Temperatura</th>
+                         <th>{% trans "Nombre" %}</th>
+                         <th>{% trans "Inicio" %}</th>
+                         <th>{% trans "Fin" %}</th>
+                         <th>{% trans "Temperatura" %}</th>
+                         <th>{% trans "Humedad" %}</th>
+                         <th>{% trans "Concentración CO<sub>2</sub>" %}</th>
+                         <th>{% trans "Temperatura" %}</th>
                        </tr>
                      </thead>
                      <tbody>
@@ -209,7 +210,7 @@
       <div class="x_panel">
         <div class="row x_title">
           <div class="col-md-6 col-sm-6 col-xs-12">
-            <h2>Modelos</h2>
+            <h2>{% trans "Modelos" %}</h2>
           </div>
           <div class="col-md-6 col-sm-6 col-xs-12">
           </div>
@@ -219,28 +220,28 @@
           <div class="col-md-3 col-sm-3 col-xs-12">
             <button class="btn btn-info btn-lg btn-block" disabled>
               <i class="fa fa-play fa-3x"></i>
-              <br><h1>Velocidad</h1>
+              <br><h1>{% trans "Velocidad" %}</h1>
             </button>
             <button class="btn btn-success btn-block" disabled>
-              <h2><i class="fa fa-eye fa-lg"></i> Resultados</h2>
+              <h2><i class="fa fa-eye fa-lg"></i> {% trans "Resultados" %}</h2>
             </button>
           </div>
           <div class="col-md-3 col-sm-3 col-xs-12">
             <button class="btn btn-info btn-lg btn-block">
               <i class="fa fa-play fa-3x"></i>
-              <br><h1>Fuerza</h1>
+              <br><h1>{% trans "Fuerza" %}</h1>
             </button>
             <button class="btn btn-success btn-block">
-              <h2><i class="fa fa-eye fa-lg"></i> Resultados</h2>
+              <h2><i class="fa fa-eye fa-lg"></i> {% trans "Resultados" %}</h2>
             </button>
           </div>
           <div class="col-md-3 col-sm-3 col-xs-12">
             <button class="btn btn-info btn-lg btn-block">
               <i class="fa fa-play fa-3x"></i>
-              <br><h1>Temperatura</h1>
+              <br><h1>{% trans "Temperatura" %}</h1>
             </button>
             <button class="btn btn-success btn-block">
-              <h2><i class="fa fa-eye fa-lg"></i> Resultados</h2>
+              <h2><i class="fa fa-eye fa-lg"></i> {% trans "Resultados" %}</h2>
             </button>
           </div>
           <div class="col-md-3 col-sm-3 col-xs-12">
@@ -252,32 +253,13 @@
               <br><h2>Detener</h2>
             </button>
             <button class="btn btn-success btn-block" disabled>
-              <h2><i class="fa fa-eye fa-lg"></i> Resultados</h2>
+              <h2><i class="fa fa-eye fa-lg"></i> {% trans "Resultados" %}</h2>
             </button>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-      <div class="x_panel">
-        <div class="row x_title">
-          <div class="col-md-6 col-sm-6 col-xs-12">
-            <h2>Input modelos</h2>
-          </div>
-          <div class="col-md-6 col-sm-6 col-xs-12">
-          </div>
-          <div class="clearfix"></div>
-        </div>
-        <div class="x_content">
-          <pre class="well"></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-
 
 </div>
 {% endblock %}
