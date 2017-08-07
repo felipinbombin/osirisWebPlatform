@@ -14,11 +14,13 @@ class GetSceneData(View):
     def __init__(self):
         self.context = {}
 
-    def get(self, request, sceneId):
-        """ return data of step 1 """
+    def getData(self, request, sceneId):
+        """ return dict object with scene data """
 
         sceneId = int(sceneId)
-        scene = Scene.objects.prefetch_related('metroline_set__metrostation_set', 'metroline_set__metrodepot_set').\
+        scene = Scene.objects.prefetch_related('metroline_set__metrostation_set',
+                                               'metroline_set__metrodepot_set',
+                                               'metroconnection_set__stations').\
             get(user=request.user, id=sceneId)
 
         lines = list(map(lambda obj: obj.getDict(), scene.metroline_set.all().order_by('id')))
@@ -39,7 +41,12 @@ class GetSceneData(View):
                     'operation': operation,
                     'currentStep': scene.currentStep,
                     'name': scene.name}
+        return response
 
+    def get(self, request, sceneId):
+        """ return data through http """
+
+        response = self.getData(request, sceneId)
         Status.getJsonStatus(Status.OK, response)
 
         return JsonResponse(response, safe=False)

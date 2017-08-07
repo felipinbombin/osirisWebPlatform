@@ -12,6 +12,7 @@ from scene.models import Scene
 from scene.statusResponse import Status
 from scene.models import MetroLineMetric, OperationPeriodForMetroStation, OperationPeriodForMetroTrack, \
     OperationPeriodForMetroLine
+from scene.views.SceneData import GetSceneData
 
 import numpy as np
 import datetime
@@ -26,8 +27,10 @@ class ScenePanel(View):
     def get(self, request, sceneId):
 
         try:
-            self.context['scene'] = Scene.objects.get(user=request.user, 
-                id=sceneId)
+            scene = Scene.objects.get(user=request.user, id=sceneId)
+            self.context['scene'] = scene
+            self.context['data'] = GetSceneData().getData(request, sceneId)
+            self.context['barWidth'] = int(scene.currentStep / 7 * 100)
         except:
             raise Http404
 
