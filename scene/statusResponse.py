@@ -9,29 +9,29 @@ class Status:
 
     statusDict = {
         OK: {
-          'code': OK, 
-          'title': 'Consulta exitosa', 
-          'message': ':-)', 'type': 'success'
+          "code": OK,
+          "title": u"Consulta exitosa",
+          "message": u":-)", "type": u"success"
         },
         INVALID_SIZE_FILE: {
-          'code': INVALID_SIZE_FILE, 
-          'title': 'Tamaño de archivo no válido', 
-          'message': 'El archivo ha superado el espacio permitido.', 'type': 'error'
+          "code": INVALID_SIZE_FILE,
+          "title": u"Tamaño de archivo no válido",
+          "message": u"El archivo ha superado el espacio permitido", "type": u"error"
         },
         INVALID_STEP: {
-          'code': INVALID_STEP, 
-          'title': 'Paso no permitido', 
-          'message': 'Debe completar los pasos previos.', 'type': 'error'
+          "code": INVALID_STEP,
+          "title": u"Paso no permitido",
+          "message": u"Debe completar los pasos previos", "type": u"error"
         },
         INVALID_FORMAT_FILE: {
-          'code': INVALID_FORMAT_FILE, 
-          'title': 'Formato de archivo no válido', 
-          'message': 'El archivo debe tener formato Excel.', 'type': 'error'
+          "code": INVALID_FORMAT_FILE,
+          "title": u"Formato de archivo no válido",
+          "message": u"El archivo debe tener formato Excel", "type": u"error"
         },
         EXCEL_ERROR: {
-          'code': EXCEL_ERROR,
-          'title': 'Error al procesar archivo',
-          'message': 'error description', 'type': 'error'
+          "code": EXCEL_ERROR,
+          "title": u"Error al procesar archivo",
+          "message": u"error description", "type": u"error"
         },
     }
 
@@ -40,10 +40,10 @@ class Status:
         """ return json with status and message related to code """
         status = Status.statusDict[code]
         if title is not None:
-            status['title'] = title
+            status["title"] = title
         if message is not None:
-            status['message'] = message
+            status["message"] = message
 
-        jsonObj['status'] = status
+        jsonObj["status"] = status
  
         return jsonObj
