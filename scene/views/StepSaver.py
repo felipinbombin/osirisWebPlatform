@@ -144,15 +144,21 @@ class Step2Saver(StepSaver):
 
     def save(self, data):
         super(Step2Saver, self).save(data)
-        systemicParamsData = data['systemicParams']
-        connections = data['connections']
 
-        SystemicParams.objects.filter(scene=self.scene).update(**systemicParamsData)
-        for connection in connections:
-            MetroConnection.objects.filter(scene=self.scene, externalId=connection['id'])\
-                .update(consumption=connection['consumption'])
+        try:
+            with transaction.atomic():
 
-        return True
+                systemicParamsData = data['systemicParams']
+                connections = data['connections']
+
+                SystemicParams.objects.filter(scene=self.scene).update(**systemicParamsData)
+                for connection in connections:
+                    MetroConnection.objects.filter(scene=self.scene, externalId=connection['id'])\
+                        .update(consumption=connection['consumption'])
+
+                return True
+        except IntegrityError:
+            return False
 
 class Step4Saver(StepSaver):
     """
@@ -165,44 +171,47 @@ class Step4Saver(StepSaver):
     def save(self, data):
         super(Step4Saver, self).save(data)
 
-        self.scene.averageMassOfAPassanger = data['averageMassOfAPassanger']
-        self.scene.annualTemperatureAverage = data['annualTemperatureAverage']
-        self.scene.save()
+        try:
+            with transaction.atomic():
+                self.scene.averageMassOfAPassanger = data['averageMassOfAPassanger']
+                self.scene.annualTemperatureAverage = data['annualTemperatureAverage']
+                self.scene.save()
 
-        OperationPeriod.objects.filter(scene=self.scene).update(isOld=True)
+                OperationPeriod.objects.filter(scene=self.scene).update(isOld=True)
 
-        for operationPeriod in data['operationPeriods']:
-            if operationPeriod["id"]:
-                OperationPeriod.objects.filter(scene=self.scene, externalId=operationPeriod["id"]).update(
-                    name=operationPeriod["name"],
-                    start=operationPeriod["start"],
-                    end=operationPeriod["end"],
-                    temperature=operationPeriod["temperature"],
-                    humidity=operationPeriod["humidity"],
-                    co2Concentration=operationPeriod["co2Concentration"],
-                    solarRadiation=operationPeriod["solarRadiation"],
-                    sunElevationAngle=operationPeriod["sunElevationAngle"],
-                    isOld=False
-                )
-            else:
-                OperationPeriod.objects.create(
-                    scene=self.scene,
-                    externalId=uuid.uuid4(),
-                    name=operationPeriod["name"],
-                    start=operationPeriod["start"],
-                    end=operationPeriod["end"],
-                    temperature=operationPeriod["temperature"],
-                    humidity=operationPeriod["humidity"],
-                    co2Concentration=operationPeriod["co2Concentration"],
-                    solarRadiation=operationPeriod["solarRadiation"],
-                    sunElevationAngle=operationPeriod["sunElevationAngle"]
-                )
-        OperationPeriod.objects.filter(scene=self.scene, isOld=True).delete()
+                for operationPeriod in data['operationPeriods']:
+                    if operationPeriod["id"]:
+                        OperationPeriod.objects.filter(scene=self.scene, externalId=operationPeriod["id"]).update(
+                            name=operationPeriod["name"],
+                            start=operationPeriod["start"],
+                            end=operationPeriod["end"],
+                            temperature=operationPeriod["temperature"],
+                            humidity=operationPeriod["humidity"],
+                            co2Concentration=operationPeriod["co2Concentration"],
+                            solarRadiation=operationPeriod["solarRadiation"],
+                            sunElevationAngle=operationPeriod["sunElevationAngle"],
+                            isOld=False
+                        )
+                    else:
+                        OperationPeriod.objects.create(
+                            scene=self.scene,
+                            externalId=uuid.uuid4(),
+                            name=operationPeriod["name"],
+                            start=operationPeriod["start"],
+                            end=operationPeriod["end"],
+                            temperature=operationPeriod["temperature"],
+                            humidity=operationPeriod["humidity"],
+                            co2Concentration=operationPeriod["co2Concentration"],
+                            solarRadiation=operationPeriod["solarRadiation"],
+                            sunElevationAngle=operationPeriod["sunElevationAngle"]
+                        )
+                OperationPeriod.objects.filter(scene=self.scene, isOld=True).delete()
 
-        # create template file for step 5
-        step5Excel = Step5ExcelWriter(self.scene)
-        step5Excel.createTemplateFile()
+                # create template file for step 5
+                step5Excel = Step5ExcelWriter(self.scene)
+                step5Excel.createTemplateFile()
 
-        return True
+                return True
 
-
+        except IntegrityError:
+            return False
