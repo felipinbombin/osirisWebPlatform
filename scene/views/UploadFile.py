@@ -143,8 +143,8 @@ class UploadOperationalFile(UploadFile):
         return response
 
 
-class UploadVelocityFile(UploadFile):
-    ''' validate data from stepa 7 '''
+class UploadSpeedFile(UploadFile):
+    ''' validate data from step 6 '''
 
     def processFile(self, scene, inMemoryFile):
             

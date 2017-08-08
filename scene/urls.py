@@ -2,7 +2,7 @@ from django.conf.urls import url
 from .views.defaults import StepsView, ValidationStepView
 from .views.SceneData import GetSceneData
 from .views.Panel import ScenePanel, ScenePanelData, InputModelData
-from .views.UploadFile import UploadTopologicFile, UploadSystemicFile, UploadOperationalFile, UploadVelocityFile
+from .views.UploadFile import UploadTopologicFile, UploadSystemicFile, UploadOperationalFile, UploadSpeedFile
 from .views.DownloadFile import DownloadStepFile, DownloadStepTemplate
 from django.contrib.auth.decorators import login_required
 
@@ -34,7 +34,7 @@ urlpatterns = [
       login_required(UploadOperationalFile.as_view()), name='uploadOperationalFile'),
     # step 6
     url(r'^scene/wizard/uploadVelocityFile/(?P<sceneId>[0-9]+)$', 
-      login_required(UploadVelocityFile.as_view()), name='uploadVelocityFile'),
+      login_required(UploadSpeedFile.as_view()), name='uploadSpeedFile'),
 
     # for steps 1,3,5 and 6
     url(r'^scene/wizard/downloadStepFile/(?P<stepId>[0-9]+)/(?P<sceneId>[0-9]+)$', 
