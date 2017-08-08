@@ -1,0 +1,253 @@
+{
+  "lines": [
+    {
+      "id": "",
+      "name": "L1",
+      "stations": [
+        {
+          "id": "",
+          "name": "S1"
+        },
+        {
+          "id": "",
+          "name": "S2"
+        },
+        {
+          "id": "",
+          "name": "S3"
+        },
+        {
+          "id": "",
+          "name": "S4"
+        },
+        {
+          "id": "",
+          "name": "S5"
+        },
+        {
+          "id": "",
+          "name": "S6"
+        },
+        {
+          "id": "",
+          "name": "S7"
+        },
+        {
+          "id": "",
+          "name": "S8"
+        },
+        {
+          "id": "",
+          "name": "S9"
+        },
+        {
+          "id": "",
+          "name": "S10"
+        }
+      ],
+      "depots": [
+        {
+          "id": "",
+          "name": "D1"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "L2",
+      "stations": [
+        {
+          "id": "",
+          "name": "S1"
+        },
+        {
+          "id": "",
+          "name": "S2"
+        },
+        {
+          "id": "",
+          "name": "S3"
+        },
+        {
+          "id": "",
+          "name": "S4"
+        },
+        {
+          "id": "",
+          "name": "S5"
+        },
+        {
+          "id": "",
+          "name": "S6"
+        },
+        {
+          "id": "",
+          "name": "S7"
+        },
+        {
+          "id": "",
+          "name": "S8"
+        },
+        {
+          "id": "",
+          "name": "S9"
+        },
+        {
+          "id": "",
+          "name": "S10"
+        },
+        {
+          "id": "",
+          "name": "S11"
+        },
+        {
+          "id": "",
+          "name": "S12"
+        }
+      ],
+      "depots": [
+        {
+          "id": "",
+          "name": "D1"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "",
+      "name": "ConnectionL1L2",
+      "stations": [
+        {
+          "id": "",
+          "line": {
+            "id": "",
+            "name": "L1",
+            "stations": [
+              {
+                "id": "",
+                "name": "S1"
+              },
+              {
+                "id": "",
+                "name": "S2"
+              },
+              {
+                "id": "",
+                "name": "S3"
+              },
+              {
+                "id": "",
+                "name": "S4"
+              },
+              {
+                "id": "",
+                "name": "S5"
+              },
+              {
+                "id": "",
+                "name": "S6"
+              },
+              {
+                "id": "",
+                "name": "S7"
+              },
+              {
+                "id": "",
+                "name": "S8"
+              },
+              {
+                "id": "",
+                "name": "S9"
+              },
+              {
+                "id": "",
+                "name": "S10"
+              }
+            ],
+            "depots": [
+              {
+                "id": "",
+                "name": "D1"
+              }
+            ]
+          },
+          "station": {
+            "id": "",
+            "name": "S5"
+          }
+        },
+        {
+          "id": "",
+          "line": {
+            "id": "",
+            "name": "L2",
+            "stations": [
+              {
+                "id": "",
+                "name": "S1"
+              },
+              {
+                "id": "",
+                "name": "S2"
+              },
+              {
+                "id": "",
+                "name": "S3"
+              },
+              {
+                "id": "",
+                "name": "S4"
+              },
+              {
+                "id": "",
+                "name": "S5"
+              },
+              {
+                "id": "",
+                "name": "S6"
+              },
+              {
+                "id": "",
+                "name": "S7"
+              },
+              {
+                "id": "",
+                "name": "S8"
+              },
+              {
+                "id": "",
+                "name": "S9"
+              },
+              {
+                "id": "",
+                "name": "S10"
+              },
+              {
+                "id": "",
+                "name": "S11"
+              },
+              {
+                "id": "",
+                "name": "S12"
+              }
+            ],
+            "depots": [
+              {
+                "id": "",
+                "name": "D1"
+              }
+            ]
+          },
+          "station": {
+            "id": "",
+            "name": "S6"
+          }
+        }
+      ],
+      "avgHeight": 7.2,
+      "avgSurface": 4300,
+      "description": "L1-S5<i class='fa fa-arrows-h fa-lg' aria-hidden='true'></i>L2-S6"
+    }
+  ]
+}
