@@ -18,7 +18,7 @@
       <a href="{% url 'scene:downloadStepTemplate' stepId=7 sceneId=scene.id %}" class="btn btn-info btn-lg btn-block btn-excel"><i class="fa fa-file-excel-o fa-5x"></i><br /><h1>Descargar plantilla</h1></a>
     </div>
     <div class="col-md-6 col-sm-6 col-xs-12">
-      <form id="step7form" action='{% url "scene:uploadVelocityFile" sceneId=scene.id %}' class="dropzone">
+      <form id="step7form" action='{% url "scene:uploadSpeedFile" sceneId=scene.id %}' class="dropzone">
       </form>
     </div>
   </div>
