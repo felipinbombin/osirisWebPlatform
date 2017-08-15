@@ -27,11 +27,11 @@ def download_file_button(stepId, scene, disabled = ""):
     else:
         timeStamp = timezone.localtime(timeStamp).strftime("%Y-%m-%d %H:%M:%S")
 
-    field = """
+    field = u"""
      <a href="{}" class="btn btn-success btn-lg btn-block {}">
        <i class="fa fa-file-excel-o"></i> {}
        (<span id="timestamp1">{}</span>)
      </a>
     """
-    buttonMessage = "Descargar ultimo archivo subido"
+    buttonMessage = u"Descargar ultimo archivo subido"
     return format_html(field, url, disabled, buttonMessage, timeStamp)
