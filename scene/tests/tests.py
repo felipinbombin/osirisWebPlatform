@@ -133,7 +133,6 @@ class CompleteSceneData(TestCase):
             params = self.sceneObj.systemicparams_set.first()
 
             for name, value in params.__dict__.items():
-
                 if isinstance(value, float):
                     self.assertEqual(value, data["systemicParams"][name])
 
@@ -144,7 +143,24 @@ class CompleteSceneData(TestCase):
 
     def check_step_4(self):
         """ simulate step 4 process """
+        STEP_4_JSON_FILE_NAME = "step4_data.json"
         STEP_4_URL = reverse("scene:validation", kwargs={"stepId": 4, "sceneId": self.sceneObj.id})
+
+        with open(os.path.join(self.FILE_PATH, STEP_4_JSON_FILE_NAME)) as fp:
+            data = json.loads(fp.read())
+            self.validate_step(STEP_4_URL, json.dumps(data), "application/json")
+
+            # check data was created correctly
+            self.load_scene_obj()
+
+            self.assertEqual(self.sceneObj.annualTemperatureAverage, float(data["annualTemperatureAverage"]))
+            self.assertEqual(self.sceneObj.averageMassOfAPassanger, float(data["averageMassOfAPassanger"]))
+            self.assertEqual(self.sceneObj.operationperiod_set.all().count(), 2)
+
+            for period_obj, period_data in zip(self.sceneObj.operationperiod_set.all().order_by("id"), data["operationPeriods"]):
+                for name, value in period_obj.__dict__.items():
+                    if isinstance(value, float):
+                        self.assertEqual(value, float(period_data[name]))
 
     def check_step_5(self):
         """ simulate step 5 process """
@@ -212,7 +228,47 @@ class CompleteSceneData(TestCase):
 
     def upload_systemic_file(self):
         """ simulate step 3 uploading excel file """
-        pass
+        UPLOAD_SYSTEMIC_FILE_URL = reverse("scene:uploadSystemicFile", kwargs={"sceneId": self.sceneObj.id})
+        SYSTEMIC_FILE_NAME = u"Escenario_sistemico.xlsx"
+
+        # upload file
+        with open(os.path.join(self.FILE_PATH, SYSTEMIC_FILE_NAME), "rb") as fp:
+            data = {"file": fp}
+            response = self.client.post(UPLOAD_SYSTEMIC_FILE_URL, data)
+
+            self.assertEqual(response.status_code, 200)
+            status = json.loads(response.content.decode("utf-8"))["status"]
+            self.assertEqual(status["code"], Status.getJsonStatus(Status.OK, {})["status"]["code"])
+
+            self.load_scene_obj()
+
+            for index, line_obj in enumerate(self.sceneObj.metroline_set.all().order_by("id")):
+
+                for track_obj in line_obj.metrotrack_set.all():
+                    self.assertIsNotNone(track_obj.auxiliariesConsumption)
+                    self.assertIsNotNone(track_obj.ventilationConsumption)
+
+                for depot_obj in line_obj.metrodepot_set.all():
+                    self.assertIsNotNone(depot_obj.auxConsumption)
+                    self.assertIsNotNone(depot_obj.ventilationConsumption)
+                    self.assertIsNotNone(depot_obj.dcConsumption)
+
+                for station_obj in line_obj.metrostation_set.all():
+                    self.assertIsNotNone(station_obj.minAuxConsumption)
+                    self.assertIsNotNone(station_obj.maxAuxConsumption)
+                    self.assertIsNotNone(station_obj.minHVACConsumption)
+                    self.assertIsNotNone(station_obj.maxHVACConsumption)
+                    self.assertIsNotNone(station_obj.tau)
+
+                self.assertIsNotNone(line_obj.usableEnergyContent)
+                self.assertIsNotNone(line_obj.chargingEfficiency)
+                self.assertIsNotNone(line_obj.dischargingEfficiency)
+                self.assertIsNotNone(line_obj.peakPower)
+                self.assertIsNotNone(line_obj.maximumEnergySavingPossiblePerHour)
+                self.assertIsNotNone(line_obj.energySavingMode)
+                self.assertIsNotNone(line_obj.powerLimitToFeed)
+
+            self.assertIsNotNone(self.sceneObj.timeStampStep3File)
 
     def upload_operation_file(self):
         """ simulate step 5 uploading excel file """
@@ -230,9 +286,9 @@ class CompleteSceneData(TestCase):
         self.check_step_1()
         self.check_step_2()
         self.upload_systemic_file()
-        """
         self.check_step_3()
         self.check_step_4()
+        """
         self.upload_operation_file()
         self.check_step_5()
         self.upload_speed_file()

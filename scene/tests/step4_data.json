@@ -1,0 +1,30 @@
+{
+  "averageMassOfAPassanger": "70",
+  "annualTemperatureAverage": "13.9",
+  "operationPeriods": [
+    {
+      "id": null,
+      "name": "H1",
+      "start": "07:00:00",
+      "end": "08:00:00",
+      "temperature": "12",
+      "humidity": "50",
+      "co2Concentration": "200",
+      "solarRadiation": "1000",
+      "sunElevationAngle": "30",
+      "internalId": null
+    },
+    {
+      "id": null,
+      "name": "H2",
+      "start": "08:00:00",
+      "end": "09:00:00",
+      "temperature": "11",
+      "humidity": "40",
+      "co2Concentration": "200",
+      "solarRadiation": "1000",
+      "sunElevationAngle": "30",
+      "internalId": null
+    }
+  ]
+}
