@@ -151,7 +151,11 @@ class Step2Saver(StepSaver):
                 systemicParamsData = data['systemicParams']
                 connections = data['connections']
 
+                if SystemicParams.objects.filter(scene=self.scene).count() == 0:
+                    SystemicParams.objects.create(scene=self.scene)
+
                 SystemicParams.objects.filter(scene=self.scene).update(**systemicParamsData)
+
                 for connection in connections:
                     MetroConnection.objects.filter(scene=self.scene, externalId=connection['id'])\
                         .update(consumption=connection['consumption'])
