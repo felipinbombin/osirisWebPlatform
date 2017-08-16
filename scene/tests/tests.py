@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from scene.models import Scene, MetroLineMetric
+from scene.models import Scene, MetroLineMetric, SystemicParams
 from scene.statusResponse import Status
 
 from collections import defaultdict
@@ -72,6 +72,7 @@ class CompleteSceneData(TestCase):
                                                        "metroline_set__metrostation_set",
                                                        "metroline_set__metrotrack_set",
                                                        "metroline_set__metrolinemetric_set",
+                                                       "systemicparams_set",
                                                        "metroconnection_set").get(name=self.scene_name)
 
     def validate_step(self, url, data, content_type=""):
@@ -79,8 +80,7 @@ class CompleteSceneData(TestCase):
         response = self.client.post(url, data, content_type)
 
         self.assertEqual(response.status_code, 200)
-
-        status = json.loads(response.content)["status"]
+        status = json.loads(response.content.decode("utf-8"))["status"]
         self.assertEqual(status["code"], Status.getJsonStatus(Status.OK, {})["status"]["code"])
 
         return response
@@ -118,7 +118,25 @@ class CompleteSceneData(TestCase):
 
     def check_step_2(self):
         """ simulate step 2 process """
+        STEP_2_JSON_FILE_NAME = "step2_data.json"
         STEP_2_URL = reverse("scene:validation", kwargs={"stepId": 2, "sceneId": self.sceneObj.id})
+
+        with open(os.path.join(self.FILE_PATH, STEP_2_JSON_FILE_NAME)) as fp:
+            data = json.loads(fp.read())
+            self.validate_step(STEP_2_URL, json.dumps(data), "application/json")
+
+            # check data was created correctly
+            self.load_scene_obj()
+
+            params = self.sceneObj.systemicparams_set.first()
+            print(SystemicParams.objects.first())
+            #self.assertEqual(self.sceneObj.systemicparams_set.all().count(), 1)
+
+            for v, i in params.items():
+                print(v)
+                print(i)
+
+
 
     def check_step_3(self):
         """ simulate step 3 process """
@@ -150,7 +168,7 @@ class CompleteSceneData(TestCase):
             response = self.client.post(UPLOAD_TOPOLOGIC_FILE_URL, data)
 
             self.assertEqual(response.status_code, 200)
-            status = json.loads(response.content)["status"]
+            status = json.loads(response.content.decode("utf-8"))["status"]
             self.assertEqual(status["code"], Status.getJsonStatus(Status.OK, {})["status"]["code"])
 
             self.load_scene_obj()
@@ -221,3 +239,12 @@ class CompleteSceneData(TestCase):
         self.upload_speed_file()
         self.check_step_6()
         """
+
+    def test_checkStep1WithoutPrevious(self):
+        """ test step 1 without previous step """
+        self.upload_topologic_file()
+        self.check_step_1()
+
+    def test_checkStep2WithoutPrevious(self):
+        """ test step 2 without previous step """
+        self.check_step_2()
