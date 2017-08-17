@@ -13,7 +13,7 @@ import xlrd
 
 
 class ExcelReader(object):
-    ''' to manage excel files '''
+    """ to manage excel files """
     __metaclass__ = ABCMeta
 
     def __init__(self, scene):
@@ -27,13 +27,13 @@ class ExcelReader(object):
 
 
 class Step1ExcelReader(ExcelReader):
-    ''' read excel file uploaded on step 2 '''
+    """ read excel file uploaded on step 2 """
 
     def __init__(self, scene):
         super(self.__class__, self).__init__(scene)
 
     def processFile(self, inMemoryFile):
-        ''' read excel file and retrieve data '''
+        """ read excel file and retrieve data """
         workbook = xlrd.open_workbook(file_contents=inMemoryFile.read())
 
         # all metro track records are old
@@ -124,14 +124,15 @@ class Step1ExcelReader(ExcelReader):
         self.scene.timeStampStep1File = timezone.now()
         self.scene.save()
 
+
 class Step3ExcelReader(ExcelReader):
-    ''' read excel file uploaded in step 3 '''
+    """ read excel file uploaded in step 3 """
 
     def __init__(self, scene):
         super(self.__class__, self).__init__(scene)
 
     def processFile(self, inMemoryFile):
-        ''' read excel file and retrieve data '''
+        """ read excel file and retrieve data """
         workbook = xlrd.open_workbook(file_contents=inMemoryFile.read())
 
         for line in self.scene.metroline_set.all().order_by('id'):
@@ -189,13 +190,13 @@ class Step3ExcelReader(ExcelReader):
         self.scene.save()
 
 class Step5ExcelReader(ExcelReader):
-    ''' create excel file for step 5 '''
+    """ create excel file for step 5 """
 
     def __init__(self, scene):
         super(self.__class__, self).__init__(scene)
 
     def processFile(self, inMemoryFile):
-        ''' read excel file and retrieve data '''
+        """ read excel file and retrieve data """
         workbook = xlrd.open_workbook(file_contents=inMemoryFile.read())
 
         # delete previous data of the line
@@ -405,4 +406,19 @@ class Step5ExcelReader(ExcelReader):
                 currentColumn = 1
 
         self.scene.timeStampStep5File = timezone.now()
+        self.scene.save()
+
+class Step6ExcelReader(ExcelReader):
+    """ create excel file for step 6 """
+
+    def __init__(self, scene):
+        super(self.__class__, self).__init__(scene)
+
+    def processFile(self, inMemoryFile):
+        """ read excel file and retrieve data """
+        workbook = xlrd.open_workbook(file_contents=inMemoryFile.read())
+
+        # process file
+
+        self.scene.timeStampStep6File = timezone.now()
         self.scene.save()

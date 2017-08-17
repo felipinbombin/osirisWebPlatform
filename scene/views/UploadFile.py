@@ -7,13 +7,13 @@ from abc import ABCMeta, abstractmethod
 
 from django.conf import settings
 from django.http import JsonResponse
-# Create your views here.
+from django.db import transaction, IntegrityError
 from django.views.generic import View
 
 from scene.models import Scene
 from scene.statusResponse import Status
 
-from .ExcelReader import Step1ExcelReader, Step3ExcelReader, Step5ExcelReader
+from .ExcelReader import Step1ExcelReader, Step3ExcelReader, Step5ExcelReader, Step6ExcelReader
 
 MESSAGE = {
     "FILE_TOO_BIG": "El archivo no puede tener un tamaño superior a 2 MB.",
@@ -24,8 +24,9 @@ MESSAGE = {
     "FILE_STEP6_UPLOADED_SUCCESSFULLY": "Archivo de velocidades subido exitosamente.",
 }
 
+
 class UploadFile(View):
-    ''' general upload file behavior '''
+    """ general upload file behavior """
     __metaclass__ = ABCMeta
 
     def __init__(self):
@@ -51,25 +52,27 @@ class UploadFile(View):
         sceneId = int(sceneId)
 
         sceneObj = Scene.objects.\
-                       prefetch_related('metroline_set__metrostation_set', 
-                       'metroline_set__metrodepot_set', 
-                       'metroline_set__metrotrack_set', 
-                       'operationperiod_set').\
-                       get(user=request.user, id=sceneId)
+            prefetch_related('metroline_set__metrostation_set',
+                             'metroline_set__metrodepot_set',
+                             'metroline_set__metrotrack_set',
+                             'operationperiod_set').\
+            get(user=request.user, id=sceneId)
 
         response = {}
 
         if sceneObj.currentStep > 0:
             inMemoryUploadedFile = request.FILES['file']
-            #try:
-            response = self.validateFile(inMemoryUploadedFile, response)
 
-            if response['status']['code'] == Status.OK:
-                # process file
-                response = self.processFile(sceneObj, inMemoryUploadedFile)
-            #except Exception as e:
-            #    Status.getJsonStatus(Status.EXCEL_ERROR, response)
-            #    response['status']['message'] = str(e)
+            try:
+                with transaction.atomic():
+                    response = self.validateFile(inMemoryUploadedFile, response)
+
+                    if response['status']['code'] == Status.OK:
+                        # process file
+                        response = self.processFile(sceneObj, inMemoryUploadedFile)
+            except Exception as e:
+                Status.getJsonStatus(Status.EXCEL_ERROR, response)
+                response['status']['message'] = str(e)
         else:
             Status.getJsonStatus(Status.INVALID_STEP, response)
 
@@ -97,7 +100,7 @@ class UploadFile(View):
 
 
 class UploadTopologicFile(UploadFile):
-    ''' validate data from step 1 '''
+    """ validate data from step 1 """
 
     def processFile(self, scene, inMemoryFile):
         # validate, update and insert new data
@@ -113,7 +116,7 @@ class UploadTopologicFile(UploadFile):
 
 
 class UploadSystemicFile(UploadFile):
-    ''' validate data from stepa 3 '''
+    """ validate data from stepa 3 """
 
     def processFile(self, scene, inMemoryFile):
         # validate, update and insert new data
@@ -129,7 +132,7 @@ class UploadSystemicFile(UploadFile):
 
 
 class UploadOperationalFile(UploadFile):
-    ''' validate data from stepa 5 '''
+    """ validate data from stepa 5 """
 
     def processFile(self, scene, inMemoryFile):
         # validate, update and insert new data
@@ -139,19 +142,16 @@ class UploadOperationalFile(UploadFile):
 
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = MESSAGE["FILE_STEP5_UPLOADED_SUCCESSFULLY"]
-
+        
         return response
 
 
 class UploadSpeedFile(UploadFile):
-    ''' validate data from step 6 '''
+    """ validate data from step 6 """
 
     def processFile(self, scene, inMemoryFile):
-            
-        # validate data
-        # delete previous data
-        # insert new data
-
+        # validate, update and insert new data
+        Step6ExcelReader(scene).processFile(inMemoryFile)
         # save file
         self.updateCurrentStep(scene, scene.step6File, inMemoryFile, 6)
 
@@ -159,4 +159,3 @@ class UploadSpeedFile(UploadFile):
         response['status']['message'] = MESSAGE["FILE_STEP6_UPLOADED_SUCCESSFULLY"]
 
         return response
-
