@@ -2,20 +2,19 @@
 from __future__ import unicode_literals
 
 from django.test import TestCase
-from django.test import Client
 
 from django.urls import reverse
-from django.contrib.auth.models import User
 from django.conf import settings
 
-from scene.models import Scene, MetroLineMetric, SystemicParams
+from scene.models import Scene, MetroLineMetric
 from scene.statusResponse import Status
+
+from testHelper import TestHelper
 
 from collections import defaultdict
 
 import os
 import json
-
 
 class CompleteSceneData(TestCase):
     """
@@ -26,77 +25,42 @@ class CompleteSceneData(TestCase):
         """
             create user and log in
         """
+        self.testHelper = TestHelper(self)
 
-        # log in inputs
-        username = "Felipinbombin"
-        password = "Felipinbombin"
-        email = "a@b.cl"
-
-        # create user on django contrib user model
-        User.objects.create_superuser(username=username, email=email, password=password)
-
-        # log in process
-        self.client = Client()
-        response = self.client.login(username=username, password=password)
-        self.assertTrue(response)
+        self.client = self.testHelper.get_logged_client()
 
         # create scene
         self.scene_name = "Escenario 1"
-        URL = reverse("admin:scene_scene_add")
-        response = self.client.post(URL, {"name": self.scene_name}, follow=True)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(Scene.objects.count(), 1)
+        self.scene_obj = self.testHelper.create_scene(self.scene_name)
 
         self.FILE_PATH, _ = os.path.split(os.path.abspath(__file__))
 
-        self.load_scene_obj()
-
     def tearDown(self):
         """ executed after every test """
-        self.load_scene_obj()
+        self.scene_obj = self.testHelper.get_scene_obj(self.scene_name)
 
         # delete uploaded files
-        if self.sceneObj.step1File:
-            os.remove(os.path.join(settings.MEDIA_ROOT, str(self.sceneObj.step1File)))
-        if self.sceneObj.step3File:
-            os.remove(os.path.join(settings.MEDIA_ROOT, str(self.sceneObj.step3File)))
-        if self.sceneObj.step5File:
-            os.remove(os.path.join(settings.MEDIA_ROOT, str(self.sceneObj.step5File)))
-        if self.sceneObj.step6File:
-            os.remove(os.path.join(settings.MEDIA_ROOT, str(self.sceneObj.step6File)))
-
-    def load_scene_obj(self):
-        """ reload scene obj with latest data """
-        self.sceneObj = Scene.objects.prefetch_related("metroline_set__metrodepot_set",
-                                                       "metroline_set__metrostation_set",
-                                                       "metroline_set__metrotrack_set",
-                                                       "metroline_set__metrolinemetric_set",
-                                                       "systemicparams_set",
-                                                       "metroconnection_set").get(name=self.scene_name)
-
-    def validate_step(self, url, data, content_type=""):
-        """ validate step to continue to next step """
-        response = self.client.post(url, data, content_type)
-
-        self.assertEqual(response.status_code, 200)
-        status = json.loads(response.content.decode("utf-8"))["status"]
-        self.assertEqual(status["code"], Status.getJsonStatus(Status.OK, {})["status"]["code"])
-
-        return response
+        if self.scene_obj.step1File:
+            os.remove(os.path.join(settings.MEDIA_ROOT, str(self.scene_obj.step1File)))
+        if self.scene_obj.step3File:
+            os.remove(os.path.join(settings.MEDIA_ROOT, str(self.scene_obj.step3File)))
+        if self.scene_obj.step5File:
+            os.remove(os.path.join(settings.MEDIA_ROOT, str(self.scene_obj.step5File)))
+        if self.scene_obj.step6File:
+            os.remove(os.path.join(settings.MEDIA_ROOT, str(self.scene_obj.step6File)))
 
     def check_step_0(self):
         """ simulate upload data for step 0 """
         STEP_0_JSON_FILE_NAME = "step0_data.json"
-        STEP_0_URL = reverse("scene:validation", kwargs={"stepId": 0, "sceneId": self.sceneObj.id})
+        STEP_0_URL = reverse("scene:validation", kwargs={"stepId": 0, "sceneId": self.scene_obj.id})
 
         with open(os.path.join(self.FILE_PATH, STEP_0_JSON_FILE_NAME)) as fp:
             data = json.loads(fp.read())
-            self.validate_step(STEP_0_URL, json.dumps(data), "application/json")
+            self.testHelper.make_post_request(STEP_0_URL, json.dumps(data), "application/json")
 
             # check data was created correctly
-            self.load_scene_obj()
-            lines = self.sceneObj.metroline_set.all().order_by("id")
+            self.scene_obj = self.testHelper.get_scene_obj(self.scene_name, with_related=True)
+            lines = self.scene_obj.metroline_set.all().order_by("id")
 
             for json_line, line_obj in zip(data["lines"], lines):
                 self.assertEqual(json_line["name"], line_obj.name)
@@ -113,24 +77,24 @@ class CompleteSceneData(TestCase):
 
     def check_step_1(self):
         """ simulate step 1 process """
-        STEP_1_URL = reverse("scene:validation", kwargs={"stepId": 1, "sceneId": self.sceneObj.id})
-        self.validate_step(STEP_1_URL, {})
+        STEP_1_URL = reverse("scene:validation", kwargs={"stepId": 1, "sceneId": self.scene_obj.id})
+        self.testHelper.make_post_request(STEP_1_URL, {})
 
     def check_step_2(self):
         """ simulate step 2 process """
         STEP_2_JSON_FILE_NAME = "step2_data.json"
-        STEP_2_URL = reverse("scene:validation", kwargs={"stepId": 2, "sceneId": self.sceneObj.id})
+        STEP_2_URL = reverse("scene:validation", kwargs={"stepId": 2, "sceneId": self.scene_obj.id})
 
         with open(os.path.join(self.FILE_PATH, STEP_2_JSON_FILE_NAME)) as fp:
             data = json.loads(fp.read())
-            self.validate_step(STEP_2_URL, json.dumps(data), "application/json")
+            self.testHelper.make_post_request(STEP_2_URL, json.dumps(data), "application/json")
 
             # check data was created correctly
-            self.load_scene_obj()
+            self.scene_obj = self.testHelper.get_scene_obj(self.scene_name, with_related=True)
 
-            self.assertEqual(self.sceneObj.systemicparams_set.all().count(), 1)
+            self.assertEqual(self.scene_obj.systemicparams_set.all().count(), 1)
 
-            params = self.sceneObj.systemicparams_set.first()
+            params = self.scene_obj.systemicparams_set.first()
 
             for name, value in params.__dict__.items():
                 if isinstance(value, float):
@@ -138,43 +102,44 @@ class CompleteSceneData(TestCase):
 
     def check_step_3(self):
         """ simulate step 3 process """
-        STEP_3_URL = reverse("scene:validation", kwargs={"stepId": 3, "sceneId": self.sceneObj.id})
-        self.validate_step(STEP_3_URL, {})
+        STEP_3_URL = reverse("scene:validation", kwargs={"stepId": 3, "sceneId": self.scene_obj.id})
+        self.testHelper.make_post_request(STEP_3_URL, {})
 
     def check_step_4(self):
         """ simulate step 4 process """
         STEP_4_JSON_FILE_NAME = "step4_data.json"
-        STEP_4_URL = reverse("scene:validation", kwargs={"stepId": 4, "sceneId": self.sceneObj.id})
+        STEP_4_URL = reverse("scene:validation", kwargs={"stepId": 4, "sceneId": self.scene_obj.id})
 
         with open(os.path.join(self.FILE_PATH, STEP_4_JSON_FILE_NAME)) as fp:
             data = json.loads(fp.read())
-            self.validate_step(STEP_4_URL, json.dumps(data), "application/json")
+            self.testHelper.make_post_request(STEP_4_URL, json.dumps(data), "application/json")
 
             # check data was created correctly
-            self.load_scene_obj()
+            self.scene_obj = self.testHelper.get_scene_obj(self.scene_name, with_related=True)
 
-            self.assertEqual(self.sceneObj.annualTemperatureAverage, float(data["annualTemperatureAverage"]))
-            self.assertEqual(self.sceneObj.averageMassOfAPassanger, float(data["averageMassOfAPassanger"]))
-            self.assertEqual(self.sceneObj.operationperiod_set.all().count(), 2)
+            self.assertEqual(self.scene_obj.annualTemperatureAverage, float(data["annualTemperatureAverage"]))
+            self.assertEqual(self.scene_obj.averageMassOfAPassanger, float(data["averageMassOfAPassanger"]))
+            self.assertEqual(self.scene_obj.operationperiod_set.all().count(), 2)
 
-            for period_obj, period_data in zip(self.sceneObj.operationperiod_set.all().order_by("id"), data["operationPeriods"]):
+            for period_obj, period_data in zip(self.scene_obj.operationperiod_set.all().order_by("id"),
+                                               data["operationPeriods"]):
                 for name, value in period_obj.__dict__.items():
                     if isinstance(value, float):
                         self.assertEqual(value, float(period_data[name]))
 
     def check_step_5(self):
         """ simulate step 5 process """
-        STEP_5_URL = reverse("scene:validation", kwargs={"stepId": 5, "sceneId": self.sceneObj.id})
-        self.validate_step(STEP_5_URL, {})
+        STEP_5_URL = reverse("scene:validation", kwargs={"stepId": 5, "sceneId": self.scene_obj.id})
+        self.testHelper.make_post_request(STEP_5_URL, {})
 
     def check_step_6(self):
         """ simulate step 6 process """
-        STEP_6_URL = reverse("scene:validation", kwargs={"stepId": 6, "sceneId": self.sceneObj.id})
-        self.validate_step(STEP_6_URL, {})
+        STEP_6_URL = reverse("scene:validation", kwargs={"stepId": 6, "sceneId": self.scene_obj.id})
+        self.testHelper.make_post_request(STEP_6_URL, {})
 
     def upload_topologic_file(self):
         """ simulate step 1 uploading excel file """
-        UPLOAD_TOPOLOGIC_FILE_URL = reverse("scene:uploadTopologicFile", kwargs={"sceneId": self.sceneObj.id})
+        UPLOAD_TOPOLOGIC_FILE_URL = reverse("scene:uploadTopologicFile", kwargs={"sceneId": self.scene_obj.id})
         TOPOLOGIC_FILE_NAME = u"Escenario_topologico.xlsx"
 
         # upload file
@@ -186,10 +151,10 @@ class CompleteSceneData(TestCase):
             status = json.loads(response.content.decode("utf-8"))["status"]
             self.assertEqual(status["code"], Status.getJsonStatus(Status.OK, {})["status"]["code"])
 
-            self.load_scene_obj()
+            self.scene_obj = self.testHelper.get_scene_obj(self.scene_name, with_related=True)
 
             metric_length = [9, 11]
-            for index, line_obj in enumerate(self.sceneObj.metroline_set.all().order_by("id")):
+            for index, line_obj in enumerate(self.scene_obj.metroline_set.all().order_by("id")):
                 self.assertEqual(line_obj.metrotrack_set.count(), line_obj.metrostation_set.count() - 1)
 
                 for track_obj in line_obj.metrotrack_set.all():
@@ -224,11 +189,11 @@ class CompleteSceneData(TestCase):
                         if metric_id in metric_dict:
                             self.assertEqual(len(metric_dict[metric_id]), metric_length[index])
 
-            self.assertIsNotNone(self.sceneObj.timeStampStep1File)
+            self.assertIsNotNone(self.scene_obj.timeStampStep1File)
 
     def upload_systemic_file(self):
         """ simulate step 3 uploading excel file """
-        UPLOAD_SYSTEMIC_FILE_URL = reverse("scene:uploadSystemicFile", kwargs={"sceneId": self.sceneObj.id})
+        UPLOAD_SYSTEMIC_FILE_URL = reverse("scene:uploadSystemicFile", kwargs={"sceneId": self.scene_obj.id})
         SYSTEMIC_FILE_NAME = u"Escenario_sistemico.xlsx"
 
         # upload file
@@ -240,9 +205,9 @@ class CompleteSceneData(TestCase):
             status = json.loads(response.content.decode("utf-8"))["status"]
             self.assertEqual(status["code"], Status.getJsonStatus(Status.OK, {})["status"]["code"])
 
-            self.load_scene_obj()
+            self.scene_obj = self.testHelper.get_scene_obj(self.scene_name, with_related=True)
 
-            for index, line_obj in enumerate(self.sceneObj.metroline_set.all().order_by("id")):
+            for index, line_obj in enumerate(self.scene_obj.metroline_set.all().order_by("id")):
 
                 for track_obj in line_obj.metrotrack_set.all():
                     self.assertIsNotNone(track_obj.auxiliariesConsumption)
@@ -268,15 +233,69 @@ class CompleteSceneData(TestCase):
                 self.assertIsNotNone(line_obj.energySavingMode)
                 self.assertIsNotNone(line_obj.powerLimitToFeed)
 
-            self.assertIsNotNone(self.sceneObj.timeStampStep3File)
+            self.assertIsNotNone(self.scene_obj.timeStampStep3File)
 
     def upload_operation_file(self):
         """ simulate step 5 uploading excel file """
-        pass
+        UPLOAD_OPERATION_FILE_URL = reverse("scene:uploadOperationalFile", kwargs={"sceneId": self.scene_obj.id})
+        OPERATION_FILE_NAME = u"Escenario_operacion.xlsx"
+
+        # upload file
+        with open(os.path.join(self.FILE_PATH, OPERATION_FILE_NAME), "rb") as fp:
+            data = {"file": fp}
+            response = self.client.post(UPLOAD_OPERATION_FILE_URL, data)
+
+            self.assertEqual(response.status_code, 200)
+            status = json.loads(response.content.decode("utf-8"))["status"]
+            self.assertEqual(status["code"], Status.getJsonStatus(Status.OK, {})["status"]["code"])
+
+            self.scene_obj = self.testHelper.get_scene_obj(self.scene_name, with_related=True)
+
+            for index, line_obj in enumerate(self.scene_obj.metroline_set.all().order_by("id")):
+
+                for operation_obj in self.scene_obj.operationperiod_set.all().order_by("id"):
+                    from scene.models import OperationPeriodForMetroLine, OperationPeriodForMetroStation, OperationPeriodForMetroTrack
+                    op_for_lines = OperationPeriodForMetroLine.objects.filter(operationPeriod=operation_obj,
+                                                                              metroLine=line_obj).count()
+                    #for o in OperationPeriodForMetroLine.objects.filter(operationPeriod=operation_obj,
+                    #                                                          metroLine=line_obj).order_by("id"):
+                    #    print("{} {} {}".format(o.metric, o.value, o.direction))
+                    self.assertEqual(op_for_lines, 11)
+                    for station_obj in line_obj.metrostation_set.all().order_by("id"):
+                        op_for_stations = OperationPeriodForMetroStation.objects.filter(operationPeriod=operation_obj,
+                                                                                        metroStation=station_obj).count()
+                        self.assertEqual(op_for_stations, 5)
+
+                    for track_obj in line_obj.metrotrack_set.all().order_by("id"):
+                        op_for_tracks = OperationPeriodForMetroTrack.objects.filter(operationPeriod=operation_obj,
+                                                                                    metroTrack=track_obj).count()
+                        self.assertEqual(op_for_tracks, 4)
+
+            self.assertIsNotNone(self.scene_obj.timeStampStep5File)
 
     def upload_speed_file(self):
         """ simulate step 6 uploading excel file """
         pass
+        """
+        UPLOAD_SPEED_FILE_URL = reverse("scene:uploadSpeedFile", kwargs={"sceneId": self.scene_obj.id})
+        OPERATION_FILE_NAME = u"Escenario_velocidad.xlsx"
+        
+        # upload file
+        with open(os.path.join(self.FILE_PATH, OPERATION_FILE_NAME), "rb") as fp:
+            data = {"file": fp}
+            response = self.client.post(UPLOAD_SPEED_FILE_URL, data)
+
+            self.assertEqual(response.status_code, 200)
+            status = json.loads(response.content.decode("utf-8"))["status"]
+            self.assertEqual(status["code"], Status.getJsonStatus(Status.OK, {})["status"]["code"])
+
+            self.load_scene_obj()
+
+            # now check changes
+            ...
+
+        self.assertIsNotNone(self.scene_obj.timeStampStep6File)
+        """
 
     def test_FillAllSteps(self):
         """ simulate correct process to create a escene """
@@ -288,9 +307,9 @@ class CompleteSceneData(TestCase):
         self.upload_systemic_file()
         self.check_step_3()
         self.check_step_4()
-        """
         self.upload_operation_file()
         self.check_step_5()
+        """
         self.upload_speed_file()
         self.check_step_6()
         """

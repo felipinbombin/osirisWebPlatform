@@ -54,11 +54,11 @@ class ScenePanelData(View):
 
         lines = []
         for line in scene.metroline_set.all():
-            lines.append(line.getDict())
+            lines.append(line.get_dict())
         
         connectionsDict = []
         for connection in scene.connection_set.all():
-            connectionsDict.append(connection.getDict())
+            connectionsDict.append(connection.get_dict())
 
         response = {'lines': lines, 'connections': connectionsDict}
 

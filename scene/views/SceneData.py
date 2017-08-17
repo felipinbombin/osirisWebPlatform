@@ -23,11 +23,11 @@ class GetSceneData(View):
                                                'metroconnection_set__stations').\
             get(user=request.user, id=sceneId)
 
-        lines = list(map(lambda obj: obj.getDict(), scene.metroline_set.all().order_by('id')))
-        connections = list(map(lambda obj: obj.getDict(), MetroConnection.objects.prefetch_related('stations').\
+        lines = list(map(lambda obj: obj.get_dict(), scene.metroline_set.all().order_by('id')))
+        connections = list(map(lambda obj: obj.get_dict(), MetroConnection.objects.prefetch_related('stations'). \
                                filter(scene=scene)))
-        systemicParams = SystemicParams.objects.get_or_create(scene=scene)[0].getDict()
-        operationPeriods = list(map(lambda obj: obj.getDict(), OperationPeriod.objects.filter(scene=scene).order_by('id')))
+        systemicParams = SystemicParams.objects.get_or_create(scene=scene)[0].get_dict()
+        operationPeriods = list(map(lambda obj: obj.get_dict(), OperationPeriod.objects.filter(scene=scene).order_by('id')))
 
         operation = {
             'averageMassOfAPassanger': scene.averageMassOfAPassanger,

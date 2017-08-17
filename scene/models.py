@@ -19,7 +19,7 @@ class OverwriteStorage(FileSystemStorage):
 
 # Create your models here.
 class Scene(models.Model):
-    ''' group of parameter to run models '''
+    """ group of parameter to run models """
     #######################################################
     # INTERNAL VARIABLES
     #######################################################
@@ -51,9 +51,9 @@ class Scene(models.Model):
     # GLOBAL CONDITION
     #######################################################
     averageMassOfAPassanger = models.FloatField(null=True)
-    ''' unit: Kg '''
+    """ unit: Kg """
     annualTemperatureAverage = models.FloatField(null=True)
-    ''' unit: °C '''
+    """ unit: °C """
 
     class Meta:
         verbose_name = 'escenario'
@@ -63,170 +63,171 @@ class Scene(models.Model):
     def __str__(self):
         return self.name
 
+
 class MetroLine(models.Model):
-    ''' metro line '''
+    """ metro line """
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
     externalId = models.UUIDField(null=False, unique=True)
-    ''' used to track record in wizard form, this way i know if is new record or previous '''
+    """ used to track record in wizard form, this way i know if is new record or previous """
     isOld = models.BooleanField(default=False)
-    ''' used when topological variables are updated '''
+    """ used when topological variables are updated """
     name = models.CharField(max_length=100)
     #######################################################
     # CONSUMPTION                                         
     #######################################################
     usableEnergyContent = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
     chargingEfficiency = models.FloatField(null=True)
-    ''' unit: % '''
+    """ unit: % """
     dischargingEfficiency = models.FloatField(null=True)
-    ''' unit: % '''
+    """ unit: % """
     peakPower = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
     maximumEnergySavingPossiblePerHour = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
     energySavingMode = models.FloatField(null=True)
-    ''' unit: Boolean '''
+    """ unit: Boolean """
     powerLimitToFeed = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
 
     class Meta:
         unique_together = ('scene', 'name',)
 
-    def getDict(self):
-        ''' dict '''
-        dict = {'id': self.externalId, 'name': self.name, 'stations': [], 'depots': []}
+    def get_dict(self):
+        """ dict """
+        line_dict = {'id': self.externalId, 'name': self.name, 'stations': [], 'depots': []}
 
         for station in self.metrostation_set.all().order_by('id'):
-            dict['stations'].append(station.getDict())
+            line_dict['stations'].append(station.get_dict())
 
         for depot in self.metrodepot_set.all().order_by('id'):
-            dict['depots'].append(depot.getDict())
+            line_dict['depots'].append(depot.get_dict())
 
-        return dict
+        return line_dict
 
 
 class MetroStation(models.Model):
-    ''' metro station'''
+    """ metro station"""
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
     externalId = models.UUIDField(null=False, unique=True)
-    ''' uses to track record in wizard form, this way i know if is new record or previous '''
+    """ uses to track record in wizard form, this way i know if is new record or previous """
     isOld = models.BooleanField(default=False)
-    ''' used when topological variables are updated '''
+    """ used when topological variables are updated """
     name = models.CharField(max_length=100)
     length = models.FloatField(null=True)
-    ''' length of the stations. Unit: meters '''
+    """ length of the stations. Unit: meters """
     secondLevelAverageHeight = models.FloatField(null=True)
-    ''' unit: meters '''
+    """ unit: meters """
     secondLevelFloorSurface = models.FloatField(null=True)
-    ''' unit: square meters '''
+    """ unit: square meters """
     platformSection = models.FloatField(null=True)
-    ''' unit: square meters '''
+    """ unit: square meters """
     platformAveragePerimeter = models.FloatField(null=True)
-    ''' unit: meters '''
+    """ unit: meters """
     #######################################################
     # CONSUMPTION                                         
     #######################################################
     minAuxConsumption = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
     maxAuxConsumption = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
     minHVACConsumption = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
     maxHVACConsumption = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
     tau = models.FloatField(null=True)
-    ''' unit: none '''
+    """ unit: none """
 
     class Meta:
         unique_together = ('metroLine', 'name',)
 
-    def getDict(self):
-        ''' dict structure '''
-        dict = {'id': self.externalId, 'name': self.name, 'lineName': self.metroLine.name}
+    def get_dict(self):
+        """ dict structure """
+        station_dict = {'id': self.externalId, 'name': self.name, 'lineName': self.metroLine.name}
 
-        return dict
+        return station_dict
 
 
 class MetroDepot(models.Model):
-    ''' train depot '''
+    """ train depot """
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
     externalId = models.UUIDField(null=False, unique=True)
-    ''' uses to track record in wizard form, this way i know if is new record or previous '''
+    """ uses to track record in wizard form, this way i know if is new record or previous """
     isOld = models.BooleanField(default=False)
-    ''' used when topological variables are updated '''
+    """ used when topological variables are updated """
     name = models.CharField(max_length=100)
     #######################################################
     # CONSUMPTION                                         
     #######################################################
     auxConsumption = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
     ventilationConsumption = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
     dcConsumption = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
 
     class Meta:
         unique_together = ('metroLine', 'name',)
 
-    def getDict(self):
-        ''' dict '''
-        dict = {'id': self.externalId, 'name': self.name}
+    def get_dict(self):
+        """ dict """
+        depot_dict = {'id': self.externalId, 'name': self.name}
 
-        return dict
+        return depot_dict
    
 
 class MetroConnection(models.Model):
-    ''' connection between metro stations fo different metro lines '''
+    """ connection between metro stations fo different metro lines """
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
     externalId = models.UUIDField(null=False, unique=True)
-    ''' used to track record in wizard form, this way i know if is new record or previous '''
+    """ used to track record in wizard form, this way i know if is new record or previous """
     isOld = models.BooleanField(default=False)
-    ''' used when topological variables are updated '''
+    """ used when topological variables are updated """
     name = models.CharField(max_length=100)
     stations = models.ManyToManyField(MetroStation, through='MetroConnectionStation')
     avgHeight = models.FloatField(null=True)
-    ''' unit: meters '''
+    """ unit: meters """
     avgSurface = models.FloatField(null=True)
-    ''' unit: square meters '''
+    """ unit: square meters """
     #######################################################
     # CONSUMPTION                                         
     #######################################################
     consumption = models.FloatField(null=True)
-    ''' unit: Watts '''
+    """ unit: Watts """
 
     class meta:
         unique_together = ('scene', 'name',)
 
-    def getDict(self):
-        ''' dict '''
-        dict = {'id': self.externalId, 'name': self.name, 'avgHeight': self.avgHeight, 'avgSurface': self.avgSurface,
-                'consumption': self.consumption, 'stations': []}
+    def get_dict(self):
+        """ dict """
+        conn_dict = {'id': self.externalId, 'name': self.name, 'avgHeight': self.avgHeight,
+                     'avgSurface': self.avgSurface, 'consumption': self.consumption, 'stations': []}
 
         for connectionStation in self.metroconnectionstation_set.all().order_by('id'):
-            dict['stations'].append(connectionStation.getDict())
+            conn_dict['stations'].append(connectionStation.get_dict())
 
-        return dict
+        return conn_dict
 
 class MetroConnectionStation(models.Model):
-    ''' bridge between MetroStation and MetroConnection models '''
+    """ bridge between MetroStation and MetroConnection models """
     metroStation = models.ForeignKey(MetroStation)
     metroConnection = models.ForeignKey(MetroConnection)
     isOld = models.BooleanField(default=False)
-    ''' used when topological variables are updated '''
+    """ used when topological variables are updated """
     externalId = models.UUIDField(null=False, unique=True)
-    ''' used to track record in wizard form, this way i know if is new record or previous '''
+    """ used to track record in wizard form, this way i know if is new record or previous """
 
-    def getDict(self):
-        ''' dict '''
-        dict = {'id': self.externalId, 'station': self.metroStation.getDict()}
+    def get_dict(self):
+        """ dict """
+        conn_dict = {'id': self.externalId, 'station': self.metroStation.get_dict()}
 
-        return dict
+        return conn_dict
 
 class MetroTrack(models.Model):
-    ''' connection between metro stations '''
+    """ connection between metro stations """
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
     isOld = models.BooleanField(default=False)
-    ''' used when topological variables are updated '''
+    """ used when topological variables are updated """
     name = models.CharField(max_length=100)
     startStation = models.ForeignKey(MetroStation, 
         related_name= 'startstation', 
@@ -235,22 +236,22 @@ class MetroTrack(models.Model):
         related_name= 'endstation', 
         on_delete=models.CASCADE)
     crossSection = models.FloatField(null=True)
-    ''' unit: square meters '''
+    """ unit: square meters """
     averagePerimeter = models.FloatField(null=True)
-    ''' unit: meters '''
+    """ unit: meters """
     length = models.FloatField(null=True)
-    ''' length of the stations. Unit: meters '''
+    """ length of the stations. Unit: meters """
     #######################################################
     # CONSUMPTION                                         
     #######################################################
     auxiliariesConsumption = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
     ventilationConsumption = models.FloatField(null=True)
-    ''' unit: W '''
+    """ unit: W """
 
 
 class MetroLineMetric(models.Model):
-    ''' metric defined by chunk '''
+    """ metric defined by chunk """
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
     # metric
     SLOPE = 'S'
@@ -274,16 +275,16 @@ class MetroLineMetric(models.Model):
         (REVERSE, '')
     )
     direction = models.CharField(max_length=50, null=True, choices=DIRECTION_CHOICES)
-    ''' example: s0-sN|sN-s0  '''
+    """ example: s0-sN|sN-s0  """
 
     
 class OperationPeriod(models.Model):
-    ''' operation period '''
+    """ operation period """
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
     isOld = models.BooleanField(default=False)
-    ''' used when topological variables are updated '''
+    """ used when topological variables are updated """
     externalId = models.UUIDField(null=False, unique=True)
-    ''' used to track record in wizard form, this way i know if is new record or previous '''
+    """ used to track record in wizard form, this way i know if is new record or previous """
 
     name = models.CharField(max_length=100)
     start = models.TimeField()
@@ -292,33 +293,33 @@ class OperationPeriod(models.Model):
     # AMBIENT CONDITION
     #######################################################
     temperature = models.FloatField()
-    ''' unit: °C '''
+    """ unit: °C """
     humidity = models.FloatField()
-    ''' unit: % '''
+    """ unit: % """
     co2Concentration = models.FloatField()
-    ''' unit: ppm '''
+    """ unit: ppm """
     solarRadiation = models.FloatField()
-    ''' unit: W/m2 '''
+    """ unit: W/m2 """
     sunElevationAngle = models.FloatField()
-    ''' unit: ° '''
+    """ unit: ° """
 
-    def getDict(self):
-        ''' dict '''
-        dict = {}
-        dict['id'] = self.externalId
-        dict['name'] = self.name
-        dict['start'] = self.start
-        dict['end'] = self.end
-        dict['temperature'] = self.temperature
-        dict['humidity'] = self.humidity
-        dict['co2Concentration'] = self.co2Concentration
-        dict['solarRadiation'] = self.solarRadiation
-        dict['sunElevationAngle'] = self.sunElevationAngle
+    def get_dict(self):
+        """ dict """
+        op_dict = {}
+        op_dict['id'] = self.externalId
+        op_dict['name'] = self.name
+        op_dict['start'] = self.start
+        op_dict['end'] = self.end
+        op_dict['temperature'] = self.temperature
+        op_dict['humidity'] = self.humidity
+        op_dict['co2Concentration'] = self.co2Concentration
+        op_dict['solarRadiation'] = self.solarRadiation
+        op_dict['sunElevationAngle'] = self.sunElevationAngle
 
-        return dict
+        return op_dict
 
 class OperationPeriodForMetroLine(models.Model):
-    ''' bridge between OperationPeriod and MetroLine models '''
+    """ bridge between OperationPeriod and MetroLine models """
     operationPeriod = models.ForeignKey(OperationPeriod)
     metroLine = models.ForeignKey(MetroLine)
     FREQUENCY = 'frequency'
@@ -338,18 +339,18 @@ class OperationPeriodForMetroLine(models.Model):
     metric = models.CharField(max_length=50, null=True, 
                                  choices=METRIC_CHOICES)
     value = models.FloatField(null=True)
-    ''' unit: depends of metric '''
+    """ unit: depends of metric """
     direction = models.CharField(max_length=50, null=True, 
                                  choices=MetroLineMetric.DIRECTION_CHOICES)
 
-    def getDict(self):
-        ''' dict '''
-        dict = {'metric': self.metric, 'value': self.value, 'direction': self.direction}
+    def get_dict(self):
+        """ dict """
+        op_dict = {'metric': self.metric, 'value': self.value, 'direction': self.direction}
 
-        return dict
+        return op_dict
 
 class OperationPeriodForMetroStation(models.Model):
-    ''' bridge between OperationPeriod and MetroStation models '''
+    """ bridge between OperationPeriod and MetroStation models """
     operationPeriod = models.ForeignKey(OperationPeriod)
     metroStation = models.ForeignKey(MetroStation)
     VENTILATION_FLOW = 'ventilationFlow'
@@ -362,18 +363,19 @@ class OperationPeriodForMetroStation(models.Model):
     )
     metric = models.CharField(max_length=50, null=True, choices=METRIC_CHOICES)
     value = models.FloatField(null=True)
-    ''' unit: depends of metric '''
+    """ unit: depends of metric """
     direction = models.CharField(max_length=50, null=True, 
                                  choices=MetroLineMetric.DIRECTION_CHOICES)
 
-    def getDict(self):
-        ''' dict '''
-        dict = {'metric': self.metric, 'value': self.value, 'direction': self.direction}
+    def get_dict(self):
+        """ dict """
+        op_dict = {'metric': self.metric, 'value': self.value, 'direction': self.direction}
 
-        return dict
+        return op_dict
+
 
 class OperationPeriodForMetroTrack(models.Model):
-    ''' bridge between OperationPeriod and MetroTrack models '''
+    """ bridge between OperationPeriod and MetroTrack models """
     operationPeriod = models.ForeignKey(OperationPeriod)
     metroTrack = models.ForeignKey(MetroTrack)
     PASSENGERS_TRAVELING_BETWEEN_STATION = 'PassengersTravelingBetweenStations'
@@ -384,19 +386,19 @@ class OperationPeriodForMetroTrack(models.Model):
     )
     metric = models.CharField(max_length=50, null=True, choices=METRIC_CHOICES)
     value = models.FloatField(null=True)
-    ''' unit: depends of metric '''
+    """ unit: depends of metric """
     direction = models.CharField(max_length=50, null=True, 
                                  choices=MetroLineMetric.DIRECTION_CHOICES)
 
-    def getDict(self):
-        ''' dict '''
-        dict = {'metric': self.metric, 'value': self.value, 'direction': self.direction}
+    def get_dict(self):
+        """ dict """
+        op_dict = {'metric': self.metric, 'value': self.value, 'direction': self.direction}
 
-        return dict
+        return op_dict
 
 
 class SystemicParams(models.Model):
-    ''' global systemic params '''
+    """ global systemic params """
     """
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
     group = models.CharField(max_length=30, null=False)
@@ -479,69 +481,69 @@ class SystemicParams(models.Model):
     trainsTerminalResistance = models.FloatField(null=True)
     voltageDCTrainsTerminals = models.FloatField(null=True)
 
-    def getDict(self):
-        ''' dict '''
-        dict = {}
+    def get_dict(self):
+        """ dict """
+        sys_dict = {}
 
         # TRAIN FORCES
-        dict['mass'] = self.mass
-        dict['inercialMass'] = self.inercialMass
-        dict['maxAccelerationAllowed'] = self.maxAccelerationAllowed
-        dict['maxStartingForceAllowed'] = self.maxStartingForceAllowed
-        dict['maxBrakingForceAllowed'] = self.maxBrakingForceAllowed
-        dict['speedOfMotorRegimeChange'] = self.speedOfMotorRegimeChange
-        dict['maxPower'] = self.maxPower
-        dict['maxSpeedAllowed'] = self.maxSpeedAllowed
+        sys_dict['mass'] = self.mass
+        sys_dict['inercialMass'] = self.inercialMass
+        sys_dict['maxAccelerationAllowed'] = self.maxAccelerationAllowed
+        sys_dict['maxStartingForceAllowed'] = self.maxStartingForceAllowed
+        sys_dict['maxBrakingForceAllowed'] = self.maxBrakingForceAllowed
+        sys_dict['speedOfMotorRegimeChange'] = self.speedOfMotorRegimeChange
+        sys_dict['maxPower'] = self.maxPower
+        sys_dict['maxSpeedAllowed'] = self.maxSpeedAllowed
 
-        dict['davisParameterA'] = self.davisParameterA
-        dict['davisParameterB'] = self.davisParameterB
-        dict['davisParameterC'] = self.davisParameterC
-        dict['davisParameterD'] = self.davisParameterD
-        dict['davisParameterE'] = self.davisParameterE
+        sys_dict['davisParameterA'] = self.davisParameterA
+        sys_dict['davisParameterB'] = self.davisParameterB
+        sys_dict['davisParameterC'] = self.davisParameterC
+        sys_dict['davisParameterD'] = self.davisParameterD
+        sys_dict['davisParameterE'] = self.davisParameterE
 
         # TRAIN TRACTION
-        dict['tractionSystemEfficiency'] = self.tractionSystemEfficiency
-        dict['brakingSystemEfficiency'] = self.brakingSystemEfficiency
-        dict['electricalBrakeTreshold'] = self.electricalBrakeTreshold
-        dict['electroMechanicalBrakeThreshold'] = self.electroMechanicalBrakeThreshold
+        sys_dict['tractionSystemEfficiency'] = self.tractionSystemEfficiency
+        sys_dict['brakingSystemEfficiency'] = self.brakingSystemEfficiency
+        sys_dict['electricalBrakeTreshold'] = self.electricalBrakeTreshold
+        sys_dict['electroMechanicalBrakeThreshold'] = self.electroMechanicalBrakeThreshold
 
         # TRAIN STRUCTURE
-        dict['length'] = self.length
-        dict['numberOfCars'] = self.numberOfCars
-        dict['carWidth'] = self.carWidth
-        dict['carHeight'] = self.carHeight
-        dict['vehicleWallThickness'] = self.vehicleWallThickness
-        dict['heatConductivityOfTheVehicleWall'] = self.heatConductivityOfTheVehicleWall
-        dict['cabinVolumeFactor'] = self.cabinVolumeFactor
-        dict['trainPassengerCapacity'] = self.trainPassengerCapacity
+        sys_dict['length'] = self.length
+        sys_dict['numberOfCars'] = self.numberOfCars
+        sys_dict['carWidth'] = self.carWidth
+        sys_dict['carHeight'] = self.carHeight
+        sys_dict['vehicleWallThickness'] = self.vehicleWallThickness
+        sys_dict['heatConductivityOfTheVehicleWall'] = self.heatConductivityOfTheVehicleWall
+        sys_dict['cabinVolumeFactor'] = self.cabinVolumeFactor
+        sys_dict['trainPassengerCapacity'] = self.trainPassengerCapacity
 
-        dict['point1Tin'] = self.point1Tin
-        dict['point2Tin'] = self.point2Tin
-        dict['point3Tin'] = self.point3Tin
-        dict['point4Tin'] = self.point4Tin
-        dict['point5Tin'] = self.point5Tin
-        dict['point1Tout'] = self.point1Tout
-        dict['point2Tout'] = self.point2Tout
-        dict['point3Tout'] = self.point3Tout
-        dict['point4Tout'] = self.point4Tout
-        dict['point5Tout'] = self.point5Tout
+        sys_dict['point1Tin'] = self.point1Tin
+        sys_dict['point2Tin'] = self.point2Tin
+        sys_dict['point3Tin'] = self.point3Tin
+        sys_dict['point4Tin'] = self.point4Tin
+        sys_dict['point5Tin'] = self.point5Tin
+        sys_dict['point1Tout'] = self.point1Tout
+        sys_dict['point2Tout'] = self.point2Tout
+        sys_dict['point3Tout'] = self.point3Tout
+        sys_dict['point4Tout'] = self.point4Tout
+        sys_dict['point5Tout'] = self.point5Tout
 
-        dict['hrsExtraPower'] = self.hrsExtraPower
-        dict['onBoardEnergyStorageSystem'] = self.onBoardEnergyStorageSystem
-        dict['storageCapacityWeighting'] = self.storageCapacityWeighting
+        sys_dict['hrsExtraPower'] = self.hrsExtraPower
+        sys_dict['onBoardEnergyStorageSystem'] = self.onBoardEnergyStorageSystem
+        sys_dict['storageCapacityWeighting'] = self.storageCapacityWeighting
 
         # TRAIN CMM TRACTION
-        dict['obessChargeEfficiency'] = self.obessChargeEfficiency
-        dict['obessDischargeEfficiency'] = self.obessDischargeEfficiency
-        dict['obessUsableEnergyContent'] = self.obessUsableEnergyContent
-        dict['maxDischargePower'] = self.maxDischargePower
-        dict['maxEnergySavingPossiblePerHour'] = self.maxEnergySavingPossiblePerHour
-        dict['powerLimitToFeed'] = self.powerLimitToFeed
+        sys_dict['obessChargeEfficiency'] = self.obessChargeEfficiency
+        sys_dict['obessDischargeEfficiency'] = self.obessDischargeEfficiency
+        sys_dict['obessUsableEnergyContent'] = self.obessUsableEnergyContent
+        sys_dict['maxDischargePower'] = self.maxDischargePower
+        sys_dict['maxEnergySavingPossiblePerHour'] = self.maxEnergySavingPossiblePerHour
+        sys_dict['powerLimitToFeed'] = self.powerLimitToFeed
 
         # TRAIN ENERGY
-        dict['hvacConsumption'] = self.hvacConsumption
-        dict['auxiliariesConsumption'] = self.auxiliariesConsumption
-        dict['trainsTerminalResistance'] = self.trainsTerminalResistance
-        dict['voltageDCTrainsTerminals'] = self.voltageDCTrainsTerminals
+        sys_dict['hvacConsumption'] = self.hvacConsumption
+        sys_dict['auxiliariesConsumption'] = self.auxiliariesConsumption
+        sys_dict['trainsTerminalResistance'] = self.trainsTerminalResistance
+        sys_dict['voltageDCTrainsTerminals'] = self.voltageDCTrainsTerminals
 
-        return dict
+        return sys_dict

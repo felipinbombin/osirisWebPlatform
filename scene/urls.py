@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^scene/wizard/uploadOperationalFile/(?P<sceneId>[0-9]+)$', 
       login_required(UploadOperationalFile.as_view()), name='uploadOperationalFile'),
     # step 6
-    url(r'^scene/wizard/uploadVelocityFile/(?P<sceneId>[0-9]+)$', 
+    url(r'^scene/wizard/uploadSpeedFile/(?P<sceneId>[0-9]+)$',
       login_required(UploadSpeedFile.as_view()), name='uploadSpeedFile'),
 
     # for steps 1,3,5 and 6
