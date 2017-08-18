@@ -107,7 +107,7 @@ class UploadTopologicFile(UploadFile):
         Step1ExcelReader(scene).processFile(inMemoryFile)
 
         # save file
-        self.updateCurrentStep(scene, scene.step1File, inMemoryFile, 1)
+        self.updateCurrentStep(scene, scene.step1File, inMemoryFile, 2)
 
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = MESSAGE["FILE_STEP1_UPLOADED_SUCCESSFULLY"]
@@ -123,7 +123,7 @@ class UploadSystemicFile(UploadFile):
         Step3ExcelReader(scene).processFile(inMemoryFile)
 
         # save file
-        self.updateCurrentStep(scene, scene.step3File, inMemoryFile, 3)
+        self.updateCurrentStep(scene, scene.step3File, inMemoryFile, 4)
 
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = MESSAGE["FILE_STEP3_UPLOADED_SUCCESSFULLY"]
@@ -138,7 +138,7 @@ class UploadOperationalFile(UploadFile):
         # validate, update and insert new data
         Step5ExcelReader(scene).processFile(inMemoryFile)
         # save file
-        self.updateCurrentStep(scene, scene.step5File, inMemoryFile, 5)
+        self.updateCurrentStep(scene, scene.step5File, inMemoryFile, 6)
 
         response = Status.getJsonStatus(Status.OK, {})
         response['status']['message'] = MESSAGE["FILE_STEP5_UPLOADED_SUCCESSFULLY"]
