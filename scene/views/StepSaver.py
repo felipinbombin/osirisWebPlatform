@@ -142,7 +142,10 @@ class Step2Saver(StepSaver):
         if isinstance(data, dict):
             for key, value in data.items():
                 self.validate(value, key)
-        elif data is None:
+        if isinstance(data, list):
+            for el in data:
+                self.validate(el)
+        elif data is None or data == "":
             response = Status.getJsonStatus(Status.EXCEL_ERROR, {})
             response["status"]["message"] = u"El valor del campo {} no puede ser vacío.".format(attr_name, data)
             raise(OsirisException(response))
