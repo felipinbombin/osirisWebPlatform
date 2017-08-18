@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.http import JsonResponse
-# Create your views here.
 from django.views.generic import View
 
 from scene.models import Scene, MetroConnection, SystemicParams, OperationPeriod
@@ -12,6 +11,7 @@ class GetSceneData(View):
     ''' get data of scene '''
 
     def __init__(self):
+        super(GetSceneData, self).__init__()
         self.context = {}
 
     def getData(self, request, sceneId):

@@ -2,6 +2,7 @@
 
 class Status:
     OK = 200
+    SUCCESS_NEW_NAME = 201
     INVALID_SIZE_FILE = 401
     INVALID_STEP = 402
     INVALID_FORMAT_FILE = 403
@@ -11,10 +12,15 @@ class Status:
     ERROR = 200
 
     statusDict = {
+        SUCCESS_NEW_NAME: {
+          "code": SUCCESS_NEW_NAME,
+          "title": u"Cambio exitoso",
+          "message": u"El nombre ha sido actualizado exitosamente.", "type": u"success"
+        },
         ERROR: {
           "code": ERROR,
           "title": u"Error",
-          "message": u"error genérico", "type": u"success"
+          "message": u"error genérico", "type": u"error"
         },
         OK: {
           "code": OK,

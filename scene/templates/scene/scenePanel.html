@@ -21,14 +21,14 @@
 <div id="content-main" class="col-md-12 col-sm-12 col-xs-12">
   <div class="page-title">
     <div class="title_left">
-      <h1>{{ scene.name }}
+        <h1><span data-bind="text: name">{{ scene.name }}</span>
         <span class="dropdown">
           <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
             <i class="fa fa-wrench" aria-hidden="true"></i>
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <li><a><i class="fa fa-header" aria-hidden="true"></i> {% trans "Cambiar nombre" %}</a></li>
+            <li><a data-bind="click: openForm"><i class="fa fa-header" aria-hidden="true"></i> {% trans "Cambiar nombre" %}</a></li>
             <li><a><i class="fa fa-trash" aria-hidden="true"></i> {% trans "Eliminar" %}</a></li>
           </ul>
         </span>
@@ -98,6 +98,31 @@
     </div>
   </div>
   {% include "scene/scenePanel_models.html" %}
+
+    <!-- modal to change scene name -->
+    <div class="modal fade" tabindex="-1" role="dialog" data-bind="modal: showChangeNameDialog">
+      <div class="modal-dialog">
+        <div class="modal-content" data-bind="with: changeNameFormLogic">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Cambiar nombre de escenario</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-horizontal form-label-left">
+              <div class="form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">Nombre</label>
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                  <input type="text" class="form-control" data-bind="value: name">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" data-bind="click : $root.changeName" autofocus>Cambiar nombre</button>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -108,37 +133,68 @@
     <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.js" %}"></script>
   {% endwith %}
   <script src="{% static "components/knockout/dist/knockout.debug.js" %}"></script>
+  <script src="{% static "js/knockout.components.js" %}"></script>
+  <script src="{% static "js/user.notification.js" %}"></script>
+  <script src="{% static "components/js-cookie/src/js.cookie.js" %}"></script>
   <script>
   $(document).ready(function() {
       const PATH_NAME = window.location.pathname.split("/");
       const SCENE_ID = parseInt(PATH_NAME[PATH_NAME.length - 1]);
-      const URL = '/admin/scene/wizard/getSceneData/' + SCENE_ID;
+      const URL_DATA = '/admin/scene/wizard/getSceneData/' + SCENE_ID;
+      const URL_CHANGE_NAME = '/admin/scene/panel/changeName/' + SCENE_ID;
 
       // knockout scene object
       let Scene = function () {
           let self = this;
 
-          self.lines = ko.observable();
-          self.connections = ko.observable();
-          self.operation = ko.observable();
-          self.systemicParams = ko.observable();
-
           self.name = ko.observable();
-          self.currentStep = ko.observable();
 
-          self.data = null;
-          // load scene data
-          $.get(URL, function (data) {
-              console.log(data);
-              self.lines(data["lines"]);
-              self.connections(data["connections"]);
-              self.operation(data["operation"]);
-              self.systemicParams(data["systemicParams"]);
+          // retrieve scene data
+          $.get(URL_DATA, function (data) {
               self.name(data["name"]);
-              self.currentStep(data["currentStep"]);
           });
+
+          /**************************************************
+           * FORM TO CHANGE SCENE NAME
+           ***************************************************/
+          self.showChangeNameDialog = ko.observable(false);
+          let changeNameFormLogic = function () {
+              let self = this;
+              self.name = ko.observable(null);
+          };
+          self.changeNameFormLogic = new changeNameFormLogic();
+          self.openForm = function () {
+              self.changeNameFormLogic.name(self.name());
+              self.showChangeNameDialog(true);
+          };
+          self.changeName = function () {
+              let newName = self.changeNameFormLogic.name();
+              if (newName !== null && newName !== "") {
+                  // retrieve scene data
+                  let csrf = Cookies.get("csrftoken");
+                  let data = {
+                      "new_name":  newName
+                  };
+                  $.ajax({
+                      url: URL_CHANGE_NAME,
+                      type: 'post',
+                      data: data,
+                      headers: {
+                        "X-CSRFToken": csrf
+                      },
+                      success: function (response) {
+                          self.name(newName);
+                          self.showChangeNameDialog(false);
+                          showNotificationMessage(response["status"]);
+                          console.log(response);
+                      }
+                  });
+              }
+          };
       };
-      let scene = new Scene();
+      let stepDOM = document.getElementById("content-main");
+      let viewModel = new Scene();
+      ko.applyBindings(viewModel, stepDOM);
       /* show input for first model
     $.get(URL, function(data){
       console.log(data);

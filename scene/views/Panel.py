@@ -18,10 +18,12 @@ from scene.views.SceneData import GetSceneData
 import numpy as np
 import datetime
 
+
 class ScenePanel(View):
     """ wizard form: first """
 
     def __init__(self):
+        super(ScenePanel, self).__init__()
         self.context = {}
         self.template = "scene/scenePanel.html"
 
@@ -42,10 +44,10 @@ class ChangeSceneName(View):
     """ view to change scene name """
 
     def __init__(self):
+        super(ChangeSceneName, self).__init__()
         self.context = {}
 
     def post(self, request, scene_id):
-        print(request.POST)
         response = {}
         try:
             scene_obj = Scene.objects.get(user=request.user, id=int(scene_id))
@@ -54,7 +56,7 @@ class ChangeSceneName(View):
             if new_name is not None and new_name != "":
                 scene_obj.name = new_name
                 scene_obj.save()
-                Status.getJsonStatus(Status.OK, response)
+                Status.getJsonStatus(Status.SUCCESS_NEW_NAME, response)
             else:
                 Status.getJsonStatus(Status.INVALID_SCENE_NAME, response)
 
@@ -63,10 +65,12 @@ class ChangeSceneName(View):
 
         return JsonResponse(response, safe=False)
 
+
 class DeleteScene(View):
     """ view to change scene name """
 
     def __init__(self):
+        super(DeleteScene, self).__init__()
         self.context = {}
 
     def post(self, request, scene_id):
@@ -90,6 +94,7 @@ class ScenePanelData(View):
     """ get inputModel of scene """
 
     def __init__(self):
+        super(ScenePanelData, self).__init__()
         self.context = {}
 
     def get(self, request, sceneId):
@@ -98,13 +103,13 @@ class ScenePanelData(View):
         sceneId = int(sceneId)
         scene = Scene.objects.prefetch_related("metroline_set__metrostation_set",
                                                "metroline_set__metrodepot_set",
-                                               "metroconnection_set__stations").\
+                                               "metroconnection_set__stations"). \
             get(user=request.user, id=sceneId)
 
         lines = []
         for line in scene.metroline_set.all():
             lines.append(line.get_dict())
-        
+
         connectionsDict = []
         for connection in scene.connection_set.all():
             connectionsDict.append(connection.get_dict())
@@ -132,10 +137,10 @@ class InputModelData(View):
                                                "metroline_set__metrotrack_set__operationperiodformetrotrack_set",
                                                "metroline_set__operationperiodformetroline_set",
                                                "metroconnection_set__metroconnectionstation_set__metroStation",
-                                               "systemicparams_set").\
+                                               "systemicparams_set"). \
             get(user=request.user, id=sceneId)
 
-        inputModel = {"oper":{},"top":{},"sist":{}}
+        inputModel = {"oper": {}, "top": {}, "sist": {}}
 
         lineNumber = scene.metroline_set.all().count()
         connectionNumber = scene.metroconnection_set.all().count()
@@ -147,7 +152,7 @@ class InputModelData(View):
         inputModel["top"]["nConnections"] = connectionNumber
 
         inputModel["top"]["nStations"] = np.empty([lineNumber, 1])
-        inputModel["top"]["nDepots"] = [0]*lineNumber #np.empty([lineNumber, 1])
+        inputModel["top"]["nDepots"] = [0] * lineNumber  # np.empty([lineNumber, 1])
         for index, line in enumerate(metroLines):
             inputModel["top"]["nStations"][index] = len(line.metrostation_set.all())
             inputModel["top"]["nDepots"][index] = len(line.metrodepot_set.all())
@@ -155,7 +160,8 @@ class InputModelData(View):
         if connectionNumber:
             conStations = [[None], [None]] * connectionNumber
             for i in range(0, connectionNumber):
-                for j, metroConnectionStation in enumerate(metroConnections[i].metroconnectionstation_set.all().order_by("id")):
+                for j, metroConnectionStation in enumerate(
+                        metroConnections[i].metroconnectionstation_set.all().order_by("id")):
                     conStations[j][i] = metroConnectionStation.metroStation.name
             inputModel["top"]["connections.stations"] = conStations
 
@@ -179,24 +185,22 @@ class InputModelData(View):
                 metricId = metric.metric + str(metric.direction)
                 metrics[metricId].append([metric.start, metric.end, metric.value])
 
-
             slopeLRId = MetroLineMetric.SLOPE + MetroLineMetric.GOING
             slopeLR = np.zeros([len(metrics[slopeLRId]), 3])
             for i in range(len(metrics[slopeLRId])):
-                slopeLR[i, 0] = metrics[slopeLRId][i][0] # start
-                slopeLR[i, 1] = metrics[slopeLRId][i][1] # end
-                slopeLR[i, 2] = metrics[slopeLRId][i][2] # value
+                slopeLR[i, 0] = metrics[slopeLRId][i][0]  # start
+                slopeLR[i, 1] = metrics[slopeLRId][i][1]  # end
+                slopeLR[i, 2] = metrics[slopeLRId][i][2]  # value
 
             slopeRLId = MetroLineMetric.SLOPE + MetroLineMetric.REVERSE
             slopeRL = np.zeros([len(metrics[slopeRLId]), 3])
             for i in range(len(metrics[slopeRLId])):
-                slopeRL[i, 0] = metrics[slopeRLId][i][0] # start
-                slopeRL[i, 1] = metrics[slopeRLId][i][1] # end
-                slopeRL[i, 2] = metrics[slopeRLId][i][2] # value
+                slopeRL[i, 0] = metrics[slopeRLId][i][0]  # start
+                slopeRL[i, 1] = metrics[slopeRLId][i][1]  # end
+                slopeRL[i, 2] = metrics[slopeRLId][i][2]  # value
 
             inputModel["top"]["lines"][index]["geometry"]["slopeLR"] = slopeLR
             inputModel["top"]["lines"][index]["geometry"]["slopeRL"] = slopeRL
-
 
             curveLRId = MetroLineMetric.CURVE_RADIUS + MetroLineMetric.GOING
             curveLR = np.zeros([len(metrics[curveLRId]), 3])
@@ -215,7 +219,6 @@ class InputModelData(View):
             inputModel["top"]["lines"][index]["geometry"]["curvLR"] = curveLR
             inputModel["top"]["lines"][index]["geometry"]["curvRL"] = curveRL
 
-
             speedLimitLRId = MetroLineMetric.SPEED_LIMIT + MetroLineMetric.GOING
             speedLimitLR = np.zeros([len(metrics[speedLimitLRId]), 3])
             for i in range(len(metrics[speedLimitLRId])):
@@ -233,7 +236,6 @@ class InputModelData(View):
             inputModel["top"]["lines"][index]["geometry"]["spBoundsLR"] = speedLimitLR
             inputModel["top"]["lines"][index]["geometry"]["spBoundsRL"] = speedLimitRL
 
-
             groundId = MetroLineMetric.GROUND + "None"
             grounds = np.zeros([len(metrics[groundId]), 3])
             for i in range(len(metrics[groundId])):
@@ -248,7 +250,6 @@ class InputModelData(View):
                 for i in range(int(i0), int(i1)):
                     groundByMeter[i] = [i, ground[2]]
             inputModel["top"]["lines"][index]["geometry"]["underabove"] = groundByMeter
-
 
             metroTracks = metroLine.metrotrack_set.all().order_by("id")
             metroStations = metroLine.metrostation_set.all().order_by("id")
@@ -371,8 +372,10 @@ class InputModelData(View):
             for i in range(0, len(metroStations)):
                 inputModel["sist"]["lines"][index]["stationsMinAuxConsumption"][i] = metroStations[i].minAuxConsumption
                 inputModel["sist"]["lines"][index]["stationsMaxAuxConsumption"][i] = metroStations[i].maxAuxConsumption
-                inputModel["sist"]["lines"][index]["stationsMinHVACConsumption"][i] = metroStations[i].minHVACConsumption
-                inputModel["sist"]["lines"][index]["stationsMaxHVACConsumption"][i] = metroStations[i].maxHVACConsumption
+                inputModel["sist"]["lines"][index]["stationsMinHVACConsumption"][i] = metroStations[
+                    i].minHVACConsumption
+                inputModel["sist"]["lines"][index]["stationsMaxHVACConsumption"][i] = metroStations[
+                    i].maxHVACConsumption
                 inputModel["sist"]["lines"][index]["stationsTauConsumption"][i] = metroStations[i].tau
 
             metroDepots = metroLine.metrodepot_set.all().order_by("id")
@@ -515,15 +518,21 @@ class InputModelData(View):
                 inputModel["oper"]["lines"][i]["percentajeDCDistLossesLR"][j] = metrics[percDCDistLossesLRId][j] / 100
                 inputModel["oper"]["lines"][i]["percentajeDCDistLossesRL"][j] = metrics[percDCDistLossesRLId][j] / 100
                 inputModel["oper"]["lines"][i]["percentajeACSubstationLossesEntireSystemLR"][j] = metrics[
-                                                                                                   percACSubstationLossesEntireSystemLRId][j] / 100
+                                                                                                      percACSubstationLossesEntireSystemLRId][
+                                                                                                      j] / 100
                 inputModel["oper"]["lines"][i]["percentajeACSubstationLossesEntireSystemRL"][j] = metrics[
-                                                                                                   percACSubstationLossesEntireSystemRLId][j] / 100
-                inputModel["oper"]["lines"][i]["percentajeACSubstationLossesACSystemLR"][j] = metrics[percACSubstationLossesACSystemLRId][j] / 100
-                inputModel["oper"]["lines"][i]["percentajeACSubstationLossesACSystemRL"][j] =  metrics[percACSubstationLossesACSystemRLId][j] / 100
-                inputModel["oper"]["lines"][i]["percentajeDCSubstationLossesLR"][j] =  metrics[percDCSubstationLossesLRId][j] / 100
-                inputModel["oper"]["lines"][i]["percentajeDCSubstationLossesRL"][j] =  metrics[percDCSubstationLossesRLId][j] / 100
+                                                                                                      percACSubstationLossesEntireSystemRLId][
+                                                                                                      j] / 100
+                inputModel["oper"]["lines"][i]["percentajeACSubstationLossesACSystemLR"][j] = \
+                metrics[percACSubstationLossesACSystemLRId][j] / 100
+                inputModel["oper"]["lines"][i]["percentajeACSubstationLossesACSystemRL"][j] = \
+                metrics[percACSubstationLossesACSystemRLId][j] / 100
+                inputModel["oper"]["lines"][i]["percentajeDCSubstationLossesLR"][j] = \
+                metrics[percDCSubstationLossesLRId][j] / 100
+                inputModel["oper"]["lines"][i]["percentajeDCSubstationLossesRL"][j] = \
+                metrics[percDCSubstationLossesRLId][j] / 100
 
-                inputModel["oper"]["lines"][i]["receptivity"][j] =  metrics[receptivityId][j] / 100
+                inputModel["oper"]["lines"][i]["receptivity"][j] = metrics[receptivityId][j] / 100
 
         response = {"inputModel": inputModel}
         Status.getJsonStatus(Status.OK, response)
@@ -541,6 +550,7 @@ class InputModelData(View):
                     return str(obj)
                 else:
                     return super(MyEncoder, self).default(obj)
+
         response = json.dumps(response, ensure_ascii=False, cls=MyEncoder)
         response = json.loads(response)
         """

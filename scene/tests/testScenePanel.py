@@ -37,7 +37,8 @@ class SceneDataPanel(TestCase):
         data = {
             "new_name": new_name
         }
-        self.testHelper.make_post_request(URL, data)
+        self.testHelper.make_post_request(URL, data,
+                                          expected_response=Status.getJsonStatus(Status.SUCCESS_NEW_NAME, {}))
 
         self.scene_obj.refresh_from_db()
         self.assertEqual(self.scene_obj.name, new_name)
