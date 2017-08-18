@@ -1,0 +1,149 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify join_by_attr join_by_attr_arrow print_connection_description %}
+{% load read_only_field download_file_button %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+  {{ media }}
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  {% with "components/gentelella/vendors/" as gentelella_static %}
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.css" %}" rel="stylesheet">
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.css" %}" rel="stylesheet">
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.css" %}" rel="stylesheet">
+  {% endwith %}
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="col-md-12 col-sm-12 col-xs-12">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>{{ scene.name }}
+        <span class="dropdown">
+          <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <i class="fa fa-wrench" aria-hidden="true"></i>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a><i class="fa fa-header" aria-hidden="true"></i> {% trans "Cambiar nombre" %}</a></li>
+            <li><a><i class="fa fa-trash" aria-hidden="true"></i> {% trans "Eliminar" %}</a></li>
+          </ul>
+        </span>
+      </h1>
+    </div>
+    <div class="title_right">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>{% trans "Estado" %}: {{ scene.status }} <small></small></h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <div class="row">
+            <div class="col-md-10 col-sm-10 col-sx-12">
+              <div class="progress">
+                <div class="progress-bar progress-bar-{% if scene.currentStep < 6 %}danger{% else %}success{% endif %}"
+                   style="width: {{ barWidth }}%;">
+                   {% if scene.currentStep < 6 %}
+                   {% trans "FALTA COMPLETAR PASO" %} {{ scene.currentStep|add:1 }}
+                   {% else %}
+                   {% trans "COMPLETADO" %}
+                   {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 col-sm-2 col-sx-12">
+      <a href="{% url 'scene:wizard' sceneId=scene.id %}"type="button" class="pull-right btn btn-success btn-xs btn-block">
+        <i class="fa fa-edit" aria-hidden="true"></i> {% trans "Editar escenario" %}
+      </a>
+            </div>
+          </div>
+
+          <div class="" role="tabpanel" data-example-id="togglable-tabs">
+            <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+              <li role="presentation" class="active"><a href="#tab_content1" id="tab1" role="tab" data-toggle="tab" aria-expanded="true">{% trans "Topología" %}</a>
+              </li>
+              <li role="presentation" class=""><a href="#tab_content2" role="tab" id="tab2" data-toggle="tab" aria-expanded="false">{% trans "Sistémico" %}</a>
+              </li>
+              <li role="presentation" class=""><a href="#tab_content3" role="tab" id="tab3" data-toggle="tab" aria-expanded="false">{% trans "Operación" %}</a>
+               </li>
+              <li role="presentation" class=""><a href="#tab_content4" role="tab" id="tab4" data-toggle="tab" aria-expanded="false">{% trans "Velocidad" %}</a>
+               </li>
+             </ul>
+
+             <div id="myTabContent" class="tab-content">
+               <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+                 {% include "scene/scenePanel_topology.html" %}
+               </div>
+               <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+                 {% include "scene/scenePanel_energySystem.html" %}
+               </div>
+               <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
+                 {% include "scene/scenePanel_operation.html" %}
+               </div>
+               <div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="profile-tab">
+                   {% download_file_button stepId=6 scene=scene %}
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+    </div>
+  </div>
+  {% include "scene/scenePanel_models.html" %}
+</div>
+{% endblock %}
+
+{% block extrajs %}
+  {% with "components/gentelella/vendors/" as gentelella_static %}
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.js" %}"></script>
+  {% endwith %}
+  <script src="{% static "components/knockout/dist/knockout.debug.js" %}"></script>
+  <script>
+  $(document).ready(function() {
+      const PATH_NAME = window.location.pathname.split("/");
+      const SCENE_ID = parseInt(PATH_NAME[PATH_NAME.length - 1]);
+      const URL = '/admin/scene/wizard/getSceneData/' + SCENE_ID;
+
+      // knockout scene object
+      let Scene = function () {
+          let self = this;
+
+          self.lines = ko.observable();
+          self.connections = ko.observable();
+          self.operation = ko.observable();
+          self.systemicParams = ko.observable();
+
+          self.name = ko.observable();
+          self.currentStep = ko.observable();
+
+          self.data = null;
+          // load scene data
+          $.get(URL, function (data) {
+              console.log(data);
+              self.lines(data["lines"]);
+              self.connections(data["connections"]);
+              self.operation(data["operation"]);
+              self.systemicParams(data["systemicParams"]);
+              self.name(data["name"]);
+              self.currentStep(data["currentStep"]);
+          });
+      };
+      let scene = new Scene();
+      /* show input for first model
+    $.get(URL, function(data){
+      console.log(data);
+      $('.well').html(JSON.stringify(data['inputModel'], null, '  '));
+    });*/
+  });
+  </script>
+{% endblock %}

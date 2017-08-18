@@ -1,0 +1,57 @@
+{% load download_file_button i18n join_by_attr_arrow join_by_attr print_connection_description %}
+{% download_file_button stepId=1 scene=scene %}
+ <div class="panel panel-default">
+   <!-- Default panel contents -->
+     <div class="panel-heading">{% trans "Líneas" %}</div>
+   <!-- Table -->
+   <table class="table table-striped">
+     <thead>
+       <tr>
+         <th>#</th>
+         <th>{% trans "Nombre" %}</th>
+         <th>{% trans "N° Estaciones" %}</th>
+         <th>{% trans "Estaciones" %}</th>
+         <th>{% trans "Depósitos" %}</th>
+       </tr>
+     </thead>
+     <tbody>
+       {% for line in data.lines %}
+       <tr>
+         <th scope="row">{{ forloop.counter }}</th>
+         <td>{{ line.name }}</td>
+         <td>{{ line.stations|length }}</td>
+         <td>{{ line.stations|join_by_attr_arrow:"name"|safe }}</td>
+         <td>{{ line.depots|join_by_attr:"name"|safe }}</td>
+       </tr>
+       {% endfor %}
+     </tbody>
+   </table>
+ </div>
+
+ <div class="panel panel-default">
+   <!-- Default panel contents -->
+   <div class="panel-heading">{% trans "Conexiones" %}</div>
+   <!-- Table -->
+   <table class="table table-striped">
+     <thead>
+       <tr>
+         <th>#</th>
+         <th>{% trans "Nombre" %}</th>
+         <th>{% trans "Estaciones" %}</th>
+         <th>{% trans "Alt. prom." %} (m)</th>
+         <th>{% trans "Sup. prom." %} (m<sup>2</sup>)</th>
+       </tr>
+     </thead>
+     <tbody>
+       {% for connection in data.connections %}
+       <tr>
+         <th scope="row">{{ forloop.counter }}</th>
+         <td>{{ connection.name }}</td>
+         <td>{{ connection.stations|print_connection_description|safe }}</td>
+         <td>{{ connection.avgHeight }}</td>
+         <td>{{ connection.avgSurface }}</td>
+       </tr>
+       {% endfor %}
+     </tbody>
+   </table>
+ </div>

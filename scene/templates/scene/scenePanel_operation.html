@@ -1,0 +1,50 @@
+{% load download_file_button i18n read_only_field %}
+   {% download_file_button stepId=5 scene=scene %}
+ <div class="panel panel-default">
+   <!-- Default panel contents -->
+   <div class="panel-heading">{% trans "Variables globales" %}</div>
+   <div class="panel-body">
+       <div class="col-md-6 col-sm-6 col-sx-12">
+           {% trans "Masa promedio de pasajero" as label %}
+           {% read_only_field label data.operation.averageMassOfAPassanger "Kg" %}
+       </div>
+       <div class="col-md-6 col-sm-6 col-sx-12">
+           {% trans "Temperatura anual promedio" as label %}
+           {% read_only_field label data.operation.annualTemperatureAverage "°C" %}
+       </div>
+   </div>
+ </div>
+ <div class="panel panel-default">
+   <div class="panel-heading">{% trans "Períodos" %}</div>
+   <!-- Table -->
+   <table class="table table-striped">
+     <thead>
+       <tr>
+         <th>#</th>
+         <th>{% trans "Nombre" %}</th>
+         <th>{% trans "Inicio" %}</th>
+         <th>{% trans "Fin" %}</th>
+         <th>{% trans "Temperatura" %}</th>
+         <th>{% trans "Humedad" %}</th>
+         <th>{% trans "Concentración CO<sub>2</sub>" %}</th>
+         <th>{% trans "Radiación solar" %}</th>
+         <th>{% trans "Ángulo de elevación del sol" %}</th>
+       </tr>
+     </thead>
+     <tbody>
+       {% for period in data.operation.periods %}
+       <tr>
+         <th scope="row">{{ forloop.counter }}</th>
+         <td>{{ period.name }}</td>
+         <td>{{ period.start }}</td>
+         <td>{{ period.end }}</td>
+         <td>{{ period.temperature }}</td>
+         <td>{{ period.humidity }}</td>
+         <td>{{ period.co2Concentration }}</td>
+         <td>{{ period.solarRadiation }}</td>
+         <td>{{ period.sunElevationAngle }}</td>
+       </tr>
+       {% endfor %}
+     </tbody>
+   </table>
+ </div>

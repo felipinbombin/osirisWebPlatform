@@ -23,7 +23,7 @@ class ScenePanel(View):
 
     def __init__(self):
         self.context = {}
-        self.template = "scene/sceneView.html"
+        self.template = "scene/scenePanel.html"
 
     def get(self, request, sceneId):
 

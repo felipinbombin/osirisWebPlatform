@@ -1,0 +1,7 @@
+{% load download_file_button %}
+{% download_file_button stepId=3 scene=scene %}
+<ul>
+{% for key, value in data.systemicParams.items %}
+    <li>{{ key }}: {{ value }}</li>
+{% endfor %}
+</ul>
