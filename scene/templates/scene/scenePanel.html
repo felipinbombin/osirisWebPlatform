@@ -133,73 +133,13 @@
     <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.js" %}"></script>
   {% endwith %}
   <script src="{% static "components/knockout/dist/knockout.debug.js" %}"></script>
+  <script src="{% static "components/js-cookie/src/js.cookie.js" %}"></script>
+  <script src="{% static "components/spin.js/spin.min.js" %}"></script>
   <script src="{% static "js/knockout.components.js" %}"></script>
   <script src="{% static "js/user.notification.js" %}"></script>
-  <script src="{% static "components/js-cookie/src/js.cookie.js" %}"></script>
+  <script src="{% static "js/spinConfig.js" %}"></script>
+  <script src="{% static "js/scenePanel.js" %}"></script>
   <script>
-  $(document).ready(function() {
-      const PATH_NAME = window.location.pathname.split("/");
-      const SCENE_ID = parseInt(PATH_NAME[PATH_NAME.length - 1]);
-      const URL_DATA = '/admin/scene/wizard/getSceneData/' + SCENE_ID;
-      const URL_CHANGE_NAME = '/admin/scene/panel/changeName/' + SCENE_ID;
 
-      // knockout scene object
-      let Scene = function () {
-          let self = this;
-
-          self.name = ko.observable();
-
-          // retrieve scene data
-          $.get(URL_DATA, function (data) {
-              self.name(data["name"]);
-          });
-
-          /**************************************************
-           * FORM TO CHANGE SCENE NAME
-           ***************************************************/
-          self.showChangeNameDialog = ko.observable(false);
-          let changeNameFormLogic = function () {
-              let self = this;
-              self.name = ko.observable(null);
-          };
-          self.changeNameFormLogic = new changeNameFormLogic();
-          self.openForm = function () {
-              self.changeNameFormLogic.name(self.name());
-              self.showChangeNameDialog(true);
-          };
-          self.changeName = function () {
-              let newName = self.changeNameFormLogic.name();
-              if (newName !== null && newName !== "") {
-                  // retrieve scene data
-                  let csrf = Cookies.get("csrftoken");
-                  let data = {
-                      "new_name":  newName
-                  };
-                  $.ajax({
-                      url: URL_CHANGE_NAME,
-                      type: 'post',
-                      data: data,
-                      headers: {
-                        "X-CSRFToken": csrf
-                      },
-                      success: function (response) {
-                          self.name(newName);
-                          self.showChangeNameDialog(false);
-                          showNotificationMessage(response["status"]);
-                          console.log(response);
-                      }
-                  });
-              }
-          };
-      };
-      let stepDOM = document.getElementById("content-main");
-      let viewModel = new Scene();
-      ko.applyBindings(viewModel, stepDOM);
-      /* show input for first model
-    $.get(URL, function(data){
-      console.log(data);
-      $('.well').html(JSON.stringify(data['inputModel'], null, '  '));
-    });*/
-  });
   </script>
 {% endblock %}
