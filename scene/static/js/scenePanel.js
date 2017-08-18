@@ -3,8 +3,10 @@
 $(document).ready(function () {
     const PATH_NAME = window.location.pathname.split("/");
     const SCENE_ID = parseInt(PATH_NAME[PATH_NAME.length - 1]);
-    const URL_DATA = '/admin/scene/wizard/getSceneData/' + SCENE_ID;
-    const URL_CHANGE_NAME = '/admin/scene/panel/changeName/' + SCENE_ID;
+    const URL_DATA = "/admin/scene/wizard/getSceneData/" + SCENE_ID;
+    const URL_CHANGE_NAME = "/admin/scene/panel/changeName/" + SCENE_ID;
+    const URL_DELETE_SCENE = "/admin/scene/panel/delete/" + SCENE_ID;
+    const URL_SCENE_ADMIN = "/admin/scene/scene/";
 
     // knockout scene object
     let Scene = function () {
@@ -58,6 +60,34 @@ $(document).ready(function () {
                     }
                 });
             }
+        };
+
+        /**************************************************
+         * FORM TO DELETE SCENE
+         ***************************************************/
+        self.showDeleteDialog = ko.observable(false);
+        self.delete = function () {
+            // retrieve scene data
+            let csrf = Cookies.get("csrftoken");
+
+            // activate spinjs
+            spinner.spin(spinnerParentDOM);
+            $.ajax({
+                url: URL_DELETE_SCENE,
+                type: "post",
+                headers: {
+                    "X-CSRFToken": csrf
+                },
+                success: function (response) {
+                    self.showDeleteDialog(false);
+                    showNotificationMessage(response["status"]);
+                    // redirect
+                    window.location.replace("http://" + window.location.host + URL_SCENE_ADMIN);
+                },
+                complete: function () {
+                    spinner.stop();
+                }
+            });
         };
     };
     let stepDOM = document.getElementById("content-main");

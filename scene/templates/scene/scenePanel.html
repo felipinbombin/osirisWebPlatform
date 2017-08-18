@@ -29,7 +29,7 @@
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
             <li><a data-bind="click: openForm"><i class="fa fa-header" aria-hidden="true"></i> {% trans "Cambiar nombre" %}</a></li>
-            <li><a><i class="fa fa-trash" aria-hidden="true"></i> {% trans "Eliminar" %}</a></li>
+            <li><a data-bind="click: showDeleteDialog"><i class="fa fa-trash" aria-hidden="true"></i> {% trans "Eliminar" %}</a></li>
           </ul>
         </span>
       </h1>
@@ -119,6 +119,26 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-success" data-bind="click : $root.changeName" autofocus>Cambiar nombre</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- modal to delete scene -->
+    <div class="modal fade" tabindex="-1" role="dialog" data-bind="modal: showDeleteDialog">
+      <div class="modal-dialog">
+        <div class="modal-content" data-bind="with: changeNameFormLogic">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Eliminar Escenario</h4>
+          </div>
+          <div class="modal-body">
+              ¿Está seguro que desea eliminar el escenario? <br />
+              <span class="text-danger">RECUERDE QUE ESTA OPERACIÓN ES IRREVERSIBLE.</span>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bind="click : $root.delete">Eliminar</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
           </div>
         </div>
       </div>
