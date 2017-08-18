@@ -9,7 +9,7 @@ from django.conf import settings
 from scene.models import Scene, MetroLineMetric
 from scene.statusResponse import Status
 
-from testHelper import TestHelper
+from .testHelper import TestHelper
 
 from collections import defaultdict
 
