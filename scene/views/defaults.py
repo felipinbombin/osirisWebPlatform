@@ -125,4 +125,3 @@ class ValidationStepView(View):
             response.update(e.get_status_response())
 
         return JsonResponse(response, safe=False)
-

@@ -2,19 +2,12 @@
 from __future__ import unicode_literals
 
 from django.test import TestCase
-
 from django.urls import reverse
-from django.conf import settings
 
-from scene.models import Scene, MetroLineMetric
+from scene.models import Scene
 from scene.statusResponse import Status
-
 from .testHelper import TestHelper
 
-from collections import defaultdict
-
-import os
-import json
 
 class SceneDataPanel(TestCase):
     """
@@ -37,17 +30,35 @@ class SceneDataPanel(TestCase):
         """ executed after every test """
         pass
 
-    def test_FillAllSteps(self):
-        """ simulate correct process to create a escene """
-        pass
+    def test_ChangeName(self):
+        """ change name """
+        URL = reverse("scene:changeSceneName", kwargs={"scene_id": self.scene_obj.id})
+        new_name = "this is the new name of scene"
+        data = {
+            "new_name": new_name
+        }
+        self.testHelper.make_post_request(URL, data)
 
-    def test_change_scene_name(self):
-        """ test step 1 without previous step """
-        pass
-        #self.upload_topologic_file()
-        #self.check_step_1()
+        self.scene_obj.refresh_from_db()
+        self.assertEqual(self.scene_obj.name, new_name)
 
-    def test_delete_scene(self):
-        """ test step 2 without previous step """
-        pass
-        #self.check_step_2()
+    def test_WrongSceneName(self):
+        """ send scene name = "" """
+        URL = reverse("scene:changeSceneName", kwargs={"scene_id": self.scene_obj.id})
+        new_name = ""
+        data = {
+            "new_name": new_name
+        }
+        self.testHelper.make_post_request(URL, data,
+                                          expected_response=Status.getJsonStatus(Status.INVALID_SCENE_NAME, {}))
+
+        previous_name = self.scene_obj.name
+        self.scene_obj.refresh_from_db()
+        self.assertEqual(self.scene_obj.name, previous_name)
+
+    def test_DeleteScene(self):
+        """ delete scene """
+        URL = reverse("scene:deleteScene", kwargs={"scene_id": self.scene_obj.id})
+        self.testHelper.make_post_request(URL, {})
+
+        self.assertRaises(Scene.DoesNotExist, Scene.objects.get, id=self.scene_obj.id)

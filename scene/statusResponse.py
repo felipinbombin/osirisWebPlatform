@@ -6,8 +6,16 @@ class Status:
     INVALID_STEP = 402
     INVALID_FORMAT_FILE = 403
     EXCEL_ERROR = 404
+    INVALID_SCENE_NAME = 405
+    USER_NOT_LOGGED = 406
+    ERROR = 200
 
     statusDict = {
+        ERROR: {
+          "code": ERROR,
+          "title": u"Error",
+          "message": u"error genérico", "type": u"success"
+        },
         OK: {
           "code": OK,
           "title": u"Consulta exitosa",
@@ -33,6 +41,16 @@ class Status:
           "title": u"Error al procesar archivo",
           "message": u"error description", "type": u"error"
         },
+        INVALID_SCENE_NAME: {
+            "code": INVALID_SCENE_NAME,
+            "title": u"Error",
+            "message": u"Nombre de escenario no válido", "type": u"error"
+        },
+        USER_NOT_LOGGED: {
+            "code": USER_NOT_LOGGED,
+            "title": u"Error",
+            "message": u"Debe iniciar sesión nuevamente", "type": u"error"
+        }
     }
 
     @staticmethod

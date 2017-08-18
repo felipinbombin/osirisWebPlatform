@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 from django.urls import reverse
 from django.test import Client
+from django.test.client import MULTIPART_CONTENT
 from scene.models import Scene
 
 from scene.statusResponse import Status
@@ -71,7 +72,7 @@ class TestHelper():
 
         return response
 
-    def make_post_request(self, url, data, content_type="", expected_server_response_code=200,
+    def make_post_request(self, url, data, content_type=MULTIPART_CONTENT, expected_server_response_code=200,
                           expected_response=Status.getJsonStatus(Status.OK, {})):
         """  """
         response = self.client.post(url, data, content_type)

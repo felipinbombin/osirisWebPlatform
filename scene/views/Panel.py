@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.db import transaction
 from django.http import Http404
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -22,19 +23,67 @@ class ScenePanel(View):
 
     def __init__(self):
         self.context = {}
-        self.template = 'scene/sceneView.html'
+        self.template = "scene/sceneView.html"
 
     def get(self, request, sceneId):
 
         try:
             scene = Scene.objects.get(user=request.user, id=sceneId)
-            self.context['scene'] = scene
-            self.context['data'] = GetSceneData().getData(request, sceneId)
-            self.context['barWidth'] = int(float(scene.currentStep) / 7 * 100)
+            self.context["scene"] = scene
+            self.context["data"] = GetSceneData().getData(request, sceneId)
+            self.context["barWidth"] = int(float(scene.currentStep) / 7 * 100)
         except:
             raise Http404
 
         return render(request, self.template, self.context)
+
+
+class ChangeSceneName(View):
+    """ view to change scene name """
+
+    def __init__(self):
+        self.context = {}
+
+    def post(self, request, scene_id):
+        print(request.POST)
+        response = {}
+        try:
+            scene_obj = Scene.objects.get(user=request.user, id=int(scene_id))
+            new_name = request.POST.get("new_name")
+
+            if new_name is not None and new_name != "":
+                scene_obj.name = new_name
+                scene_obj.save()
+                Status.getJsonStatus(Status.OK, response)
+            else:
+                Status.getJsonStatus(Status.INVALID_SCENE_NAME, response)
+
+        except Scene.DoesNotExist:
+            Status.getJsonStatus(Status.USER_NOT_LOGGED, response)
+
+        return JsonResponse(response, safe=False)
+
+class DeleteScene(View):
+    """ view to change scene name """
+
+    def __init__(self):
+        self.context = {}
+
+    def post(self, request, scene_id):
+
+        response = {}
+        try:
+            with transaction.atomic():
+                scene_obj = Scene.objects.get(user=request.user, id=int(scene_id))
+                scene_obj.delete()
+                Status.getJsonStatus(Status.OK, response)
+        except Scene.DoesNotExist:
+            Status.getJsonStatus(Status.USER_NOT_LOGGED, response)
+        except:
+            Status.getJsonStatus(Status.ERROR, response)
+            response["status"]["message"] = u"No se pudo eliminar el escenario"
+
+        return JsonResponse(response, safe=False)
 
 
 class ScenePanelData(View):
@@ -47,9 +96,9 @@ class ScenePanelData(View):
         """ return inputModel of step 1 """
 
         sceneId = int(sceneId)
-        scene = Scene.objects.prefetch_related('metroline_set__metrostation_set',
-                                               'metroline_set__metrodepot_set',
-                                               'metroconnection_set__stations').\
+        scene = Scene.objects.prefetch_related("metroline_set__metrostation_set",
+                                               "metroline_set__metrodepot_set",
+                                               "metroconnection_set__stations").\
             get(user=request.user, id=sceneId)
 
         lines = []
@@ -60,11 +109,12 @@ class ScenePanelData(View):
         for connection in scene.connection_set.all():
             connectionsDict.append(connection.get_dict())
 
-        response = {'lines': lines, 'connections': connectionsDict}
+        response = {"lines": lines, "connections": connectionsDict}
 
         Status.getJsonStatus(Status.OK, response)
 
         return JsonResponse(response, safe=False)
+
 
 class InputModelData(View):
     """ get input model inputModel """
@@ -76,56 +126,56 @@ class InputModelData(View):
         """ return inputModel to run models """
 
         sceneId = int(sceneId)
-        scene = Scene.objects.prefetch_related('metroline_set__metrostation_set__operationperiodformetrostation_set',
-                                               'metroline_set__metrodepot_set',
-                                               'metroline_set__metrolinemetric_set',
-                                               'metroline_set__metrotrack_set__operationperiodformetrotrack_set',
-                                               'metroline_set__operationperiodformetroline_set',
-                                               'metroconnection_set__metroconnectionstation_set__metroStation',
-                                               'systemicparams_set').\
+        scene = Scene.objects.prefetch_related("metroline_set__metrostation_set__operationperiodformetrostation_set",
+                                               "metroline_set__metrodepot_set",
+                                               "metroline_set__metrolinemetric_set",
+                                               "metroline_set__metrotrack_set__operationperiodformetrotrack_set",
+                                               "metroline_set__operationperiodformetroline_set",
+                                               "metroconnection_set__metroconnectionstation_set__metroStation",
+                                               "systemicparams_set").\
             get(user=request.user, id=sceneId)
 
-        inputModel = {'oper':{},'top':{},'sist':{}}
+        inputModel = {"oper":{},"top":{},"sist":{}}
 
         lineNumber = scene.metroline_set.all().count()
         connectionNumber = scene.metroconnection_set.all().count()
 
-        metroConnections = scene.metroconnection_set.all().order_by('id')
-        metroLines = scene.metroline_set.all().order_by('id')
+        metroConnections = scene.metroconnection_set.all().order_by("id")
+        metroLines = scene.metroline_set.all().order_by("id")
 
-        inputModel['top']['nLines'] = lineNumber
-        inputModel['top']['nConnections'] = connectionNumber
+        inputModel["top"]["nLines"] = lineNumber
+        inputModel["top"]["nConnections"] = connectionNumber
 
-        inputModel['top']['nStations'] = np.empty([lineNumber, 1])
-        inputModel['top']['nDepots'] = [0]*lineNumber #np.empty([lineNumber, 1])
+        inputModel["top"]["nStations"] = np.empty([lineNumber, 1])
+        inputModel["top"]["nDepots"] = [0]*lineNumber #np.empty([lineNumber, 1])
         for index, line in enumerate(metroLines):
-            inputModel['top']['nStations'][index] = len(line.metrostation_set.all())
-            inputModel['top']['nDepots'][index] = len(line.metrodepot_set.all())
+            inputModel["top"]["nStations"][index] = len(line.metrostation_set.all())
+            inputModel["top"]["nDepots"][index] = len(line.metrodepot_set.all())
 
         if connectionNumber:
             conStations = [[None], [None]] * connectionNumber
             for i in range(0, connectionNumber):
-                for j, metroConnectionStation in enumerate(metroConnections[i].metroconnectionstation_set.all().order_by('id')):
+                for j, metroConnectionStation in enumerate(metroConnections[i].metroconnectionstation_set.all().order_by("id")):
                     conStations[j][i] = metroConnectionStation.metroStation.name
-            inputModel['top']['connections.stations'] = conStations
+            inputModel["top"]["connections.stations"] = conStations
 
-            inputModel['top']['connections.avHeight'] = np.empty([connectionNumber, 1])
-            inputModel['top']['connections.f2Height'] = np.empty([connectionNumber, 1])
+            inputModel["top"]["connections.avHeight"] = np.empty([connectionNumber, 1])
+            inputModel["top"]["connections.f2Height"] = np.empty([connectionNumber, 1])
             for i in range(0, connectionNumber):
-                inputModel['top']['connections.avHeight'][i] = metroConnections[i].avgHeight
-                inputModel['top']['connections.f2Height'][i] = metroConnections[i].avgSurface
+                inputModel["top"]["connections.avHeight"][i] = metroConnections[i].avgHeight
+                inputModel["top"]["connections.f2Height"][i] = metroConnections[i].avgSurface
         else:
-            inputModel['top']['connections.stations'] = []
-            inputModel['top']['connections.avHeight'] = []
-            inputModel['top']['connections.f2Height'] = []
+            inputModel["top"]["connections.stations"] = []
+            inputModel["top"]["connections.avHeight"] = []
+            inputModel["top"]["connections.f2Height"] = []
 
         # PAGE PER LINE -----------------------------------------------------------
-        inputModel['top']['lines'] = defaultdict(dict)
+        inputModel["top"]["lines"] = defaultdict(dict)
         for index, metroLine in enumerate(metroLines):
-            inputModel['top']['lines'][index]['geometry'] = defaultdict(dict)
+            inputModel["top"]["lines"][index]["geometry"] = defaultdict(dict)
 
             metrics = defaultdict(list)
-            for metric in metroLine.metrolinemetric_set.all().order_by('id'):
+            for metric in metroLine.metrolinemetric_set.all().order_by("id"):
                 metricId = metric.metric + str(metric.direction)
                 metrics[metricId].append([metric.start, metric.end, metric.value])
 
@@ -144,8 +194,8 @@ class InputModelData(View):
                 slopeRL[i, 1] = metrics[slopeRLId][i][1] # end
                 slopeRL[i, 2] = metrics[slopeRLId][i][2] # value
 
-            inputModel['top']['lines'][index]['geometry']['slopeLR'] = slopeLR
-            inputModel['top']['lines'][index]['geometry']['slopeRL'] = slopeRL
+            inputModel["top"]["lines"][index]["geometry"]["slopeLR"] = slopeLR
+            inputModel["top"]["lines"][index]["geometry"]["slopeRL"] = slopeRL
 
 
             curveLRId = MetroLineMetric.CURVE_RADIUS + MetroLineMetric.GOING
@@ -162,8 +212,8 @@ class InputModelData(View):
                 curveRL[i, 1] = metrics[curveRLId][i][1]  # end
                 curveRL[i, 2] = metrics[curveRLId][i][2]  # value
 
-            inputModel['top']['lines'][index]['geometry']['curvLR'] = curveLR
-            inputModel['top']['lines'][index]['geometry']['curvRL'] = curveRL
+            inputModel["top"]["lines"][index]["geometry"]["curvLR"] = curveLR
+            inputModel["top"]["lines"][index]["geometry"]["curvRL"] = curveRL
 
 
             speedLimitLRId = MetroLineMetric.SPEED_LIMIT + MetroLineMetric.GOING
@@ -180,8 +230,8 @@ class InputModelData(View):
                 speedLimitRL[i, 1] = metrics[speedLimitRLId][i][1]  # end
                 speedLimitRL[i, 2] = metrics[speedLimitRLId][i][2]  # value
 
-            inputModel['top']['lines'][index]['geometry']['spBoundsLR'] = speedLimitLR
-            inputModel['top']['lines'][index]['geometry']['spBoundsRL'] = speedLimitRL
+            inputModel["top"]["lines"][index]["geometry"]["spBoundsLR"] = speedLimitLR
+            inputModel["top"]["lines"][index]["geometry"]["spBoundsRL"] = speedLimitRL
 
 
             groundId = MetroLineMetric.GROUND + "None"
@@ -197,75 +247,75 @@ class InputModelData(View):
                 i1 = round(ground[1]) - 1
                 for i in range(int(i0), int(i1)):
                     groundByMeter[i] = [i, ground[2]]
-            inputModel['top']['lines'][index]['geometry']['underabove'] = groundByMeter
+            inputModel["top"]["lines"][index]["geometry"]["underabove"] = groundByMeter
 
 
-            metroTracks = metroLine.metrotrack_set.all().order_by('id')
-            metroStations = metroLine.metrostation_set.all().order_by('id')
+            metroTracks = metroLine.metrotrack_set.all().order_by("id")
+            metroStations = metroLine.metrostation_set.all().order_by("id")
 
-            inputModel['top']['lines'][index]['stations'] = {}
-            inputModel['top']['lines'][index]['tracks'] = {}
-            inputModel['top']['lines'][index]['stations']['length'] = np.empty([len(metroStations), 1])
-            inputModel['top']['lines'][index]['stations']['f2avHeight'] = np.empty([len(metroStations), 1])
-            inputModel['top']['lines'][index]['stations']['f2surfHeight'] = np.empty([len(metroStations), 1])
-            inputModel['top']['lines'][index]['stations']['platSection'] = np.empty([len(metroStations), 1])
-            inputModel['top']['lines'][index]['stations']['platAvPerim'] = np.empty([len(metroStations), 1])
-            inputModel['top']['lines'][index]['tracks']['length'] = np.empty([len(metroTracks), 1])
-            inputModel['top']['lines'][index]['tracks']['crossSection'] = np.empty([len(metroTracks), 1])
-            inputModel['top']['lines'][index]['tracks']['avPerim'] = np.empty([len(metroTracks), 1])
+            inputModel["top"]["lines"][index]["stations"] = {}
+            inputModel["top"]["lines"][index]["tracks"] = {}
+            inputModel["top"]["lines"][index]["stations"]["length"] = np.empty([len(metroStations), 1])
+            inputModel["top"]["lines"][index]["stations"]["f2avHeight"] = np.empty([len(metroStations), 1])
+            inputModel["top"]["lines"][index]["stations"]["f2surfHeight"] = np.empty([len(metroStations), 1])
+            inputModel["top"]["lines"][index]["stations"]["platSection"] = np.empty([len(metroStations), 1])
+            inputModel["top"]["lines"][index]["stations"]["platAvPerim"] = np.empty([len(metroStations), 1])
+            inputModel["top"]["lines"][index]["tracks"]["length"] = np.empty([len(metroTracks), 1])
+            inputModel["top"]["lines"][index]["tracks"]["crossSection"] = np.empty([len(metroTracks), 1])
+            inputModel["top"]["lines"][index]["tracks"]["avPerim"] = np.empty([len(metroTracks), 1])
 
             for i, metroStation in enumerate(metroStations):
-                inputModel['top']['lines'][index]['stations']['length'][i] = metroStation.length
-                inputModel['top']['lines'][index]['stations']['f2avHeight'][i] = metroStation.secondLevelAverageHeight
-                inputModel['top']['lines'][index]['stations']['f2surfHeight'][i] = metroStation.secondLevelFloorSurface
-                inputModel['top']['lines'][index]['stations']['platSection'][i] = metroStation.platformSection
-                inputModel['top']['lines'][index]['stations']['platAvPerim'][i] = metroStation.platformAveragePerimeter
+                inputModel["top"]["lines"][index]["stations"]["length"][i] = metroStation.length
+                inputModel["top"]["lines"][index]["stations"]["f2avHeight"][i] = metroStation.secondLevelAverageHeight
+                inputModel["top"]["lines"][index]["stations"]["f2surfHeight"][i] = metroStation.secondLevelFloorSurface
+                inputModel["top"]["lines"][index]["stations"]["platSection"][i] = metroStation.platformSection
+                inputModel["top"]["lines"][index]["stations"]["platAvPerim"][i] = metroStation.platformAveragePerimeter
 
             for i, metroTrack in enumerate(metroTracks):
-                inputModel['top']['lines'][index]['tracks']['length'][i] = metroTrack.length
-                inputModel['top']['lines'][index]['tracks']['crossSection'][i] = metroTrack.crossSection
-                inputModel['top']['lines'][index]['tracks']['avPerim'][i] = metroTrack.averagePerimeter
+                inputModel["top"]["lines"][index]["tracks"]["length"][i] = metroTrack.length
+                inputModel["top"]["lines"][index]["tracks"]["crossSection"][i] = metroTrack.crossSection
+                inputModel["top"]["lines"][index]["tracks"]["avPerim"][i] = metroTrack.averagePerimeter
 
         # SYSTEMIC ----------------------------------------------------------------
         # PAGE LINES CHARACTERISTICS ----------------------------------------------
         sys = scene.systemicparams_set.all()[0]
 
-        inputModel['sist']['trainMass'] = sys.mass
-        inputModel['sist']['inercialMass'] = sys.inercialMass
-        inputModel['sist']['maxAcc'] = sys.maxAccelerationAllowed
-        inputModel['sist']['maxStartForce'] = sys.maxStartingForceAllowed
-        inputModel['sist']['maxBrakeForce'] = sys.maxBrakingForceAllowed
-        inputModel['sist']['regimeChange'] = sys.speedOfMotorRegimeChange
-        inputModel['sist']['maxPower'] = sys.maxPower
-        inputModel['sist']['maxSpeed'] = sys.maxSpeedAllowed
+        inputModel["sist"]["trainMass"] = sys.mass
+        inputModel["sist"]["inercialMass"] = sys.inercialMass
+        inputModel["sist"]["maxAcc"] = sys.maxAccelerationAllowed
+        inputModel["sist"]["maxStartForce"] = sys.maxStartingForceAllowed
+        inputModel["sist"]["maxBrakeForce"] = sys.maxBrakingForceAllowed
+        inputModel["sist"]["regimeChange"] = sys.speedOfMotorRegimeChange
+        inputModel["sist"]["maxPower"] = sys.maxPower
+        inputModel["sist"]["maxSpeed"] = sys.maxSpeedAllowed
 
-        inputModel['sist']['Davis'] = {}
-        inputModel['sist']['Davis']['A'] = sys.davisParameterA
-        inputModel['sist']['Davis']['B'] = sys.davisParameterB
-        inputModel['sist']['Davis']['C'] = sys.davisParameterC
-        inputModel['sist']['Davis']['D'] = sys.davisParameterD
-        inputModel['sist']['Davis']['E'] = sys.davisParameterE
+        inputModel["sist"]["Davis"] = {}
+        inputModel["sist"]["Davis"]["A"] = sys.davisParameterA
+        inputModel["sist"]["Davis"]["B"] = sys.davisParameterB
+        inputModel["sist"]["Davis"]["C"] = sys.davisParameterC
+        inputModel["sist"]["Davis"]["D"] = sys.davisParameterD
+        inputModel["sist"]["Davis"]["E"] = sys.davisParameterE
 
-        inputModel['sist']['tractEff'] = sys.tractionSystemEfficiency / 100
-        inputModel['sist']['brakeEff'] = sys.brakingSystemEfficiency / 100
-        # inputModel['sist']['receptivity'] = fslc(15+1,1) 
-        inputModel['sist']['electBrakeT.p1'] = sys.electricalBrakeTreshold
-        inputModel['sist']['electBrakeT.p2'] = sys.electroMechanicalBrakeThreshold
+        inputModel["sist"]["tractEff"] = sys.tractionSystemEfficiency / 100
+        inputModel["sist"]["brakeEff"] = sys.brakingSystemEfficiency / 100
+        # inputModel["sist"]["receptivity"] = fslc(15+1,1) 
+        inputModel["sist"]["electBrakeT.p1"] = sys.electricalBrakeTreshold
+        inputModel["sist"]["electBrakeT.p2"] = sys.electroMechanicalBrakeThreshold
         # --------------------------------------------------------------
 
-        inputModel['sist']['trainHVACConsumption'] = sys.hvacConsumption
-        inputModel['sist']['trainAuxConsumption'] = sys.auxiliariesConsumption
-        inputModel['sist']['trainTerminalsResistence'] = sys.trainsTerminalResistance
-        inputModel['sist']['trainPotencial'] = sys.voltageDCTrainsTerminals
+        inputModel["sist"]["trainHVACConsumption"] = sys.hvacConsumption
+        inputModel["sist"]["trainAuxConsumption"] = sys.auxiliariesConsumption
+        inputModel["sist"]["trainTerminalsResistence"] = sys.trainsTerminalResistance
+        inputModel["sist"]["trainPotencial"] = sys.voltageDCTrainsTerminals
 
-        inputModel['sist']['trainLength'] = sys.length
-        inputModel['sist']['trainCars'] = sys.numberOfCars
-        inputModel['sist']['car_width'] = sys.carWidth
-        inputModel['sist']['car_height'] = sys.carHeight
-        inputModel['sist']['car_thick'] = sys.vehicleWallThickness
-        inputModel['sist']['car_lambda'] = sys.heatConductivityOfTheVehicleWall
-        inputModel['sist']['car_factor'] = sys.cabinVolumeFactor
-        inputModel['sist']['passenger_capacity'] = sys.trainPassengerCapacity
+        inputModel["sist"]["trainLength"] = sys.length
+        inputModel["sist"]["trainCars"] = sys.numberOfCars
+        inputModel["sist"]["car_width"] = sys.carWidth
+        inputModel["sist"]["car_height"] = sys.carHeight
+        inputModel["sist"]["car_thick"] = sys.vehicleWallThickness
+        inputModel["sist"]["car_lambda"] = sys.heatConductivityOfTheVehicleWall
+        inputModel["sist"]["car_factor"] = sys.cabinVolumeFactor
+        inputModel["sist"]["passenger_capacity"] = sys.trainPassengerCapacity
 
         setPoints = np.zeros([5, 2])
         setPoints[0, 0] = sys.point1Tin
@@ -279,132 +329,132 @@ class InputModelData(View):
         setPoints[4, 0] = sys.point5Tin
         setPoints[4, 1] = sys.point5Tout
 
-        inputModel['sist']['SetPoints'] = setPoints
+        inputModel["sist"]["SetPoints"] = setPoints
 
-        inputModel['sist']['ExtraPowerHRS'] = sys.hrsExtraPower
-        inputModel['sist']['isOBESS'] = sys.onBoardEnergyStorageSystem
-        inputModel['sist']['OBESScapacity'] = sys.storageCapacityWeighting
+        inputModel["sist"]["ExtraPowerHRS"] = sys.hrsExtraPower
+        inputModel["sist"]["isOBESS"] = sys.onBoardEnergyStorageSystem
+        inputModel["sist"]["OBESScapacity"] = sys.storageCapacityWeighting
 
         ####CMM traction####
-        inputModel['sist']['charge_eff'] = sys.obessChargeEfficiency / 100
-        inputModel['sist']['discharge_eff'] = sys.obessDischargeEfficiency / 100
-        inputModel['sist']['OBESS_usable'] = sys.obessUsableEnergyContent
-        inputModel['sist']['OBESS_peak_power'] = sys.maxDischargePower
-        inputModel['sist']['OBESS_max_saving'] = sys.maxEnergySavingPossiblePerHour
-        inputModel['sist']['OBESS_power_limit'] = sys.powerLimitToFeed
+        inputModel["sist"]["charge_eff"] = sys.obessChargeEfficiency / 100
+        inputModel["sist"]["discharge_eff"] = sys.obessDischargeEfficiency / 100
+        inputModel["sist"]["OBESS_usable"] = sys.obessUsableEnergyContent
+        inputModel["sist"]["OBESS_peak_power"] = sys.maxDischargePower
+        inputModel["sist"]["OBESS_max_saving"] = sys.maxEnergySavingPossiblePerHour
+        inputModel["sist"]["OBESS_power_limit"] = sys.powerLimitToFeed
 
         aux = np.array([])
         for metroConnection in metroConnections:
             aux = np.append(aux, metroConnection.consumption)
-        inputModel['sist']['interConsumption'] = aux
+        inputModel["sist"]["interConsumption"] = aux
 
         # PAGE PER LINE -----------------------------------------------------------
-        inputModel['sist']['lines'] = defaultdict(dict)
+        inputModel["sist"]["lines"] = defaultdict(dict)
         for index, metroLine in enumerate(metroLines):
 
-            inputModel['sist']['lines'][index]['SESSusableEnergyContent'] = metroLine.usableEnergyContent
-            inputModel['sist']['lines'][index]['SESSchargingEfficiency'] = metroLine.chargingEfficiency
-            inputModel['sist']['lines'][index]['SESSdischargingEfficiency'] = metroLine.dischargingEfficiency
-            inputModel['sist']['lines'][index]['SESSpeakPower'] = metroLine.peakPower
-            inputModel['sist']['lines'][index]['SESSmaxEnergySaving'] = metroLine.maximumEnergySavingPossiblePerHour
-            inputModel['sist']['lines'][index]['SESSenergySavingMode'] = metroLine.energySavingMode
-            inputModel['sist']['lines'][index]['SESSpowerLimitFeed'] = metroLine.powerLimitToFeed
+            inputModel["sist"]["lines"][index]["SESSusableEnergyContent"] = metroLine.usableEnergyContent
+            inputModel["sist"]["lines"][index]["SESSchargingEfficiency"] = metroLine.chargingEfficiency
+            inputModel["sist"]["lines"][index]["SESSdischargingEfficiency"] = metroLine.dischargingEfficiency
+            inputModel["sist"]["lines"][index]["SESSpeakPower"] = metroLine.peakPower
+            inputModel["sist"]["lines"][index]["SESSmaxEnergySaving"] = metroLine.maximumEnergySavingPossiblePerHour
+            inputModel["sist"]["lines"][index]["SESSenergySavingMode"] = metroLine.energySavingMode
+            inputModel["sist"]["lines"][index]["SESSpowerLimitFeed"] = metroLine.powerLimitToFeed
 
-            metroStations = metroLine.metrostation_set.all().order_by('id')
+            metroStations = metroLine.metrostation_set.all().order_by("id")
 
-            inputModel['sist']['lines'][index]['stationsMinAuxConsumption'] = np.empty([len(metroStations), 1])
-            inputModel['sist']['lines'][index]['stationsMaxAuxConsumption'] = np.empty([len(metroStations), 1])
-            inputModel['sist']['lines'][index]['stationsMinHVACConsumption'] = np.empty([len(metroStations), 1])
-            inputModel['sist']['lines'][index]['stationsMaxHVACConsumption'] = np.empty([len(metroStations), 1])
-            inputModel['sist']['lines'][index]['stationsTauConsumption'] = np.empty([len(metroStations), 1])
+            inputModel["sist"]["lines"][index]["stationsMinAuxConsumption"] = np.empty([len(metroStations), 1])
+            inputModel["sist"]["lines"][index]["stationsMaxAuxConsumption"] = np.empty([len(metroStations), 1])
+            inputModel["sist"]["lines"][index]["stationsMinHVACConsumption"] = np.empty([len(metroStations), 1])
+            inputModel["sist"]["lines"][index]["stationsMaxHVACConsumption"] = np.empty([len(metroStations), 1])
+            inputModel["sist"]["lines"][index]["stationsTauConsumption"] = np.empty([len(metroStations), 1])
 
             for i in range(0, len(metroStations)):
-                inputModel['sist']['lines'][index]['stationsMinAuxConsumption'][i] = metroStations[i].minAuxConsumption
-                inputModel['sist']['lines'][index]['stationsMaxAuxConsumption'][i] = metroStations[i].maxAuxConsumption
-                inputModel['sist']['lines'][index]['stationsMinHVACConsumption'][i] = metroStations[i].minHVACConsumption
-                inputModel['sist']['lines'][index]['stationsMaxHVACConsumption'][i] = metroStations[i].maxHVACConsumption
-                inputModel['sist']['lines'][index]['stationsTauConsumption'][i] = metroStations[i].tau
+                inputModel["sist"]["lines"][index]["stationsMinAuxConsumption"][i] = metroStations[i].minAuxConsumption
+                inputModel["sist"]["lines"][index]["stationsMaxAuxConsumption"][i] = metroStations[i].maxAuxConsumption
+                inputModel["sist"]["lines"][index]["stationsMinHVACConsumption"][i] = metroStations[i].minHVACConsumption
+                inputModel["sist"]["lines"][index]["stationsMaxHVACConsumption"][i] = metroStations[i].maxHVACConsumption
+                inputModel["sist"]["lines"][index]["stationsTauConsumption"][i] = metroStations[i].tau
 
-            metroDepots = metroLine.metrodepot_set.all().order_by('id')
+            metroDepots = metroLine.metrodepot_set.all().order_by("id")
 
-            inputModel['sist']['lines'][index]['depotsAuxConsumption'] = np.empty(len(metroDepots))
-            inputModel['sist']['lines'][index]['depotsVentConsumption'] = np.empty(len(metroDepots))
-            inputModel['sist']['lines'][index]['depotsDCConsumption'] = np.empty(len(metroDepots))
+            inputModel["sist"]["lines"][index]["depotsAuxConsumption"] = np.empty(len(metroDepots))
+            inputModel["sist"]["lines"][index]["depotsVentConsumption"] = np.empty(len(metroDepots))
+            inputModel["sist"]["lines"][index]["depotsDCConsumption"] = np.empty(len(metroDepots))
 
             for i, metroDepot in enumerate(metroDepots):
-                inputModel['sist']['lines'][index]['depotsAuxConsumption'][i] = metroDepot.auxConsumption
-                inputModel['sist']['lines'][index]['depotsVentConsumption'][i] = metroDepot.ventilationConsumption
-                inputModel['sist']['lines'][index]['depotsDCConsumption'][i] = metroDepot.dcConsumption
+                inputModel["sist"]["lines"][index]["depotsAuxConsumption"][i] = metroDepot.auxConsumption
+                inputModel["sist"]["lines"][index]["depotsVentConsumption"][i] = metroDepot.ventilationConsumption
+                inputModel["sist"]["lines"][index]["depotsDCConsumption"][i] = metroDepot.dcConsumption
 
-            metroTracks = metroLine.metrotrack_set.all().order_by('id')
-            inputModel['sist']['lines'][index]['tracksAuxConsumption'] = np.empty(len(metroTracks))
-            inputModel['sist']['lines'][index]['tracksVentConsumption'] = np.empty(len(metroTracks))
+            metroTracks = metroLine.metrotrack_set.all().order_by("id")
+            inputModel["sist"]["lines"][index]["tracksAuxConsumption"] = np.empty(len(metroTracks))
+            inputModel["sist"]["lines"][index]["tracksVentConsumption"] = np.empty(len(metroTracks))
             for i, metroTrack in enumerate(metroTracks):
-                inputModel['sist']['lines'][index]['tracksAuxConsumption'][i] = metroTracks[i].auxiliariesConsumption
-                inputModel['sist']['lines'][index]['tracksVentConsumption'][i] = metroTracks[i].ventilationConsumption
+                inputModel["sist"]["lines"][index]["tracksAuxConsumption"][i] = metroTracks[i].auxiliariesConsumption
+                inputModel["sist"]["lines"][index]["tracksVentConsumption"][i] = metroTracks[i].ventilationConsumption
 
         # OPERATIONAL -------------------------------------------------------------
         # PAGE LINES CHARACTERISTICS ----------------------------------------------
 
-        operationPeriods = scene.operationperiod_set.all().order_by('id')
+        operationPeriods = scene.operationperiod_set.all().order_by("id")
 
-        inputModel['oper']['numberHours'] = len(operationPeriods)
-        inputModel['oper']['massPerson'] = scene.averageMassOfAPassanger
-        inputModel['oper']['avTemp'] = scene.annualTemperatureAverage
+        inputModel["oper"]["numberHours"] = len(operationPeriods)
+        inputModel["oper"]["massPerson"] = scene.averageMassOfAPassanger
+        inputModel["oper"]["avTemp"] = scene.annualTemperatureAverage
 
-        inputModel['oper']['detHours'] = np.empty([len(operationPeriods), 2], dtype='object')
-        inputModel['oper']['tempHours'] = np.empty([len(operationPeriods), 1])
-        inputModel['oper']['humeHours'] = np.empty([len(operationPeriods), 1])
-        inputModel['oper']['CO2'] = np.empty([len(operationPeriods), 1])
-        inputModel['oper']['Rad'] = np.empty([len(operationPeriods), 1])
-        inputModel['oper']['Ele'] = np.empty([len(operationPeriods), 1])
+        inputModel["oper"]["detHours"] = np.empty([len(operationPeriods), 2], dtype="object")
+        inputModel["oper"]["tempHours"] = np.empty([len(operationPeriods), 1])
+        inputModel["oper"]["humeHours"] = np.empty([len(operationPeriods), 1])
+        inputModel["oper"]["CO2"] = np.empty([len(operationPeriods), 1])
+        inputModel["oper"]["Rad"] = np.empty([len(operationPeriods), 1])
+        inputModel["oper"]["Ele"] = np.empty([len(operationPeriods), 1])
 
         for i, opPeriod in enumerate(operationPeriods):
-            inputModel['oper']['detHours'][i][0] = opPeriod.start
-            inputModel['oper']['detHours'][i][1] = opPeriod.end
-            inputModel['oper']['tempHours'][i] = opPeriod.temperature
-            inputModel['oper']['humeHours'][i] = opPeriod.humidity
-            inputModel['oper']['CO2'][i] = opPeriod.co2Concentration
-            inputModel['oper']['Rad'][i] = opPeriod.solarRadiation
-            inputModel['oper']['Ele'][i] = opPeriod.sunElevationAngle
+            inputModel["oper"]["detHours"][i][0] = opPeriod.start
+            inputModel["oper"]["detHours"][i][1] = opPeriod.end
+            inputModel["oper"]["tempHours"][i] = opPeriod.temperature
+            inputModel["oper"]["humeHours"][i] = opPeriod.humidity
+            inputModel["oper"]["CO2"][i] = opPeriod.co2Concentration
+            inputModel["oper"]["Rad"][i] = opPeriod.solarRadiation
+            inputModel["oper"]["Ele"][i] = opPeriod.sunElevationAngle
 
         # PAGE PER LINE -----------------------------------------------------------
-        inputModel['oper']['lines'] = defaultdict(dict)
+        inputModel["oper"]["lines"] = defaultdict(dict)
         for i, metroLine in enumerate(metroLines):
 
-            metroStations = metroLine.metrostation_set.all().order_by('id')
-            metroTracks = metroLine.metrotrack_set.all().order_by('id')
+            metroStations = metroLine.metrostation_set.all().order_by("id")
+            metroTracks = metroLine.metrotrack_set.all().order_by("id")
 
             nsta = len(metroStations)
             ntra = len(metroTracks)
-            nhours = inputModel['oper']['numberHours']
+            nhours = inputModel["oper"]["numberHours"]
 
-            inputModel['oper']['lines'][i]['ventFl'] = np.empty([nsta, nhours])
-            inputModel['oper']['lines'][i]['passStLR'] = np.empty([nsta, nhours])
-            inputModel['oper']['lines'][i]['passStRL'] = np.empty([nsta, nhours])
-            inputModel['oper']['lines'][i]['dwellLR'] = np.empty([nsta, nhours])
-            inputModel['oper']['lines'][i]['dwellRL'] = np.empty([nsta, nhours])
+            inputModel["oper"]["lines"][i]["ventFl"] = np.empty([nsta, nhours])
+            inputModel["oper"]["lines"][i]["passStLR"] = np.empty([nsta, nhours])
+            inputModel["oper"]["lines"][i]["passStRL"] = np.empty([nsta, nhours])
+            inputModel["oper"]["lines"][i]["dwellLR"] = np.empty([nsta, nhours])
+            inputModel["oper"]["lines"][i]["dwellRL"] = np.empty([nsta, nhours])
 
-            inputModel['oper']['lines'][i]['passLR'] = np.empty([ntra, nhours])
-            inputModel['oper']['lines'][i]['passRL'] = np.empty([ntra, nhours])
-            inputModel['oper']['lines'][i]['maxTimeLR'] = np.empty([ntra, nhours])
-            inputModel['oper']['lines'][i]['maxTimeRL'] = np.empty([ntra, nhours])
+            inputModel["oper"]["lines"][i]["passLR"] = np.empty([ntra, nhours])
+            inputModel["oper"]["lines"][i]["passRL"] = np.empty([ntra, nhours])
+            inputModel["oper"]["lines"][i]["maxTimeLR"] = np.empty([ntra, nhours])
+            inputModel["oper"]["lines"][i]["maxTimeRL"] = np.empty([ntra, nhours])
 
-            inputModel['oper']['lines'][i]['frecLR'] = np.empty([nhours, 1])
-            inputModel['oper']['lines'][i]['frecRL'] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["frecLR"] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["frecRL"] = np.empty([nhours, 1])
 
-            inputModel['oper']['lines'][i]['percentajeDCDistLossesLR'] = np.empty([nhours, 1])
-            inputModel['oper']['lines'][i]['percentajeDCDistLossesRL'] = np.empty([nhours, 1])
-            inputModel['oper']['lines'][i]['percentajeACSubstationLossesEntireSystemLR'] = np.empty([nhours, 1])
-            inputModel['oper']['lines'][i]['percentajeACSubstationLossesEntireSystemRL'] = np.empty([nhours, 1])
-            inputModel['oper']['lines'][i]['percentajeACSubstationLossesACSystemLR'] = np.empty([nhours, 1])
-            inputModel['oper']['lines'][i]['percentajeACSubstationLossesACSystemRL'] = np.empty([nhours, 1])
-            inputModel['oper']['lines'][i]['percentajeDCSubstationLossesLR'] = np.empty([nhours, 1])
-            inputModel['oper']['lines'][i]['percentajeDCSubstationLossesRL'] = np.empty([nhours, 1])
-            inputModel['oper']['lines'][i]['receptivity'] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["percentajeDCDistLossesLR"] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["percentajeDCDistLossesRL"] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["percentajeACSubstationLossesEntireSystemLR"] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["percentajeACSubstationLossesEntireSystemRL"] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["percentajeACSubstationLossesACSystemLR"] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["percentajeACSubstationLossesACSystemRL"] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["percentajeDCSubstationLossesLR"] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["percentajeDCSubstationLossesRL"] = np.empty([nhours, 1])
+            inputModel["oper"]["lines"][i]["receptivity"] = np.empty([nhours, 1])
 
             for j, metroStation in enumerate(metroStations):
-                opMetrics = metroStation.operationperiodformetrostation_set.all().order_by('operationPeriod_id')
+                opMetrics = metroStation.operationperiodformetrostation_set.all().order_by("operationPeriod_id")
 
                 metrics = defaultdict(list)
                 for metric in opMetrics:
@@ -417,14 +467,14 @@ class InputModelData(View):
                 passStRLId = OperationPeriodForMetroStation.PASSENGERS_IN_STATION + MetroLineMetric.REVERSE
                 ventFlId = OperationPeriodForMetroStation.VENTILATION_FLOW + "None"
 
-                inputModel['oper']['lines'][i]['dwellLR'][j] = metrics[dwellLRId]
-                inputModel['oper']['lines'][i]['dwellRL'][j] = metrics[dwellRLId]
-                inputModel['oper']['lines'][i]['passStLR'][j] = metrics[passStLRId]
-                inputModel['oper']['lines'][i]['passStRL'][j] = metrics[passStRLId]
-                inputModel['oper']['lines'][i]['ventFl'][j] = metrics[ventFlId]
+                inputModel["oper"]["lines"][i]["dwellLR"][j] = metrics[dwellLRId]
+                inputModel["oper"]["lines"][i]["dwellRL"][j] = metrics[dwellRLId]
+                inputModel["oper"]["lines"][i]["passStLR"][j] = metrics[passStLRId]
+                inputModel["oper"]["lines"][i]["passStRL"][j] = metrics[passStRLId]
+                inputModel["oper"]["lines"][i]["ventFl"][j] = metrics[ventFlId]
 
             for j, metroTrack in enumerate(metroTracks):
-                opMetrics = metroTrack.operationperiodformetrotrack_set.all().order_by('id')
+                opMetrics = metroTrack.operationperiodformetrotrack_set.all().order_by("id")
 
                 metrics = defaultdict(list)
                 for metric in opMetrics:
@@ -436,13 +486,13 @@ class InputModelData(View):
                 maxTimeLRId = OperationPeriodForMetroTrack.MAX_TRAVEL_TIME_BETWEEN_STATION + MetroLineMetric.GOING
                 maxTimeRLId = OperationPeriodForMetroTrack.MAX_TRAVEL_TIME_BETWEEN_STATION + MetroLineMetric.REVERSE
 
-                inputModel['oper']['lines'][i]['passLR'][j] = metrics[passLRId]
-                inputModel['oper']['lines'][i]['passRL'][j] = metrics[passRLId]
-                inputModel['oper']['lines'][i]['maxTimeLR'][j] = metrics[maxTimeLRId]
-                inputModel['oper']['lines'][i]['maxTimeRL'][j] = metrics[maxTimeRLId]
+                inputModel["oper"]["lines"][i]["passLR"][j] = metrics[passLRId]
+                inputModel["oper"]["lines"][i]["passRL"][j] = metrics[passRLId]
+                inputModel["oper"]["lines"][i]["maxTimeLR"][j] = metrics[maxTimeLRId]
+                inputModel["oper"]["lines"][i]["maxTimeRL"][j] = metrics[maxTimeRLId]
 
             metrics = defaultdict(list)
-            for metric in metroLine.operationperiodformetroline_set.all().order_by('operationPeriod_id'):
+            for metric in metroLine.operationperiodformetroline_set.all().order_by("operationPeriod_id"):
                 metricId = metric.metric + str(metric.direction)
                 metrics[metricId].append(metric.value)
 
@@ -459,23 +509,23 @@ class InputModelData(View):
             receptivityId = OperationPeriodForMetroLine.RECEPTIVITY + "None"
 
             for j in range(nhours):
-                inputModel['oper']['lines'][i]['frecLR'][j] = metrics[frecLRId][j]
-                inputModel['oper']['lines'][i]['frecRL'][j] = metrics[frecRLId][j]
+                inputModel["oper"]["lines"][i]["frecLR"][j] = metrics[frecLRId][j]
+                inputModel["oper"]["lines"][i]["frecRL"][j] = metrics[frecRLId][j]
 
-                inputModel['oper']['lines'][i]['percentajeDCDistLossesLR'][j] = metrics[percDCDistLossesLRId][j] / 100
-                inputModel['oper']['lines'][i]['percentajeDCDistLossesRL'][j] = metrics[percDCDistLossesRLId][j] / 100
-                inputModel['oper']['lines'][i]['percentajeACSubstationLossesEntireSystemLR'][j] = metrics[
+                inputModel["oper"]["lines"][i]["percentajeDCDistLossesLR"][j] = metrics[percDCDistLossesLRId][j] / 100
+                inputModel["oper"]["lines"][i]["percentajeDCDistLossesRL"][j] = metrics[percDCDistLossesRLId][j] / 100
+                inputModel["oper"]["lines"][i]["percentajeACSubstationLossesEntireSystemLR"][j] = metrics[
                                                                                                    percACSubstationLossesEntireSystemLRId][j] / 100
-                inputModel['oper']['lines'][i]['percentajeACSubstationLossesEntireSystemRL'][j] = metrics[
+                inputModel["oper"]["lines"][i]["percentajeACSubstationLossesEntireSystemRL"][j] = metrics[
                                                                                                    percACSubstationLossesEntireSystemRLId][j] / 100
-                inputModel['oper']['lines'][i]['percentajeACSubstationLossesACSystemLR'][j] = metrics[percACSubstationLossesACSystemLRId][j] / 100
-                inputModel['oper']['lines'][i]['percentajeACSubstationLossesACSystemRL'][j] =  metrics[percACSubstationLossesACSystemRLId][j] / 100
-                inputModel['oper']['lines'][i]['percentajeDCSubstationLossesLR'][j] =  metrics[percDCSubstationLossesLRId][j] / 100
-                inputModel['oper']['lines'][i]['percentajeDCSubstationLossesRL'][j] =  metrics[percDCSubstationLossesRLId][j] / 100
+                inputModel["oper"]["lines"][i]["percentajeACSubstationLossesACSystemLR"][j] = metrics[percACSubstationLossesACSystemLRId][j] / 100
+                inputModel["oper"]["lines"][i]["percentajeACSubstationLossesACSystemRL"][j] =  metrics[percACSubstationLossesACSystemRLId][j] / 100
+                inputModel["oper"]["lines"][i]["percentajeDCSubstationLossesLR"][j] =  metrics[percDCSubstationLossesLRId][j] / 100
+                inputModel["oper"]["lines"][i]["percentajeDCSubstationLossesRL"][j] =  metrics[percDCSubstationLossesRLId][j] / 100
 
-                inputModel['oper']['lines'][i]['receptivity'][j] =  metrics[receptivityId][j] / 100
+                inputModel["oper"]["lines"][i]["receptivity"][j] =  metrics[receptivityId][j] / 100
 
-        response = {'inputModel': inputModel}
+        response = {"inputModel": inputModel}
         Status.getJsonStatus(Status.OK, response)
 
         import json
