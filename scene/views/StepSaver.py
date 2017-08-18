@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
 
 from abc import ABCMeta, abstractmethod
 from .ExcelWriter import Step1ExcelWriter, Step3ExcelWriter, Step5ExcelWriter
 from scene.models import MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation, SystemicParams, \
     OperationPeriod
+
+from scene.sceneExceptions import OsirisException
+from scene.statusResponse import Status
 
 import uuid
 
@@ -133,13 +137,15 @@ class Step2Saver(StepSaver):
     logic to save step 2 data
     """
 
-    def validate(self, data):
+    def validate(self, data, attr_name=None):
         """ check inputs before save """
         if isinstance(data, dict):
             for key, value in data.items():
-                self.validate(value)
+                self.validate(value, key)
         elif data is None:
-            raise(Exception, "error")
+            response = Status.getJsonStatus(Status.EXCEL_ERROR, {})
+            response["status"]["message"] = u"El valor del campo {} no puede ser vacío.".format(attr_name, data)
+            raise(OsirisException(response))
 
         return True
 

@@ -14,6 +14,8 @@ from scene.models import Scene
 from scene.statusResponse import Status
 from .StepSaver import Step0Saver, Step2Saver, Step4Saver
 
+from scene.sceneExceptions import OsirisException
+
 import json
 
 class StepsView(View):
@@ -119,6 +121,8 @@ class ValidationStepView(View):
         except IntegrityError as e:
             Status.getJsonStatus(Status.EXCEL_ERROR, response)
             response["status"]["message"] = str(e)
+        except OsirisException as e:
+            response.update(e.get_status_response())
 
         return JsonResponse(response, safe=False)
 
