@@ -125,6 +125,7 @@ class InputModelData(View):
     """ get input model inputModel """
 
     def __init__(self):
+        super(InputModelData, self).__init__()
         self.context = {}
 
     def get(self, request, sceneId):

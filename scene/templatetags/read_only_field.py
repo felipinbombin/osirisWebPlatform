@@ -17,4 +17,7 @@ def read_only_field(label, value, unit):
           </div>
         </div>
         """
+    if value is None:
+        value = ""
+
     return format_html(field, label, value, unit)
