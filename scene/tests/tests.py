@@ -16,6 +16,11 @@ from collections import defaultdict
 import os
 import json
 
+TOPOLOGIC_FILE_NAME = u"Escenario_topologico.xlsx"
+SYSTEMIC_FILE_NAME = u"Escenario_sistemico.xlsx"
+OPERATION_FILE_NAME = u"Escenario_operacion.xlsx"
+SPEED_FILE_NAME = u"Escenario_velocidad.xlsx"
+
 class CompleteSceneData(TestCase):
     """
     test for scene wizard
@@ -140,7 +145,6 @@ class CompleteSceneData(TestCase):
     def upload_topologic_file(self):
         """ simulate step 1 uploading excel file """
         UPLOAD_TOPOLOGIC_FILE_URL = reverse("scene:uploadTopologicFile", kwargs={"sceneId": self.scene_obj.id})
-        TOPOLOGIC_FILE_NAME = u"Escenario_topologico.xlsx"
 
         # upload file
         with open(os.path.join(self.FILE_PATH, TOPOLOGIC_FILE_NAME), "rb") as fp:
@@ -194,7 +198,6 @@ class CompleteSceneData(TestCase):
     def upload_systemic_file(self):
         """ simulate step 3 uploading excel file """
         UPLOAD_SYSTEMIC_FILE_URL = reverse("scene:uploadSystemicFile", kwargs={"sceneId": self.scene_obj.id})
-        SYSTEMIC_FILE_NAME = u"Escenario_sistemico.xlsx"
 
         # upload file
         with open(os.path.join(self.FILE_PATH, SYSTEMIC_FILE_NAME), "rb") as fp:
@@ -238,7 +241,6 @@ class CompleteSceneData(TestCase):
     def upload_operation_file(self):
         """ simulate step 5 uploading excel file """
         UPLOAD_OPERATION_FILE_URL = reverse("scene:uploadOperationalFile", kwargs={"sceneId": self.scene_obj.id})
-        OPERATION_FILE_NAME = u"Escenario_operacion.xlsx"
 
         # upload file
         with open(os.path.join(self.FILE_PATH, OPERATION_FILE_NAME), "rb") as fp:
@@ -278,10 +280,9 @@ class CompleteSceneData(TestCase):
         pass
         """
         UPLOAD_SPEED_FILE_URL = reverse("scene:uploadSpeedFile", kwargs={"sceneId": self.scene_obj.id})
-        OPERATION_FILE_NAME = u"Escenario_velocidad.xlsx"
         
         # upload file
-        with open(os.path.join(self.FILE_PATH, OPERATION_FILE_NAME), "rb") as fp:
+        with open(os.path.join(self.FILE_PATH, SPEED_FILE_NAME), "rb") as fp:
             data = {"file": fp}
             response = self.client.post(UPLOAD_SPEED_FILE_URL, data)
 
@@ -296,6 +297,11 @@ class CompleteSceneData(TestCase):
 
         self.assertIsNotNone(self.scene_obj.timeStampStep6File)
         """
+
+    def download_file(self, url, file_path):
+        """ check that url to download template files and files uploaded by users works """
+        response = self.testHelper.make_get_request(url, {}, expected_server_response_code=302, expected_response=None)
+        self.assertEquals(response.url, file_path)
 
     def test_FillAllSteps(self):
         """ simulate correct process to create a escene """
@@ -314,13 +320,22 @@ class CompleteSceneData(TestCase):
         self.check_step_6()
         """
 
-    def test_checkStep1WithoutPrevious(self):
-        """ test step 1 without previous step """
-        pass
-        #self.upload_topologic_file()
-        #self.check_step_1()
-
-    def test_checkStep2WithoutPrevious(self):
-        """ test step 2 without previous step """
-        pass
-        #self.check_step_2()
+        # check that i can download files
+        file_urls = [
+            reverse("scene:downloadStepFile", kwargs={"stepId": 1, "sceneId": self.scene_obj.id}),
+            reverse("scene:downloadStepFile", kwargs={"stepId": 3, "sceneId": self.scene_obj.id}),
+            reverse("scene:downloadStepFile", kwargs={"stepId": 5, "sceneId": self.scene_obj.id}),
+            #reverse("scene:downloadStepFile", kwargs={"stepId": 6, "sceneId": self.scene_obj.id}),
+            reverse("scene:downloadStepTemplate", kwargs={"stepId": 1, "sceneId": self.scene_obj.id}),
+            reverse("scene:downloadStepTemplate", kwargs={"stepId": 3, "sceneId": self.scene_obj.id}),
+            reverse("scene:downloadStepTemplate", kwargs={"stepId": 5, "sceneId": self.scene_obj.id}),
+            #reverse("scene:downloadStepTemplate", kwargs={"stepId": 6, "sceneId": self.scene_obj.id}),
+        ]
+        file_paths = [
+            self.scene_obj.step1File.url, self.scene_obj.step3File.url, self.scene_obj.step5File.url,
+            #self.scene_obj.step6File.url,
+            self.scene_obj.step1Template.url, self.scene_obj.step3Template.url, self.scene_obj.step5Template.url,
+            # self.scene_obj.step6Template.url,
+        ]
+        for url, file_path in zip(file_urls, file_paths):
+            self.download_file(url, file_path)

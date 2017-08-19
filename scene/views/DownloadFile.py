@@ -16,8 +16,7 @@ class DownloadStepFile(View):
             scene = Scene.objects.get(user=request.user, id=sceneId)
         except:
             raise Http404
-        
-        field = None
+
         stepId = int(stepId)
         if stepId == 1:
             field = scene.step1File

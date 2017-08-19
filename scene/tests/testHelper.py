@@ -65,10 +65,10 @@ class TestHelper():
 
     def __process_response(self, response, expected_server_response_code, expected_response):
         """  """
-
         self.testInstance.assertEqual(response.status_code, expected_server_response_code)
-        status = json.loads(response.content.decode("utf-8"))["status"]
-        self.testInstance.assertEqual(status["code"], expected_response["status"]["code"])
+        if expected_response is not None:
+            status = json.loads(response.content.decode("utf-8"))["status"]
+            self.testInstance.assertEqual(status["code"], expected_response["status"]["code"])
 
         return response
 

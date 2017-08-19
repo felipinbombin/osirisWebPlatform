@@ -21,9 +21,8 @@ from django.contrib.auth.decorators import login_required
 from django.conf.urls.static import static
 
 urlpatterns = [
-    url(r'^$', login_required(TemplateView.as_view(template_name="base_site.html")), name="index"),
+    url(r'^$', login_required(TemplateView.as_view(template_name="admin/base_site.html")), name="index"),
     url(r'^admin/', include('scene.urls', namespace='scene')),
     url(r'^admin/', admin.site.urls),
     url(r'^myadmin/', include('myadmin.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
