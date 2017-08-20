@@ -15,6 +15,8 @@ from scene.models import MetroLineMetric, OperationPeriodForMetroStation, Operat
     OperationPeriodForMetroLine
 from scene.views.SceneData import GetSceneData
 
+from models.models import Model, ModelExecutionHistory
+
 import numpy as np
 import datetime
 
@@ -34,6 +36,30 @@ class ScenePanel(View):
             self.context["scene"] = scene
             self.context["data"] = GetSceneData().getData(request, sceneId)
             self.context["barWidth"] = int(float(scene.currentStep) / 7 * 100)
+            if scene.currentStep < 6:
+                status_label = "FALTA COMPLETAR PASO {}".format(scene.currentStep + 1)
+            else:
+                status_label = "COMPLETADO"
+            self.context["status_label"] = status_label
+
+            model_list = Model.objects.all().order_by("id")
+            model_status = []
+            for model in model_list:
+                model_instance = ModelExecutionHistory.objects.filter(scene=scene, model=model).\
+                    order_by("-start").first()
+                if scene.currentStep < 5:
+                    status = "disabled"
+                elif model_instance is not None and model_instance.status == ModelExecutionHistory.RUNNING:
+                    status = "running"
+                else:
+                    status = "available"
+
+                model_status.append({
+                    "name": model.name,
+                    "status": status
+                })
+
+            self.context["models"] = model_status
         except:
             raise Http404
 
@@ -525,13 +551,13 @@ class InputModelData(View):
                                                                                                       percACSubstationLossesEntireSystemRLId][
                                                                                                       j] / 100
                 inputModel["oper"]["lines"][i]["percentajeACSubstationLossesACSystemLR"][j] = \
-                metrics[percACSubstationLossesACSystemLRId][j] / 100
+                    metrics[percACSubstationLossesACSystemLRId][j] / 100
                 inputModel["oper"]["lines"][i]["percentajeACSubstationLossesACSystemRL"][j] = \
-                metrics[percACSubstationLossesACSystemRLId][j] / 100
+                    metrics[percACSubstationLossesACSystemRLId][j] / 100
                 inputModel["oper"]["lines"][i]["percentajeDCSubstationLossesLR"][j] = \
-                metrics[percDCSubstationLossesLRId][j] / 100
+                    metrics[percDCSubstationLossesLRId][j] / 100
                 inputModel["oper"]["lines"][i]["percentajeDCSubstationLossesRL"][j] = \
-                metrics[percDCSubstationLossesRLId][j] / 100
+                    metrics[percDCSubstationLossesRLId][j] / 100
 
                 inputModel["oper"]["lines"][i]["receptivity"][j] = metrics[receptivityId][j] / 100
 
