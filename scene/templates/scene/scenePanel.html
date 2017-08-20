@@ -37,12 +37,12 @@
     <div class="title_right">
     </div>
   </div>
-
+{% include "scene/scenePanel_models.html" %}
   <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
       <div class="x_panel">
         <div class="x_title">
-          <h2>{% trans "Estado" %}: {{ scene.status }} <small></small></h2>
+          <h2>{% trans "Estado" %}: {{ status_label }} <small></small></h2>
           <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -50,12 +50,7 @@
             <div class="col-md-10 col-sm-10 col-sx-12">
               <div class="progress">
                 <div class="progress-bar progress-bar-{% if scene.currentStep < 6 %}danger{% else %}success{% endif %}"
-                   style="width: {{ barWidth }}%;">
-                   {% if scene.currentStep < 6 %}
-                   {% trans "FALTA COMPLETAR PASO" %} {{ scene.currentStep|add:1 }}
-                   {% else %}
-                   {% trans "COMPLETADO" %}
-                   {% endif %}
+                   style="width: {{ barWidth }}%;">{{ status_label }}
                 </div>
               </div>
             </div>
@@ -97,7 +92,6 @@
        </div>
     </div>
   </div>
-  {% include "scene/scenePanel_models.html" %}
 
     <!-- modal to change scene name -->
     <div class="modal fade" tabindex="-1" role="dialog" data-bind="modal: showChangeNameDialog">

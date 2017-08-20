@@ -12,10 +12,9 @@
         </div>
         <div class="x_content">
             <div class="row">
-                {% model_button "Velocidad" 3 "disabled" %}
-                {% model_button "Fuerza" 3 %}
-                {% model_button "Temperatura" 3 %}
-                {% model_button "Energía" 3 "running" %}
+                {% for model in models %}
+                    {% model_button model.name 3 model.status %}
+                {% endfor %}
             </div>
         </div>
       </div>
