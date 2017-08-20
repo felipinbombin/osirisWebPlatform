@@ -5,7 +5,7 @@ from django.utils.html import format_html
 register = template.Library()
 
 @register.simple_tag
-def model_button(model_label, column, state="available"):
+def model_button(model_label, column, id, state="available"):
     # states: [available, running, disabled]
 
     button_icon = u"""
@@ -31,7 +31,7 @@ def model_button(model_label, column, state="available"):
             """
 
     field= u"""
-        <div class="col-md-{0} col-sm-{0} col-xs-12">
+        <div id="model-{6}" class="col-md-{0} col-sm-{0} col-xs-12">
             <h1 class="text-center">{1}</h1>
             <button class="btn {4} btn-lg btn-block" {3}>
                 """ + button_icon + """
@@ -41,4 +41,4 @@ def model_button(model_label, column, state="available"):
             </button>
         </div>"""
 
-    return format_html(field, column, model_label, vis_label, disabled, button_class, button_label)
+    return format_html(field, column, model_label, vis_label, disabled, button_class, button_label, id)

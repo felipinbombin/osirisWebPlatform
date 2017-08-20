@@ -77,7 +77,8 @@ class Status(View):
         model_status_list = []
         for model in model_list:
             model_status = {
-                "name": model.name
+                "name": model.name,
+                "id": model.id
             }
             model_instance = ModelExecutionHistory.objects.filter(scene=scene_obj, model=model). \
                 order_by("-start").first()
