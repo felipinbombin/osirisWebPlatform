@@ -166,8 +166,11 @@ $(document).ready(function(){
                     prevButton,
                     nextButton,
                     finalButton
-                ],
+                ]
             },
+            anchorSettings: {
+                anchorClickable: false
+            }
         });
     });
 
