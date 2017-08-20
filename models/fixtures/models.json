@@ -9,7 +9,7 @@
   },
   {
     "model": "models.model",
-    "pk": 1,
+    "pk": 2,
     "fields": {
       "name": "Fuerza",
       "clusterFile": "strong.bash"
