@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from scene.models import Scene
-from scene.statusResponse import Status
+from scene.statusResponse import Status as sts
 
 from scene.sceneExceptions import OsirisException
 
@@ -34,7 +34,7 @@ class Run(View):
             raise Http404()
 
         response = {}
-        Status.getJsonStatus(Status.OK, response)
+        sts.getJsonStatus(sts.OK, response)
 
         return JsonResponse(response, safe=False)
 
@@ -60,7 +60,7 @@ class Stop(View):
             with transaction.atomic():
                 pass
         except IntegrityError as e:
-            Status.getJsonStatus(Status.EXCEL_ERROR, response)
+            sts.getJsonStatus(sts.EXCEL_ERROR, response)
             response["status"]["message"] = str(e)
         except OsirisException as e:
             response.update(e.get_status_response())
