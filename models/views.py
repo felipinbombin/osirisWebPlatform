@@ -13,7 +13,7 @@ from scene.models import Scene
 from scene.statusResponse import Status as sts
 
 from scene.sceneExceptions import OsirisException
-
+from models.models import Model, ModelExecutionHistory
 
 class Run(View):
     """ run model on cmm cluster """
@@ -71,16 +71,36 @@ class Stop(View):
 class Status(View):
     """ Give the information of all model for scene """
 
+    def resume_status(self, scene_obj):
+        """  """
+        model_list = Model.objects.all().order_by("id")
+        model_status_list = []
+        for model in model_list:
+            model_status = {
+                "name": model.name
+            }
+            model_instance = ModelExecutionHistory.objects.filter(scene=scene_obj, model=model). \
+                order_by("-start").first()
+            if scene_obj.currentStep < 5:
+                status = "disabled"
+            elif model_instance is not None:
+                if model_instance.status == ModelExecutionHistory.RUNNING:
+                    status = "running"
+                else:
+                    status = "available"
+                # check its queue
+                model_status["lastExecutionInfo"] = model_instance.get_dictionary()
+            else:
+                status = "available"
+
+            model_status["status"] = status
+            model_status_list.append(model_status)
+
+        return model_status_list
+
     def get(self, request):
 
         scene_id = int(request.GET.get("sceneId"))
+        scene_obj = Scene.objects.get(user=request.user, id=scene_id)
 
-        scene_obj = Scene.objects.prefetch_related("model_set__modelexecutionhistory_set").\
-                       get(user=request.user, id=scene_id)
-        response = {
-            "models": []
-        }
-        for model in scene_obj.model_set.all().order_by("id"):
-            response["models"].append(model.getDictionary)
-
-        return JsonResponse(response, safe=False)
+        return JsonResponse(self.resume_status(scene_obj), safe=False)

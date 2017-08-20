@@ -8,6 +8,13 @@ class Model(models.Model):
     name = models.CharField('Nombre', max_length=100)
     clusterFile = models.CharField('archivo bash', max_length=100)
 
+    def get_dictionary(self):
+        """  """
+        dictionary = {
+            "name": self.name,
+            "id": self.id
+        }
+        return dictionary
 
 class ModelExecutionHistory(models.Model):
     """  record history of models execution """
@@ -41,8 +48,10 @@ class ModelExecutionHistory(models.Model):
         dictionary = {
             "start": self.start,
             "end": self.end,
-            "status": self.status
+            "status": self.status,
+            "queuedModels": [m.get_dictionary for m in self.modelexecutionhistory_set.all().order_by("id")]
         }
+
         if self.end is not None:
             dictionary["duration"] = self.end - self.start
 
@@ -53,3 +62,7 @@ class ModelExecutionQueue(models.Model):
     """  record history of models execution """
     modelExecutionHistory = models.ForeignKey(ModelExecutionHistory, on_delete=models.CASCADE)
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
+
+    def get_dictionary(self):
+        """  """
+        return self.model.get_dictionary()

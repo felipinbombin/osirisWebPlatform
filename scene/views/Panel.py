@@ -15,7 +15,7 @@ from scene.models import MetroLineMetric, OperationPeriodForMetroStation, Operat
     OperationPeriodForMetroLine
 from scene.views.SceneData import GetSceneData
 
-from models.models import Model, ModelExecutionHistory
+from models.views import Status as ModelStatus
 
 import numpy as np
 import datetime
@@ -32,34 +32,17 @@ class ScenePanel(View):
     def get(self, request, sceneId):
 
         try:
-            scene = Scene.objects.get(user=request.user, id=sceneId)
-            self.context["scene"] = scene
+            scene_obj = Scene.objects.get(user=request.user, id=sceneId)
+            self.context["scene"] = scene_obj
             self.context["data"] = GetSceneData().getData(request, sceneId)
-            self.context["barWidth"] = int(float(scene.currentStep) / 7 * 100)
-            if scene.currentStep < 6:
-                status_label = "FALTA COMPLETAR PASO {}".format(scene.currentStep + 1)
+            self.context["barWidth"] = int(float(scene_obj.currentStep) / 7 * 100)
+            if scene_obj.currentStep < 6:
+                status_label = "FALTA COMPLETAR PASO {}".format(scene_obj.currentStep + 1)
             else:
                 status_label = "COMPLETADO"
             self.context["status_label"] = status_label
 
-            model_list = Model.objects.all().order_by("id")
-            model_status = []
-            for model in model_list:
-                model_instance = ModelExecutionHistory.objects.filter(scene=scene, model=model).\
-                    order_by("-start").first()
-                if scene.currentStep < 5:
-                    status = "disabled"
-                elif model_instance is not None and model_instance.status == ModelExecutionHistory.RUNNING:
-                    status = "running"
-                else:
-                    status = "available"
-
-                model_status.append({
-                    "name": model.name,
-                    "status": status
-                })
-
-            self.context["models"] = model_status
+            self.context["models"] = ModelStatus().resume_status(scene_obj)
         except:
             raise Http404
 
@@ -326,7 +309,7 @@ class InputModelData(View):
 
         inputModel["sist"]["tractEff"] = sys.tractionSystemEfficiency / 100
         inputModel["sist"]["brakeEff"] = sys.brakingSystemEfficiency / 100
-        # inputModel["sist"]["receptivity"] = fslc(15+1,1) 
+        # inputModel["sist"]["receptivity"] = fslc(15+1,1)
         inputModel["sist"]["electBrakeT.p1"] = sys.electricalBrakeTreshold
         inputModel["sist"]["electBrakeT.p2"] = sys.electroMechanicalBrakeThreshold
         # --------------------------------------------------------------
