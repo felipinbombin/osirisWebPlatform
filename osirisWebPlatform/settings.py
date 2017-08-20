@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 #    'django.contrib.formtools',
     'myadmin',
     'scene',
+    'models',
     'bowerapp'
 ]
 

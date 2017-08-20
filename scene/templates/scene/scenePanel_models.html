@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n model_button %}
 <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
       <div class="x_panel">
@@ -11,45 +11,12 @@
           <div class="clearfix"></div>
         </div>
         <div class="x_content">
-          <div class="col-md-3 col-sm-3 col-xs-12">
-            <button class="btn btn-info btn-lg btn-block" disabled>
-              <i class="fa fa-play fa-3x"></i>
-              <br><h1>{% trans "Velocidad" %}</h1>
-            </button>
-            <button class="btn btn-success btn-block" disabled>
-              <h2><i class="fa fa-eye fa-lg"></i> {% trans "Resultados" %}</h2>
-            </button>
-          </div>
-          <div class="col-md-3 col-sm-3 col-xs-12">
-            <button class="btn btn-info btn-lg btn-block">
-              <i class="fa fa-play fa-3x"></i>
-              <br><h1>{% trans "Fuerza" %}</h1>
-            </button>
-            <button class="btn btn-success btn-block">
-              <h2><i class="fa fa-eye fa-lg"></i> {% trans "Resultados" %}</h2>
-            </button>
-          </div>
-          <div class="col-md-3 col-sm-3 col-xs-12">
-            <button class="btn btn-info btn-lg btn-block">
-              <i class="fa fa-play fa-3x"></i>
-              <br><h1>{% trans "Temperatura" %}</h1>
-            </button>
-            <button class="btn btn-success btn-block">
-              <h2><i class="fa fa-eye fa-lg"></i> {% trans "Resultados" %}</h2>
-            </button>
-          </div>
-          <div class="col-md-3 col-sm-3 col-xs-12">
-            <button class="btn btn-danger btn-lg btn-block">
-              <span class="fa-stack fa-2x">
-                <i class="fa fa-stop fa-stack-1x"></i>
-                <i class="fa fa-circle-o-notch fa-spin fa-stack-2x"></i>
-              </span>
-              <br><h2>Detener</h2>
-            </button>
-            <button class="btn btn-success btn-block" disabled>
-              <h2><i class="fa fa-eye fa-lg"></i> {% trans "Resultados" %}</h2>
-            </button>
-          </div>
+            <div class="row">
+                {% model_button "Velocidad" 3 "disabled" %}
+                {% model_button "Fuerza" 3 %}
+                {% model_button "Temperatura" 3 %}
+                {% model_button "Energía" 3 "running" %}
+            </div>
         </div>
       </div>
     </div>

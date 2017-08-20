@@ -1,0 +1,34 @@
+[
+  {
+    "model": "models.model",
+    "pk": 1,
+    "fields": {
+      "name": "Velocidad",
+      "clusterFile": "speed.bash"
+    }
+  },
+  {
+    "model": "models.model",
+    "pk": 1,
+    "fields": {
+      "name": "Fuerza",
+      "clusterFile": "strong.bash"
+    }
+  },
+  {
+    "model": "models.model",
+    "pk": 3,
+    "fields": {
+      "name": "Temperatura",
+      "clusterFile": "temperature.bash"
+    }
+  },
+  {
+    "model": "models.model",
+    "pk": 4,
+    "fields": {
+      "name": "Energía",
+      "clusterFile": "energy.bash"
+    }
+  }
+]
