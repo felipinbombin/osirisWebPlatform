@@ -1,0 +1,50 @@
+[
+  {
+    "model": "models.possiblequeue",
+    "pk": 1,
+    "fields": {
+      "start": 1,
+      "follow": 2
+    }
+  },
+  {
+    "model": "models.possiblequeue",
+    "pk": 2,
+    "fields": {
+      "start": 1,
+      "follow": 3
+    }
+  },
+  {
+    "model": "models.possiblequeue",
+    "pk": 3,
+    "fields": {
+      "start": 1,
+      "follow": 4
+    }
+  },
+  {
+    "model": "models.possiblequeue",
+    "pk": 4,
+    "fields": {
+      "start": 2,
+      "follow": 3
+    }
+  },
+  {
+    "model": "models.possiblequeue",
+    "pk": 5,
+    "fields": {
+      "start": 2,
+      "follow": 4
+    }
+  },
+  {
+    "model": "models.possiblequeue",
+    "pk": 6,
+    "fields": {
+      "start": 3,
+      "follow": 4
+    }
+  }
+]

@@ -95,6 +95,13 @@ $(document).ready(function () {
         /**************************************************
          * MANAGE MODEL EXECUTION
          ***************************************************/
+        self.showRunModelDialog = ko.observable(false);
+        self.model = {
+            name: "as",
+            queue: {
+                name: "mail"
+            }
+        };
         self.updateModelButtonState = function() {
             var labels = {
                 BUTTON_MODEL_RUN: "Ejecutar",

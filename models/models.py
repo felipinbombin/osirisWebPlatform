@@ -12,9 +12,15 @@ class Model(models.Model):
         """  """
         dictionary = {
             "name": self.name,
-            "id": self.id
+            "id": self.id,
+            "follow": [{"name": c.follow.name, "id": c.follow.id} for c in self.start_set.all().order_by("id")]
         }
         return dictionary
+
+class PossibleQueue(models.Model):
+    """ define which models can run after one model """
+    start = models.ForeignKey(Model, on_delete=models.CASCADE, related_name="start_set")
+    follow = models.ForeignKey(Model, on_delete=models.CASCADE, related_name="follow_set")
 
 class ModelExecutionHistory(models.Model):
     """  record history of models execution """

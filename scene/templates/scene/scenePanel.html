@@ -137,6 +137,29 @@
         </div>
       </div>
     </div>
+
+    <!-- modal to run model -->
+    <div class="modal fade" tabindex="-1" role="dialog" data-bind="modal: showRunModelDialog">
+      <div class="modal-dialog">
+        <div class="modal-content" data-bind="with: model">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Ejecutar modelo de <span data-bind="text: name"></span></h4>
+          </div>
+          <div class="modal-body">
+              A continuación iniciará la ejecución del modelo de  <span data-bind="text: name"></span><br />
+              <span class="text-info">SI DESEA EJECUTAR CONCATENAR LA EJECUCIÓN DE OTROS MODELOS POR FAVOR MARQUELOS.</span>
+              <!-- ko foreach: queue -->
+              <input type="checkbox" /> <span data-bind="name"></span>
+              <!-- /ko -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bind="click : $root.delete">Eliminar</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 {% endblock %}
 

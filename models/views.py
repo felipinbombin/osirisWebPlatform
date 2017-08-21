@@ -76,10 +76,7 @@ class Status(View):
         model_list = Model.objects.all().order_by("id")
         model_status_list = []
         for model in model_list:
-            model_status = {
-                "name": model.name,
-                "id": model.id
-            }
+            model_status = model.get_dictionary()
             model_instance = ModelExecutionHistory.objects.filter(scene=scene_obj, model=model). \
                 order_by("-start").first()
             if scene_obj.currentStep < 5:
