@@ -1,6 +1,6 @@
 [
   {
-    "model": "models.model",
+    "model": "cmmmodel.model",
     "pk": 1,
     "fields": {
       "name": "Velocidad",
@@ -8,7 +8,7 @@
     }
   },
   {
-    "model": "models.model",
+    "model": "cmmmodel.model",
     "pk": 2,
     "fields": {
       "name": "Fuerza",
@@ -16,7 +16,7 @@
     }
   },
   {
-    "model": "models.model",
+    "model": "cmmmodel.model",
     "pk": 3,
     "fields": {
       "name": "Temperatura",
@@ -24,7 +24,7 @@
     }
   },
   {
-    "model": "models.model",
+    "model": "cmmmodel.model",
     "pk": 4,
     "fields": {
       "name": "Energía",
