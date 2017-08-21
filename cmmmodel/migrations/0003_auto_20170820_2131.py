@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('models', '0002_posiblequeue'),
+        ('cmmmodel', '0002_posiblequeue'),
     ]
 
     operations = [

@@ -15,7 +15,7 @@ from scene.models import MetroLineMetric, OperationPeriodForMetroStation, Operat
     OperationPeriodForMetroLine
 from scene.views.SceneData import GetSceneData
 
-from models.views import Status as ModelStatus
+from cmmmodel.views import Status as ModelStatus
 
 import numpy as np
 import datetime

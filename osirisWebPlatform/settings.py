@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 #    'django.contrib.formtools',
     'myadmin',
-    'models',
+    'cmmmodel',
     'scene',
     'bowerapp'
 ]

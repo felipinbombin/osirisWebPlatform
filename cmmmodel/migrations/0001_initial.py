@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('answer', models.TextField()),
                 ('status', models.CharField(choices=[('running', 'En ejecución'), ('ok', 'Terminado exitosamente'), ('error', 'Terminado con error'), ('cancel', 'Cancelado por el usuario')], default='running', max_length=40, verbose_name='Estado')),
                 ('jobNumber', models.BigIntegerField(null=True)),
-                ('model', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='models.Model')),
+                ('model', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cmmmodel.Model')),
                 ('scene', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='scene.Scene')),
             ],
         ),
@@ -40,8 +40,8 @@ class Migration(migrations.Migration):
             name='ModelExecutionQueue',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('model', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='models.Model')),
-                ('modelExecutionHistory', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='models.ModelExecutionHistory')),
+                ('model', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cmmmodel.Model')),
+                ('modelExecutionHistory', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cmmmodel.ModelExecutionHistory')),
             ],
         ),
     ]

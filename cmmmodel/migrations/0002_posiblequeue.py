@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('models', '0001_initial'),
+        ('cmmmodel', '0001_initial'),
     ]
 
     operations = [
@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
             name='PosibleQueue',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('follow', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='follow', to='models.Model')),
-                ('start', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='start', to='models.Model')),
+                ('follow', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='follow', to='cmmmodel.Model')),
+                ('start', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='start', to='cmmmodel.Model')),
             ],
         ),
     ]
