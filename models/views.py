@@ -13,7 +13,8 @@ from scene.models import Scene
 from scene.statusResponse import Status as sts
 
 from scene.sceneExceptions import OsirisException
-from models.models import Model, ModelExecutionHistory
+from models.models import ModelExecutionHistory, Model
+
 
 class Run(View):
     """ run model on cmm cluster """
