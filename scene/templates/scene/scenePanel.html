@@ -99,12 +99,12 @@
         <div class="modal-content" data-bind="with: changeNameFormLogic">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Cambiar nombre de escenario</h4>
+            <h4 class="modal-title">{% trans "Cambiar nombre de escenario" %}</h4>
           </div>
           <div class="modal-body">
             <div class="form-horizontal form-label-left">
               <div class="form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12">Nombre</label>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">{% trans "Nombre" %}</label>
                 <div class="col-md-9 col-sm-9 col-xs-12">
                   <input type="text" class="form-control" data-bind="value: name">
                 </div>
@@ -112,7 +112,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-success" data-bind="click : $root.changeName" autofocus>Cambiar nombre</button>
+            <button type="button" class="btn btn-success" data-bind="click : $root.changeName" autofocus>{% trans "Cambiar nombre" %}</button>
           </div>
         </div>
       </div>
@@ -124,15 +124,15 @@
         <div class="modal-content" data-bind="with: changeNameFormLogic">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Eliminar Escenario</h4>
+            <h4 class="modal-title">{% trans "Eliminar Escenario" %}</h4>
           </div>
           <div class="modal-body">
-              ¿Está seguro que desea eliminar el escenario? <br />
-              <span class="text-danger">RECUERDE QUE ESTA OPERACIÓN ES IRREVERSIBLE.</span>
+              {% trans "¿Está seguro que desea eliminar el escenario?" %}<br />
+              <span class="text-danger">{% trans "RECUERDE QUE ESTA OPERACIÓN ES IRREVERSIBLE." %}</span>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bind="click : $root.delete">Eliminar</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-danger" data-bind="click : $root.delete">{% trans "Eliminar" %}</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
           </div>
         </div>
       </div>
@@ -144,17 +144,19 @@
         <div class="modal-content" data-bind="with: model">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Ejecutar modelo de <span data-bind="text: name"></span></h4>
+            <h4 class="modal-title">Ejecutar modelo de <span class="lead" data-bind="text: name"></span></h4>
           </div>
           <div class="modal-body">
-              A continuación iniciará la ejecución del modelo de  <span data-bind="text: name"></span><br />
-              <span class="text-info">SI DESEA EJECUTAR CONCATENAR LA EJECUCIÓN DE OTROS MODELOS POR FAVOR MARQUELOS.</span>
-              <!-- ko foreach: queue -->
-              <input type="checkbox" /> <span data-bind="name"></span>
-              <!-- /ko -->
+              <p>Cuando presione el botón "ejecutar" comenzará la ejecución del modelo de <span data-bind="text: name"></span>.</p>
+              <p class="text-info" data-bind="if: follow().length">SI DESEA CONCATENAR LA EJECUCIÓN DE OTROS MODELOS POR FAVOR MÁRQUELOS.</p>
+              <ul data-bind="foreach: follow">
+                <li><label>
+                  <input type="checkbox" data-bind="checked: checked" /> <span data-bind="text: name"></span>
+                </label></li>
+              </ul>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bind="click : $root.delete">Eliminar</button>
+            <button type="button" class="btn btn-success" data-bind="click : $root.run">Ejecutar</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
           </div>
         </div>

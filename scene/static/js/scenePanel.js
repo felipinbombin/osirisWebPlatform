@@ -97,11 +97,11 @@ $(document).ready(function () {
          ***************************************************/
         self.showRunModelDialog = ko.observable(false);
         self.model = {
-            name: "as",
-            queue: {
-                name: "mail"
-            }
+            name: ko.observable(""),
+            follow: ko.observableArray([])
         };
+        self.models = ko.observableArray([]);
+
         self.updateModelButtonState = function() {
             var labels = {
                 BUTTON_MODEL_RUN: "Ejecutar",
@@ -112,8 +112,10 @@ $(document).ready(function () {
             // retrieve model data
             $.get(MODEL_INFO_URL, {"sceneId": SCENE_ID},
                 function(response) {
+                    console.log(response);
+                    self.models.removeAll();
                     response.forEach(function(v){
-                       var modelButton = $("#model-"+v.id);
+                       var modelButton = $("#model-" + v.id);
                        var runButton = $(":button:eq(0)", modelButton);
                        var visButton = $(":button:eq(1)", modelButton);
                        var runSkin = "<i class='fa fa-play fa-3x'></i><br><h1>" + labels.BUTTON_MODEL_RUN + "</h1>";
@@ -132,16 +134,34 @@ $(document).ready(function () {
                                visButton.prop("disabled", false);
                                break;
                        }
+                       // add checkbox interaction for each follow model
+                       v.follow.forEach(function(f) {
+                           f['checked'] = ko.observable(false);
+                       });
+                       self.models.push(v);
                     });
                 }).always(function () {
                     spinner.stop();
                 });
         }
     };
-    var stepDOM = document.getElementById("content-main");
+    var panelDOM = document.getElementById("content-main");
     var viewModel = new Scene();
-    ko.applyBindings(viewModel, stepDOM);
+    viewModel.updateModelButtonState();
+    ko.applyBindings(viewModel, panelDOM);
+
+    $("[id^=model-]").click(function(){
+        var button = $(this);
+        var id = button.attr("id").split("-")[1] - 1;
+        viewModel.model.name(viewModel.models()[id].name);
+        viewModel.model.follow.removeAll();
+        viewModel.models()[id].follow.forEach(function(f) {
+            viewModel.model.follow.push(f);
+        });
+        viewModel.showRunModelDialog(true);
+    });
+
     setInterval(function(){
-        viewModel.updateModelButtonState();
-    }, 15*1000);
+        //viewModel.updateModelButtonState();
+    }, 5*1000);
 });
