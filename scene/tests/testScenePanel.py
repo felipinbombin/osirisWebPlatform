@@ -51,7 +51,7 @@ class SceneDataPanel(TestCase):
             "new_name": new_name
         }
         self.testHelper.make_post_request(URL, data,
-                                          expected_response=Status.getJsonStatus(Status.INVALID_SCENE_NAME, {}))
+                                          expected_response=Status.getJsonStatus(Status.INVALID_SCENE_NAME_ERROR, {}))
 
         previous_name = self.scene_obj.name
         self.scene_obj.refresh_from_db()

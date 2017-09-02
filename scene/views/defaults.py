@@ -73,7 +73,7 @@ class ValidationStepView(View):
                         response["status"]["title"] = u"Actualización exitosa"
                         response["status"]["message"] = u"Archivo subido exitosamente."
                     else:
-                        Status.getJsonStatus(Status.INVALID_STEP, response)
+                        Status.getJsonStatus(Status.INVALID_STEP_ERROR, response)
                 elif stepId == 2:
                     # global systemic variables
                     data = json.loads(request.body.decode("utf-8"))
@@ -92,7 +92,7 @@ class ValidationStepView(View):
                         response["status"]["title"] = u"Actualización exitosa"
                         response["status"]["message"] = u"Archivo subido exitosamente."
                     else:
-                        Status.getJsonStatus(Status.INVALID_STEP, response)
+                        Status.getJsonStatus(Status.INVALID_STEP_ERROR, response)
                 elif stepId == 4:
                     # global operational variables
                     data = json.loads(request.body.decode("utf-8"))
@@ -113,7 +113,7 @@ class ValidationStepView(View):
                         sceneObj.status = Scene.OK
                         sceneObj.save()
                     else:
-                        Status.getJsonStatus(Status.INVALID_STEP, response)
+                        Status.getJsonStatus(Status.INVALID_STEP_ERROR, response)
                 elif stepId == 6:
                     Status.getJsonStatus(Status.OK, response)
                     response["status"]["title"] = u"Actualización exitosa"

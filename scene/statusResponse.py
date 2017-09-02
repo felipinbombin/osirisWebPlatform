@@ -3,58 +3,55 @@
 class Status:
     OK = 200
     SUCCESS_NEW_NAME = 201
-    INVALID_SIZE_FILE = 401
-    INVALID_STEP = 402
-    INVALID_FORMAT_FILE = 403
+
+    INVALID_SIZE_FILE_ERROR = 401
+    INVALID_STEP_ERROR = 402
+    INVALID_FORMAT_FILE_ERROR = 403
     EXCEL_ERROR = 404
-    INVALID_SCENE_NAME = 405
-    USER_NOT_LOGGED = 406
-    ERROR = 200
+    INVALID_SCENE_NAME_ERROR = 405
+    USER_NOT_LOGGED_ERROR = 406
+    USER_DOES_NOT_EXISTS_ERROR = 407
+    GENERIC_ERROR = 499
 
     statusDict = {
+        USER_DOES_NOT_EXISTS_ERROR: {
+          "code": USER_DOES_NOT_EXISTS_ERROR, "title": "Escenario no existe",
+          "message": "El escenario no existe en el sistema."
+        },
         SUCCESS_NEW_NAME: {
-          "code": SUCCESS_NEW_NAME,
-          "title": u"Cambio exitoso",
+          "code": SUCCESS_NEW_NAME, "title": u"Cambio exitoso",
           "message": u"El nombre ha sido actualizado exitosamente.", "type": u"success"
         },
-        ERROR: {
-          "code": ERROR,
-          "title": u"Error",
+        GENERIC_ERROR: {
+          "code": GENERIC_ERROR, "title": u"Error",
           "message": u"error genérico", "type": u"error"
         },
         OK: {
-          "code": OK,
-          "title": u"Consulta exitosa",
+          "code": OK, "title": u"Consulta exitosa",
           "message": u":-)", "type": u"success"
         },
-        INVALID_SIZE_FILE: {
-          "code": INVALID_SIZE_FILE,
-          "title": u"Tamaño de archivo no válido",
+        INVALID_SIZE_FILE_ERROR: {
+          "code": INVALID_SIZE_FILE_ERROR, "title": u"Tamaño de archivo no válido",
           "message": u"El archivo ha superado el espacio permitido", "type": u"error"
         },
-        INVALID_STEP: {
-          "code": INVALID_STEP,
-          "title": u"Paso no permitido",
+        INVALID_STEP_ERROR: {
+          "code": INVALID_STEP_ERROR, "title": u"Paso no permitido",
           "message": u"Debe completar los pasos previos", "type": u"error"
         },
-        INVALID_FORMAT_FILE: {
-          "code": INVALID_FORMAT_FILE,
-          "title": u"Formato de archivo no válido",
+        INVALID_FORMAT_FILE_ERROR: {
+          "code": INVALID_FORMAT_FILE_ERROR, "title": u"Formato de archivo no válido",
           "message": u"El archivo debe tener formato Excel", "type": u"error"
         },
         EXCEL_ERROR: {
-          "code": EXCEL_ERROR,
-          "title": u"Error al procesar archivo",
+          "code": EXCEL_ERROR, "title": u"Error al procesar archivo",
           "message": u"error description", "type": u"error"
         },
-        INVALID_SCENE_NAME: {
-            "code": INVALID_SCENE_NAME,
-            "title": u"Error",
+        INVALID_SCENE_NAME_ERROR: {
+            "code": INVALID_SCENE_NAME_ERROR, "title": u"Error",
             "message": u"Nombre de escenario no válido", "type": u"error"
         },
-        USER_NOT_LOGGED: {
-            "code": USER_NOT_LOGGED,
-            "title": u"Error",
+        USER_NOT_LOGGED_ERROR: {
+            "code": USER_NOT_LOGGED_ERROR, "title": u"Error",
             "message": u"Debe iniciar sesión nuevamente", "type": u"error"
         }
     }

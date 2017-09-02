@@ -67,10 +67,10 @@ class ChangeSceneName(View):
                 scene_obj.save()
                 Status.getJsonStatus(Status.SUCCESS_NEW_NAME, response)
             else:
-                Status.getJsonStatus(Status.INVALID_SCENE_NAME, response)
+                Status.getJsonStatus(Status.INVALID_SCENE_NAME_ERROR, response)
 
         except Scene.DoesNotExist:
-            Status.getJsonStatus(Status.USER_NOT_LOGGED, response)
+            Status.getJsonStatus(Status.USER_NOT_LOGGED_ERROR, response)
 
         return JsonResponse(response, safe=False)
 
@@ -91,9 +91,9 @@ class DeleteScene(View):
                 scene_obj.delete()
                 Status.getJsonStatus(Status.OK, response)
         except Scene.DoesNotExist:
-            Status.getJsonStatus(Status.USER_NOT_LOGGED, response)
+            Status.getJsonStatus(Status.USER_NOT_LOGGED_ERROR, response)
         except:
-            Status.getJsonStatus(Status.ERROR, response)
+            Status.getJsonStatus(Status.GENERIC_ERROR, response)
             response["status"]["message"] = u"No se pudo eliminar el escenario"
 
         return JsonResponse(response, safe=False)

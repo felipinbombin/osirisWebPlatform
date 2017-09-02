@@ -36,10 +36,10 @@ class UploadFile(View):
         fileSizeLimit = 2*math.pow(10, 6) # 2MB
 
         if inMemoryUploadedFile.size > fileSizeLimit:
-            Status.getJsonStatus(Status.INVALID_SIZE_FILE, response)
+            Status.getJsonStatus(Status.INVALID_SIZE_FILE_ERROR, response)
             response['status']['message'] = MESSAGE["FILE_TOO_BIG"]
         elif not inMemoryUploadedFile.name.endswith('.xlsx'):
-            Status.getJsonStatus(Status.INVALID_FORMAT_FILE, response)
+            Status.getJsonStatus(Status.INVALID_FORMAT_FILE_ERROR, response)
             response['status']['message'] = MESSAGE["FILE_WRONG_FORMAT"]
         else:
             Status.getJsonStatus(Status.OK, response)
@@ -74,7 +74,7 @@ class UploadFile(View):
                 Status.getJsonStatus(Status.EXCEL_ERROR, response)
                 response['status']['message'] = str(e)
         else:
-            Status.getJsonStatus(Status.INVALID_STEP, response)
+            Status.getJsonStatus(Status.INVALID_STEP_ERROR, response)
 
         return JsonResponse(response, safe=False)
 
