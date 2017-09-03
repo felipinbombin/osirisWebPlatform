@@ -8,6 +8,8 @@ $(document).ready(function () {
     const DELETE_SCENE_URL = "/admin/scene/panel/delete/" + SCENE_ID;
     const SCENE_ADMIN_URL = "/admin/scene/scene/";
     const MODEL_INFO_URL = "/models/status/";
+    const RUN_MODEL_URL = "/models/run/";
+    const STOP_MODEL_URL = "/models/stop/";
 
     // knockout scene object
     var Scene = function () {
@@ -98,6 +100,7 @@ $(document).ready(function () {
         self.showRunModelDialog = ko.observable(false);
         self.model = {
             name: ko.observable(""),
+            id: ko.observable(""),
             follow: ko.observableArray([])
         };
         self.models = ko.observableArray([]);
@@ -112,7 +115,7 @@ $(document).ready(function () {
             // retrieve model data
             $.get(MODEL_INFO_URL, {"sceneId": SCENE_ID},
                 function(response) {
-                    console.log(response);
+                    //console.log(response);
                     self.models.removeAll();
                     response.forEach(function(v){
                        var modelButton = $("#model-" + v.id);
@@ -143,6 +146,47 @@ $(document).ready(function () {
                 }).always(function () {
                     spinner.stop();
                 });
+        };
+        self.modelRun = function() {
+            var model = this;
+            var modelId = model.id();
+            var nextModelIds = [];
+            model.follow().forEach(function(v){
+                if (v.checked()) {
+                    nextModelIds.push(v.id);
+                }
+            });
+            var data = {
+                sceneId: SCENE_ID,
+                modelId: modelId,
+                nextModelIds: nextModelIds
+            };
+            // activate spinjs
+            spinner.spin(spinnerParentDOM);
+            // run model
+            $.post(RUN_MODEL_URL, data, function(response) {
+
+                showNotificationMessage(response.status);
+                self.showRunModelDialog(false);
+            }).always(function () {
+                spinner.stop();
+            });
+        };
+        self.modelStop = function() {
+            var model = this;
+            var modelId = model.id();
+            model.follow().forEach(function(v){
+               console.log(v);
+            });
+            // activate spinjs
+            spinner.spin(spinnerParentDOM);
+            // retrieve model data
+            $.get(RUN_MODEL_URL, {"sceneId": SCENE_ID},
+                function(response) {
+
+                }).always(function () {
+                    spinner.stop();
+                });
         }
     };
     var panelDOM = document.getElementById("content-main");
@@ -152,10 +196,11 @@ $(document).ready(function () {
 
     $("[id^=model-]").click(function(){
         var button = $(this);
-        var id = button.attr("id").split("-")[1] - 1;
-        viewModel.model.name(viewModel.models()[id].name);
+        var modelId = button.attr("id").split("-")[1];
+        viewModel.model.name(viewModel.models()[modelId-1].name);
+        viewModel.model.id(modelId);
         viewModel.model.follow.removeAll();
-        viewModel.models()[id].follow.forEach(function(f) {
+        viewModel.models()[modelId-1].follow.forEach(function(f) {
             viewModel.model.follow.push(f);
         });
         viewModel.showRunModelDialog(true);

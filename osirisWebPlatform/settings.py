@@ -127,3 +127,4 @@ LOGIN_URL = '/admin/login/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+KEY_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'keys')

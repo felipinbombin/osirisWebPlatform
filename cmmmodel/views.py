@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
+from django.conf import settings
 
 from scene.models import Scene
 from scene.statusResponse import Status as sts
@@ -15,6 +16,8 @@ from scene.statusResponse import Status as sts
 from scene.sceneExceptions import OsirisException
 from cmmmodel.models import ModelExecutionHistory, Model
 
+import paramiko
+import os
 
 class Run(View):
     """ run model on cmm cluster """
@@ -27,15 +30,32 @@ class Run(View):
         """  """
         scene_id = int(request.POST.get("sceneId"))
         model_id = int(request.POST.get("modelId"))
-        next_model_ids = request.POST.getlist("nextModelIds")
+        next_model_ids = [int(id) for id in request.POST.getlist("nextModelIds[]")]
 
-        try:
-            sceneObj = Scene.objects.get(user=request.user, id=scene_id)
-        except:
-            raise Http404()
+        key_path = os.path.join(settings.KEY_DIR, 'ssh_key')
 
         response = {}
-        sts.getJsonStatus(sts.OK, response)
+        try:
+            sceneObj = Scene.objects.get(user=request.user, id=scene_id)
+            print(scene_id, model_id, next_model_ids)
+
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            k = paramiko.RSAKey.from_private_key_file(key_path)
+            client.connect(hostname='leftraru.nlhpc.cl', username="fhernandez", pkey=k)
+
+            stdin, stdout, stderr = client.exec_command('ls -l')
+
+            for line in stdout:
+                print(line.strip('\n'))
+
+            client.close()
+
+            sts.getJsonStatus(sts.OK, response)
+        except Scene.DoesNotExist:
+            sts.getJsonStatus(sts.USER_DOES_NOT_EXISTS_ERROR, response)
+        #except:
+        #    Http404()
 
         return JsonResponse(response, safe=False)
 
