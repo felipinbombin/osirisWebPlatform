@@ -7,7 +7,23 @@ import numpy as np
 import datetime
 import json
 
-def serializeInput(dictionary):
+
+class InputModel:
+
+    def __init__(self, scene_id, model_id):
+        """ constructor """
+        self.model_id = model_id
+        self.scene_id = scene_id
+
+    def get_input(self):
+        """ retrieve """
+
+        # first part
+        input = speed_input_model(self.scene_id)
+
+        return ""
+
+def serialize_input(dictionary):
     """ serialize input model """
 
     class MyEncoder(json.JSONEncoder):
@@ -36,7 +52,7 @@ def serializeInput(dictionary):
     return dictionary
 
 
-def speedInputModel(user, sceneId):
+def speed_input_model(scene_id):
     """ make input data for speed model """
 
     scene = Scene.objects.prefetch_related("metroline_set__metrostation_set__operationperiodformetrostation_set",
@@ -45,7 +61,7 @@ def speedInputModel(user, sceneId):
                                            "metroline_set__metrotrack_set__operationperiodformetrotrack_set",
                                            "metroline_set__operationperiodformetroline_set",
                                            "metroconnection_set__metroconnectionstation_set__metroStation",
-                                           "systemicparams_set").get(user=user, id=sceneId)
+                                           "systemicparams_set").get(id=scene_id)
 
     inputModel = {"oper": {}, "top": {}, "sist": {}}
 

@@ -10,7 +10,7 @@ from django.views.generic import View
 from scene.models import Scene
 from scene.statusResponse import Status
 from scene.views.SceneData import GetSceneData
-from scene.views.InputModel import speedInputModel, serializeInput
+from scene.views.InputModel import speed_input_model, serialize_input
 
 from cmmmodel.views import Status as ModelStatus
 
@@ -28,20 +28,20 @@ class ScenePanel(View):
 
     def get(self, request, sceneId):
 
-        try:
-            scene_obj = Scene.objects.get(user=request.user, id=sceneId)
-            self.context["scene"] = scene_obj
-            self.context["data"] = GetSceneData().getData(request, sceneId)
-            self.context["barWidth"] = int(float(scene_obj.currentStep) / 7 * 100)
-            if scene_obj.currentStep < 6:
-                status_label = "FALTA COMPLETAR PASO {}".format(scene_obj.currentStep + 1)
-            else:
-                status_label = "COMPLETADO"
-            self.context["status_label"] = status_label
+        #try:
+        scene_obj = Scene.objects.get(user=request.user, id=sceneId)
+        self.context["scene"] = scene_obj
+        self.context["data"] = GetSceneData().getData(request, sceneId)
+        self.context["barWidth"] = int(float(scene_obj.currentStep) / 7 * 100)
+        if scene_obj.currentStep < 6:
+            status_label = "FALTA COMPLETAR PASO {}".format(scene_obj.currentStep + 1)
+        else:
+            status_label = "COMPLETADO"
+        self.context["status_label"] = status_label
 
-            self.context["models"] = ModelStatus().resume_status(scene_obj)
-        except:
-            raise Http404
+        self.context["models"] = ModelStatus().resume_status(scene_obj)
+        #except:
+        #    raise Http404
 
         return render(request, self.template, self.context)
 
@@ -138,11 +138,11 @@ class InputModelData(View):
         """ return inputModel to run models """
 
         sceneId = int(sceneId)
-        inputModel = speedInputModel(request.user, sceneId)
+        inputModel = speed_input_model(request.user, sceneId)
 
         response = {"inputModel": inputModel}
         Status.getJsonStatus(Status.OK, response)
 
-        response = serializeInput(response)
+        response = serialize_input(response)
 
         return JsonResponse(response, safe=False)
