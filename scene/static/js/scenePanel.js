@@ -133,7 +133,7 @@ $(document).ready(function () {
                                visButton.prop("disabled", true);
                                break;
                            case "running":
-                               runButton.prop("disabled", true).addClass("btn-danger").removeClass("btn-info").html(runningSkin);
+                               runButton.prop("disabled", false).addClass("btn-danger").removeClass("btn-info").html(runningSkin);
                                visButton.prop("disabled", false);
                                break;
                        }
