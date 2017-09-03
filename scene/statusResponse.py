@@ -11,12 +11,24 @@ class Status:
     INVALID_SCENE_NAME_ERROR = 405
     USER_NOT_LOGGED_ERROR = 406
     SCENE_DOES_NOT_EXISTS_ERROR = 407
+    ENQUEUED_MODEL_ERROR = 408
+    MODEL_IS_RUNNING_ERROR = 409
     GENERIC_ERROR = 499
 
     statusDict = {
+        MODEL_IS_RUNNING_ERROR: {
+            "code": MODEL_IS_RUNNING_ERROR, "title": "Modelo en ejecución",
+            "message": "El modelo se encuentra en ejecución. Si desea iniciarlo nuevamente debe detener la ejecución actual.",
+            "type": u"error"
+        },
+        ENQUEUED_MODEL_ERROR: {
+            "code": ENQUEUED_MODEL_ERROR, "title": "Modelo encolado actualmente",
+            "message": "El modelo ya se encuentra encolado en el sistema. Debe esperar que el modelo en ejecución termine o detenerlo.",
+            "type": u"error"
+        },
         SCENE_DOES_NOT_EXISTS_ERROR: {
           "code": SCENE_DOES_NOT_EXISTS_ERROR, "title": "Escenario no existe",
-          "message": "El escenario no existe en el sistema."
+          "message": "El escenario no existe en el sistema.", "type": u"error"
         },
         SUCCESS_NEW_NAME: {
           "code": SUCCESS_NEW_NAME, "title": u"Cambio exitoso",

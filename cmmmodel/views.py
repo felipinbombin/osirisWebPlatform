@@ -9,15 +9,25 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.conf import settings
+from django.utils import timezone
 
 from scene.models import Scene
 from scene.statusResponse import Status as sts
 
 from scene.sceneExceptions import OsirisException
-from cmmmodel.models import ModelExecutionHistory, Model
+from cmmmodel.models import ModelExecutionHistory, Model, ModelExecutionQueue
+from scene.views.InputModel import InputModel
 
 import paramiko
 import os
+
+
+class EnqueuedModelException(Exception):
+    pass
+
+
+class ModelIsRunningException(Exception):
+    pass
 
 class Run(View):
     """ run model on cmm cluster """
@@ -26,40 +36,77 @@ class Run(View):
     def dispatch(self, request, *args, **kwargs):
         return super(Run, self).dispatch(request, *args, **kwargs)
 
+    def runModel(self, user, scene_id, model_id, next_model_ids):
+        """ connect to cluster server and run model """
+        print(scene_id, model_id, next_model_ids)
+
+        response = {}
+        try:
+            key_path = os.path.join(settings.KEY_DIR, 'ssh_key')
+            model_obj = Model.objects.get(id=model_id)
+
+            # when is called from cluster to run next model
+            if user is None:
+                scene_obj = Scene.objects.get(id=scene_id)
+            else:
+                scene_obj = Scene.objects.get(user=user, id=scene_id)
+
+            # if model you try to run is enqueued, don´t run and notify to user
+            if ModelExecutionQueue.objects.filter(modelExecutionHistory__scene=scene_obj, model_id=model_id).exists():
+                raise EnqueuedModelException
+            elif ModelExecutionHistory.objects.filter(scene=scene_obj, model_id=model_id,
+                                                      status=ModelExecutionHistory.RUNNING).exists():
+                raise ModelIsRunningException
+
+            # create ssh connection
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            k = paramiko.RSAKey.from_private_key_file(key_path)
+            client.connect(hostname=settings.CLUSTER_URL, username=settings.CLUSTER_USER, pkey=k)
+
+            # run model
+            input = InputModel(scene_id, model_id).get_input()
+            responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
+            command = "sbatch osiris/{} {} {} {}".format(model_obj.clusterFile, settings.SERVER_IP, responseScript, input)
+            stdin, stdout, stderr = client.exec_command(command)
+
+            job_number = None
+            # save job number
+            for line in stdout:
+                job_number = int(line.strip('\n').split(" ")[3])
+
+            if job_number == None:
+                status = ModelExecutionHistory.ERROR_TO_START
+            else:
+                status = ModelExecutionHistory.RUNNING
+
+            meh = ModelExecutionHistory.objects.create(scene=scene_obj, model=model_obj, start=timezone.now(),
+                                                 status=status, jobNumber=job_number, error=stderr.read())
+            print("hola", job_number, command, meh, stderr.read())
+            for model_id in next_model_ids:
+                ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=model_id)
+            # close ssh connection
+            client.close()
+
+            sts.getJsonStatus(sts.OK, response)
+        except Scene.DoesNotExist:
+            sts.getJsonStatus(sts.SCENE_DOES_NOT_EXISTS_ERROR, response)
+        except EnqueuedModelException:
+            sts.getJsonStatus(sts.ENQUEUED_MODEL_ERROR, response)
+        except ModelIsRunningException:
+            sts.getJsonStatus(sts.MODEL_IS_RUNNING_ERROR, response)
+        #except:
+        #    Http404()
+
+        return response
+
     def post(self, request):
         """  """
         scene_id = int(request.POST.get("sceneId"))
         model_id = int(request.POST.get("modelId"))
         next_model_ids = [int(id) for id in request.POST.getlist("nextModelIds[]")]
 
-        key_path = os.path.join(settings.KEY_DIR, 'ssh_key')
-
-        response = {}
-        try:
-            sceneObj = Scene.objects.get(user=request.user, id=scene_id)
-            print(scene_id, model_id, next_model_ids)
-
-            # create ssh connection
-            client = paramiko.SSHClient()
-            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            k = paramiko.RSAKey.from_private_key_file(key_path)
-            client.connect(hostname='leftraru.nlhpc.cl', username="fhernandez", pkey=k)
-
-            responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
-            command = "sbatch osiris/speed.sh {} {}".format(settings.SERVER_IP, responseScript)
-
-            stdin, stdout, stderr = client.exec_command(command)
-
-            for line in stdout:
-                print("job number:", int(line.strip('\n').split(" ")[3]))
-
-            client.close()
-
-            sts.getJsonStatus(sts.OK, response)
-        except Scene.DoesNotExist:
-            sts.getJsonStatus(sts.SCENE_DOES_NOT_EXISTS_ERROR, response)
-        #except:
-        #    Http404()
+        response = self.runModel(request.user, scene_id, model_id, next_model_ids)
 
         return JsonResponse(response, safe=False)
 
@@ -77,7 +124,7 @@ class Stop(View):
         stepId = int(stepId)
         sceneId = int(sceneId)
 
-        sceneObj = Scene.objects.prefetch_related("metroline_set__metrostation_set",
+        scene_obj = Scene.objects.prefetch_related("metroline_set__metrostation_set",
                        "metroline_set__metrodepot_set", "operationperiod_set").\
                        get(user=request.user, id=sceneId)
         response = {}
