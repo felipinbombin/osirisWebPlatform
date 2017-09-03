@@ -128,3 +128,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 KEY_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'keys')
+
+# cluster info
+CLUSTER_URL = 'leftraru.nlhpc.cl'
+CLUSTER_USER = 'fhernandez'
