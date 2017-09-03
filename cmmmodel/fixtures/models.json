@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Velocidad",
-      "clusterFile": "speed.bash"
+      "clusterFile": "speed.sh"
     }
   },
   {
@@ -12,7 +12,7 @@
     "pk": 2,
     "fields": {
       "name": "Fuerza",
-      "clusterFile": "strong.bash"
+      "clusterFile": "strong.sh"
     }
   },
   {
@@ -20,7 +20,7 @@
     "pk": 3,
     "fields": {
       "name": "Temperatura",
-      "clusterFile": "temperature.bash"
+      "clusterFile": "temperature.sh"
     }
   },
   {
@@ -28,7 +28,7 @@
     "pk": 4,
     "fields": {
       "name": "Energía",
-      "clusterFile": "energy.bash"
+      "clusterFile": "energy.sh"
     }
   }
 ]
