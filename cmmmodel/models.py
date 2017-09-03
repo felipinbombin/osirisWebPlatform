@@ -67,6 +67,8 @@ class ModelExecutionHistory(models.Model):
 
         if self.end is not None:
             dictionary["duration"] = self.end - self.start
+        else:
+            dictionary["duration"] = ""
 
         return dictionary
 

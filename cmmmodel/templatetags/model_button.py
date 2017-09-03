@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from django import template
 from django.utils.html import format_html
+from django.utils import timezone
 
 register = template.Library()
 
 @register.simple_tag
-def model_button(model_label, column, id, state="available", vis_url=""):
+def model_button(model_label, column, id, last_execution_info, status="available", vis_url=""):
     # states: [available, running, disabled]
 
     button_icon = u"""
@@ -17,9 +18,9 @@ def model_button(model_label, column, id, state="available", vis_url=""):
     button_class = u"btn-info"
     button_label = u"Ejecutar"
 
-    if state == "disabled":
+    if status == "disabled":
         disabled = u"disabled"
-    elif state == "running":
+    elif status == "running":
         button_class = u"btn-danger"
         button_label = u"Detener"
         button_icon = u"""
@@ -30,6 +31,25 @@ def model_button(model_label, column, id, state="available", vis_url=""):
             <br><h2>{5}</h2>
             """
 
+    start = ""
+    end = ""
+    duration = ""
+    if last_execution_info != "":
+        start = timezone.localtime(last_execution_info['start']).strftime("%x %X")
+        end = timezone.localtime(last_execution_info['end']).strftime("%x %X") if last_execution_info['end'] is not None else ""
+        duration = last_execution_info['duration']
+
+    last_execution_table = u"""
+        <p class="text-center"> Última ejecución</p>
+        <table class="table table-striped table-bordered">
+          <tbody>
+            <tr><td>Inicio</td><td class="startDate">{0}</td></tr>
+            <tr><td>Fin</td><td class="endDate">{1}</td></tr>
+            <tr><td>Duración</td><td class="duration">{2}</td></tr>
+          </tbody>
+        </table>
+        """.format(start, end, duration)
+
     field= u"""
         <div id="model-{6}" class="col-md-{0} col-sm-{0} col-xs-12">
             <h1 class="text-center">{1}</h1>
@@ -39,6 +59,7 @@ def model_button(model_label, column, id, state="available", vis_url=""):
             <button onclick="window.location='{7}'" class="btn btn-success btn-block" {3}>
                 <h2><i class="fa fa-eye fa-lg"></i> {2}</h2>
             </button>
+            """ + last_execution_table + """
         </div>"""
 
     return format_html(field, column, model_label, vis_label, disabled, button_class, button_label, id, vis_url)
