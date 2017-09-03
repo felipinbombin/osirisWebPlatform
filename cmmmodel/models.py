@@ -62,7 +62,7 @@ class ModelExecutionHistory(models.Model):
             "start": self.start,
             "end": self.end,
             "status": self.status,
-            "queuedModels": [m.get_dictionary for m in self.modelexecutionqueue_set.all().order_by("id")]
+            "queuedModels": [m.get_dictionary() for m in self.modelexecutionqueue_set.all().order_by("id")]
         }
 
         if self.end is not None:
