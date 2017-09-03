@@ -39,15 +39,19 @@ class Run(View):
             sceneObj = Scene.objects.get(user=request.user, id=scene_id)
             print(scene_id, model_id, next_model_ids)
 
+            # create ssh connection
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             k = paramiko.RSAKey.from_private_key_file(key_path)
             client.connect(hostname='leftraru.nlhpc.cl', username="fhernandez", pkey=k)
 
-            stdin, stdout, stderr = client.exec_command('ls -l')
+            responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
+            command = "sbatch osiris/speed.sh {} {}".format(settings.SERVER_IP, responseScript)
+
+            stdin, stdout, stderr = client.exec_command(command)
 
             for line in stdout:
-                print(line.strip('\n'))
+                print("job number:", int(line.strip('\n').split(" ")[3]))
 
             client.close()
 
