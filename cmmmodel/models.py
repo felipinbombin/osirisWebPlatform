@@ -36,18 +36,22 @@ class ModelExecutionHistory(models.Model):
     OK = 'ok'
     RUNNING = 'running'
     ERROR = 'error'
+    ERROR_TO_START = 'error to start'
     CANCEL = 'cancel'
     STATUS = (
         (RUNNING, 'En ejecución'),
         (OK, 'Terminado exitosamente'),
         (ERROR, 'Terminado con error'),
+        (ERROR_TO_START, 'Error al iniciar'),
         (CANCEL, 'Cancelado por el usuario'),
     )
     status = models.CharField('Estado', max_length=40, choices=STATUS, default=RUNNING)
     """
     Cluster data
     """
-    jobNumber = models.BigIntegerField(null=True)
+    jobNumber = models.BigIntegerField(null=True, unique=True)
+    error = models.TextField()
+    # to save error messages
 
     def __str__(self):
         return u"{} {} {}".format(self.model, self.start, self.end, self.start)
@@ -58,7 +62,7 @@ class ModelExecutionHistory(models.Model):
             "start": self.start,
             "end": self.end,
             "status": self.status,
-            "queuedModels": [m.get_dictionary for m in self.modelexecutionhistory_set.all().order_by("id")]
+            "queuedModels": [m.get_dictionary for m in self.modelexecutionqueue_set.all().order_by("id")]
         }
 
         if self.end is not None:
