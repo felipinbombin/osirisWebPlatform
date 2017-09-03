@@ -53,7 +53,7 @@ class Run(View):
 
             sts.getJsonStatus(sts.OK, response)
         except Scene.DoesNotExist:
-            sts.getJsonStatus(sts.USER_DOES_NOT_EXISTS_ERROR, response)
+            sts.getJsonStatus(sts.SCENE_DOES_NOT_EXISTS_ERROR, response)
         #except:
         #    Http404()
 

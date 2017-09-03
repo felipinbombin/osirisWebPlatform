@@ -10,12 +10,12 @@ class Status:
     EXCEL_ERROR = 404
     INVALID_SCENE_NAME_ERROR = 405
     USER_NOT_LOGGED_ERROR = 406
-    USER_DOES_NOT_EXISTS_ERROR = 407
+    SCENE_DOES_NOT_EXISTS_ERROR = 407
     GENERIC_ERROR = 499
 
     statusDict = {
-        USER_DOES_NOT_EXISTS_ERROR: {
-          "code": USER_DOES_NOT_EXISTS_ERROR, "title": "Escenario no existe",
+        SCENE_DOES_NOT_EXISTS_ERROR: {
+          "code": SCENE_DOES_NOT_EXISTS_ERROR, "title": "Escenario no existe",
           "message": "El escenario no existe en el sistema."
         },
         SUCCESS_NEW_NAME: {
