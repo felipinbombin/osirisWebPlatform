@@ -10,12 +10,18 @@ class Status:
     EXCEL_ERROR = 404
     INVALID_SCENE_NAME_ERROR = 405
     USER_NOT_LOGGED_ERROR = 406
-    SCENE_DOES_NOT_EXISTS_ERROR = 407
+    SCENE_DOES_NOT_EXIST_ERROR = 407
     ENQUEUED_MODEL_ERROR = 408
     MODEL_IS_RUNNING_ERROR = 409
+    MODEL_EXECUTION_DOES_NOT_EXIST_ERROR = 410
     GENERIC_ERROR = 499
 
     statusDict = {
+        MODEL_EXECUTION_DOES_NOT_EXIST_ERROR: {
+            "code": MODEL_EXECUTION_DOES_NOT_EXIST_ERROR, "title": "Problema al detener modelo",
+            "message": "La ejecución del modelo ya finalizó o fue detenido por otro usuario.",
+            "type": u"error"
+        },
         MODEL_IS_RUNNING_ERROR: {
             "code": MODEL_IS_RUNNING_ERROR, "title": "Modelo en ejecución",
             "message": "El modelo se encuentra en ejecución. Si desea iniciarlo nuevamente debe detener la ejecución actual.",
@@ -26,8 +32,8 @@ class Status:
             "message": "El modelo ya se encuentra encolado en el sistema. Debe esperar que el modelo en ejecución termine o detenerlo.",
             "type": u"error"
         },
-        SCENE_DOES_NOT_EXISTS_ERROR: {
-          "code": SCENE_DOES_NOT_EXISTS_ERROR, "title": "Escenario no existe",
+        SCENE_DOES_NOT_EXIST_ERROR: {
+          "code": SCENE_DOES_NOT_EXIST_ERROR, "title": "Escenario no existe",
           "message": "El escenario no existe en el sistema.", "type": u"error"
         },
         SUCCESS_NEW_NAME: {

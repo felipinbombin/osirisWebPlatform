@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 from django.db import transaction, IntegrityError
 
-from django.http import Http404
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -22,12 +21,24 @@ import paramiko
 import os
 import uuid
 
+def getParamikoClient():
+    """ create ssh connection to cmm cluster """
+    key_path = os.path.join(settings.KEY_DIR, 'ssh_key')
+
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    k = paramiko.RSAKey.from_private_key_file(key_path)
+    client.connect(hostname=settings.CLUSTER_URL, username=settings.CLUSTER_USER, pkey=k)
+
+    return client
+
 class EnqueuedModelException(Exception):
     pass
 
 
 class ModelIsRunningException(Exception):
     pass
+
 
 class Run(View):
     """ run model on cmm cluster """
@@ -38,69 +49,64 @@ class Run(View):
 
     def runModel(self, user, scene_id, model_id, next_model_ids):
         """ connect to cluster server and run model """
-        print(scene_id, model_id, next_model_ids)
-
         response = {}
         try:
-            key_path = os.path.join(settings.KEY_DIR, 'ssh_key')
-            model_obj = Model.objects.get(id=model_id)
+            with transaction.atomic():
+                model_obj = Model.objects.get(id=model_id)
 
-            # when is called from cluster to run next model
-            if user is None:
-                scene_obj = Scene.objects.get(id=scene_id)
-            else:
-                scene_obj = Scene.objects.get(user=user, id=scene_id)
+                # when is called from cluster to run next model
+                if user is None:
+                    scene_obj = Scene.objects.get(id=scene_id)
+                else:
+                    scene_obj = Scene.objects.get(user=user, id=scene_id)
 
-            # if model you try to run is enqueued, don´t run and notify to user
-            if ModelExecutionQueue.objects.filter(modelExecutionHistory__scene=scene_obj, model_id=model_id).exists():
-                raise EnqueuedModelException
-            elif ModelExecutionHistory.objects.filter(scene=scene_obj, model_id=model_id,
-                                                      status=ModelExecutionHistory.RUNNING).exists():
-                raise ModelIsRunningException
+                # if model you try to run is enqueued, don´t run and notify to user
+                if ModelExecutionQueue.objects.filter(modelExecutionHistory__scene=scene_obj, model_id=model_id).exists():
+                    raise EnqueuedModelException
+                elif ModelExecutionHistory.objects.filter(scene=scene_obj, model_id=model_id,
+                                                          status=ModelExecutionHistory.RUNNING).exists():
+                    raise ModelIsRunningException
 
-            # create ssh connection
-            client = paramiko.SSHClient()
-            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            k = paramiko.RSAKey.from_private_key_file(key_path)
-            client.connect(hostname=settings.CLUSTER_URL, username=settings.CLUSTER_USER, pkey=k)
+                client = getParamikoClient()
 
-            # run model
-            input = "11"#InputModel(scene_id, model_id).get_input()
-            responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
-            external_id = uuid.uuid4()
-            command = "sbatch osiris/{} {} {} \"{}\" {} {}".format(model_obj.clusterFile, settings.SERVER_IP, responseScript,
-                                                         settings.PYTHON_COMMAND, external_id,input)
+                # run model
+                input = "11"#InputModel(scene_id, model_id).get_input()
+                responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
+                external_id = uuid.uuid4()
+                command = "sbatch osiris/{} {} {} \"{}\" {} {}".format(model_obj.clusterFile, settings.SERVER_IP, responseScript,
+                                                             settings.PYTHON_COMMAND, external_id,input)
 
-            stdin, stdout, stderr = client.exec_command(command)
+                stdin, stdout, stderr = client.exec_command(command)
 
-            job_number = None
-            # save job number
-            for line in stdout:
-                job_number = int(line.strip('\n').split(" ")[3])
+                job_number = None
+                # save job number
+                for line in stdout:
+                    job_number = int(line.strip('\n').split(" ")[3])
 
-            if job_number == None:
-                status = ModelExecutionHistory.ERROR_TO_START
-            else:
-                status = ModelExecutionHistory.RUNNING
+                if job_number == None:
+                    status = ModelExecutionHistory.ERROR_TO_START
+                else:
+                    status = ModelExecutionHistory.RUNNING
 
-            meh = ModelExecutionHistory.objects.create(scene=scene_obj, model=model_obj, start=timezone.now(),
-                                                       status=status, jobNumber=job_number, externalId=external_id,
-                                                       error=stderr.read())
+                meh = ModelExecutionHistory.objects.create(scene=scene_obj, model=model_obj, start=timezone.now(),
+                                                           status=status, jobNumber=job_number, externalId=external_id,
+                                                           error=stderr.read())
 
-            for model_id in next_model_ids:
-                ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=model_id)
-            # close ssh connection
-            client.close()
+                for model_id in next_model_ids:
+                    ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=model_id)
+                # close ssh connection
+                client.close()
 
-            sts.getJsonStatus(sts.OK, response)
+                sts.getJsonStatus(sts.OK, response)
         except Scene.DoesNotExist:
-            sts.getJsonStatus(sts.SCENE_DOES_NOT_EXISTS_ERROR, response)
+            sts.getJsonStatus(sts.SCENE_DOES_NOT_EXIST_ERROR, response)
         except EnqueuedModelException:
             sts.getJsonStatus(sts.ENQUEUED_MODEL_ERROR, response)
         except ModelIsRunningException:
             sts.getJsonStatus(sts.MODEL_IS_RUNNING_ERROR, response)
-        #except:
-        #    Http404()
+        except Exception as e:
+            sts.getJsonStatus(sts.GENERIC_ERROR, response)
+            response["status"]["message"] = str(e)
 
         return response
 
@@ -122,24 +128,35 @@ class Stop(View):
     def dispatch(self, request, *args, **kwargs):
         return super(Stop, self).dispatch(request, *args, **kwargs)
 
-    def post(self, request, stepId, sceneId):
+    def post(self, request):
         """ validate and update data in server """
+        scene_id = int(request.POST.get("sceneId"))
+        model_id = int(request.POST.get("modelId"))
 
-        stepId = int(stepId)
-        sceneId = int(sceneId)
-
-        scene_obj = Scene.objects.prefetch_related("metroline_set__metrostation_set",
-                       "metroline_set__metrodepot_set", "operationperiod_set").\
-                       get(user=request.user, id=sceneId)
         response = {}
         try:
             with transaction.atomic():
-                pass
+                scene_obj = Scene.objects.get(user=request.user, id=scene_id)
+
+                model_execution = ModelExecutionHistory.objects.get(scene=scene_obj, model_id=model_id,
+                                                                    status=ModelExecutionHistory.RUNNING)
+
+                command = "scancel {}".format(model_execution.jobNumber)
+                client = getParamikoClient()
+                stdin, stdout, stderr = client.exec_command(command)
+
+                model_execution.status = ModelExecutionHistory.CANCEL
+                model_execution.end = timezone.now()
+                model_execution.answer += stdout.read()
+                model_execution.error += stderr.read()
+                model_execution.save()
+
+                sts.getJsonStatus(sts.OK, response)
+        except ModelExecutionHistory.DoesNotExist:
+            sts.getJsonStatus(sts.MODEL_EXECUTION_DOES_NOT_EXIST_ERROR, response)
         except IntegrityError as e:
-            sts.getJsonStatus(sts.EXCEL_ERROR, response)
+            sts.getJsonStatus(sts.GENERIC_ERROR, response)
             response["status"]["message"] = str(e)
-        except OsirisException as e:
-            response.update(e.get_status_response())
 
         return JsonResponse(response, safe=False)
 

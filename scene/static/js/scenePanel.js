@@ -105,47 +105,52 @@ $(document).ready(function () {
         };
         self.models = ko.observableArray([]);
 
-        self.updateModelButtonState = function() {
+        self.updateButtonsView = function(models) {
             var labels = {
                 BUTTON_MODEL_RUN: "Ejecutar",
                 BUTTON_MODEL_STOP: "Detener"
             };
+            //console.log(response);
+            self.models.removeAll();
+            models.forEach(function(model){
+               var modelButton = $("#model-" + model.id);
+               var runButton = $(":button:eq(0)", modelButton);
+               var visButton = $(":button:eq(1)", modelButton);
+               var runSkin = "<i class='fa fa-play fa-3x'></i><br><h1>" + labels.BUTTON_MODEL_RUN + "</h1>";
+               var runningSkin = "<span class='fa-stack fa-2x'><i class='fa fa-stop fa-stack-1x'></i><i class='fa fa-circle-o-notch fa-spin fa-stack-2x'></i></span><br><h2>" + labels.BUTTON_MODEL_STOP + "</h2>";
+               switch (model.status) {
+                   case "available":
+                       runButton.prop("disabled", false).addClass("btn-info").removeClass("btn-danger").html(runSkin);
+                       visButton.prop("disabled", false);
+                       break;
+                   case "disabled":
+                       runButton.prop("disabled", true).addClass("btn-info").removeClass("btn-danger").html(runSkin);
+                       visButton.prop("disabled", true);
+                       break;
+                   case "running":
+                       runButton.prop("disabled", false).addClass("btn-danger").removeClass("btn-info").html(runningSkin);
+                       visButton.prop("disabled", false);
+                       break;
+               }
+               // add checkbox interaction for each follow model
+               model.follow.forEach(function(nextModel) {
+                   nextModel['checked'] = ko.observable(false);
+               });
+               self.models.push(model);
+            });
+        };
+        self.updateModelButtonState = function() {
             // activate spinjs
             spinner.spin(spinnerParentDOM);
             // retrieve model data
-            $.get(MODEL_INFO_URL, {"sceneId": SCENE_ID},
-                function(response) {
-                    //console.log(response);
-                    self.models.removeAll();
-                    response.forEach(function(v){
-                       var modelButton = $("#model-" + v.id);
-                       var runButton = $(":button:eq(0)", modelButton);
-                       var visButton = $(":button:eq(1)", modelButton);
-                       var runSkin = "<i class='fa fa-play fa-3x'></i><br><h1>" + labels.BUTTON_MODEL_RUN + "</h1>";
-                       var runningSkin = "<span class='fa-stack fa-2x'><i class='fa fa-stop fa-stack-1x'></i><i class='fa fa-circle-o-notch fa-spin fa-stack-2x'></i></span><br><h2>" + labels.BUTTON_MODEL_STOP + "</h2>";
-                       switch (v.status) {
-                           case "available":
-                               runButton.prop("disabled", false).addClass("btn-info").removeClass("btn-danger").html(runSkin);
-                               visButton.prop("disabled", false);
-                               break;
-                           case "disabled":
-                               runButton.prop("disabled", true).addClass("btn-info").removeClass("btn-danger").html(runSkin);
-                               visButton.prop("disabled", true);
-                               break;
-                           case "running":
-                               runButton.prop("disabled", false).addClass("btn-danger").removeClass("btn-info").html(runningSkin);
-                               visButton.prop("disabled", false);
-                               break;
-                       }
-                       // add checkbox interaction for each follow model
-                       v.follow.forEach(function(f) {
-                           f['checked'] = ko.observable(false);
-                       });
-                       self.models.push(v);
-                    });
-                }).always(function () {
-                    spinner.stop();
-                });
+            var data = {
+                "sceneId": SCENE_ID
+            };
+            $.get(MODEL_INFO_URL, data, function(response) {
+                self.updateButtonsView(response);
+            }).always(function () {
+                spinner.stop();
+            });
         };
         self.modelRun = function() {
             var model = this;
@@ -165,28 +170,36 @@ $(document).ready(function () {
             spinner.spin(spinnerParentDOM);
             // run model
             $.post(RUN_MODEL_URL, data, function(response) {
-
                 showNotificationMessage(response.status);
                 self.showRunModelDialog(false);
             }).always(function () {
                 spinner.stop();
             });
         };
+
+        self.showStopModelDialog = ko.observable(false);
         self.modelStop = function() {
             var model = this;
             var modelId = model.id();
+            var nextModelIds = [];
             model.follow().forEach(function(v){
-               console.log(v);
+                if (v.checked()) {
+                    nextModelIds.push(v.id);
+                }
             });
+            var data = {
+                "sceneId": SCENE_ID,
+                "modelId": modelId
+            };
             // activate spinjs
             spinner.spin(spinnerParentDOM);
             // retrieve model data
-            $.get(RUN_MODEL_URL, {"sceneId": SCENE_ID},
-                function(response) {
-
-                }).always(function () {
-                    spinner.stop();
-                });
+            $.post(STOP_MODEL_URL, data, function(response) {
+                showNotificationMessage(response.status);
+                self.showStopModelDialog(false);
+            }).always(function () {
+                spinner.stop();
+            });
         }
     };
     var panelDOM = document.getElementById("content-main");
@@ -197,13 +210,19 @@ $(document).ready(function () {
     $("[id^=model-]").click(function(){
         var button = $(this);
         var modelId = button.attr("id").split("-")[1];
+
         viewModel.model.name(viewModel.models()[modelId-1].name);
         viewModel.model.id(modelId);
         viewModel.model.follow.removeAll();
         viewModel.models()[modelId-1].follow.forEach(function(f) {
             viewModel.model.follow.push(f);
         });
-        viewModel.showRunModelDialog(true);
+
+        if(viewModel.models()[modelId-1].status !== "running"){
+            viewModel.showRunModelDialog(true);
+        } else {
+            viewModel.showStopModelDialog(true);
+        }
     });
 
     setInterval(function(){
