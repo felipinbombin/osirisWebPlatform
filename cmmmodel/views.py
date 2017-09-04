@@ -67,9 +67,8 @@ class Run(View):
             # run model
             input = InputModel(scene_id, model_id).get_input()
             responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
-            pythonCommand = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'myenv/bin/python')
             command = "sbatch osiris/{} {} {} {}".format(model_obj.clusterFile, settings.SERVER_IP, responseScript,
-                                                         pythonCommand, input)
+                                                         settings.PYTHON_COMMAND, input)
             stdin, stdout, stderr = client.exec_command(command)
 
             job_number = None
