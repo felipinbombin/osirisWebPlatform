@@ -67,8 +67,9 @@ class Run(View):
             # run model
             input = "11"#InputModel(scene_id, model_id).get_input()
             responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
-            command = "sbatch osiris/{} {} {} {} {}".format(model_obj.clusterFile, settings.SERVER_IP, responseScript,
+            command = "sbatch osiris/{} {} {} \"{}\" {}".format(model_obj.clusterFile, settings.SERVER_IP, responseScript,
                                                          settings.PYTHON_COMMAND, input)
+
             stdin, stdout, stderr = client.exec_command(command)
 
             job_number = None
@@ -83,7 +84,7 @@ class Run(View):
 
             meh = ModelExecutionHistory.objects.create(scene=scene_obj, model=model_obj, start=timezone.now(),
                                                  status=status, jobNumber=job_number, error=stderr.read())
-            print("hola", job_number, command, meh, stderr.read())
+
             for model_id in next_model_ids:
                 ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=model_id)
             # close ssh connection
