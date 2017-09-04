@@ -63,6 +63,7 @@ class ModelExecutionHistory(models.Model):
             "start": self.start,
             "end": self.end,
             "status": self.status,
+            "id": self.externalId,
             "queuedModels": [m.get_dictionary() for m in self.modelexecutionqueue_set.all().order_by("id")]
         }
 
