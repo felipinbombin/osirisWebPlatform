@@ -65,9 +65,9 @@ class Run(View):
             client.connect(hostname=settings.CLUSTER_URL, username=settings.CLUSTER_USER, pkey=k)
 
             # run model
-            input = InputModel(scene_id, model_id).get_input()
+            input = "11"#InputModel(scene_id, model_id).get_input()
             responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
-            command = "sbatch osiris/{} {} {} {}".format(model_obj.clusterFile, settings.SERVER_IP, responseScript,
+            command = "sbatch osiris/{} {} {} {} {}".format(model_obj.clusterFile, settings.SERVER_IP, responseScript,
                                                          settings.PYTHON_COMMAND, input)
             stdin, stdout, stderr = client.exec_command(command)
 
