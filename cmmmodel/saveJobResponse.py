@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.utils import timezone
-
-from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue
-from cmmmodel.views import Run
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "osirisWebPlatform.settings")
+import django
+django.setup()
 import sys
 
+from django.utils import timezone
+from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue
+from cmmmodel.views import Run
 
 def saveModelResponse(job_number, std_out, std_err):
     """ save model response  """
@@ -24,5 +27,5 @@ def saveModelResponse(job_number, std_out, std_err):
     ModelExecutionQueue.objects.filter(modelExecutionHistory=execution_obj).delete()
 
 if __name__ == "__main__":
-    """ load data with data given by args """
+    """ update execution record """
     saveModelResponse(sys.argv[1], sys.argv[2], sys.argv[3])
