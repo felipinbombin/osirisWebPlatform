@@ -20,7 +20,7 @@ from scene.views.InputModel import InputModel
 
 import paramiko
 import os
-
+import uuid
 
 class EnqueuedModelException(Exception):
     pass
@@ -67,8 +67,9 @@ class Run(View):
             # run model
             input = "11"#InputModel(scene_id, model_id).get_input()
             responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
-            command = "sbatch osiris/{} {} {} \"{}\" {}".format(model_obj.clusterFile, settings.SERVER_IP, responseScript,
-                                                         settings.PYTHON_COMMAND, input)
+            external_id = uuid.uuid4()
+            command = "sbatch osiris/{} {} {} \"{}\" {} {}".format(model_obj.clusterFile, settings.SERVER_IP, responseScript,
+                                                         settings.PYTHON_COMMAND, external_id,input)
 
             stdin, stdout, stderr = client.exec_command(command)
 
@@ -83,7 +84,8 @@ class Run(View):
                 status = ModelExecutionHistory.RUNNING
 
             meh = ModelExecutionHistory.objects.create(scene=scene_obj, model=model_obj, start=timezone.now(),
-                                                 status=status, jobNumber=job_number, error=stderr.read())
+                                                       status=status, jobNumber=job_number, externalId=external_id,
+                                                       error=stderr.read())
 
             for model_id in next_model_ids:
                 ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=model_id)

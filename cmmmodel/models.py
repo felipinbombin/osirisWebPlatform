@@ -51,6 +51,7 @@ class ModelExecutionHistory(models.Model):
     """
     jobNumber = models.BigIntegerField(null=True, unique=True)
     error = models.TextField()
+    externalId = models.UUIDField(null=False)
     # to save error messages
 
     def __str__(self):
