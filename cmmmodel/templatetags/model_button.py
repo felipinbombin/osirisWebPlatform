@@ -37,7 +37,7 @@ def model_button(model_label, column, id, last_execution_info, status="available
     if last_execution_info != "":
         start = timezone.localtime(last_execution_info['start']).strftime("%x %X")
         end = timezone.localtime(last_execution_info['end']).strftime("%x %X") if last_execution_info['end'] is not None else ""
-        duration = last_execution_info['duration']
+        duration = last_execution_info['duration'].strftime("%x %X") if last_execution_info['duration'] is not None else ""
 
     last_execution_table = u"""
         <p class="text-center"> Última ejecución</p>
