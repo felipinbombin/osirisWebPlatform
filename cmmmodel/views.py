@@ -90,7 +90,7 @@ class Run(View):
 
                 meh = ModelExecutionHistory.objects.create(scene=scene_obj, model=model_obj, start=timezone.now(),
                                                            status=status, jobNumber=job_number, externalId=external_id,
-                                                           error=stderr.read())
+                                                           error=stderr.read().decode('utf-8'))
 
                 for model_id in next_model_ids:
                     ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=model_id)
@@ -151,6 +151,8 @@ class Stop(View):
                 model_execution.answer += stdout.read().decode('utf-8')
                 model_execution.error += stderr.read().decode('utf-8')
                 model_execution.save()
+
+                ModelExecutionQueue.objects.filter(modelExecutionHistory=model_execution).delete()
 
                 response["models"] = Status().resume_status(scene_obj)
                 sts.getJsonStatus(sts.OK, response)
