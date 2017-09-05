@@ -9,9 +9,9 @@ from django.utils import timezone
 from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue
 from cmmmodel.views import Run
 
-def saveModelResponse(external_id, std_out, std_err):
+
+def save_model_response(external_id, std_out, std_err):
     """ save model response  """
-    #TODO: verify if it had problem
 
     execution_obj = ModelExecutionHistory.objects.get(externalId=external_id)
     execution_obj.end = timezone.now()
@@ -30,4 +30,4 @@ def saveModelResponse(external_id, std_out, std_err):
 
 if __name__ == "__main__":
     """ update execution record """
-    saveModelResponse(sys.argv[1], sys.argv[2], sys.argv[3])
+    save_model_response(sys.argv[1], sys.argv[2], sys.argv[3])
