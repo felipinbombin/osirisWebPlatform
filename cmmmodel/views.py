@@ -97,6 +97,7 @@ class Run(View):
                 # close ssh connection
                 client.close()
 
+                response["models"] = Status().resume_status(scene_obj)
                 sts.getJsonStatus(sts.OK, response)
         except Scene.DoesNotExist:
             sts.getJsonStatus(sts.SCENE_DOES_NOT_EXIST_ERROR, response)
@@ -147,10 +148,11 @@ class Stop(View):
 
                 model_execution.status = ModelExecutionHistory.CANCEL
                 model_execution.end = timezone.now()
-                model_execution.answer += stdout.read()
-                model_execution.error += stderr.read()
+                model_execution.answer += stdout.read().decode('utf-8')
+                model_execution.error += stderr.read().decode('utf-8')
                 model_execution.save()
 
+                response["models"] = Status().resume_status(scene_obj)
                 sts.getJsonStatus(sts.OK, response)
         except ModelExecutionHistory.DoesNotExist:
             sts.getJsonStatus(sts.MODEL_EXECUTION_DOES_NOT_EXIST_ERROR, response)

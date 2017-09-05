@@ -171,6 +171,9 @@ $(document).ready(function () {
             // run model
             $.post(RUN_MODEL_URL, data, function(response) {
                 showNotificationMessage(response.status);
+                if("models" in response) {
+                    self.updateButtonsView(response["models"])
+                }
                 self.showRunModelDialog(false);
             }).always(function () {
                 spinner.stop();
@@ -196,6 +199,9 @@ $(document).ready(function () {
             // retrieve model data
             $.post(STOP_MODEL_URL, data, function(response) {
                 showNotificationMessage(response.status);
+                if("models" in response) {
+                    self.updateButtonsView(response["models"])
+                }
                 self.showStopModelDialog(false);
             }).always(function () {
                 spinner.stop();
@@ -226,6 +232,6 @@ $(document).ready(function () {
     });
 
     setInterval(function(){
-        //viewModel.updateModelButtonState();
-    }, 5*1000);
+        viewModel.updateModelButtonState();
+    }, 15*1000);
 });
