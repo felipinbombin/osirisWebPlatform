@@ -14,9 +14,9 @@ def saveModelResponse(external_id, std_out, std_err):
     #TODO: verify if it had problem
 
     execution_obj = ModelExecutionHistory.objects.get(externalId=external_id)
-    execution_obj.end=timezone.now()
-    execution_obj.status=ModelExecutionHistory.OK
-    execution_obj.answer=std_out
+    execution_obj.end = timezone.now()
+    execution_obj.status = ModelExecutionHistory.OK
+    execution_obj.answer = std_out
     execution_obj.error += std_err
     execution_obj.save()
 
@@ -24,7 +24,7 @@ def saveModelResponse(external_id, std_out, std_err):
     next_models = ModelExecutionQueue.objects.filter(modelExecutionHistory=execution_obj).order_by('id').\
         values_list('id', flat=True)
 
-    if len(next_models) > 1:
+    if len(next_models) >= 1:
         Run().runModel(None, execution_obj.scene_id, next_models[0], next_models[1:])
         ModelExecutionQueue.objects.filter(modelExecutionHistory=execution_obj).delete()
 
