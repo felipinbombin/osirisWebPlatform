@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from datetime import timedelta
 
 from scene.models import Scene
 
@@ -68,7 +69,8 @@ class ModelExecutionHistory(models.Model):
         }
 
         if self.end is not None:
-            dictionary["duration"] = self.end - self.start
+            duration = self.end - self.start
+            dictionary["duration"] = str(duration - timedelta(microseconds=duration.microseconds))
         else:
             dictionary["duration"] = ""
 

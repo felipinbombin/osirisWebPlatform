@@ -132,6 +132,17 @@ $(document).ready(function () {
                        visButton.prop("disabled", false);
                        break;
                }
+
+               if("lastExecutionInfo" in model){
+                   var startDate = (new Date(model.lastExecutionInfo.start)).toLocaleString();
+                   var endDate = "";
+                   if (model.lastExecutionInfo.end !== null) {
+                       var endDate = (new Date(model.lastExecutionInfo.end)).toLocaleString();
+                   }
+                   $(".startDate", modelButton).html(startDate);
+                   $(".endDate", modelButton).html(endDate);
+                   $(".duration", modelButton).html(model.lastExecutionInfo.duration);
+               }
                // add checkbox interaction for each follow model
                model.follow.forEach(function(nextModel) {
                    nextModel['checked'] = ko.observable(false);
