@@ -224,8 +224,8 @@ $(document).ready(function () {
     viewModel.updateModelButtonState();
     ko.applyBindings(viewModel, panelDOM);
 
-    $("[id^=model-]").click(function(){
-        var button = $(this);
+    $("[id^=model-] :button:even").click(function(){
+        var button = $(this).parent();
         var modelId = button.attr("id").split("-")[1];
 
         viewModel.model.name(viewModel.models()[modelId-1].name);
