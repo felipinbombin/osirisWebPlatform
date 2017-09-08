@@ -339,3 +339,18 @@ class CompleteSceneData(TestCase):
         ]
         for url, file_path in zip(file_urls, file_paths):
             self.download_file(url, file_path)
+
+
+        # serialize speed model input
+        from scene.views.InputModel import InputModel
+        input = InputModel(self.scene_obj.id, 1)
+        input_dict = input.get_input()
+        import pickle
+        from StringIO import StringIO
+        serialized = pickle.dumps(input_dict, protocol=2)
+        unserialized = pickle.load(StringIO(serialized))
+        print(serialized)
+        print(unserialized)
+
+        shared_items = set(input_dict.items()) & set(unserialized.items())
+        print(shared_items)

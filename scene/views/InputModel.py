@@ -19,9 +19,9 @@ class InputModel:
         """ retrieve """
 
         # first part
-        input = speed_input_model(self.scene_id)
+        input = speed_model_input(self.scene_id)
 
-        return ""
+        return input
 
 def serialize_input(dictionary):
     """ serialize input model """

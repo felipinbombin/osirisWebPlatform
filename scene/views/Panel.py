@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import transaction
-from django.http import Http404
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import View
@@ -10,12 +9,9 @@ from django.views.generic import View
 from scene.models import Scene
 from scene.statusResponse import Status
 from scene.views.SceneData import GetSceneData
-from scene.views.InputModel import speed_input_model, serialize_input
+from scene.views.InputModel import speed_model_input, serialize_input
 
 from cmmmodel.views import Status as ModelStatus
-
-import numpy as np
-import datetime
 
 
 class ScenePanel(View):
@@ -138,7 +134,7 @@ class InputModelData(View):
         """ return inputModel to run models """
 
         sceneId = int(sceneId)
-        inputModel = speed_input_model(request.user, sceneId)
+        inputModel = speed_model_input(request.user, sceneId)
 
         response = {"inputModel": inputModel}
         Status.getJsonStatus(Status.OK, response)
