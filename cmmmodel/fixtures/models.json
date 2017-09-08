@@ -19,16 +19,16 @@
     "model": "cmmmodel.model",
     "pk": 3,
     "fields": {
-      "name": "Temperatura",
-      "clusterFile": "temperature.sh"
+      "name": "Energía",
+      "clusterFile": "energy.sh"
     }
   },
   {
     "model": "cmmmodel.model",
     "pk": 4,
     "fields": {
-      "name": "Energía",
-      "clusterFile": "energy.sh"
+      "name": "Temperatura",
+      "clusterFile": "temperature.sh"
     }
   }
 ]
