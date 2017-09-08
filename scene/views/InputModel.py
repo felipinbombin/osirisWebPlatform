@@ -52,7 +52,7 @@ def serialize_input(dictionary):
     return dictionary
 
 
-def speed_input_model(scene_id):
+def speed_model_input(scene_id):
     """ make input data for speed model """
 
     scene = Scene.objects.prefetch_related("metroline_set__metrostation_set__operationperiodformetrostation_set",
