@@ -51,7 +51,8 @@ class ModelExecutionHistory(models.Model):
     Cluster data
     """
     jobNumber = models.BigIntegerField(null=True, unique=True)
-    error = models.TextField()
+    std_out = models.TextField()
+    std_err = models.TextField()
     externalId = models.UUIDField(null=False)
     # to save error messages
 

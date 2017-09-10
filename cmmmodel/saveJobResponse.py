@@ -10,14 +10,15 @@ from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue
 from cmmmodel.views import Run
 
 
-def save_model_response(external_id, std_out, std_err):
+def save_model_response(external_id, model_answer, std_out, std_err):
     """ save model response  """
 
     execution_obj = ModelExecutionHistory.objects.get(externalId=external_id)
     execution_obj.end = timezone.now()
     execution_obj.status = ModelExecutionHistory.OK
-    execution_obj.answer = std_out
-    execution_obj.error += std_err
+    execution_obj.answer = model_answer
+    execution_obj.std_out = std_out
+    execution_obj.std_err += std_err
     execution_obj.save()
 
     # exec next model if exists
@@ -30,4 +31,4 @@ def save_model_response(external_id, std_out, std_err):
 
 if __name__ == "__main__":
     """ update execution record """
-    save_model_response(sys.argv[1], sys.argv[2], sys.argv[3])
+    save_model_response(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
