@@ -92,7 +92,7 @@ class Run(View):
 
                 meh = ModelExecutionHistory.objects.create(scene=scene_obj, model=model_obj, start=timezone.now(),
                                                            status=status, jobNumber=job_number, externalId=external_id,
-                                                           error=stderr.read().decode('utf-8'))
+                                                           std_err=stderr.read().decode('utf-8'))
 
                 for model_id in next_model_ids:
                     ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=model_id)
@@ -107,9 +107,9 @@ class Run(View):
             sts.getJsonStatus(sts.ENQUEUED_MODEL_ERROR, response)
         except ModelIsRunningException:
             sts.getJsonStatus(sts.MODEL_IS_RUNNING_ERROR, response)
-        except Exception as e:
-            sts.getJsonStatus(sts.GENERIC_ERROR, response)
-            response["status"]["message"] = str(e)
+        #except Exception as e:
+        #    sts.getJsonStatus(sts.GENERIC_ERROR, response)
+        #    response["status"]["message"] = str(e)
 
         return response
 
