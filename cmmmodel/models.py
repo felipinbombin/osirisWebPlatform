@@ -8,7 +8,7 @@ from scene.models import Scene
 class Model(models.Model):
     """ math models used by osiris web platform """
     name = models.CharField('Nombre', max_length=100)
-    clusterFile = models.CharField('archivo bash', max_length=100)
+    clusterExecutionId = models.CharField('archivo bash', max_length=100)
 
     def get_dictionary(self):
         """  """

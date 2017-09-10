@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Velocidad",
-      "clusterFile": "speed.sh"
+      "clusterExecutionId": "S"
     }
   },
   {
@@ -12,7 +12,7 @@
     "pk": 2,
     "fields": {
       "name": "Fuerza",
-      "clusterFile": "strong.sh"
+      "clusterExecutionId": "F"
     }
   },
   {
@@ -20,7 +20,7 @@
     "pk": 3,
     "fields": {
       "name": "Energía",
-      "clusterFile": "energy.sh"
+      "clusterExecutionId": "E"
     }
   },
   {
@@ -28,7 +28,7 @@
     "pk": 4,
     "fields": {
       "name": "Temperatura",
-      "clusterFile": "temperature.sh"
+      "clusterExecutionId": "T"
     }
   }
 ]
