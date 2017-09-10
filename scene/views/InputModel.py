@@ -6,6 +6,7 @@ from scene.models import MetroLineMetric, OperationPeriodForMetroStation, Operat
 import numpy as np
 import datetime
 import json
+import pickle
 
 
 class InputModel:
@@ -18,8 +19,13 @@ class InputModel:
     def get_input(self):
         """ retrieve """
 
-        # first part
-        input = speed_model_input(self.scene_id)
+        # speed model
+        if self.model_id == 1:
+            input = speed_model_input(self.scene_id)
+            input = pickle.dumps(input, protocol=2)
+        else:
+            # search previous model execution and extract the answer
+            pass
 
         return input
 
@@ -74,7 +80,7 @@ def speed_model_input(scene_id):
     inputModel["top"]["nLines"] = lineNumber
     inputModel["top"]["nConnections"] = connectionNumber
 
-    inputModel["top"]["nStations"] = np.empty([lineNumber, 1])
+    inputModel["top"]["nStations"] = np.empty([lineNumber, 1], dtype=np.int32)
     inputModel["top"]["nDepots"] = [0] * lineNumber  # np.empty([lineNumber, 1])
     for index, line in enumerate(metroLines):
         inputModel["top"]["nStations"][index] = len(line.metrostation_set.all())

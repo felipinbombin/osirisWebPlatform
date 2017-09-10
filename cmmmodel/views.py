@@ -70,7 +70,7 @@ class Run(View):
                 client = getParamikoClient()
 
                 # run model
-                input = "11"#InputModel(scene_id, model_id).get_input()
+                input = InputModel(scene_id, model_id).get_input()
                 responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
                 external_id = uuid.uuid4()
                 command = "sbatch osiris/runModel.sh {} {} \"{}\" {} {} {}".format(settings.SERVER_IP, responseScript,
