@@ -70,13 +70,23 @@ class Run(View):
                 client = getParamikoClient()
 
                 # run model
-                input = InputModel(scene_id, model_id).get_input()
                 responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
                 external_id = uuid.uuid4()
-                command = "sbatch osiris/runModel.sh {} {} \"{}\" {} {} {}".format(settings.SERVER_IP, responseScript,
-                                                                                     settings.PYTHON_COMMAND,
-                                                                                     external_id, input,
-                                                                                     model_obj.clusterExecutionId)
+
+                # create file with serialized input model data
+                model_input_data = InputModel(scene_id, model_id).get_input()
+                file_name = "{}.model_input".format(external_id)
+                sftp = client.open_sftp()
+                remote_file = sftp.open("osiris/inputs/" + file_name, mode="w")
+                remote_file.write(model_input_data)
+                remote_file.close()
+                sftp.close()
+
+                command = "sbatch ~/osiris/runModel.sh {} {} \"{}\" {} \"{}\" {}".format(settings.SERVER_IP,
+                                                                                   responseScript,
+                                                                                   settings.PYTHON_COMMAND,
+                                                                                   external_id, file_name,
+                                                                                   model_obj.clusterExecutionId)
 
                 stdin, stdout, stderr = client.exec_command(command)
 
@@ -150,8 +160,8 @@ class Stop(View):
 
                 model_execution.status = ModelExecutionHistory.CANCEL
                 model_execution.end = timezone.now()
-                model_execution.answer += stdout.read().decode('utf-8')
-                model_execution.error += stderr.read().decode('utf-8')
+                model_execution.std_out += stdout.read().decode('utf-8')
+                model_execution.std_err += stderr.read().decode('utf-8')
                 model_execution.save()
 
                 ModelExecutionQueue.objects.filter(modelExecutionHistory=model_execution).delete()
