@@ -79,6 +79,7 @@ class Run(View):
                 sftp = client.open_sftp()
                 remote_file = sftp.open("osiris/inputs/" + file_name, mode="wb")
                 remote_file.write(model_input_data)
+                remote_file.flush()
                 remote_file.close()
                 sftp.close()
 

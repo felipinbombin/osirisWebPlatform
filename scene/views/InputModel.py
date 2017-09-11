@@ -22,7 +22,7 @@ class InputModel:
         # speed model
         if self.model_id == 1:
             input = speed_model_input(self.scene_id)
-            input = pickle.dumps(input, protocol=2)
+            input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             # search previous model execution and extract the answer
             pass
