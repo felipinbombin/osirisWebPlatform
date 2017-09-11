@@ -17,6 +17,8 @@ from scene.sceneExceptions import OsirisException
 from cmmmodel.models import ModelExecutionHistory, Model, ModelExecutionQueue
 from scene.views.InputModel import InputModel
 
+from io import BytesIO
+
 import paramiko
 import os
 import uuid
@@ -76,11 +78,10 @@ class Run(View):
                 # create file with serialized input model data
                 model_input_data = InputModel(scene_id, model_id).get_input()
                 file_name = "{}.model_input".format(external_id)
+                destination = "osiris/inputs/" + file_name
+
                 sftp = client.open_sftp()
-                remote_file = sftp.open("osiris/inputs/" + file_name, mode="wb")
-                remote_file.write(model_input_data)
-                remote_file.flush()
-                remote_file.close()
+                sftp.putfo(BytesIO(model_input_data), destination)
                 sftp.close()
 
                 command = "sbatch ~/osiris/runModel.sh {} {} \"{}\" {} \"{}\" {}".format(settings.SERVER_IP,
@@ -118,9 +119,9 @@ class Run(View):
             sts.getJsonStatus(sts.ENQUEUED_MODEL_ERROR, response)
         except ModelIsRunningException:
             sts.getJsonStatus(sts.MODEL_IS_RUNNING_ERROR, response)
-        #except Exception as e:
-        #    sts.getJsonStatus(sts.GENERIC_ERROR, response)
-        #    response["status"]["message"] = str(e)
+        except Exception as e:
+            sts.getJsonStatus(sts.GENERIC_ERROR, response)
+            response["status"]["message"] = str(e)
 
         return response
 
