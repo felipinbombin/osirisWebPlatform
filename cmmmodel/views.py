@@ -77,7 +77,7 @@ class Run(View):
                 model_input_data = InputModel(scene_id, model_id).get_input()
                 file_name = "{}.model_input".format(external_id)
                 sftp = client.open_sftp()
-                remote_file = sftp.open("osiris/inputs/" + file_name, mode="w")
+                remote_file = sftp.open("osiris/inputs/" + file_name, mode="wb")
                 remote_file.write(model_input_data)
                 remote_file.close()
                 sftp.close()
@@ -95,7 +95,7 @@ class Run(View):
                 for line in stdout:
                     job_number = int(line.strip('\n').split(" ")[3])
 
-                if job_number == None:
+                if job_number is None:
                     status = ModelExecutionHistory.ERROR_TO_START
                 else:
                     status = ModelExecutionHistory.RUNNING
