@@ -78,7 +78,7 @@ class Run(View):
                 # create file with serialized input model data
                 model_input_data = InputModel(scene_id, model_id).get_input()
                 file_name = "{}.model_input".format(external_id)
-                destination = "~/osiris/inputs/" + file_name
+                destination = "/home/fhernandez/osiris/inputs/" + file_name
 
                 sftp = client.open_sftp()
                 sftp.putfo(BytesIO(model_input_data), destination)
@@ -119,9 +119,9 @@ class Run(View):
             sts.getJsonStatus(sts.ENQUEUED_MODEL_ERROR, response)
         except ModelIsRunningException:
             sts.getJsonStatus(sts.MODEL_IS_RUNNING_ERROR, response)
-        except Exception as e:
-            sts.getJsonStatus(sts.GENERIC_ERROR, response)
-            response["status"]["message"] = str(e)
+        #except Exception as e:
+        #    sts.getJsonStatus(sts.GENERIC_ERROR, response)
+        #    response["status"]["message"] = str(e)
 
         return response
 
