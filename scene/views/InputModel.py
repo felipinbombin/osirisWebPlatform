@@ -24,8 +24,11 @@ class InputModel:
             input = speed_model_input(self.scene_id)
             input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
         else:
-            # search previous model execution and extract the answer
-            pass
+            # TODO: search previous model execution and extract the answer
+
+            # while make the same as model_id = 1
+            input = speed_model_input(self.scene_id)
+            input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
 
         return input
 
