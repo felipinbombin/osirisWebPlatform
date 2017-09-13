@@ -128,8 +128,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 KEY_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'keys')
+
+# to manipulate remote execution
 PYTHON_COMMAND = "PYTHONPATH={} {}".format(BASE_DIR,
                                            os.path.join(BASE_DIR, os.path.join('myenv', os.path.join('bin', 'python'))))
+# folder to save model answer sent by cmm cluster
+MODEL_OUTPUT_PATH = os.path.join(MEDIA_ROOT, "modelOutput")
 
 # cluster info
 CLUSTER_URL = 'leftraru.nlhpc.cl'

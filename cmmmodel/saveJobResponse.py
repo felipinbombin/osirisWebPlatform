@@ -6,13 +6,21 @@ django.setup()
 import sys
 
 from django.utils import timezone
+from django.conf import settings
 from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue
 from cmmmodel.views import Run
 
+import pickle
 
-def save_model_response(external_id, model_answer, std_out, std_err):
+def save_model_response(external_id, output_file_name, std_out, std_err):
     """ save model response  """
-
+    file_path = os.path.join(settings.MODEL_OUTPUT_PATH, output_file_name)
+    model_answer = ""
+    if os.paht.isfile(file_path):
+        file = open(file_path, "rb")
+        answer = pickle.load(file)
+        file.close()
+        model_answer = pickle.dumps(answer, protocol=pickle.HIGHEST_PROTOCOL)
     execution_obj = ModelExecutionHistory.objects.get(externalId=external_id)
     execution_obj.end = timezone.now()
     execution_obj.status = ModelExecutionHistory.OK

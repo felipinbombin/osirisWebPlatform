@@ -77,18 +77,20 @@ class Run(View):
 
                 # create file with serialized input model data
                 model_input_data = InputModel(scene_id, model_id).get_input()
-                file_name = "{}.model_input".format(external_id)
-                destination = "osiris/inputs/" + file_name
+                input_file_name = "{}.model_input".format(external_id)
+                destination = "osiris/inputs/" + input_file_name
 
                 sftp = client.open_sftp()
                 sftp.putfo(BytesIO(model_input_data), destination)
                 sftp.close()
 
-                command = "sbatch ~/osiris/runModel.sh {} {} \"{}\" {} \"{}\" {}".format(settings.SERVER_IP,
-                                                                                   response_script,
-                                                                                   settings.PYTHON_COMMAND,
-                                                                                   external_id, file_name,
-                                                                                   model_obj.clusterExecutionId)
+                command = "sbatch ~/osiris/runModel.sh {} {} \"{}\" {} \"{}\" {} {}".format(settings.SERVER_IP,
+                                                                                            response_script,
+                                                                                            settings.PYTHON_COMMAND,
+                                                                                            external_id,
+                                                                                            input_file_name,
+                                                                                            model_obj.clusterExecutionId,
+                                                                                            settings.MODEL_OUTPUT_PATH)
 
                 stdin, stdout, stderr = client.exec_command(command)
 
