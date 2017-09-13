@@ -72,7 +72,7 @@ class Run(View):
                 client = getParamikoClient()
 
                 # run model
-                responseScript = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
+                response_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
                 external_id = uuid.uuid4()
 
                 # create file with serialized input model data
@@ -85,7 +85,7 @@ class Run(View):
                 sftp.close()
 
                 command = "sbatch ~/osiris/runModel.sh {} {} \"{}\" {} \"{}\" {}".format(settings.SERVER_IP,
-                                                                                   responseScript,
+                                                                                   response_script,
                                                                                    settings.PYTHON_COMMAND,
                                                                                    external_id, file_name,
                                                                                    model_obj.clusterExecutionId)
