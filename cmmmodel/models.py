@@ -32,7 +32,6 @@ class ModelExecutionHistory(models.Model):
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
     start = models.DateTimeField('Tiempo de inicio', null=False)
     end = models.DateTimeField('Tiempo de fin', null=True)
-    answer = models.TextField()
     # answer given by executed model in CMM cluster
     OK = 'ok'
     RUNNING = 'running'
@@ -52,9 +51,10 @@ class ModelExecutionHistory(models.Model):
     """
     jobNumber = models.BigIntegerField(null=True, unique=True)
     std_out = models.TextField()
+    # to save error messages
     std_err = models.TextField()
     externalId = models.UUIDField(null=False)
-    # to save error messages
+    answer = models.FileField(upload_to='modelOutput/', null=True)
 
     def __str__(self):
         return u"{} {} {}".format(self.model, self.start, self.end, self.start)
