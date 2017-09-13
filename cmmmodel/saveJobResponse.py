@@ -43,7 +43,7 @@ def save_model_response(external_id, output_file_name, std_out, std_err):
 
     # exec next model if exists
     next_models = ModelExecutionQueue.objects.filter(modelExecutionHistory=execution_obj).order_by('id').\
-        values_list('id', flat=True)
+        values_list('model_id', flat=True)
 
     if len(next_models) >= 1:
         Run().runModel(None, execution_obj.scene_id, next_models[0], next_models[1:])
