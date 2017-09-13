@@ -12,22 +12,34 @@ from cmmmodel.views import Run
 
 import pickle
 
+
+def process_answer(answer_dict):
+    """ save dict in table """
+    for key, value in answer_dict.items():
+        if isinstance(value, dict):
+            print(key)
+            process_answer(value)
+        else:
+            print(key, " : ", value)
+
+
 def save_model_response(external_id, output_file_name, std_out, std_err):
     """ save model response  """
-    file_path = os.path.join(settings.MODEL_OUTPUT_PATH, output_file_name)
-    model_answer = ""
-    if os.path.isfile(file_path):
-        file = open(file_path, "rb")
-        answer = pickle.load(file)
-        file.close()
-        model_answer = pickle.dumps(answer, protocol=pickle.HIGHEST_PROTOCOL)
+
     execution_obj = ModelExecutionHistory.objects.get(externalId=external_id)
     execution_obj.end = timezone.now()
     execution_obj.status = ModelExecutionHistory.OK
-    execution_obj.answer = model_answer
+    execution_obj.answer.name = os.path.join("modelOutput", output_file_name)
     execution_obj.std_out = std_out
     execution_obj.std_err += std_err
     execution_obj.save()
+
+    # process output for viz
+    file_path = os.path.join(settings.MODEL_OUTPUT_PATH, output_file_name)
+    if os.path.isfile(file_path):
+        with open(file_path, "rb") as answer_file:
+            answer = pickle.load(answer_file)
+            process_answer(answer)
 
     # exec next model if exists
     next_models = ModelExecutionQueue.objects.filter(modelExecutionHistory=execution_obj).order_by('id').\
