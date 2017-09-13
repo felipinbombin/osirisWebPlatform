@@ -183,7 +183,7 @@ $(document).ready(function () {
             $.post(RUN_MODEL_URL, data, function(response) {
                 showNotificationMessage(response.status);
                 if("models" in response) {
-                    self.updateButtonsView(response["models"])
+                    self.updateButtonsView(response.models);
                 }
                 self.showRunModelDialog(false);
             }).always(function () {
@@ -211,13 +211,13 @@ $(document).ready(function () {
             $.post(STOP_MODEL_URL, data, function(response) {
                 showNotificationMessage(response.status);
                 if("models" in response) {
-                    self.updateButtonsView(response["models"])
+                    self.updateButtonsView(response.models);
                 }
                 self.showStopModelDialog(false);
             }).always(function () {
                 spinner.stop();
             });
-        }
+        };
     };
     var panelDOM = document.getElementById("content-main");
     var viewModel = new Scene();
