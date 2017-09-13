@@ -62,6 +62,9 @@ class Run(View):
                 else:
                     scene_obj = Scene.objects.get(user=user, id=scene_id)
 
+                # TODO:check if step is under valid threshold
+
+
                 # if model you try to run is enqueued, don´t run and notify to user
                 if ModelExecutionQueue.objects.filter(modelExecutionHistory__scene=scene_obj, model_id=model_id).exists():
                     raise EnqueuedModelException
