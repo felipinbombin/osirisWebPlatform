@@ -12,7 +12,9 @@ from scene.views.SceneData import GetSceneData
 from scene.views.InputModel import speed_model_input, serialize_input
 
 from cmmmodel.views import Status as ModelStatus
+from cmmmodel.models import ModelExecutionHistory
 
+import pickle
 
 class ScenePanel(View):
     """ wizard form: first """
@@ -134,9 +136,11 @@ class InputModelData(View):
         """ return inputModel to run models """
 
         sceneId = int(sceneId)
-        inputModel = speed_model_input(request.user, sceneId)
+        execution = ModelExecutionHistory.objects.order_by("-start").first()
+        with open(execution.answer.path, mode="rb") as answer_file:
+            answer = pickle.load(answer_file)
 
-        response = {"inputModel": inputModel}
+        response = {"answer": answer}
         Status.getJsonStatus(Status.OK, response)
 
         response = serialize_input(response)
