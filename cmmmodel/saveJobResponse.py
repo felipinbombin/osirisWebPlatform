@@ -29,6 +29,8 @@ def save_model_response(external_id, output_file_name, std_out, std_err):
     execution_obj = ModelExecutionHistory.objects.get(externalId=external_id)
     execution_obj.end = timezone.now()
     execution_obj.status = ModelExecutionHistory.OK
+    if std_err != "":
+        execution_obj.status = ModelExecutionHistory.ERROR
     execution_obj.answer.name = os.path.join("modelOutput", output_file_name)
     execution_obj.std_out = std_out
     execution_obj.std_err += std_err
