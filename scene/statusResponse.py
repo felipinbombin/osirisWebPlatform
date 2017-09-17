@@ -14,9 +14,21 @@ class Status:
     ENQUEUED_MODEL_ERROR = 408
     MODEL_IS_RUNNING_ERROR = 409
     MODEL_EXECUTION_DOES_NOT_EXIST_ERROR = 410
+    MODEL_INPUT_DOES_NOT_EXIST_ERROR = 411
+    INCOMPLETE_SCENE_ERROR = 412
     GENERIC_ERROR = 499
 
     statusDict = {
+        INCOMPLETE_SCENE_ERROR: {
+            "code": INCOMPLETE_SCENE_ERROR, "title": "Escenario incompleto",
+            "message": "El escenario debe ser completado antes de poder ejecutar el modelo.",
+            "type": u"error"
+        },
+        MODEL_INPUT_DOES_NOT_EXIST_ERROR: {
+            "code": MODEL_INPUT_DOES_NOT_EXIST_ERROR, "title": "Modelo sin datos de entrada",
+            "message": "No existe entrada para correr el modelo. Debe ejecutar los modelos previos.",
+            "type": u"error"
+        },
         MODEL_EXECUTION_DOES_NOT_EXIST_ERROR: {
             "code": MODEL_EXECUTION_DOES_NOT_EXIST_ERROR, "title": "Problema al detener modelo",
             "message": "La ejecución del modelo ya finalizó o fue detenido por otro usuario.",

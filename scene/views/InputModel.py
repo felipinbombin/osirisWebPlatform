@@ -3,10 +3,16 @@ from scene.models import Scene
 from scene.models import MetroLineMetric, OperationPeriodForMetroStation, OperationPeriodForMetroTrack, \
     OperationPeriodForMetroLine
 
+from cmmmodel.models import ModelExecutionHistory
+
 import numpy as np
 import datetime
 import json
 import pickle
+
+
+class ModelInputDoesNotExistException(Exception):
+    pass
 
 
 class InputModel:
@@ -24,11 +30,15 @@ class InputModel:
             input = speed_model_input(self.scene_id)
             input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
         else:
-            # TODO: search previous model execution and extract the answer
+            previous_model = self.model_id - 1
+            model_obj = ModelExecutionHistory.objects.filter(status=ModelExecutionHistory.OK,
+                                                             scene_id=self.model_id,
+                                                             model_id=previous_model).order_by("-end").first()
+            if model_obj is None:
+                raise ModelInputDoesNotExistException
 
-            # while make the same as model_id = 1
-            input = speed_model_input(self.scene_id)
-            input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
+            with open(model_obj.answer.path, mode="rb") as answer_file:
+                input = answer_file.read()
 
         return input
 

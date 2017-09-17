@@ -15,7 +15,7 @@ from scene.statusResponse import Status as sts
 
 from scene.sceneExceptions import OsirisException
 from cmmmodel.models import ModelExecutionHistory, Model, ModelExecutionQueue
-from scene.views.InputModel import InputModel
+from scene.views.InputModel import InputModel, ModelInputDoesNotExistException
 
 from io import BytesIO
 
@@ -42,6 +42,10 @@ class ModelIsRunningException(Exception):
     pass
 
 
+class IncompleteSceneException(Exception):
+    pass
+
+
 class Run(View):
     """ run model on cmm cluster """
 
@@ -62,8 +66,8 @@ class Run(View):
                 else:
                     scene_obj = Scene.objects.get(user=user, id=scene_id)
 
-                # TODO:check if step is under valid threshold
-
+                if scene_obj.status == Scene.INCOMPLETE:
+                    raise IncompleteSceneException
 
                 # if model you try to run is enqueued, don´t run and notify to user
                 if ModelExecutionQueue.objects.filter(modelExecutionHistory__scene=scene_obj, model_id=model_id).exists():
@@ -120,13 +124,17 @@ class Run(View):
                 sts.getJsonStatus(sts.OK, response)
         except Scene.DoesNotExist:
             sts.getJsonStatus(sts.SCENE_DOES_NOT_EXIST_ERROR, response)
+        except ModelInputDoesNotExistException:
+            sts.getJsonStatus(sts.MODEL_INPUT_DOES_NOT_EXIST_ERROR, response)
         except EnqueuedModelException:
             sts.getJsonStatus(sts.ENQUEUED_MODEL_ERROR, response)
         except ModelIsRunningException:
             sts.getJsonStatus(sts.MODEL_IS_RUNNING_ERROR, response)
-        #except Exception as e:
-        #    sts.getJsonStatus(sts.GENERIC_ERROR, response)
-        #    response["status"]["message"] = str(e)
+        except IncompleteSceneException:
+            sts.getJsonStatus(sts.INCOMPLETE_SCENE_ERROR, response)
+        except Exception as e:
+            sts.getJsonStatus(sts.GENERIC_ERROR, response)
+            response["status"]["message"] = str(e)
 
         return response
 
