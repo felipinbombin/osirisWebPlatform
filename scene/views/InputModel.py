@@ -32,7 +32,7 @@ class InputModel:
         else:
             previous_model = self.model_id - 1
             model_obj = ModelExecutionHistory.objects.filter(status=ModelExecutionHistory.OK,
-                                                             scene_id=self.model_id,
+                                                             scene_id=self.scene_id,
                                                              model_id=previous_model).order_by("-end").first()
             if model_obj is None:
                 raise ModelInputDoesNotExistException
