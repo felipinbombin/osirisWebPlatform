@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.utils import timezone
 from datetime import timedelta
 
 from scene.models import Scene
@@ -18,6 +19,9 @@ class Model(models.Model):
             "follow": [{"name": c.follow.name, "id": c.follow.id} for c in self.start_set.all().order_by("id")]
         }
         return dictionary
+
+    def __str__(self):
+        return "{}".format(self.name)
 
 
 class PossibleQueue(models.Model):
@@ -57,7 +61,7 @@ class ModelExecutionHistory(models.Model):
     answer = models.FileField(upload_to='modelOutput/', null=True)
 
     def __str__(self):
-        return u"{} {} {}".format(self.model, self.start, self.end, self.start)
+        return u"{} {} {}".format(self.model, timezone.localtime(self.start), timezone.localtime(self.end))
 
     def get_dictionary(self):
         """  """
