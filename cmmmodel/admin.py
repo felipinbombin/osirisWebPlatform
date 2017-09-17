@@ -11,7 +11,7 @@ class CMMModelAdmin(admin.ModelAdmin):
 
 
 class ModelExecutionHistoryAdmin(admin.ModelAdmin):
-    fields = ('scene', 'model', 'start', 'end', 'status', 'jobNumber', 'externalId')
+    fields = ('scene', 'model', 'start', 'end', 'status', 'jobNumber', 'externalId', 'std_out', 'std_err', 'answer')
     list_display = ('scene', 'model', 'start', 'end', 'status', 'jobNumber', 'externalId')
 
 
