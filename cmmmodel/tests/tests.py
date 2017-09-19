@@ -11,8 +11,11 @@ from scene.statusResponse import Status as st
 from cmmmodel.models import ModelExecutionQueue, Model, ModelExecutionHistory
 from cmmmodel.views import Status
 
+from cmmmodel.saveJobResponse import save_model_response
+
 import json
 import uuid
+import os
 
 TEST_MODEL_ID = 999
 
@@ -127,5 +130,28 @@ class ExecuteModel(TestCase):
         #print(json_response.content)
 
     def test_saveJob(self):
-        """ simulate a call from cluster after finish model execution """
-        pass
+        """ simulate a call from cluster after finish model execution to saveJobResponse file """
+        file_name = "1d954557-0082-4d86-8f17-3995ea87a8b8.output"
+        file_path = os.path.join("..", os.path.join("..", os.path.join("cmmmodel", os.path.join("tests", file_name))))
+        std_out = ""
+        std_err = ""
+        external_id = uuid.uuid4()
+        meh = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=TEST_MODEL_ID, externalId=external_id,
+                                             start=timezone.now())
+
+        # added test model to queue to test queue model execution process
+        ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=TEST_MODEL_ID)
+
+        save_model_response(str(external_id), file_path, std_out, std_err)
+
+        # stop execution model in cmm cluster (queued model)
+        self.stop_test_model()
+
+        meh.refresh_from_db()
+        self.assertEqual(meh.status, ModelExecutionHistory.OK)
+        self.assertIsNotNone(meh.end)
+
+        std_err = "not empty"
+        save_model_response(str(external_id), file_path, std_out, std_err)
+        meh.refresh_from_db()
+        self.assertEqual(meh.status, ModelExecutionHistory.ERROR)

@@ -28,7 +28,7 @@ class InputModel:
         if self.model_id == 999:
             # for testing purpose
             input = {
-                "seconds": 5
+                "seconds": 60
             }
             input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
         elif self.model_id == 1:

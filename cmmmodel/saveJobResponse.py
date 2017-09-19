@@ -51,6 +51,7 @@ def save_model_response(external_id, output_file_name, std_out, std_err):
         ModelExecutionQueue.objects.filter(modelExecutionHistory=execution_obj).delete()
         Run().runModel(None, execution_obj.scene_id, next_models[0], next_models[1:])
 
+
 if __name__ == "__main__":
     """ update execution record """
     save_model_response(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
