@@ -23,10 +23,16 @@ class InputModel:
         self.scene_id = scene_id
 
     def get_input(self):
-        """ retrieve """
+        """ retrieve input data """
 
-        # speed model
-        if self.model_id == 1:
+        if self.model_id == 999:
+            # for testing purpose
+            input = {
+                "seconds": 5
+            }
+            input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
+        elif self.model_id == 1:
+            # speed model
             input = speed_model_input(self.scene_id)
             input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
         else:
