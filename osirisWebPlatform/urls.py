@@ -25,5 +25,5 @@ urlpatterns = [
     url(r'^admin/', include('scene.urls', namespace='scene')),
     url(r'^admin/', admin.site.urls),
     url(r'^myadmin/', include('myadmin.urls')),
-    url(r'^models/', include('cmmmodel.urls', namespace='models')),
+    url(r'^models/', include('cmmmodel.urls', namespace='cmmmodel')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
