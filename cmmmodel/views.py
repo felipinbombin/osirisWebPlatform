@@ -13,7 +13,6 @@ from django.utils import timezone
 from scene.models import Scene
 from scene.statusResponse import Status as sts
 
-from scene.sceneExceptions import OsirisException
 from cmmmodel.models import ModelExecutionHistory, Model, ModelExecutionQueue
 from scene.views.InputModel import InputModel, ModelInputDoesNotExistException
 
@@ -156,6 +155,23 @@ class Stop(View):
     def dispatch(self, request, *args, **kwargs):
         return super(Stop, self).dispatch(request, *args, **kwargs)
 
+    def cancel_task(self, scene_obj, model_id):
+        """ cancel cluster task """
+        model_execution = ModelExecutionHistory.objects.get(scene=scene_obj, model_id=model_id,
+                                                            status=ModelExecutionHistory.RUNNING)
+
+        command = "scancel {}".format(model_execution.jobNumber)
+        client = getParamikoClient()
+        stdin, stdout, stderr = client.exec_command(command)
+
+        model_execution.status = ModelExecutionHistory.CANCEL
+        model_execution.end = timezone.now()
+        model_execution.std_out += stdout.read().decode('utf-8')
+        model_execution.std_err += stderr.read().decode('utf-8')
+        model_execution.save()
+
+        ModelExecutionQueue.objects.filter(modelExecutionHistory=model_execution).delete()
+
     def post(self, request):
         """ validate and update data in server """
         scene_id = int(request.POST.get("sceneId"))
@@ -165,22 +181,7 @@ class Stop(View):
         try:
             with transaction.atomic():
                 scene_obj = Scene.objects.get(user=request.user, id=scene_id)
-
-                model_execution = ModelExecutionHistory.objects.get(scene=scene_obj, model_id=model_id,
-                                                                    status=ModelExecutionHistory.RUNNING)
-
-                command = "scancel {}".format(model_execution.jobNumber)
-                client = getParamikoClient()
-                stdin, stdout, stderr = client.exec_command(command)
-
-                model_execution.status = ModelExecutionHistory.CANCEL
-                model_execution.end = timezone.now()
-                model_execution.std_out += stdout.read().decode('utf-8')
-                model_execution.std_err += stderr.read().decode('utf-8')
-                model_execution.save()
-
-                ModelExecutionQueue.objects.filter(modelExecutionHistory=model_execution).delete()
-
+                self.cancel_task(scene_obj, model_id)
                 response["models"] = Status().resume_status(scene_obj)
                 sts.getJsonStatus(sts.OK, response)
         except ModelExecutionHistory.DoesNotExist:
@@ -194,6 +195,9 @@ class Stop(View):
 
 class Status(View):
     """ Give the information of all model for scene """
+    DISABLED = "disabled"
+    RUNNING = "running"
+    AVAILABLE = "available"
 
     def resume_status(self, scene_obj):
         """  """
@@ -203,17 +207,17 @@ class Status(View):
             model_status = model.get_dictionary()
             model_instance = ModelExecutionHistory.objects.filter(scene=scene_obj, model=model). \
                 order_by("-start").first()
-            if scene_obj.currentStep < 5:
-                status = "disabled"
+            if scene_obj.status == Scene.INCOMPLETE:
+                status = self.DISABLED
             elif model_instance is not None:
                 if model_instance.status == ModelExecutionHistory.RUNNING:
-                    status = "running"
+                    status = self.RUNNING
                 else:
-                    status = "available"
+                    status = self.AVAILABLE
                 # check its queue
                 model_status["lastExecutionInfo"] = model_instance.get_dictionary()
             else:
-                status = "available"
+                status = self.AVAILABLE
 
             model_status["status"] = status
             model_status_list.append(model_status)
