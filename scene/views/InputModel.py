@@ -17,10 +17,10 @@ class ModelInputDoesNotExistException(Exception):
 
 class InputModel:
 
-    def __init__(self, scene_id, model_id):
+    def __init__(self, scene_obj, model_id):
         """ constructor """
         self.model_id = model_id
-        self.scene_id = scene_id
+        self.scene_obj = scene_obj
 
     def get_input(self):
         """ retrieve input data """
@@ -33,12 +33,12 @@ class InputModel:
             input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
         elif self.model_id == 1:
             # speed model
-            input = speed_model_input(self.scene_id)
+            input = speed_model_input(self.scene_obj)
             input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             previous_model = self.model_id - 1
             model_obj = ModelExecutionHistory.objects.filter(status=ModelExecutionHistory.OK,
-                                                             scene_id=self.scene_id,
+                                                             scene=self.scene_obj,
                                                              model_id=previous_model).order_by("-end").first()
             if model_obj is None:
                 raise ModelInputDoesNotExistException

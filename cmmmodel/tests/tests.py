@@ -131,6 +131,12 @@ class ExecuteModel(TestCase):
 
     def test_saveJob(self):
         """ simulate a call from cluster after finish model execution to saveJobResponse file """
+
+        # simulate scene is ready to run
+        self.scene_obj.status = Scene.OK
+        self.scene_obj.save()
+
+        # create execution record
         file_name = "1d954557-0082-4d86-8f17-3995ea87a8b8.output"
         file_path = os.path.join("..", os.path.join("..", os.path.join("cmmmodel", os.path.join("tests", file_name))))
         std_out = ""

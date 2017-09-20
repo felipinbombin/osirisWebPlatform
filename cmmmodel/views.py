@@ -52,75 +52,79 @@ class Run(View):
     def dispatch(self, request, *args, **kwargs):
         return super(Run, self).dispatch(request, *args, **kwargs)
 
-    def runModel(self, user, scene_id, model_id, next_model_ids):
+    def runModel(self, scene_obj, model_id, next_model_ids):
         """ connect to cluster server and run model """
+
+        with transaction.atomic():
+            model_obj = Model.objects.get(id=model_id)
+
+            if scene_obj.status == Scene.INCOMPLETE:
+                raise IncompleteSceneException
+
+            # if model you try to run is enqueued, don´t run and notify to user
+            if ModelExecutionQueue.objects.filter(modelExecutionHistory__scene=scene_obj, model_id=model_id).exists():
+                raise EnqueuedModelException
+            elif ModelExecutionHistory.objects.filter(scene=scene_obj, model_id=model_id,
+                                                      status=ModelExecutionHistory.RUNNING).exists():
+                raise ModelIsRunningException
+
+            client = getParamikoClient()
+
+            # run model
+            response_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
+            external_id = uuid.uuid4()
+
+            # create file with serialized input model data
+            model_input_data = InputModel(scene_obj, model_id).get_input()
+            input_file_name = "{}.model_input".format(external_id)
+            destination = "osiris/inputs/" + input_file_name
+
+            sftp = client.open_sftp()
+            sftp.putfo(BytesIO(model_input_data), destination)
+            sftp.close()
+
+            command = "sbatch ~/osiris/runModel.sh {} {} \"{}\" {} \"{}\" {} {}".format(settings.SERVER_IP,
+                                                                                        response_script,
+                                                                                        settings.PYTHON_COMMAND,
+                                                                                        external_id,
+                                                                                        input_file_name,
+                                                                                        model_obj.clusterExecutionId,
+                                                                                        settings.MODEL_OUTPUT_PATH)
+
+            stdin, stdout, stderr = client.exec_command(command)
+
+            job_number = None
+            # save job number
+            for line in stdout:
+                job_number = int(line.strip('\n').split(" ")[3])
+
+            if job_number is None:
+                status = ModelExecutionHistory.ERROR_TO_START
+            else:
+                status = ModelExecutionHistory.RUNNING
+
+            meh = ModelExecutionHistory.objects.create(scene=scene_obj, model=model_obj, start=timezone.now(),
+                                                       status=status, jobNumber=job_number, externalId=external_id,
+                                                       std_err=stderr.read().decode('utf-8'))
+
+            for model_id in next_model_ids:
+                ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=model_id)
+            # close ssh connection
+            client.close()
+
+    def post(self, request):
+        """  """
+        scene_id = int(request.POST.get("sceneId"))
+        model_id = int(request.POST.get("modelId"))
+        next_model_ids = [int(id) for id in request.POST.getlist("nextModelIds[]")]
+
         response = {}
         try:
-            with transaction.atomic():
-                model_obj = Model.objects.get(id=model_id)
+            scene_obj = Scene.objects.get(user=request.user, id=scene_id)
+            self.runModel(scene_obj, model_id, next_model_ids)
 
-                # when is called from cluster to run next model
-                if user is None:
-                    scene_obj = Scene.objects.get(id=scene_id)
-                else:
-                    scene_obj = Scene.objects.get(user=user, id=scene_id)
-
-                if scene_obj.status == Scene.INCOMPLETE:
-                    raise IncompleteSceneException
-
-                # if model you try to run is enqueued, don´t run and notify to user
-                if ModelExecutionQueue.objects.filter(modelExecutionHistory__scene=scene_obj, model_id=model_id).exists():
-                    raise EnqueuedModelException
-                elif ModelExecutionHistory.objects.filter(scene=scene_obj, model_id=model_id,
-                                                          status=ModelExecutionHistory.RUNNING).exists():
-                    raise ModelIsRunningException
-
-                client = getParamikoClient()
-
-                # run model
-                response_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saveJobResponse.py')
-                external_id = uuid.uuid4()
-
-                # create file with serialized input model data
-                model_input_data = InputModel(scene_id, model_id).get_input()
-                input_file_name = "{}.model_input".format(external_id)
-                destination = "osiris/inputs/" + input_file_name
-
-                sftp = client.open_sftp()
-                sftp.putfo(BytesIO(model_input_data), destination)
-                sftp.close()
-
-                command = "sbatch ~/osiris/runModel.sh {} {} \"{}\" {} \"{}\" {} {}".format(settings.SERVER_IP,
-                                                                                            response_script,
-                                                                                            settings.PYTHON_COMMAND,
-                                                                                            external_id,
-                                                                                            input_file_name,
-                                                                                            model_obj.clusterExecutionId,
-                                                                                            settings.MODEL_OUTPUT_PATH)
-
-                stdin, stdout, stderr = client.exec_command(command)
-
-                job_number = None
-                # save job number
-                for line in stdout:
-                    job_number = int(line.strip('\n').split(" ")[3])
-
-                if job_number is None:
-                    status = ModelExecutionHistory.ERROR_TO_START
-                else:
-                    status = ModelExecutionHistory.RUNNING
-
-                meh = ModelExecutionHistory.objects.create(scene=scene_obj, model=model_obj, start=timezone.now(),
-                                                           status=status, jobNumber=job_number, externalId=external_id,
-                                                           std_err=stderr.read().decode('utf-8'))
-
-                for model_id in next_model_ids:
-                    ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=model_id)
-                # close ssh connection
-                client.close()
-
-                response["models"] = Status().resume_status(scene_obj)
-                sts.getJsonStatus(sts.OK, response)
+            response["models"] = Status().resume_status(scene_obj)
+            sts.getJsonStatus(sts.OK, response)
         except Scene.DoesNotExist:
             sts.getJsonStatus(sts.SCENE_DOES_NOT_EXIST_ERROR, response)
         except ModelInputDoesNotExistException:
@@ -134,16 +138,6 @@ class Run(View):
         except Exception as e:
             sts.getJsonStatus(sts.GENERIC_ERROR, response)
             response["status"]["message"] = str(e)
-
-        return response
-
-    def post(self, request):
-        """  """
-        scene_id = int(request.POST.get("sceneId"))
-        model_id = int(request.POST.get("modelId"))
-        next_model_ids = [int(id) for id in request.POST.getlist("nextModelIds[]")]
-
-        response = self.runModel(request.user, scene_id, model_id, next_model_ids)
 
         return JsonResponse(response, safe=False)
 
