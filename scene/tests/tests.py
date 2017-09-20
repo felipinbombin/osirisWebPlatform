@@ -2,26 +2,30 @@
 from __future__ import unicode_literals
 
 from django.test import TestCase
-
 from django.urls import reverse
 from django.conf import settings
 
-from scene.models import Scene, MetroLineMetric
+from scene.models import MetroLineMetric
 from scene.statusResponse import Status
 
 from .testHelper import TestHelper
 
 from collections import defaultdict
 
+#from scene.views.InputModel import InputModel
+#from io import BytesIO
+#from SM import SM
+
 import os
 import json
+#import pickle
 
 TOPOLOGIC_FILE_NAME = u"Escenario_topologico.xlsx"
 SYSTEMIC_FILE_NAME = u"Escenario_sistemico.xlsx"
 OPERATION_FILE_NAME = u"Escenario_operacion.xlsx"
 SPEED_FILE_NAME = u"Escenario_velocidad.xlsx"
 
-class CompleteSceneData(TestCase):
+class CompleteSceneDataTest(TestCase):
     """
     test for scene wizard
     """
@@ -340,17 +344,24 @@ class CompleteSceneData(TestCase):
         for url, file_path in zip(file_urls, file_paths):
             self.download_file(url, file_path)
 
-
+        """
         # serialize speed model input
-        from scene.views.InputModel import InputModel
-        input = InputModel(self.scene_obj.id, 1)
+        model_id = 1
+        input = InputModel(self.scene_obj.id, model_id)
+        # input dictionary comes serialized
         input_dict = input.get_input()
-        import pickle
-        from StringIO import StringIO
-        serialized = pickle.dumps(input_dict, protocol=2)
-        unserialized = pickle.load(StringIO(serialized))
-        print(serialized)
-        print(unserialized)
+        unserialized = pickle.load(BytesIO(input_dict))
 
-        shared_items = set(input_dict.items()) & set(unserialized.items())
-        print(shared_items)
+        file_name = "hola.txt"
+        f = open(file_name, 'wb')
+        pickle.dump(unserialized, f)
+        f.close()
+        f = open(file_name, 'rb')
+        unserialized = pickle.load(f)
+        f.close()
+        os.remove(file_name)
+
+        model_answer = SM(unserialized)
+        for key in model_answer.keys():
+            print(key)
+        """
