@@ -135,9 +135,9 @@ class Run(View):
             sts.getJsonStatus(sts.MODEL_IS_RUNNING_ERROR, response)
         except IncompleteSceneException:
             sts.getJsonStatus(sts.INCOMPLETE_SCENE_ERROR, response)
-        except Exception as e:
-            sts.getJsonStatus(sts.GENERIC_ERROR, response)
-            response["status"]["message"] = str(e)
+        #except Exception as e:
+        #    sts.getJsonStatus(sts.GENERIC_ERROR, response)
+        #    response["status"]["message"] = str(e)
 
         return JsonResponse(response, safe=False)
 
