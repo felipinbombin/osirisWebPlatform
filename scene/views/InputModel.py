@@ -33,7 +33,7 @@ class InputModel:
             input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
         elif self.model_id == 1:
             # speed model
-            input = speed_model_input(self.scene_obj)
+            input = speed_model_input(self.scene_obj.id)
             input = pickle.dumps(input, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             previous_model = self.model_id - 1
