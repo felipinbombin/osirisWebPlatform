@@ -50,7 +50,7 @@
             <div class="col-md-10 col-sm-10 col-sx-12">
               <div class="progress">
                 <div class="progress-bar progress-bar-{% if scene.currentStep < 6 %}danger{% else %}success{% endif %}"
-                   style="width: {{ barWidth }}%;">{{ status_label }}
+                   data-transitiongoal="{{ barWidth }}">{{ status_label }}
                 </div>
               </div>
             </div>
