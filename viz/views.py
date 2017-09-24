@@ -36,19 +36,14 @@ class SpeedModelVizData(View):
 
         scene_id = int(sceneId)
         execution = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()
-        answer = ModelAnswer.objects.filter(execution=execution).values("metroLine__name", "direction",
-                                                                        "metroTrack__name",
+        answer = ModelAnswer.objects.filter(execution=execution).values_list("metroLine__name", "direction",
                                                                         "operationPeriod__name", "attributeName",
-                                                                        "value").\
+                                                                        "metroTrack__name", "value").\
             order_by("metroLine__name", "direction", "metroTrack__name", "operationPeriod__name", "attributeName", "order")
         from itertools import groupby
         groups = []
-        for k1, g1 in groupby(answer, lambda _ : "metroLine__name"):
-            for k2, g2 in groupby(g1, lambda _ : "direaction"):
-                for k3, g3 in groupby(g2, lambda _ : "operationPeriod__name"):
-                    for k4, g4 in groupby(g3, lambda _ : "attributeName"):
-                        for k5, g5 in groupby(g4, lambda _ : "metroTrack_name"):
-                            groups = list(g5)
+        for key, group in groupby(answer, lambda row : "{}-{}-{}-{}".format(row[0], row[1], row[2], row[3])):
+            groups = list(group)
 
         response = {}
         response["answer"] = groups
