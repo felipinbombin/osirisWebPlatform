@@ -54,7 +54,4 @@ class SpeedModelVizData(View):
         response = {}
         response["answer"] = groups
 
-        for row in answer:
-            response["answer"].append(row)
-
         return JsonResponse(response, safe=False)
