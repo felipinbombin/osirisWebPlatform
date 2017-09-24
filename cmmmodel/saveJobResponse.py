@@ -38,9 +38,9 @@ def process_answer(answer_dict, execution_obj):
                             print(answer_dict[metric][0][0])
                             values = answer_dict[metric][line_id][direction][op_id][track_id]
                             for index, value in enumerate(values):
-                                ModelAnswer.objects.create(execution=execution_obj, line=line_obj.id,
-                                                           direction=system_direction, operation=operation_period.id,
-                                                           track=track_obj.id, attributeName=metric, order=index,
+                                ModelAnswer.objects.create(execution=execution_obj, metroLine=line_obj,
+                                                           direction=system_direction, operationPeriod=operation_period,
+                                                           metroTrack=track_obj, attributeName=metric, order=index,
                                                            value=value)
 
     """

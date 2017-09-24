@@ -1,16 +1,16 @@
 from django.db import models
 
 from cmmmodel.models import ModelExecutionHistory
-# Create your models here.
+from scene.models import MetroLine, MetroTrack, OperationPeriod
 
 
 class ModelAnswer(models.Model):
     """ model answer by execution """
     execution = models.ForeignKey(ModelExecutionHistory, on_delete=models.CASCADE)
-    line = models.IntegerField()
+    metroLine = models.ForeignKey(MetroLine)
     direction = models.CharField(max_length=1)
-    operation = models.IntegerField()
-    track = models.IntegerField(null=True)
+    operationPeriod = models.ForeignKey(OperationPeriod)
+    metroTrack = models.ForeignKey(MetroTrack)
     attributeName = models.CharField(max_length=100)
     order = models.IntegerField()
     value = models.FloatField()
@@ -27,4 +27,9 @@ class ModelAnswer(models.Model):
 
     def __str__(self):
         return "{}".format(self.id)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['execution', 'metroLine', 'direction', 'operationPeriod', 'metroTrack']),
+        ]
 

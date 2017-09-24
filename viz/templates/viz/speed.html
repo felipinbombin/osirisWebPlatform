@@ -1,0 +1,42 @@
+{% extends "admin/base_site.html" %}
+{% load i18n header static join_by_attr join_by_attr_arrow print_connection_description header %}
+{% load read_only_field download_file_button %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  {% with "components/gentelella/vendors/" as gentelella_static %}
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.css" %}" rel="stylesheet">
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.css" %}" rel="stylesheet">
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.css" %}" rel="stylesheet">
+  {% endwith %}
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="col-md-12 col-sm-12 col-xs-12">
+  {% trans "Modelo de velocidad" as title %}
+  {% header title %}
+</div>
+{% endblock %}
+
+{% block extrajs %}
+  {% with "components/gentelella/vendors/" as gentelella_static %}
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.js" %}"></script>
+  {% endwith %}
+  <script src="{% static "components/knockout/dist/knockout.debug.js" %}"></script>
+  <script src="{% static "components/js-cookie/src/js.cookie.js" %}"></script>
+  <script src="{% static "components/spin.js/spin.min.js" %}"></script>
+  <script src="{% static "js/knockout.components.js" %}"></script>
+  <script src="{% static "js/user.notification.js" %}"></script>
+  <script src="{% static "js/spinConfig.js" %}"></script>
+  <script src="{% static "js/scenePanel.js" %}"></script>
+  <script>
+
+  </script>
+{% endblock %}
