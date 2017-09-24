@@ -2,14 +2,17 @@
 from django import template
 from django.utils.html import format_html
 from django.utils import timezone
+from django.urls import reverse
 
-from datetime import timedelta
+class ThereIsNotVizURLException(Exception):
+    pass
 
 register = template.Library()
 
 @register.simple_tag
-def model_button(model_label, column, id, last_execution_info, status="available", vis_url=""):
+def model_button(scene_obj, model_label, column, id, last_execution_info, status="available"):
     # states: [available, running, disabled]
+    # id: model.id
 
     button_icon = u"""
         <i class="fa fa-play fa-3x"></i>
@@ -64,4 +67,17 @@ def model_button(model_label, column, id, last_execution_info, status="available
             """ + last_execution_table + """
         </div>"""
 
-    return format_html(field, column, model_label, vis_label, disabled, button_class, button_label, id, vis_url)
+    # find viz url
+    if id == 1:
+        viz_url = reverse("viz:speedModel", kwargs={"sceneId": scene_obj.id})
+    elif id == 2:
+        viz_url = ""
+    elif id == 3:
+        viz_url = ""
+    elif id == 4:
+        viz_url = ""
+    else:
+        raise ThereIsNotVizURLException
+
+
+    return format_html(field, column, model_label, vis_label, disabled, button_class, button_label, id, viz_url)
