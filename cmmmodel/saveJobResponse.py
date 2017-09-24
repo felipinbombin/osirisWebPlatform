@@ -24,7 +24,8 @@ def process_answer(answer_dict, execution_obj):
         operation_periods = OperationPeriod.objects.filter(scene=execution_obj.scene).order_by("id")
         metrics = ["Powerfc"]
 
-        ModelAnswer.objects.filter(execution__model_id=execution_obj.model_id).delete()
+        ModelAnswer.objects.filter(execution__model_id=execution_obj.model_id,
+                                   execution__scene=execution_obj.scene).delete()
         for metric in metrics:
             for line_obj in line_objs:
                 track_objs = MetroTrack.objects.filter(metroLine=line_obj).order_by("id")
