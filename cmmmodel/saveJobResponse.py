@@ -30,7 +30,7 @@ def process_answer(answer_dict, execution_obj):
                 track_objs = MetroTrack.objects.filter(metroLine=line_obj).order_by("id")
                 # metro line metrics direction = going (g) or reverse (r)
                 for direction in [0, 1]:
-                    system_direction = MetroLineMetric.GOING if direction == "0" else MetroLineMetric.REVERSE
+                    system_direction = MetroLineMetric.GOING if direction == 0 else MetroLineMetric.REVERSE
                     for operation_period in operation_periods:
                         for track_obj in track_objs:
                             line_id = line_obj.id - line_objs[0].id
