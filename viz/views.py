@@ -41,10 +41,15 @@ class SpeedModelVizData(View):
                                                                         "metroTrack__name", "value").\
             order_by("metroLine__name", "direction", "metroTrack__name", "operationPeriod__name", "attributeName", "order")
         from itertools import groupby
-        groups = []
-        for key, group in groupby(answer, lambda row : "{}-{}-{}-{}".format(row[0], row[1], row[2], row[3])):
-            groups = list(group)
-            print(key, "cantidad: ", len(groups))
+        from collections import defaultdict
+        groups = defaultdict(dict)
+        for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3])):
+            group = list(group)
+            line, direction, op, attr = key.split("_-_")
+            # group by track
+            for key2, group2 in groupby(group, lambda row: row[4]):
+                groups[line][direction][op][attr][key2] = list(group2)
+                print(key, key2, len(list(group2)))
 
         response = {}
         response["answer"] = groups
