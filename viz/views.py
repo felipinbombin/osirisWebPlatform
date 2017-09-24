@@ -43,6 +43,7 @@ class SpeedModelVizData(View):
         from itertools import groupby
         groups = []
         for key, group in groupby(answer, lambda row : "{}-{}-{}-{}".format(row[0], row[1], row[2], row[3])):
+            print(key)
             groups = list(group)
 
         response = {}
