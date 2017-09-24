@@ -39,7 +39,7 @@ class SpeedModelVizData(View):
         answer = ModelAnswer.objects.filter(execution=execution).values_list("metroLine__name", "direction",
                                                                         "operationPeriod__name", "attributeName",
                                                                         "metroTrack__name", "value").\
-            order_by("metroLine__name", "direction", "metroTrack__name", "operationPeriod__name", "attributeName", "order")
+            order_by("metroLine__name", "direction", "metroTrack__id", "operationPeriod__start", "attributeName", "order")
         from itertools import groupby
         from collections import defaultdict
         groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
