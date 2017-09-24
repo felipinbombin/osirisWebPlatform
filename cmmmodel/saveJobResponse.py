@@ -11,17 +11,46 @@ from django.conf import settings
 from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue
 from cmmmodel.views import Run
 
+from scene.models import MetroLine, OperationPeriod, MetroTrack, MetroLineMetric
+from viz.models import ModelAnswer
+
 import pickle
 
 
 def process_answer(answer_dict, execution_obj):
     """ fill viz table with answer dictionary """
+    if execution_obj.model_id == 1:
+        line_objs = MetroLine.objects.filter(scene=execution_obj.scene).order_by("id")
+        operation_periods = OperationPeriod.objects.filter(scene=execution_obj.scene).order_by("id")
+        metrics = ["Powerfc"]
+
+        for metric in metrics:
+            for line_obj in line_objs:
+                track_objs = MetroTrack.objects.filter(metroLine=line_obj).order_by("id")
+                # metro line metrics direction = going (g) or reverse (r)
+                for direction in [0, 1]:
+                    system_direction = MetroLineMetric.GOING if direction == "0" else MetroLineMetric.REVERSE
+                    for operation_period in operation_periods:
+                        for track_obj in track_objs:
+                            line_id = line_obj.id - line_objs[0].id
+                            op_id = operation_period.id - operation_periods[0].id
+                            track_id = track_obj.id - track_objs[0].id
+                            print(answer_dict[metric][0][0])
+                            values = answer_dict[metric][line_id][direction][op_id][track_id]
+                            for index, value in enumerate(values):
+                                ModelAnswer.objects.create(execution=execution_obj, line=line_obj.id,
+                                                           direction=system_direction, operation=operation_period.id,
+                                                           track=track_obj.id, attributeName=metric, order=index,
+                                                           value=value)
+
+    """
     for key, value in answer_dict.items():
         if isinstance(value, dict):
-            print(key)
-            process_answer(value, execution_obj)
-        else:
-            print(key, " : ", value)
+            for key2, value2 in value.items():
+                if isinstance(value2, dict):
+                    for key3, value3 in value2.items():
+                        f.write("{} {} {} {}".format(key, key2, key3, value))
+    """
 
 
 def save_model_response(external_id, output_file_name, std_out, std_err):

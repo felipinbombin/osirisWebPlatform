@@ -10,14 +10,18 @@ from scene.statusResponse import Status as st
 
 from cmmmodel.models import ModelExecutionQueue, Model, ModelExecutionHistory
 from cmmmodel.views import Status
+from cmmmodel.saveJobResponse import save_model_response, process_answer
 
-from cmmmodel.saveJobResponse import save_model_response
+from viz.models import ModelAnswer
+from scene.models import MetroLine, MetroTrack, MetroStation, OperationPeriod
 
 import json
 import uuid
 import os
+import pickle
 
 TEST_MODEL_ID = 999
+
 
 class ExecuteModel(TestCase):
     """
@@ -138,7 +142,7 @@ class ExecuteModel(TestCase):
 
         # create execution record
         file_name = "1d954557-0082-4d86-8f17-3995ea87a8b8.output"
-        file_path = os.path.join("..", os.path.join("..", os.path.join("cmmmodel", os.path.join("tests", file_name))))
+        file_path = os.path.join("tests", file_name)
         std_out = ""
         std_err = ""
         external_id = uuid.uuid4()
@@ -161,3 +165,32 @@ class ExecuteModel(TestCase):
         save_model_response(str(external_id), file_path, std_out, std_err)
         meh.refresh_from_db()
         self.assertEqual(meh.status, ModelExecutionHistory.ERROR)
+
+    def test_processAnswer(self):
+        """ test load data from speed model output dict based on situation of file """
+        file_name = "1d954557-0082-4d86-8f17-3995ea87a8b8.output"
+        file_path = os.path.join("cmmmodel", os.path.join("tests", file_name))
+
+        L1 = MetroLine.objects.create(scene=self.scene_obj, name="L1", externalId=uuid.uuid4())
+        [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L1) for index in range(1, 11)]
+        [MetroTrack.objects.create(metroLine=L1, name="t{}".format(index), startStation_id=1, endStation_id=1) for index in range(9)]
+
+        L2 = MetroLine.objects.create(scene=self.scene_obj, name="L2", externalId=uuid.uuid4())
+        [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L2) for index in range(12, 24)]
+        [MetroTrack.objects.create(metroLine=L2, name="t{}".format(index), startStation_id=2, endStation_id=2) for index in range(11)]
+
+        OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP1",
+                                       start="09:00:00", end="10:00:00", temperature=0, humidity=0, co2Concentration=0,
+                                       solarRadiation=0, sunElevationAngle=0)
+        OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP2",
+                                       start="10:00:00", end="11:00:00", temperature=0, humidity=0, co2Concentration=0,
+                                       solarRadiation=0, sunElevationAngle=0)
+
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=1, externalId=uuid.uuid4(),
+                                                             start=timezone.now())
+
+        with open(file_path, "rb") as answer_file:
+            answer = pickle.load(answer_file)
+            process_answer(answer, execution_obj)
+
+        self.assertEqual(ModelAnswer.objects.count(), 49126)
