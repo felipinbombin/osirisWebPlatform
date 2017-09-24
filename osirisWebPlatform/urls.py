@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^myadmin/', include('myadmin.urls')),
     url(r'^models/', include('cmmmodel.urls', namespace='cmmmodel')),
+    url(r'^viz/', include('viz.urls', namespace='viz')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

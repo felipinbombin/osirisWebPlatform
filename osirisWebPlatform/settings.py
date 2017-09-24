@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'myadmin',
     'scene',
     'cmmmodel',
+    'viz',
     'bowerapp'
 ]
 
