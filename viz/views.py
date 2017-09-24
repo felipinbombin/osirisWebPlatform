@@ -43,11 +43,11 @@ class SpeedModelVizData(View):
             order_by("metroLine__name", "direction", "metroTrack__name", "operationPeriod__name", "attributeName", "order")
         from itertools import groupby
         groups = []
-        for k1, g1 in groupby(answer, "metroLine__name"):
-            for k2, g2 in groupby(g1, "direaction"):
-                for k3, g3 in groupby(g2, "operationPeriod__name"):
-                    for k4, g4 in groupby(g3, "attributeName"):
-                        for k5, g5 in groupby(g4, "metroTrack_name"):
+        for k1, g1 in groupby(answer, lambda : "metroLine__name"):
+            for k2, g2 in groupby(g1, lambda : "direaction"):
+                for k3, g3 in groupby(g2, lambda : "operationPeriod__name"):
+                    for k4, g4 in groupby(g3, lambda : "attributeName"):
+                        for k5, g5 in groupby(g4, lambda : "metroTrack_name"):
                             groups = list(g5)
 
         response = {}
