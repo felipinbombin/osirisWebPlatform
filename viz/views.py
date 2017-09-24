@@ -42,7 +42,7 @@ class SpeedModelVizData(View):
             order_by("metroLine__name", "direction", "metroTrack__name", "operationPeriod__name", "attributeName", "order")
         from itertools import groupby
         from collections import defaultdict
-        groups = defaultdict(lambda : defaultdict(lambda : defaultdict(list)))
+        groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
         for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3])):
             group = list(group)
             line, direction, op, attr = key.split("_-_")
