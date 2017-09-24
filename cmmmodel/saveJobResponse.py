@@ -24,6 +24,7 @@ def process_answer(answer_dict, execution_obj):
         operation_periods = OperationPeriod.objects.filter(scene=execution_obj.scene).order_by("id")
         metrics = ["Powerfc"]
 
+        ModelAnswer.objects.filter(execution__model_id=execution_obj.model_id).delete()
         for metric in metrics:
             for line_obj in line_objs:
                 track_objs = MetroTrack.objects.filter(metroLine=line_obj).order_by("id")
@@ -35,7 +36,6 @@ def process_answer(answer_dict, execution_obj):
                             line_id = line_obj.id - line_objs[0].id
                             op_id = operation_period.id - operation_periods[0].id
                             track_id = track_obj.id - track_objs[0].id
-                            print(answer_dict[metric][0][0])
                             values = answer_dict[metric][line_id][direction][op_id][track_id]
                             for index, value in enumerate(values):
                                 ModelAnswer.objects.create(execution=execution_obj, metroLine=line_obj,
