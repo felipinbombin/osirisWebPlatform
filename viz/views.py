@@ -48,7 +48,7 @@ class SpeedModelVizData(View):
             line, direction, op, attr = key.split("_-_")
             # group by track
             for key2, group2 in groupby(group, lambda row: row[4]):
-                groups[line][direction][op][attr][key2] = list(group2)
+                groups[line][direction][op][attr][key2] = [v[5] for v in group2]
                 print(key, key2, len(list(group2)))
 
         response = {}
