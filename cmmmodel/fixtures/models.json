@@ -4,6 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Velocidad",
+      "vizURL": "viz/speed/{0}",
       "clusterExecutionId": "S"
     }
   },
@@ -12,6 +13,7 @@
     "pk": 2,
     "fields": {
       "name": "Fuerza",
+      "vizURL": "viz/strong/{0}",
       "clusterExecutionId": "F"
     }
   },
@@ -20,6 +22,7 @@
     "pk": 3,
     "fields": {
       "name": "Energía",
+      "vizURL": "viz/energy/{0}",
       "clusterExecutionId": "E"
     }
   },
@@ -28,6 +31,7 @@
     "pk": 4,
     "fields": {
       "name": "Temperatura",
+      "vizURL": "viz/temperature/{0}",
       "clusterExecutionId": "T"
     }
   }

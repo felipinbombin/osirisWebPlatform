@@ -2,17 +2,14 @@
 from django import template
 from django.utils.html import format_html
 from django.utils import timezone
-from django.urls import reverse
 
-class ThereIsNotVizURLException(Exception):
-    pass
+from cmmmodel.views import Status
 
 register = template.Library()
 
+
 @register.simple_tag
-def model_button(scene_obj, model_label, column, id, last_execution_info, status="available"):
-    # states: [available, running, disabled]
-    # id: model.id
+def model_button(scene_obj, model, column):
 
     button_icon = u"""
         <i class="fa fa-play fa-3x"></i>
@@ -23,9 +20,9 @@ def model_button(scene_obj, model_label, column, id, last_execution_info, status
     button_class = u"btn-info"
     button_label = u"Ejecutar"
 
-    if status == "disabled":
+    if model["status"] == Status.DISABLED:
         disabled = u"disabled"
-    elif status == "running":
+    elif model["status"] == Status.RUNNING:
         button_class = u"btn-danger"
         button_label = u"Detener"
         button_icon = u"""
@@ -39,10 +36,11 @@ def model_button(scene_obj, model_label, column, id, last_execution_info, status
     start = ""
     end = ""
     duration = ""
-    if last_execution_info != "":
-        start = timezone.localtime(last_execution_info['start']).strftime("%x %X")
-        end = timezone.localtime(last_execution_info['end']).strftime("%x %X") if last_execution_info['end'] is not None else ""
-        duration = last_execution_info['duration']
+    if "last_execution_info" in model:
+        with model["last_execution_info"] as execution:
+            start = timezone.localtime(execution['start']).strftime("%x %X")
+            end = timezone.localtime(execution['end']).strftime("%x %X") if execution['end'] is not None else ""
+            duration = execution['duration']
 
     last_execution_table = u"""
         <p class="text-center"> Última ejecución</p>
@@ -67,17 +65,7 @@ def model_button(scene_obj, model_label, column, id, last_execution_info, status
             """ + last_execution_table + """
         </div>"""
 
-    # find viz url
-    if id == 1:
-        viz_url = reverse("viz:speedModel", kwargs={"sceneId": scene_obj.id})
-    elif id == 2:
-        viz_url = ""
-    elif id == 3:
-        viz_url = ""
-    elif id == 4:
-        viz_url = ""
-    else:
-        raise ThereIsNotVizURLException
+    # build viz url
+    viz_url = model["vizURL"].format(scene_obj.id)
 
-
-    return format_html(field, column, model_label, vis_label, disabled, button_class, button_label, id, viz_url)
+    return format_html(field, column, model["name"], vis_label, disabled, button_class, button_label, model["id"], viz_url)

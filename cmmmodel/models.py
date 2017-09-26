@@ -10,12 +10,14 @@ class Model(models.Model):
     """ math models used by osiris web platform """
     name = models.CharField('Nombre', max_length=100)
     clusterExecutionId = models.CharField('archivo bash', max_length=100)
+    vizURL = models.CharField(max_length=100)
 
     def get_dictionary(self):
         """  """
         dictionary = {
             "name": self.name,
             "id": self.id,
+            "vizURL": self.vizURL,
             "follow": [{"name": c.follow.name, "id": c.follow.id} for c in self.start_set.all().order_by("id")]
         }
         return dictionary

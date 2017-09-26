@@ -31,7 +31,7 @@ class ScenePanel(View):
         self.context["scene"] = scene_obj
         self.context["data"] = GetSceneData().getData(request, sceneId)
         self.context["barWidth"] = int(float(scene_obj.currentStep) / 7 * 100)
-        if scene_obj.currentStep < 6:
+        if scene_obj.status == Scene.INCOMPLETE:
             status_label = "FALTA COMPLETAR PASO {}".format(scene_obj.currentStep + 1)
         else:
             status_label = "COMPLETADO"
