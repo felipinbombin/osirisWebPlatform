@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "osirisWebPlatform.settings")
-import django
-django.setup()
-import sys
 
 from django.db import transaction
 from django.utils import timezone
@@ -14,7 +9,13 @@ from cmmmodel.views import Run
 from scene.models import MetroLine, OperationPeriod, MetroTrack, MetroLineMetric
 from viz.models import ModelAnswer
 
+import os
+import sys
 import pickle
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "osirisWebPlatform.settings")
+django.setup()
 
 
 def process_answer(answer_dict, execution_obj):
