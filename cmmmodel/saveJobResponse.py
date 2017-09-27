@@ -1,58 +1,25 @@
 # -*- coding: utf-8 -*-
+import os
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "osirisWebPlatform.settings")
+django.setup()
 
 from django.db import transaction
 from django.utils import timezone
 from django.conf import settings
+
 from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue
 from cmmmodel.views import Run
+from cmmmodel.transform.processSpeedData import ProcessSpeedData
 
-from scene.models import MetroLine, OperationPeriod, MetroTrack, MetroLineMetric
-from viz.models import ModelAnswer
-
-import os
 import sys
 import pickle
-import django
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "osirisWebPlatform.settings")
-django.setup()
 
 
 def process_answer(answer_dict, execution_obj):
     """ fill viz table with answer dictionary """
     if execution_obj.model_id == 1:
-        line_objs = MetroLine.objects.filter(scene=execution_obj.scene).order_by("id")
-        operation_periods = OperationPeriod.objects.filter(scene=execution_obj.scene).order_by("id")
-        metrics = ["Powerfc"]
-
-        ModelAnswer.objects.filter(execution__model_id=execution_obj.model_id,
-                                   execution__scene=execution_obj.scene).delete()
-        for metric in metrics:
-            for line_obj in line_objs:
-                track_objs = MetroTrack.objects.filter(metroLine=line_obj).order_by("id")
-                # metro line metrics direction = going (g) or reverse (r)
-                for direction in [0, 1]:
-                    system_direction = MetroLineMetric.GOING if direction == 0 else MetroLineMetric.REVERSE
-                    for operation_period in operation_periods:
-                        for track_obj in track_objs:
-                            line_id = line_obj.id - line_objs[0].id
-                            op_id = operation_period.id - operation_periods[0].id
-                            track_id = track_obj.id - track_objs[0].id
-                            values = answer_dict[metric][line_id][direction][op_id][track_id]
-                            for index, value in enumerate(values):
-                                ModelAnswer.objects.create(execution=execution_obj, metroLine=line_obj,
-                                                           direction=system_direction, operationPeriod=operation_period,
-                                                           metroTrack=track_obj, attributeName=metric, order=index,
-                                                           value=value)
-
-    """
-    for key, value in answer_dict.items():
-        if isinstance(value, dict):
-            for key2, value2 in value.items():
-                if isinstance(value2, dict):
-                    for key3, value3 in value2.items():
-                        f.write("{} {} {} {}".format(key, key2, key3, value))
-    """
+        ProcessSpeedData().load(answer_dict, execution_obj)
 
 
 def save_model_response(external_id, output_file_name, std_out, std_err):
