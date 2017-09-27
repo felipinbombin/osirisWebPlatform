@@ -31,16 +31,16 @@ class ProcessSpeedData(ProcessData):
         super(ProcessSpeedData, self).__init__()
         self.metrics = [
             {
-                "name": "velDist",
-                "endValue": []
+                "name": "velDist"
             },
             {
-                "name": "Time",
-                "endValue": []
+                "name": "Time"
             },
             {
-                "name": "Speedlimit",
-                "endValue": []
+                "name": "Speedlimit"
+            },
+            {
+                "name": "Distance"
             }
         ]
 
