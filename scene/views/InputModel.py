@@ -147,8 +147,8 @@ def speed_model_input(scene_id):
             slopeRL[i, 1] = metrics[slopeRLId][i][1]  # end
             slopeRL[i, 2] = metrics[slopeRLId][i][2]  # value
 
-        inputModel["top"]["lines"][index]["geometry"]["slopeLR"] = slopeLR
-        inputModel["top"]["lines"][index]["geometry"]["slopeRL"] = slopeRL
+        inputModel["top"]["lines"][index]["geometry"]["SlopeLR"] = slopeLR
+        inputModel["top"]["lines"][index]["geometry"]["SlopeRL"] = slopeRL
 
         curveLRId = MetroLineMetric.CURVE_RADIUS + MetroLineMetric.GOING
         curveLR = np.zeros([len(metrics[curveLRId]), 3])
@@ -164,8 +164,8 @@ def speed_model_input(scene_id):
             curveRL[i, 1] = metrics[curveRLId][i][1]  # end
             curveRL[i, 2] = metrics[curveRLId][i][2]  # value
 
-        inputModel["top"]["lines"][index]["geometry"]["curvLR"] = curveLR
-        inputModel["top"]["lines"][index]["geometry"]["curvRL"] = curveRL
+        inputModel["top"]["lines"][index]["geometry"]["CurvLR"] = curveLR
+        inputModel["top"]["lines"][index]["geometry"]["CurvRL"] = curveRL
 
         speedLimitLRId = MetroLineMetric.SPEED_LIMIT + MetroLineMetric.GOING
         speedLimitLR = np.zeros([len(metrics[speedLimitLRId]), 3])
@@ -181,8 +181,8 @@ def speed_model_input(scene_id):
             speedLimitRL[i, 1] = metrics[speedLimitRLId][i][1]  # end
             speedLimitRL[i, 2] = metrics[speedLimitRLId][i][2]  # value
 
-        inputModel["top"]["lines"][index]["geometry"]["spBoundsLR"] = speedLimitLR
-        inputModel["top"]["lines"][index]["geometry"]["spBoundsRL"] = speedLimitRL
+        inputModel["top"]["lines"][index]["geometry"]["SpBoundsLR"] = speedLimitLR
+        inputModel["top"]["lines"][index]["geometry"]["SpBoundsRL"] = speedLimitRL
 
         groundId = MetroLineMetric.GROUND + "None"
         grounds = np.zeros([len(metrics[groundId]), 3])
