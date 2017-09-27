@@ -1,10 +1,14 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 
 from scene.models import MetroLine, MetroTrack, MetroLineMetric, OperationPeriod
 from viz.models import ModelAnswer
 
+import numpy
 
-class ProcessData(ABC):
+
+class ProcessData:
+    __metaclass__ = ABCMeta
+
     MODEL_ID = None
 
     def __init__(self):
@@ -27,16 +31,24 @@ class ProcessSpeedData(ProcessData):
         super(ProcessSpeedData, self).__init__()
         self.metrics = [
             {
-                "name": "Powerfc",
+                "name": "velDist",
+                "endValue": []
+            },
+            {
+                "name": "Time",
+                "endValue": []
+            },
+            {
+                "name": "Speedlimit",
                 "endValue": []
             }
         ]
 
     def load(self, data, execution_obj):
-        #TODO: complete logic
-        return 1
         scene_obj = execution_obj.scene
-        line_objs = MetroLine.objects.filter(scene=scene_obj).order_by("id")
+        self.delete_previous_data(execution_obj.scene)
+
+        line_objs = MetroLine.objects.prefetch_related("metrotrack_set").filter(scene=scene_obj).order_by("id")
         operation_periods = OperationPeriod.objects.filter(scene=scene_obj).order_by("id")
 
         self.delete_previous_data(scene_obj)
@@ -45,7 +57,7 @@ class ProcessSpeedData(ProcessData):
 
         for metric in self.metrics:
             for line_obj in line_objs:
-                track_objs = MetroTrack.objects.filter(metroLine=line_obj).order_by("id")
+                track_objs = line_obj.metrotrack_set.all().order_by("id")
                 # metro line metrics direction = going (g) or reverse (r)
                 for direction in [0, 1]:
                     system_direction = MetroLineMetric.GOING if direction == 0 else MetroLineMetric.REVERSE
@@ -55,18 +67,14 @@ class ProcessSpeedData(ProcessData):
                             op_id = operation_period.id - operation_periods[0].id
                             track_id = track_obj.id - track_objs[0].id
                             values = data[metric["name"]][line_id][direction][op_id][track_id]
-                            if isinstance(values, list):
-                                for index, value in enumerate(values):
-                                    record = ModelAnswer(execution=execution_obj, metroLine=line_obj, direction=system_direction,
-                                                operationPeriod=operation_period, metroTrack=track_obj,
-                                                attributeName=metric, order=index, value=value)
-                                    object_list.append(record)
-                            if isinstance(values, float):
+                            if not isinstance(values, numpy.ndarray):
+                                values = [values]
+                            for index, value in enumerate(values):
                                 record = ModelAnswer(execution=execution_obj, metroLine=line_obj,
                                                      direction=system_direction,
                                                      operationPeriod=operation_period, metroTrack=track_obj,
-                                                     attributeName=metric, order=track_index, value=values)
+                                                     attributeName=metric, order=index, value=value)
                                 object_list.append(record)
 
             ModelAnswer.objects.bulk_create(object_list)
-            object_list.clear()
+            del object_list[:]

@@ -168,7 +168,7 @@ class ExecuteModel(TestCase):
 
     def test_processAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "1d954557-0082-4d86-8f17-3995ea87a8b8.output"
+        file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
         file_path = os.path.join("cmmmodel", os.path.join("tests", file_name))
 
         L1 = MetroLine.objects.create(scene=self.scene_obj, name="L1", externalId=uuid.uuid4())
@@ -193,4 +193,4 @@ class ExecuteModel(TestCase):
             answer = pickle.load(answer_file)
             process_answer(answer, execution_obj)
 
-        self.assertEqual(ModelAnswer.objects.count(), 49126)
+        self.assertEqual(ModelAnswer.objects.count(), 98168)
