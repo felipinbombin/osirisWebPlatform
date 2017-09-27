@@ -17,9 +17,6 @@
   ],
   "dependencies": {
     "gentelella": "^1.4.0",
-    "knockout": "knockoutjs#^3.4.2",
-    "smartwizard": "^4.2.2",
-    "js-cookie": "^2.1.4",
     "spin.js": "^2.3.2"
   }
 }
