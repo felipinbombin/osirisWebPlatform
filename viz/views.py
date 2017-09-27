@@ -17,9 +17,13 @@ class SpeedModelViz(View):
 
     def get(self, request, sceneId):
         try:
-            self.context["scene"] = Scene.objects.get(user=request.user, id=sceneId)
+            #TODO: retrieve data for selects
+            scene_obj = Scene.objects.get(user=request.user, id=sceneId)
+
         except:
             raise Http404
+
+        self.context["scene"] = scene_obj
 
         return render(request, self.template, self.context)
 

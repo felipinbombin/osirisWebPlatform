@@ -33,6 +33,7 @@ class ProcessSpeedData(ProcessData):
         ]
 
     def load(self, data, execution_obj):
+        #TODO: complete logic
         return 1
         scene_obj = execution_obj.scene
         line_objs = MetroLine.objects.filter(scene=scene_obj).order_by("id")
