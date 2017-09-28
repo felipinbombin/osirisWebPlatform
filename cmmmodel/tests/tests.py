@@ -72,7 +72,7 @@ class ExecuteModel(TestCase):
         """ ask for status of models """
         json_response = self.get_model_status()
 
-        for model in json.loads(json_response.content):
+        for model in json.loads(json_response.content.decode("utf-8")):
             # print(model)
             pass
 
@@ -117,14 +117,14 @@ class ExecuteModel(TestCase):
 
         # set modelexecutionhistory object to modify model status response (to show a model is running in json)
         #ModelExecutionHistory.objects.update(model_id=1)
-        json_response = json.loads(self.get_model_status().content)
+        json_response = json.loads(self.get_model_status().content.decode("utf-8"))
         test_model_position = len(json_response) - 1
         self.assertIn("lastExecutionInfo", json_response[test_model_position].keys())
         self.assertIn(Status.RUNNING, json_response[test_model_position]["status"])
 
         # check that model after be executed is available
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
-        json_response = json.loads(self.get_model_status().content)
+        json_response = json.loads(self.get_model_status().content.decode("utf-8"))
         self.assertIn(Status.AVAILABLE, json_response[test_model_position]["status"])
 
         # restore model execution status
