@@ -56,8 +56,8 @@ class CheckExecutionStatusTest(TestCase):
                                                 (None, BytesIO(b""), BytesIO(b"")),
                                                 (None, BytesIO(b""), BytesIO(b"")), # check squeue
                                                 (None, BytesIO(b""), BytesIO(b"")), # check squeue
-                                                (None, BytesIO(b""), BytesIO(b"")),
                                                 (None, BytesIO(b""), BytesIO(b"error")),
+                                                (None, BytesIO(b""), BytesIO(b"")),
                                                 (None, BytesIO(b""), BytesIO(b"")),
                                                 (None, BytesIO(b""), BytesIO(b"error"))
                                                 ]
