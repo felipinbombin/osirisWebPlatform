@@ -49,11 +49,13 @@ class SpeedModelVizTest(TestCase):
         file_path = os.path.join("cmmmodel", os.path.join("tests", file_name))
 
         [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=self.L1) for index in range(2, 11)]
-        [MetroTrack.objects.create(metroLine=self.L1, name="t{}".format(index), startStation_id=1, endStation_id=1) for index in range(9)]
+        [MetroTrack.objects.create(metroLine=self.L1, name="t{}".format(index),
+                                   startStation_id=self.S1.id, endStation_id=self.S1.id) for index in range(9)]
 
         L2 = MetroLine.objects.create(scene=self.scene_obj, name="L2", externalId=uuid.uuid4())
         [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L2) for index in range(12, 24)]
-        [MetroTrack.objects.create(metroLine=L2, name="t{}".format(index), startStation_id=2, endStation_id=2) for index in range(11)]
+        [MetroTrack.objects.create(metroLine=L2, name="t{}".format(index),
+                                   startStation_id=self.S1.id, endStation_id=self.S1.id) for index in range(11)]
 
         OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP1",
                                        start="09:00:00", end="10:00:00", temperature=0, humidity=0, co2Concentration=0,
