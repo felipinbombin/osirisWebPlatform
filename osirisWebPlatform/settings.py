@@ -145,4 +145,4 @@ CLUSTER_USER = 'fhernandez'
 CRONJOBS = [
     ('*/1 * * * *', 'cmmmodel.cron.checkExecutionStatus.check_execution_is_running', '>> /tmp/task.log 2>&1')
 ]
-CRONTAB_LOCK_JOBS=True
+CRONTAB_LOCK_JOBS = True
