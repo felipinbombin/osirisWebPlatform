@@ -42,8 +42,10 @@ def check_execution_is_running(client=None):
     active_job_numbers = []
     # save job number
     for line in stdout:
-        job_number = int(line.strip().split(" ")[0])
-        active_job_numbers.append(job_number)
+        line = line.strip()
+        if line != "":
+            job_number = int(line.split(" ")[0])
+            active_job_numbers.append(job_number)
 
     active_executions = ModelExecutionHistory.objects.filter(status=ModelExecutionHistory.RUNNING)
 
