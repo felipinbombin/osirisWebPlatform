@@ -140,8 +140,8 @@ class ExecuteModel(TestCase):
         self.scene_obj.save()
 
         # create execution record
-        file_name = "1d954557-0082-4d86-8f17-3995ea87a8b8.output"
-        file_path = os.path.join("tests", file_name)
+        file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
+        file_path = os.path.join("..", os.path.join("..", os.path.join("cmmmodel", os.path.join("tests", file_name))))
         std_out = ""
         std_err = ""
         external_id = uuid.uuid4()
