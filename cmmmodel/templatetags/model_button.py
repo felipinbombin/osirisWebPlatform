@@ -36,11 +36,13 @@ def model_button(scene_obj, model, column):
     start = ""
     end = ""
     duration = ""
+    status = ""
     if "last_execution_info" in model:
         with model["last_execution_info"] as execution:
             start = timezone.localtime(execution['start']).strftime("%x %X")
             end = timezone.localtime(execution['end']).strftime("%x %X") if execution['end'] is not None else ""
             duration = execution['duration']
+            status = execution['status']
 
     last_execution_table = u"""
         <p class="text-center"> Última ejecución</p>
@@ -49,9 +51,10 @@ def model_button(scene_obj, model, column):
             <tr><td>Inicio</td><td class="startDate">{0}</td></tr>
             <tr><td>Fin</td><td class="endDate">{1}</td></tr>
             <tr><td>Duración</td><td class="duration">{2}</td></tr>
+            <tr><td>Estado</td><td class="status">{3}</td></tr>
           </tbody>
         </table>
-        """.format(start, end, duration)
+        """.format(start, end, duration, status)
 
     field= u"""
         <div id="model-{6}" class="col-md-{0} col-sm-{0} col-xs-12">
