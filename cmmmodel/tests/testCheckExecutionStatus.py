@@ -49,7 +49,7 @@ class CheckExecutionStatusTest(TestCase):
     def test_CheckJobsId(self):
         """   """
         # job numbers active on cmm cluster
-        squeue = "title\n1\n2\n3"
+        squeue = u"title\n1\n2\n3"
         self.client.exec_command.side_effect = [(None, StringIO(squeue), BytesIO(b"")), # check squeue
                                                 (None, StringIO(squeue), BytesIO(b"")), # check squeue
                                                 (None, BytesIO(b"ok1"), BytesIO(b"")),
