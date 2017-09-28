@@ -137,15 +137,16 @@ $(document).ready(function () {
                    var startDate = (new Date(model.lastExecutionInfo.start)).toLocaleString();
                    var endDate = "";
                    if (model.lastExecutionInfo.end !== null) {
-                       var endDate = (new Date(model.lastExecutionInfo.end)).toLocaleString();
+                       endDate = (new Date(model.lastExecutionInfo.end)).toLocaleString();
                    }
                    $(".startDate", modelButton).html(startDate);
                    $(".endDate", modelButton).html(endDate);
                    $(".duration", modelButton).html(model.lastExecutionInfo.duration);
+                   $(".status", modelButton).html(model.lastExecutionInfo.status);
                }
                // add checkbox interaction for each follow model
                model.follow.forEach(function(nextModel) {
-                   nextModel['checked'] = ko.observable(false);
+                   nextModel.checked = ko.observable(false);
                });
                self.models.push(model);
             });
