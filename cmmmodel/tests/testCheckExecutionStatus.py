@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from mock import Mock
-from io import BytesIO
+from io import BytesIO, StringIO
 
 from cmmmodel.cron.checkExecutionStatus import check_execution_is_running
 from cmmmodel.models import ModelExecutionHistory
@@ -49,9 +49,9 @@ class CheckExecutionStatusTest(TestCase):
     def test_CheckJobsId(self):
         """   """
         # job numbers active on cmm cluster
-        squeue = b"title\n1\n2\n3"
-        self.client.exec_command.side_effect = [(None, BytesIO(squeue), BytesIO(b"")), # check squeue
-                                                (None, BytesIO(squeue), BytesIO(b"")), # check squeue
+        squeue = "title\n1\n2\n3"
+        self.client.exec_command.side_effect = [(None, StringIO(squeue), BytesIO(b"")), # check squeue
+                                                (None, StringIO(squeue), BytesIO(b"")), # check squeue
                                                 (None, BytesIO(b"ok1"), BytesIO(b"")),
                                                 (None, BytesIO(b""), BytesIO(b"")),
                                                 (None, BytesIO(b""), BytesIO(b"")), # check squeue
