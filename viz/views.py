@@ -18,12 +18,21 @@ class SpeedModelViz(View):
     def get(self, request, sceneId):
         try:
             #TODO: retrieve data for selects
-            scene_obj = Scene.objects.get(user=request.user, id=sceneId)
+            scene_obj = Scene.objects.prefetch_related("metroline_set", "metroline_set__metrostation_set").get(user=request.user, id=sceneId)
 
         except:
             raise Http404
 
         self.context["scene"] = scene_obj
+        self.context["metro_lines"] = [metro_line_obj.name for metro_line_obj in
+                                       scene_obj.metroline_set.all().order_by("id")]
+        self.context["metro_stations"] = [metro_station_obj.name for metro_station_obj in
+                                          scene_obj.metroline_set.all().order_by("id")[0].metrostation_set.all().order_by("id")]
+        self.context["metro_stations2"] = [metro_station_obj.name for metro_station_obj in
+                                          scene_obj.metroline_set.all().order_by("id")[0].metrostation_set.all().order_by("-id")]
+        self.context["op_periods"] = ["{} ({} - {})".format(op_period_obj.name,op_period_obj.start,op_period_obj.end) for op_period_obj in
+                                       scene_obj.operationperiod_set.all().order_by("id")]
+        self.context["chart_type"] = ["Velocidad vs Tiempo", "Velocidad vs Distancia"]
 
         return render(request, self.template, self.context)
 
