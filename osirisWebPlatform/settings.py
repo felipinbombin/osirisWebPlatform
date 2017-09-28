@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
     'myadmin',
     'scene',
     'cmmmodel',
@@ -139,3 +140,9 @@ MODEL_OUTPUT_PATH = os.path.join(MEDIA_ROOT, "modelOutput")
 # cluster info
 CLUSTER_URL = 'leftraru.nlhpc.cl'
 CLUSTER_USER = 'fhernandez'
+
+# crontab configuration
+CRONJOBS = [
+    ('*/1 * * * *', 'cmmmodel.cron.checkExecutionStatus.check_execution_is_running', '>> /tmp/task.log 2>&1')
+]
+CRONTAB_LOCK_JOBS=True

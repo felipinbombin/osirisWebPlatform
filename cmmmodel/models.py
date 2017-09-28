@@ -43,6 +43,7 @@ class ModelExecutionHistory(models.Model):
     RUNNING = 'running'
     ERROR = 'error'
     ERROR_TO_START = 'error to start'
+    ERROR_TO_COMMUNICATE_ANSWER = "cluster didn't send answer"
     CANCEL = 'cancel'
     STATUS = (
         (RUNNING, 'En ejecución'),
@@ -50,8 +51,12 @@ class ModelExecutionHistory(models.Model):
         (ERROR, 'Terminado con error'),
         (ERROR_TO_START, 'Error al iniciar'),
         (CANCEL, 'Cancelado por el usuario'),
+        (ERROR_TO_COMMUNICATE_ANSWER, 'Clúster no informó respuesta')
     )
     status = models.CharField('Estado', max_length=40, choices=STATUS, default=RUNNING)
+    check_answer = models.IntegerField('', default=0)
+    # used by crontab to save the number of time that execution has been checked before to change state to
+    # ERROR_TO_COMMUNICATE_ANSWER
     """
     Cluster data
     """
@@ -67,10 +72,11 @@ class ModelExecutionHistory(models.Model):
 
     def get_dictionary(self):
         """  """
+        status = [user_message for (code, user_message) in self.STATUS if self.status==code][0]
         dictionary = {
             "start": self.start,
             "end": self.end,
-            "status": self.status,
+            "status": status,
             "id": self.externalId,
             "queuedModels": [m.get_dictionary() for m in self.modelexecutionqueue_set.all().order_by("id")]
         }

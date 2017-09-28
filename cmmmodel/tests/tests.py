@@ -3,7 +3,6 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-# Create your tests here.
 from scene.tests.testHelper import TestHelper
 from scene.models import Scene
 from scene.statusResponse import Status as st
