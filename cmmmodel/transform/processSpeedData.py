@@ -29,6 +29,7 @@ class ProcessSpeedData(ProcessData):
 
     def __init__(self):
         super(ProcessSpeedData, self).__init__()
+
         self.metrics = [
             {
                 "name": "velDist"
@@ -67,13 +68,14 @@ class ProcessSpeedData(ProcessData):
                             op_id = operation_period.id - operation_periods[0].id
                             track_id = track_obj.id - track_objs[0].id
                             values = data[metric["name"]][line_id][direction][op_id][track_id]
+
                             if not isinstance(values, numpy.ndarray):
                                 values = [values]
                             for index, value in enumerate(values):
                                 record = ModelAnswer(execution=execution_obj, metroLine=line_obj,
                                                      direction=system_direction,
                                                      operationPeriod=operation_period, metroTrack=track_obj,
-                                                     attributeName=metric, order=index, value=value)
+                                                     attributeName=metric["name"], order=index, value=value)
                                 object_list.append(record)
 
             ModelAnswer.objects.bulk_create(object_list)

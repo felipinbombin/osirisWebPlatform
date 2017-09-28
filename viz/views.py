@@ -3,6 +3,9 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import View
 
+from itertools import groupby
+from collections import defaultdict
+
 from scene.models import Scene
 from cmmmodel.models import ModelExecutionHistory
 from viz.models import ModelAnswer
@@ -17,8 +20,8 @@ class SpeedModelViz(View):
 
     def get(self, request, sceneId):
         try:
-            #TODO: retrieve data for selects
-            scene_obj = Scene.objects.prefetch_related("metroline_set", "metroline_set__metrostation_set").get(user=request.user, id=sceneId)
+            scene_obj = Scene.objects.prefetch_related("metroline_set", "metroline_set__metrostation_set").\
+                get(user=request.user, id=sceneId)
 
         except:
             raise Http404
@@ -35,6 +38,7 @@ class SpeedModelViz(View):
         self.context["chart_type"] = ["Velocidad vs Tiempo", "Velocidad vs Distancia"]
 
         return render(request, self.template, self.context)
+
 
 class SpeedModelVizData(View):
     """ data for charts  """
@@ -53,16 +57,13 @@ class SpeedModelVizData(View):
                                                                         "operationPeriod__name", "attributeName",
                                                                         "metroTrack__name", "value").\
             order_by("metroLine__name", "direction", "metroTrack__id", "operationPeriod__start", "attributeName", "order")
-        from itertools import groupby
-        from collections import defaultdict
+
         groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
         for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3])):
-            group = list(group)
             line, direction, op, attr = key.split("_-_")
             # group by track
             for key2, group2 in groupby(group, lambda row: row[4]):
                 groups[line][direction][op][attr].append({key2: [v[5] for v in group2]})
-                print(key, key2, len(list(group2)))
 
         response = {}
         response["answer"] = groups
