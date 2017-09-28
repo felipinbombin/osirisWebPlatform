@@ -2,6 +2,9 @@ from django.test import TestCase
 from django.urls import reverse
 
 from scene.tests.testHelper import TestHelper
+from scene.models import MetroLine, MetroStation
+
+import uuid
 
 
 class SpeedModelVizTest(TestCase):
@@ -18,6 +21,9 @@ class SpeedModelVizTest(TestCase):
         # create scene
         self.scene_name = "test scene name"
         self.scene_obj = self.testHelper.create_scene(self.scene_name)
+
+        metroLine = MetroLine.objects.create(scene=self.scene_obj, name="L1", externalId=uuid.uuid4())
+        MetroStation.objects.create(metroLine=metroLine, name="S1", externalId=uuid.uuid4())
 
     def test_loadHTML(self):
         """ ask for speed output html file """
