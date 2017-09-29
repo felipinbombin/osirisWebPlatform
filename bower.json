@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "gentelella": "^1.4.0",
-    "spin.js": "^2.3.2"
+    "spin.js": "^2.3.2",
+    "echarts": "^3.7.2"
   }
 }

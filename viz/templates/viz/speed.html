@@ -23,13 +23,13 @@
   {% inline_select "Línea:" "lineFilter" metro_lines as line_select %}
   {% columns 2 2 12 line_select as col1 %}
 
-  {% inline_select "Estación de origen:" "stationOriginFilter" metro_stations as station_origin_select %}
+  {% inline_select "Estación de origen:" "originStationFilter" metro_stations as station_origin_select %}
   {% columns 2 2 12 station_origin_select as col2 %}
 
-  {% inline_select "Estación de destino:" "stationDestinationFilter" metro_stations2 as station_destination_select %}
+  {% inline_select "Estación de destino:" "destinationStationFilter" metro_stations2 as station_destination_select %}
   {% columns 2 2 12 station_destination_select as col3 %}
 
-  {% inline_select "Período de operación:" "operationHourFilter" op_periods as operation_hour_select %}
+  {% inline_select "Período de operación:" "operationPeriodFilter" op_periods as operation_hour_select %}
   {% columns 2 2 12 operation_hour_select as col4 %}
 
   {% inline_select "Tipo de gráfico:" "chartTypeFilter" chart_type as chart_type_select %}
@@ -58,6 +58,8 @@
     <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.js" %}"></script>
     <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.js" %}"></script>
   {% endwith %}
+  <script src="{% static "components/echarts/dist/echarts.min.js" %}"></script>
+  <script src="{% static "js/echartsTheme.js" %}"></script>
   <script src="{% static "components/spin.js/spin.min.js" %}"></script>
   <script src="{% static "js/user.notification.js" %}"></script>
   <script src="{% static "js/spinConfig.js" %}"></script>
