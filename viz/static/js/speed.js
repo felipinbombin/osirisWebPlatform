@@ -7,26 +7,20 @@ $(document).ready(function(){
     var SCENE_DATA_URL = "/admin/scene/panel/data/" + SCENE_ID;
 
     var ECHARTS_OPTIONS = {
-         title: {
-             text: "Velocidad VS tiempo"
-         },
-         legend: {
-             data: ["asd"]
-         },
-         xAxis: [{
-             type: "value",
-             data: [1,2,3]
-         }],
+        legend: {
+           show: true
+        },
+        title: {
+            text: "Velocidad VS tiempo"
+        },
         yAxis: [{
              type: "value",
              name: "Velocidad",
-             //max: capacity - capacity%10 + 10,
              position: "left"
         }],
         tooltip: {
             trigger: "axis"
-        },
-        calculable: false
+        }
     };
     var chart = echarts.init(document.getElementById("chart"), theme);
     var data = null;
@@ -42,21 +36,7 @@ $(document).ready(function(){
         });
     });
     $.get(MODEL_DATA_URL, function (serverData) {
-        data = serverData["answer"];
-
-        // build lines info
-        for (var operationPeriod in data) {
-            for (var metroLine in data[operationPeriod]) {
-                //linesInfo[metroLine] = [];
-                for (var track in data[operationPeriod][metroLine].Distance.g){
-                    for (var value in data[operationPeriod][metroLine].Distance.g[track]) {
-                        //console.log(data[operationPeriod][metroLine].Distance.g[track]);
-                        //console.log(track);
-                    }
-                }
-            }
-            return true;
-        }
+        data = serverData.answer;
     });
     $("#btnUpdateChart").click(function () {
         console.log("update chart");
@@ -86,7 +66,6 @@ $(document).ready(function(){
 
         // get data¿
         var series = [];
-        console.log(OPERATION);
         var distanceTrackList = data[OPERATION][SELECTED_LINE]["Distance"][direction];
         var speedTrackList = data[OPERATION][SELECTED_LINE]["Distance"][direction]; //velDist
         //var speedLimitTrackList = data[OPERATION][SELECTED_LINE]["Speedlimit"][direction]; //velDist
@@ -99,22 +78,25 @@ $(document).ready(function(){
                         name: el.name,
                         data: el.value
                     };
+                    series.push(serie);
                 }
-                series.push(serie);
             }
         });
-
         var options = {
-            series: series
+            series: series,
+            xAxis: [{
+                type: "category",
+                data: [1,2,3]
+            }]
         };
         $.extend(options, ECHARTS_OPTIONS);
-
+        console.log(options);
         chart.clear();
         chart.setOption(options, {
             notMerge: true
         });
     });
     $(window).resize(function() {
-        chart.resizeCharts();
+        chart.resize();
     });
 });
