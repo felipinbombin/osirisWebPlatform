@@ -53,17 +53,18 @@ class SpeedModelVizData(View):
 
         scene_id = int(sceneId)
         execution = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()
-        answer = ModelAnswer.objects.filter(execution=execution).values_list("metroLine__name", "direction",
-                                                                        "operationPeriod__name", "attributeName",
-                                                                        "metroTrack__name", "value").\
-            order_by("metroLine__name", "direction", "metroTrack__id", "operationPeriod__start", "attributeName", "order")
+        answer = ModelAnswer.objects.filter(execution=execution).values_list("operationPeriod__name", "metroLine__name",
+                                                                             "attributeName", "direction",
+                                                                             "metroTrack__name", "order", "value").\
+            order_by("operationPeriod__name", "metroLine__name", "attributeName", "direction")
 
         groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
         for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3])):
-            line, direction, op, attr = key.split("_-_")
+            attr1, attr2, attr3, attr4 = key.split("_-_")
             # group by track
+            group = sorted(group, key = lambda x: (x[5], x[6]))
             for key2, group2 in groupby(group, lambda row: row[4]):
-                groups[line][direction][op][attr].append({key2: [v[5] for v in group2]})
+                groups[attr1][attr2][attr3][attr4].append({key2: [v[7] for v in group2]})
 
         response = {}
         response["answer"] = groups
