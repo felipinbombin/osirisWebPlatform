@@ -14,7 +14,7 @@ $(document).ready(function(){
              data: ["asd"]
          },
          xAxis: [{
-             type: "category",
+             type: "value",
              data: [1,2,3]
          }],
         yAxis: [{
