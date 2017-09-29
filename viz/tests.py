@@ -10,6 +10,7 @@ from cmmmodel.saveJobResponse import process_answer
 import uuid
 import pickle
 import os
+import json
 
 
 class SpeedModelVizTest(TestCase):
@@ -74,3 +75,7 @@ class SpeedModelVizTest(TestCase):
         URL = reverse("viz:speedModelData", kwargs={"sceneId": self.scene_obj.id})
 
         response = self.testHelper.make_get_request(URL, {}, expected_response=None)
+        content = json.loads(response.content.decode("utf-8"))
+
+        self.assertEqual(content["answer"]["OP1"]["L1"]["Distance"]["r"][0]["t0"],
+                         content["answer"]["OP1"]["L1"]["Distance"]["r"][0]["t0"])
