@@ -30,10 +30,10 @@
   {% columns 2 2 12 station_destination_select as col3 %}
 
   {% inline_select "Período de operación:" "operationPeriodFilter" op_periods as operation_hour_select %}
-  {% columns 2 2 12 operation_hour_select as col4 %}
+  {% columns 3 3 12 operation_hour_select as col4 %}
 
   {% inline_select "Tipo de gráfico:" "chartTypeFilter" chart_type as chart_type_select %}
-  {% columns 2 2 12 chart_type_select as col5 %}
+  {% columns 3 3 12 chart_type_select as col5 %}
 
   {% update_button "btnUpdateChart" "Actualizar datos" as update_button %}
   {% columns 12 12 12 update_button as col6 %}

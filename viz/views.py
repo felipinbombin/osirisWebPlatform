@@ -35,7 +35,8 @@ class SpeedModelViz(View):
                                           scene_obj.metroline_set.all().order_by("id")[0].metrostation_set.all().order_by("-id")]
         self.context["op_periods"] = [{"value": op_period_obj.name, "item": "{} ({} - {})".format(op_period_obj.name,op_period_obj.start,op_period_obj.end)} for op_period_obj in
                                        scene_obj.operationperiod_set.all().order_by("id")]
-        self.context["chart_type"] = ["Velocidad vs Tiempo", "Velocidad vs Distancia"]
+        self.context["chart_type"] = [{"item": "Velocidad vs Tiempo", "value": 1},
+                                      {"item": "Velocidad vs Distancia", "value": 2}]
 
         return render(request, self.template, self.context)
 
