@@ -76,12 +76,14 @@ class SpeedModelVizData(View):
         if metro_line_name is not None:
             answer = answer.filter(metroLine__name=metro_line_name)
 
-        groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
+        # groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
+        groups = defaultdict(list)
         for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3])):
             attr1, attr2, attr3, attr4 = key.split("_-_")
             # group by track
             for key2, group2 in groupby(group, lambda row: row[4]):
-                groups[attr1][attr2][attr3][attr4].append({"name": key2, "value": [v[5] for v in group2]})
+                #groups[attr1][attr2][attr3][attr4].append({"name": key2, "value": [v[5] for v in group2]})
+                groups[attr1].append({"name": key2, "value": [v[5] for v in group2]})
 
         response = {
             "answer": groups

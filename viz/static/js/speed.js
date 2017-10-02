@@ -78,7 +78,6 @@ $(document).ready(function(){
             }
         }
 
-        console.log(tracksPositions);
         // get data
         var params = {
             direction: direction,
@@ -96,8 +95,17 @@ $(document).ready(function(){
         $.getJSON(MODEL_DATA_URL, params, function(result) {
             var series = [];
 
-            for (var attribute in result) {
+            for (var attribute in result.answer) {
                 var attributeValue = result[attribute];
+
+                if (attribute === "Distance") {
+
+                } else if  (attribute === "Time") {
+
+                } else {
+                    // lines
+                }
+
                 console.log(attributeValue);
             }
 
