@@ -48,7 +48,7 @@ $(document).ready(function(){
         var ORIGIN_STATION = $("#originStationFilter").val();
         var DESTINATION_STATION = $("#destinationStationFilter").val();
         var OPERATION = $("#operationPeriodFilter").val();
-        var CHART_TYPE = $("#chartTypeFilter").val();
+        var CHART_TYPE = parseInt($("#chartTypeFilter").val());
 
         // detect direction
         var direction = "g"; // default direction: going
