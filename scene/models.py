@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import os
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.db import models
+
+import os
+import uuid
 
 
 class OverwriteStorage(FileSystemStorage):
 
     # This method is actually defined in Storage
     def get_available_name(self, name, max_length):
-      if self.exists(name):
-          os.remove(os.path.join(settings.MEDIA_ROOT, name))
-      return name # simply returns the name passed
+        if self.exists(name):
+            os.remove(os.path.join(settings.MEDIA_ROOT, name))
+        return name # simply returns the name passed
 
-# Create your models here.
+
 class Scene(models.Model):
     """ group of parameter to run models """
     #######################################################
@@ -226,11 +227,14 @@ class MetroConnectionStation(models.Model):
 
         return conn_dict
 
+
 class MetroTrack(models.Model):
     """ connection between metro stations """
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
     isOld = models.BooleanField(default=False)
     """ used when topological variables are updated """
+    externalId = models.UUIDField(null=False, unique=True, default=uuid.uuid4)
+    """ used to track record in wizard form, this way i know if is new record or previous """
     name = models.CharField(max_length=100)
     startStation = models.ForeignKey(MetroStation, 
         related_name= 'startstation', 
@@ -257,7 +261,8 @@ class MetroTrack(models.Model):
         track_dict = {
             "name": self.name,
             "startStation": self.startStation.name,
-            "endStation": self.endStation.name
+            "endStation": self.endStation.name,
+            "id": self.externalId
         }
         return track_dict
 
@@ -330,6 +335,7 @@ class OperationPeriod(models.Model):
 
         return op_dict
 
+
 class OperationPeriodForMetroLine(models.Model):
     """ bridge between OperationPeriod and MetroLine models """
     operationPeriod = models.ForeignKey(OperationPeriod)
@@ -360,6 +366,7 @@ class OperationPeriodForMetroLine(models.Model):
         op_dict = {'metric': self.metric, 'value': self.value, 'direction': self.direction}
 
         return op_dict
+
 
 class OperationPeriodForMetroStation(models.Model):
     """ bridge between OperationPeriod and MetroStation models """
