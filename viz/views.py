@@ -78,18 +78,4 @@ class SpeedModelVizData(View):
             "answer": groups
         }
 
-        response["answer"] = {
-            "H2": {
-                "L1": {
-                    "Distance": {
-                        "g": [{"name": "S1-S2", "value": [1,2,3]}, {"name": "S2-S3", "value": [4,5,6]}]
-                    }
-                },
-                "L2": {
-                    "Distance": {
-                        "g": [{"name":"S3-S4", "value": [7,8,9]}, {"name":"S4-S5", "value": [10,11,12]}]
-                    }
-                }
-            }
-        }
         return JsonResponse(response, safe=False)
