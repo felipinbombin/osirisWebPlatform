@@ -55,6 +55,8 @@ class SpeedModelVizData(View):
         # attributes to retrieve
         attributes = request.GET.getlist("attributes[]", [])
         direction = request.GET.get("direction", None)
+        operation_period = request.GET.get("operationPeriod", None)
+        metro_line_name = request.GET.get("metroLineName", None)
 
         scene_id = int(sceneId)
         execution = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()
@@ -66,6 +68,10 @@ class SpeedModelVizData(View):
         if direction is not None:
             direction = MetroLineMetric.GOING if direction == "g" else MetroLineMetric.REVERSE
             answer = answer.filter(direction=direction)
+        if operation_period is not None:
+            answer = answer.filter(operation_period__name=operation_period)
+        if metro_line_name is not None:
+            answer = answer.filter(metroLine__name=metro_line_name)
 
         groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
         for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3])):
