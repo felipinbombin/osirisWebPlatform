@@ -37,8 +37,9 @@ $(document).ready(function(){
             });
         });
     });
-    $.get(MODEL_DATA_URL, function (serverData) {
-        data = serverData.answer;
+    $.get(MODEL_DATA_URL, {attributes: ["Distance", "Time"]}, function (serverData) {
+        timeAxis = serverData.answer.Time;
+        distanceAxis = serverData.answer.Distance;
     });
     $("#btnUpdateChart").click(function () {
         console.log("update chart");
