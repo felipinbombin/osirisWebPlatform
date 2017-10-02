@@ -60,7 +60,8 @@ class SpeedModelVizData(View):
         answer = ModelAnswer.objects.filter(execution=execution).filter(attributeName__in=attributes).\
             values_list("attributeName", "operationPeriod__name", "metroLine__name", "direction", "metroTrack__name",
                         "order", "value").\
-            order_by("attributeName", "operationPeriod__name", "metroLine__name", "direction", "metroTrack_name", "order")
+            order_by("attributeName", "operationPeriod__name", "metroLine__name", "direction", "metroTrack__name",
+                     "order")
 
         groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
         for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3])):
