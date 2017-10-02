@@ -73,11 +73,10 @@ class ProcessSpeedData(ProcessData):
                                 values = [values]
 
                             for index, value in enumerate(values):
-                                position =  len(values)-index if system_direction==MetroLineMetric.REVERSE else index
                                 record = ModelAnswer(execution=execution_obj, metroLine=line_obj,
                                                      direction=system_direction,
                                                      operationPeriod=operation_period, metroTrack=track_obj,
-                                                     attributeName=metric["name"], order=position, value=value)
+                                                     attributeName=metric["name"], order=index, value=value)
                                 object_list.append(record)
 
             ModelAnswer.objects.bulk_create(object_list)
