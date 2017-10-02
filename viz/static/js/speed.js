@@ -51,11 +51,11 @@ $(document).ready(function(){
         var CHART_TYPE = $("#chartTypeFilter").val();
 
         // detect direction
-        var direction = "g"; //going
-        var station1 = linesInfo[SELECTED_LINE].indexOf(ORIGIN_STATION);
-        var station2 = linesInfo[SELECTED_LINE].indexOf(DESTINATION_STATION);
+        var direction = "g"; // default direction: going
+        var station1Index = linesInfo[SELECTED_LINE].indexOf(ORIGIN_STATION);
+        var station2Index = linesInfo[SELECTED_LINE].indexOf(DESTINATION_STATION);
 
-        if (station2 - station1 === 0){
+        if (station2Index - station1Index === 0) {
             var status = {
                 message: "La estación de origen y la estación de destino deben ser distintas.",
                 title: "Error",
@@ -63,40 +63,60 @@ $(document).ready(function(){
             };
             showNotificationMessage(status);
             return;
-        }else if (station2 - station1 < 0) {
-            direction = "r" // reverse
+        } else if (station2Index - station1Index < 0) {
+            direction = "r"; // reverse
         }
 
         // get data¿
-        var series = [];
-        var distanceTrackList = data[OPERATION][SELECTED_LINE]["Distance"][direction];
-        var speedTrackList = data[OPERATION][SELECTED_LINE]["Distance"][direction]; //velDist
-        //var speedLimitTrackList = data[OPERATION][SELECTED_LINE]["Speedlimit"][direction]; //velDist
-
-        distanceTrackList.forEach(function(el, index){
-            if (direction==="g"){
-                if (station1 <= index && index <= station2){
-                    var serie = {
-                        type: "line",
-                        name: el.name,
-                        data: el.value
-                    };
-                    series.push(serie);
-                }
-            }
-        });
-        var options = {
-            series: series,
-            xAxis: [{
-                type: "category",
-                data: [1,2,3]
-            }]
+        var params = {
+            direction: direction,
+            operationPeriod: OPERATION,
+            metroLineName: SELECTED_LINE
         };
-        $.extend(options, ECHARTS_OPTIONS);
-        console.log(options);
-        chart.clear();
-        chart.setOption(options, {
-            notMerge: true
+        switch (CHART_TYPE) {
+            case 1:
+                // speed attribute
+                params.attributes = ["velDist", "Speedlimit"];
+                break;
+        }
+
+        $.getJSON(MODEL_DATA_URL, params, function(result) {
+            var series = [];
+
+            for (var attribute in result) {
+                var attributeValue = result[attribute];
+
+            }
+
+            var distanceTrackList = data[OPERATION][SELECTED_LINE]["Distance"][direction];
+            var speedTrackList = data[OPERATION][SELECTED_LINE]["Distance"][direction]; //velDist
+            //var speedLimitTrackList = data[OPERATION][SELECTED_LINE]["Speedlimit"][direction]; //velDist
+
+            distanceTrackList.forEach(function (el, index) {
+                if (direction === "g") {
+                    if (station1Index <= index && index <= station2Index) {
+                        var serie = {
+                            type: "line",
+                            name: el.name,
+                            data: el.value
+                        };
+                        series.push(serie);
+                    }
+                }
+            });
+            var options = {
+                series: series,
+                xAxis: [{
+                    type: "category",
+                    data: [1,2,3]
+                }]
+            };
+            $.extend(options, ECHARTS_OPTIONS);
+            console.log(options);
+            chart.clear();
+            chart.setOption(options, {
+                notMerge: true
+            });
         });
     });
     $(window).resize(function() {
