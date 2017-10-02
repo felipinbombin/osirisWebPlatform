@@ -57,14 +57,17 @@ class SpeedModelVizData(View):
         direction = request.GET.get("direction", None)
         operation_period = request.GET.get("operationPeriod", None)
         metro_line_name = request.GET.get("metroLineName", None)
+        metro_tracks = request.GET.getlist("tracks", [])
 
         scene_id = int(sceneId)
         execution = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()
-        answer = ModelAnswer.objects.filter(execution=execution).filter(attributeName__in=attributes).\
+        answer = ModelAnswer.objects.filter(execution=execution).filter(attributeName__in=attributes,
+                                                                        metroTrack__externalId__in=metro_tracks).\
             values_list("attributeName", "operationPeriod__name", "metroLine__name", "direction", "metroTrack__name",
                         "order", "value").\
             order_by("attributeName", "operationPeriod__name", "metroLine__name", "direction", "metroTrack__name",
                      "order")
+
         if direction is not None:
             direction = MetroLineMetric.GOING if direction == "g" else MetroLineMetric.REVERSE
             answer = answer.filter(direction=direction)

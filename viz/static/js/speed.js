@@ -23,24 +23,20 @@ $(document).ready(function(){
         }
     };
     var chart = echarts.init(document.getElementById("chart"), theme);
-    var data = null;
     var linesInfo = {};
-    var timeAxis = null;
-    var distanceAxis = null;
 
     // retrieve scene data
     $.getJSON(SCENE_DATA_URL, function (sceneData) {
-        sceneData["lines"].forEach(function(metroLineData){
-            linesInfo[metroLineData.name] = [];
+        sceneData.lines.forEach(function(metroLineData){
+            linesInfo[metroLineData.name].stations = [];
+            linesInfo[metroLineData.name].tracks = [];
             metroLineData.stations.forEach(function(station){
-                linesInfo[metroLineData.name].push(station.name);
+                linesInfo[metroLineData.name].stations.push(station.name);
             });
+            linesInfo[metroLineData.name].tracks = metroLineData.tracks;
         });
     });
-    $.getJSON(MODEL_DATA_URL, {attributes: ["Distance", "Time"]}, function (serverData) {
-        timeAxis = serverData.answer.Time;
-        distanceAxis = serverData.answer.Distance;
-    });
+
     $("#btnUpdateChart").click(function () {
         console.log("update chart");
 
@@ -52,8 +48,8 @@ $(document).ready(function(){
 
         // detect direction
         var direction = "g"; // default direction: going
-        var station1Index = linesInfo[SELECTED_LINE].indexOf(ORIGIN_STATION);
-        var station2Index = linesInfo[SELECTED_LINE].indexOf(DESTINATION_STATION);
+        var station1Index = linesInfo[SELECTED_LINE].stations.indexOf(ORIGIN_STATION);
+        var station2Index = linesInfo[SELECTED_LINE].stations.indexOf(DESTINATION_STATION);
 
         if (station2Index - station1Index === 0) {
             var status = {
@@ -67,11 +63,26 @@ $(document).ready(function(){
             direction = "r"; // reverse
         }
 
-        // get data¿
+        // identify tracks to retrieve
+        var tracksPositions = [];
+        if (direction === "g") {
+            for (var i = station1Index; i < station2Index; i++) {
+                tracksPositions.push(linesInfo.tracks[i].id);
+            }
+        // reverse
+        } else {
+            for (var i = station2Index - 1; i >= station1Index; i--) {
+                tracksPositions.push(linesInfo.tracks[i].id);
+            }
+        }
+
+
+        // get data
         var params = {
             direction: direction,
             operationPeriod: OPERATION,
-            metroLineName: SELECTED_LINE
+            metroLineName: SELECTED_LINE,
+            tracks: tracksPositions
         };
         switch (CHART_TYPE) {
             case 1:
@@ -85,7 +96,7 @@ $(document).ready(function(){
 
             for (var attribute in result) {
                 var attributeValue = result[attribute];
-
+                console.log(attributeValue);
             }
 
             var distanceTrackList = data[OPERATION][SELECTED_LINE]["Distance"][direction];
