@@ -69,7 +69,7 @@ class SpeedModelVizData(View):
             direction = MetroLineMetric.GOING if direction == "g" else MetroLineMetric.REVERSE
             answer = answer.filter(direction=direction)
         if operation_period is not None:
-            answer = answer.filter(operation_period__name=operation_period)
+            answer = answer.filter(operationPeriod__name=operation_period)
         if metro_line_name is not None:
             answer = answer.filter(metroLine__name=metro_line_name)
 
