@@ -52,22 +52,25 @@ class SpeedModelVizData(View):
         except:
             raise Http404
 
+        # attributes to retrieve
+        attributes = request.GET.get("attributes[]")
+
         scene_id = int(sceneId)
         execution = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()
-        answer = ModelAnswer.objects.filter(execution=execution).values_list("operationPeriod__name", "metroLine__name",
-                                                                             "attributeName", "direction",
-                                                                             "metroTrack__name", "order", "value", "metroTrack_id").\
-            order_by("operationPeriod__name", "metroLine__name", "attributeName", "direction", "metroTrack_id", "order")
+        answer = ModelAnswer.objects.filter(execution=execution).filter(attributeName__in=attributes).\
+            values_list("attributeName", "operationPeriod__name", "metroLine__name", "direction", "metroTrack__name",
+                        "order", "value").\
+            order_by("attributeName", "operationPeriod__name", "metroLine__name", "direction", "metroTrack_name", "order")
 
         groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
         for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3])):
             attr1, attr2, attr3, attr4 = key.split("_-_")
             # group by track
-            group = sorted(group, key = lambda x: (x[7], x[5]))
             for key2, group2 in groupby(group, lambda row: row[4]):
-                groups[attr1][attr2][attr3][attr4].append({key2: [v[6] for v in group2]})
+                groups[attr1][attr2][attr3][attr4].append({"name": key2, "value": [v[5] for v in group2]})
 
-        response = {}
-        response["answer"] = groups
+        response = {
+            "answer": groups
+        }
 
         return JsonResponse(response, safe=False)
