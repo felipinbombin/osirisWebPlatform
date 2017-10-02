@@ -29,7 +29,7 @@ $(document).ready(function(){
     var distanceAxis = null;
 
     // retrieve scene data
-    $.get(SCENE_DATA_URL, function (sceneData) {
+    $.getJSON(SCENE_DATA_URL, function (sceneData) {
         sceneData["lines"].forEach(function(metroLineData){
             linesInfo[metroLineData.name] = [];
             metroLineData.stations.forEach(function(station){
@@ -37,7 +37,7 @@ $(document).ready(function(){
             });
         });
     });
-    $.get(MODEL_DATA_URL, {attributes: ["Distance", "Time"]}, function (serverData) {
+    $.getJSON(MODEL_DATA_URL, {attributes: ["Distance", "Time"]}, function (serverData) {
         timeAxis = serverData.answer.Time;
         distanceAxis = serverData.answer.Distance;
     });
