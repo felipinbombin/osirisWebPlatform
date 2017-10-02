@@ -64,7 +64,7 @@ class SpeedModelVizData(View):
         answer = ModelAnswer.objects.filter(execution=execution).filter(attributeName__in=attributes,
                                                                         metroTrack__externalId__in=metro_tracks).\
             values_list("attributeName", "operationPeriod__name", "metroLine__name", "direction", "metroTrack__name",
-                        "order", "value").\
+                        "value").\
             order_by("attributeName", "operationPeriod__name", "metroLine__name", "direction", "metroTrack__name",
                      "order")
 
@@ -83,7 +83,7 @@ class SpeedModelVizData(View):
             # group by track
             for key2, group2 in groupby(group, lambda row: row[4]):
                 #groups[attr1][attr2][attr3][attr4].append({"name": key2, "value": [v[5] for v in group2]})
-                groups[attr1].append({"name": key2, "value": [v[5] for v in group2]})
+                groups[attr1].append({"name": key2, "data": [v[5] for v in group2]})
 
         response = {
             "answer": groups
