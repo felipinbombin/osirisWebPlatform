@@ -25,6 +25,8 @@ $(document).ready(function(){
     var chart = echarts.init(document.getElementById("chart"), theme);
     var data = null;
     var linesInfo = {};
+    var timeAxis = null;
+    var distanceAxis = null;
 
     // retrieve scene data
     $.get(SCENE_DATA_URL, function (sceneData) {
