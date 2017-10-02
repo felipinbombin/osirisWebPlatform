@@ -28,6 +28,7 @@ $(document).ready(function(){
     // retrieve scene data
     $.getJSON(SCENE_DATA_URL, function (sceneData) {
         sceneData.lines.forEach(function(metroLineData){
+            linesInfo[metroLineData.name] = {};
             linesInfo[metroLineData.name].stations = [];
             linesInfo[metroLineData.name].tracks = [];
             metroLineData.stations.forEach(function(station){
