@@ -57,7 +57,7 @@ class SpeedModelVizData(View):
         direction = request.GET.get("direction", None)
         operation_period = request.GET.get("operationPeriod", None)
         metro_line_name = request.GET.get("metroLineName", None)
-        metro_tracks = request.GET.getlist("tracks", [])
+        metro_tracks = request.GET.getlist("tracks[]", [])
 
         scene_id = int(sceneId)
         execution = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()

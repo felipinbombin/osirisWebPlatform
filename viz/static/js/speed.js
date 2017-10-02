@@ -73,12 +73,12 @@ $(document).ready(function(){
             }
         // reverse
         } else {
-            for (var i = station2Index - 1; i >= station1Index; i--) {
+            for (var i = station1Index - 1; i >= station2Index; i--) {
                 tracksPositions.push(linesInfo[SELECTED_LINE].tracks[i].id);
             }
         }
 
-
+        console.log(tracksPositions);
         // get data
         var params = {
             direction: direction,
