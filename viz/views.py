@@ -53,7 +53,7 @@ class SpeedModelVizData(View):
             raise Http404
 
         # attributes to retrieve
-        attributes = request.GET.get("attributes[]", [])
+        attributes = request.GET.getlist("attributes[]", [])
 
         scene_id = int(sceneId)
         execution = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()
