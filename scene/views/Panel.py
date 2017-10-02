@@ -107,7 +107,8 @@ class ScenePanelData(View):
         sceneId = int(sceneId)
         scene = Scene.objects.prefetch_related("metroline_set__metrostation_set",
                                                "metroline_set__metrodepot_set",
-                                               "metroconnection_set__stations"). \
+                                               "metroline_set__metrotrack_set__startStation",
+                                               "metroline_set__metrotrack_set__endStation"). \
             get(user=request.user, id=sceneId)
 
         lines = []

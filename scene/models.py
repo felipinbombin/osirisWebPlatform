@@ -95,13 +95,16 @@ class MetroLine(models.Model):
 
     def get_dict(self):
         """ dict """
-        line_dict = {'id': self.externalId, 'name': self.name, 'stations': [], 'depots': []}
+        line_dict = {'id': self.externalId, 'name': self.name, 'stations': [], 'depots': [], 'tracks': []}
 
         for station in self.metrostation_set.all().order_by('id'):
             line_dict['stations'].append(station.get_dict())
 
         for depot in self.metrodepot_set.all().order_by('id'):
             line_dict['depots'].append(depot.get_dict())
+
+        for track in self.metrotrack_set.all().order_by('id'):
+            line_dict['tracks'].append(track.get_dict())
 
         return line_dict
 
@@ -248,6 +251,15 @@ class MetroTrack(models.Model):
     """ unit: W """
     ventilationConsumption = models.FloatField(null=True)
     """ unit: W """
+
+    def get_dict(self):
+        """  """
+        track_dict = {
+            "name": self.name,
+            "startStation": self.startStation.name,
+            "endStation": self.endStation.name
+        }
+        return track_dict
 
 
 class MetroLineMetric(models.Model):
