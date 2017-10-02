@@ -28,9 +28,10 @@ $(document).ready(function(){
     // retrieve scene data
     $.getJSON(SCENE_DATA_URL, function (sceneData) {
         sceneData.lines.forEach(function(metroLineData){
-            linesInfo[metroLineData.name] = {};
-            linesInfo[metroLineData.name].stations = [];
-            linesInfo[metroLineData.name].tracks = [];
+            linesInfo[metroLineData.name] = {
+                stations: [],
+                tracks: []
+            };
             metroLineData.stations.forEach(function(station){
                 linesInfo[metroLineData.name].stations.push(station.name);
             });
@@ -68,12 +69,12 @@ $(document).ready(function(){
         var tracksPositions = [];
         if (direction === "g") {
             for (var i = station1Index; i < station2Index; i++) {
-                tracksPositions.push(linesInfo.tracks[i].id);
+                tracksPositions.push(linesInfo[SELECTED_LINE].tracks[i].id);
             }
         // reverse
         } else {
             for (var i = station2Index - 1; i >= station1Index; i--) {
-                tracksPositions.push(linesInfo.tracks[i].id);
+                tracksPositions.push(linesInfo[SELECTED_LINE].tracks[i].id);
             }
         }
 
