@@ -7,15 +7,12 @@ $(document).ready(function(){
     var SCENE_DATA_URL = "/admin/scene/panel/data/" + SCENE_ID;
 
     var ECHARTS_OPTIONS = {
-        legend: {
-           show: true
-        },
         title: {
             text: "Velocidad VS tiempo"
         },
         yAxis: [{
              type: "value",
-             name: "Velocidad",
+             name: "Velocidad KM/H",
              position: "left"
         }],
         tooltip: {
@@ -94,37 +91,35 @@ $(document).ready(function(){
 
         $.getJSON(MODEL_DATA_URL, params, function(result) {
             var series = [];
-            var xData = [];
+            var names = [];
 
-            for (var attribute in result.answer) {
-                var attributeValue = result.answer[attribute];
-
-                console.log(attribute);
-                console.log(attributeValue);
-                if (attribute === "Distance") {
-                    console.log("dist");
-                } else if  (attribute === "Time") {
-                    attributeValue.forEach(function(track) {
-                        xData = xData.concat(track.data);
-                    });
-                } else {
-                    // lines
-                    attributeValue.forEach(function(track) {
-                        var serie = {
-                            type: "line",
-                            name: track.name,
-                            data: track.data
-                        };
-                        series.push(serie);
-                    });
-                }
-            }
+            result.answer.forEach(function(track){
+                var name = track.name + " (" + track.direction + ")";
+                var attributes = track.attributes;
+                var trackData = [];
+                attributes.Time.forEach(function(timeData, index){
+                    trackData.push([timeData, attributes.velDist[index]]);
+                });
+                var serie = {
+                    type: "line",
+                    name: name,
+                    data: trackData,
+                    yAxisIndex: 0,
+                    smooth: false,
+                    showSymbol: false
+                };
+                series.push(serie);
+                names.push(name);
+            });
 
             var options = {
+                legend: {
+                    data: names
+                },
                 series: series,
                 xAxis: [{
-                    type: "category",
-                    data: xData
+                    name: "Tiempo (segundos)",
+                    type: "value"
                 }]
             };
             $.extend(options, ECHARTS_OPTIONS);
