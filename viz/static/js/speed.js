@@ -94,46 +94,41 @@ $(document).ready(function(){
 
         $.getJSON(MODEL_DATA_URL, params, function(result) {
             var series = [];
+            var xData = [];
 
             for (var attribute in result.answer) {
-                var attributeValue = result[attribute];
+                var attributeValue = result.answer[attribute];
 
+                console.log(attribute);
+                console.log(attributeValue);
                 if (attribute === "Distance") {
-
+                    console.log("dist");
                 } else if  (attribute === "Time") {
-
+                    attributeValue.forEach(function(track) {
+                        xData = xData.concat(track.data);
+                    });
                 } else {
                     // lines
-                }
-
-                console.log(attributeValue);
-            }
-
-            var distanceTrackList = data[OPERATION][SELECTED_LINE]["Distance"][direction];
-            var speedTrackList = data[OPERATION][SELECTED_LINE]["Distance"][direction]; //velDist
-            //var speedLimitTrackList = data[OPERATION][SELECTED_LINE]["Speedlimit"][direction]; //velDist
-
-            distanceTrackList.forEach(function (el, index) {
-                if (direction === "g") {
-                    if (station1Index <= index && index <= station2Index) {
+                    attributeValue.forEach(function(track) {
                         var serie = {
                             type: "line",
-                            name: el.name,
-                            data: el.value
+                            name: track.name,
+                            data: track.data
                         };
                         series.push(serie);
-                    }
+                    });
                 }
-            });
+            }
+
             var options = {
                 series: series,
                 xAxis: [{
                     type: "category",
-                    data: [1,2,3]
+                    data: xData
                 }]
             };
             $.extend(options, ECHARTS_OPTIONS);
-            console.log(options);
+
             chart.clear();
             chart.setOption(options, {
                 notMerge: true
