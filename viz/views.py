@@ -1,12 +1,12 @@
+# -*- coding: utf-8 -*-
 from django.http import Http404
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import View
 
 from itertools import groupby
-from collections import defaultdict
 
-from scene.models import Scene, MetroLineMetric
+from scene.models import Scene, MetroLineMetric, OperationPeriodForMetroStation
 from cmmmodel.models import ModelExecutionHistory
 from viz.models import ModelAnswer
 
@@ -35,14 +35,27 @@ class SpeedModelViz(View):
                                           scene_obj.metroline_set.all().order_by("id")[0].metrostation_set.all().order_by("-id")]
         self.context["op_periods"] = [{"value": op_period_obj.name, "item": "{} ({} - {})".format(op_period_obj.name,op_period_obj.start,op_period_obj.end)} for op_period_obj in
                                        scene_obj.operationperiod_set.all().order_by("id")]
-        self.context["chart_type"] = [{"item": "Velocidad", "value": 1},
-                                      {"item": "Velocidad vs Distancia", "value": 2}]
+        self.context["table_titles"] = ["Sección", "Tiempo (seg)"]
 
         return render(request, self.template, self.context)
 
 
 class SpeedModelVizData(View):
     """ data for charts  """
+
+    def getDwellTime(self, operation_period_name, metro_line_name, direction, scene_id):
+        """ get station list of dwell time """
+        station_list = OperationPeriodForMetroStation.objects.filter(operationPeriod__scene_id=scene_id,
+                                                                     operationPeriod__name=operation_period_name,
+                                                                     metroStation__metroLine__name=metro_line_name,
+                                                                     direction=direction,
+                                                                     metric=OperationPeriodForMetroStation.DWELL_TIME).\
+            order_by("metroStation_id").values_list("metroStation__name", "value")
+
+        answer = {}
+        for station in station_list:
+            answer[station[0]] = station[1]
+        return answer
 
     def get(self, request, sceneId):
 
@@ -55,7 +68,7 @@ class SpeedModelVizData(View):
         # attributes to retrieve
         attributes = request.GET.getlist("attributes[]", []) + ["Distance", "Time"]
         direction = request.GET.get("direction", None)
-        operation_period = request.GET.get("operationPeriod", None)
+        operation_period_name = request.GET.get("operationPeriod", None)
         metro_line_name = request.GET.get("metroLineName", None)
         metro_tracks = request.GET.getlist("tracks[]", [])
 
@@ -71,8 +84,8 @@ class SpeedModelVizData(View):
         if direction is not None:
             direction = MetroLineMetric.GOING if direction == "g" else MetroLineMetric.REVERSE
             answer = answer.filter(direction=direction)
-        if operation_period is not None:
-            answer = answer.filter(operationPeriod__name=operation_period)
+        if operation_period_name is not None:
+            answer = answer.filter(operationPeriod__name=operation_period_name)
         if metro_line_name is not None:
             answer = answer.filter(metroLine__name=metro_line_name)
 
@@ -94,7 +107,8 @@ class SpeedModelVizData(View):
             groups.append(groupElement)
 
         response = {
-            "answer": groups
+            "answer": groups,
+            "dwellTime": self.getDwellTime(operation_period_name, metro_line_name, direction, scene_id)
         }
 
         return JsonResponse(response, safe=False)

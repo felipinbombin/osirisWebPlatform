@@ -16,7 +16,9 @@
 {% endblock %}
 
 {% block content %}
-<div id="content-main" class="col-md-12 col-sm-12 col-xs-12">
+
+<div class="row">
+<div class="col-md-12 col-sm-12 col-xs-12">
   {% trans "Modelo de velocidad" as title %}
   {% header title scene.name %}
 
@@ -32,25 +34,22 @@
   {% inline_select "Período de operación:" "operationPeriodFilter" op_periods as operation_hour_select %}
   {% columns 3 3 12 operation_hour_select as col4 %}
 
-  {% inline_select "Tipo de gráfico:" "chartTypeFilter" chart_type as chart_type_select %}
-  {% columns 3 3 12 chart_type_select as col5 %}
-
   {% update_button "btnUpdateChart" "Actualizar datos" as update_button %}
   {% columns 12 12 12 update_button as col6 %}
 
-  {% panel "fa-filter" "Filtro" col1|add:col2|add:col3|add:col4|add:col5|add:col6 %}
+  {% panel "fa-filter" "Filtro" col1|add:col2|add:col3|add:col4|add:col6 %}
+</div>
 </div>
 
-
 <div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-        {% with barChart='<div id="chart" style="height:600px;"></div>' %}
-            {% columns 10 10 12 barChart as col6 %}
-            {% table "timeTable" 2 as timeTable %}
-            {% columns 2 2 12 timeTable as col7 %}
-            {% panel "fa-bar-chart" "Curva de velocidad <small></small>" col6|add:col7 %}
-        {% endwith %}
-    </div>
+    {% with barChart='<div id="chart" style="height:400px;"></div>' %}
+        {% table "timeTable" 2 table_titles as timeTable %}
+        {% panel "fa-bar-chart" "Curva de velocidad VS distancia <small></small>" barChart as chart_panel %}
+        {% panel "fa-table" "Tiempos <small></small>" timeTable as table_panel %}
+
+        {% columns 10 10 12 chart_panel %}
+        {% columns 2 2 12 table_panel %}
+    {% endwith %}
 </div>
 {% endblock %}
 

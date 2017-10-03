@@ -1,13 +1,17 @@
+# -*- coding: utf-8 -*-
 from django import template
 from django.utils.html import format_html
 
 register = template.Library()
 
 @register.simple_tag
-def table(id, columns, withChecker=False):
+def table(id, columns, titles, withChecker=False):
     ths = u""
-    for _ in range(columns):
-        ths += u"<th></th>"
+    for index in range(columns):
+        header = ""
+        if len(titles) > index:
+            header = titles[index]
+        ths += u"<th>{}</th>".format(header.decode("utf-8"))
 
     checker = u""
     if withChecker:
@@ -18,6 +22,8 @@ def table(id, columns, withChecker=False):
             <thead>
               <tr>""" + checker + ths + u"""</tr>
             </thead>
+            <tbody>
+            </tbody>
         </table>
         """
 
