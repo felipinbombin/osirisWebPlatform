@@ -61,11 +61,11 @@ class SpeedModelVizData(View):
 
         scene_id = int(sceneId)
         execution = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()
-        answer = ModelAnswer.objects.filter(execution=execution).filter(attributeName__in=attributes,
-                                                                        metroTrack__externalId__in=metro_tracks).\
-            values_list("operationPeriod__name", "metroLine__name", "direction", "metroTrack__name", "attributeName",
-                        "value").\
-            order_by("operationPeriod__name", "metroLine__name", "direction", "metroTrack__name", "attributeName",
+        answer = ModelAnswer.objects.prefetch_related("metroTrack__endStation", "metroTrack__startStation").\
+            filter(execution=execution, attributeName__in=attributes, metroTrack__externalId__in=metro_tracks).\
+            values_list("operationPeriod__name", "metroLine__name", "direction", "metroTrack__name",
+                        "metroTrack__startStation__name", "metroTrack__endStation__name", "attributeName", "value").\
+            order_by("operationPeriod__id", "metroLine__id", "direction", "metroTrack__id", "attributeName",
                      "order")
 
         if direction is not None:
@@ -78,13 +78,19 @@ class SpeedModelVizData(View):
 
         # groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
         groups = []
-        for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3])):
-            attr1, attr2, attr3, attr4 = key.split("_-_")
+        for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3], row[4], row[5])):
+            attr1, attr2, attr3, attr4, attr5, attr6 = key.split("_-_")
             # group by track
-            groupElement = {"name": attr4, "direction": attr3, "attributes": {}}
-            for key2, group2 in groupby(group, lambda row: row[4]):
+            groupElement = {
+                "name": attr4,
+                "direction": attr3,
+                "startStation": attr5,
+                "endStation": attr6,
+                "attributes": {}
+            }
+            for key2, group2 in groupby(group, lambda row: row[6]):
                 #groups[attr1][attr2][attr3][attr4].append({"name": key2, "value": [v[5] for v in group2]})
-                groupElement["attributes"][key2] = [v[5] for v in group2]
+                groupElement["attributes"][key2] = [v[7] for v in group2]
             groups.append(groupElement)
 
         response = {

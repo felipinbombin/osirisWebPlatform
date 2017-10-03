@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static inline_select columns header panel update_button %}
+{% load i18n static inline_select columns header panel update_button table %}
 
 {% block extrahead %}
   {{ block.super }}
@@ -45,8 +45,10 @@
 <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
         {% with barChart='<div id="chart" style="height:600px;"></div>' %}
-            {% columns 12 12 12 barChart as col6 %}
-            {% panel "fa-bar-chart" "Curva de velocidad <small></small>" col6 %}
+            {% columns 10 10 12 barChart as col6 %}
+            {% table "timeTable" 2 as timeTable %}
+            {% columns 2 2 12 timeTable as col7 %}
+            {% panel "fa-bar-chart" "Curva de velocidad <small></small>" col6|add:col7 %}
         {% endwith %}
     </div>
 </div>

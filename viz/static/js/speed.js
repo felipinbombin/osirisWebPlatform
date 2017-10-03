@@ -34,6 +34,20 @@ $(document).ready(function(){
             });
             linesInfo[metroLineData.name].tracks = metroLineData.tracks;
         });
+        $("#lineFilter").change(function(){
+            var SELECTED_LINE = $("#lineFilter").val();
+            var ORIGIN_STATION = $("#originStationFilter");
+            var DESTINATION_STATION = $("#destinationStationFilter");
+
+            ORIGIN_STATION.empty();
+            DESTINATION_STATION.empty();
+            linesInfo[SELECTED_LINE].stations.forEach(function(station){
+                var option = $("<option></option>").attr("value", station).text(station);
+                ORIGIN_STATION.append(option);
+                DESTINATION_STATION.prepend(option.clone());
+            });
+            DESTINATION_STATION[0].selectedIndex = 0;
+        });
     });
 
     $("#btnUpdateChart").click(function () {
@@ -94,11 +108,15 @@ $(document).ready(function(){
             var names = [];
 
             result.answer.forEach(function(track){
-                var name = track.name + " (" + track.direction + ")";
+                var name = track.startStation + " -> " + track.endStation;
+                if (direction === "r"){
+                    name = track.endStation + " -> " + track.startStation;
+                }
+
                 var attributes = track.attributes;
                 var trackData = [];
                 attributes.Time.forEach(function(timeData, index){
-                    trackData.push([timeData, attributes.velDist[index]]);
+                    trackData.push([timeData, attributes.velDist[index]*3.6]);
                 });
                 var serie = {
                     type: "line",
