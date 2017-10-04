@@ -8,10 +8,10 @@ register = template.Library()
 def table(id, columns, titles, withChecker=False):
     ths = u""
     for index in range(columns):
-        header = ""
+        header = u""
         if len(titles) > index:
             header = titles[index]
-        ths += u"<th>{}</th>".format(header.decode("utf-8"))
+        ths += u"<th>{}</th>".format(header)
 
     checker = u""
     if withChecker:
