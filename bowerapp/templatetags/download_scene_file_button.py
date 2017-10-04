@@ -6,8 +6,9 @@ from django.urls import reverse
 
 register = template.Library()
 
+
 @register.simple_tag
-def download_file_button(stepId, scene, disabled = ""):
+def download_scene_file_button(stepId, scene, disabled =""):
     url = reverse("scene:downloadStepFile", kwargs={"stepId":stepId, "sceneId":scene.id})
 
     if stepId == 1:

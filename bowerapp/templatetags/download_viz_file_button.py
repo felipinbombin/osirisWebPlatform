@@ -18,10 +18,14 @@ def download_viz_file_button(execution_obj, disabled =""):
         timeStamp = timezone.localtime(timeStamp).strftime("%Y-%m-%d %H:%M:%S")
 
     field = u"""
-     <a href="{}" class="btn btn-success btn-lg btn-block {}">
-       <i class="fa fa-file-excel-o"></i> {}
-       (<span id="timestamp1">{}</span>)
+     <a href="{0}" class="btn btn-success btn-lg btn-block {1}">
+       <i class="fa fa-file-excel-o"></i> {2}
+       (<span id="timestamp1">{3}</span>)
      </a>
     """
     buttonMessage = u"Descargar datos"
-    return format_html(field, execution_obj.downloadFile.url, disabled, buttonMessage, timeStamp)
+    path = ""
+    if execution_obj.downloadFile:
+        path = execution_obj.downloadFile.url
+
+    return format_html(field, path, disabled, buttonMessage, timeStamp)

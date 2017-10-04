@@ -7,7 +7,7 @@ from django.views.generic import View
 from itertools import groupby
 
 from scene.models import Scene, MetroLineMetric, OperationPeriodForMetroStation
-from cmmmodel.models import ModelExecutionHistory
+from cmmmodel.models import ModelExecutionHistory, Model
 from viz.models import ModelAnswer
 
 
@@ -36,6 +36,7 @@ class SpeedModelViz(View):
         self.context["op_periods"] = [{"value": op_period_obj.name, "item": "{} ({} - {})".format(op_period_obj.name,op_period_obj.start,op_period_obj.end)} for op_period_obj in
                                        scene_obj.operationperiod_set.all().order_by("id")]
         self.context["table_titles"] = ["Sección", "Tiempo (seg)"]
+        self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj, model_id=Model.SPEED_MODEL_ID).order_by("-id").first()
 
         return render(request, self.template, self.context)
 

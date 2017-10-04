@@ -8,13 +8,13 @@ register = template.Library()
 def panel(title_icon, title, body):
     header = u"""
         <div class="x_title">
-            <h2><i class="fa {}"></i> {}</h2>
+            <h2><i class="fa {0}"></i> {1}</h2>
           <div class="clearfix"></div>
         </div>
         """
     content = u"""
         <div class="x_content">
-          {}
+          {2}
         </div>"""
     header = header if title != "" else ""
     panel = u"<div class='x_panel'>{0}{1}</div>".format(header, content)

@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static inline_select columns header panel update_button table %}
+{% load i18n static inline_select columns header panel update_button table download_viz_file_button %}
 
 {% block extrahead %}
   {{ block.super }}
@@ -43,12 +43,15 @@
 
 <div class="row">
     {% with barChart='<div id="chart" style="height:400px;"></div>' %}
-        {% table "timeTable" 2 table_titles as timeTable %}
         {% panel "fa-bar-chart" "Curva de velocidad VS distancia <small></small>" barChart as chart_panel %}
+
+        {% table "timeTable" 2 table_titles as timeTable %}
         {% panel "fa-table" "Tiempos <small></small>" timeTable as table_panel %}
+        {% download_viz_file_button execution_obj as download_button %}
+        {% panel "" "" download_button as download_panel %}
 
         {% columns 10 10 12 chart_panel %}
-        {% columns 2 2 12 table_panel %}
+        {% columns 2 2 12 download_panel|add:table_panel %}
     {% endwith %}
 </div>
 {% endblock %}
