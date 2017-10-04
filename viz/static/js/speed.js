@@ -23,7 +23,7 @@ $(document).ready(function(){
         },
         grid: {
             left: "30px",
-            right: "40px",
+            right: "50px",
             containLabel: true
         },
         toolbox: {
