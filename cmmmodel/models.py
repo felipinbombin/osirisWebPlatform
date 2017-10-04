@@ -12,6 +12,11 @@ class Model(models.Model):
     clusterExecutionId = models.CharField('archivo bash', max_length=100)
     vizURL = models.CharField(max_length=100)
 
+    SPEED_MODEL_ID = 1
+    STRONG_MODEL_ID = 2
+    ENERGY_MODEL_ID = 3
+    TEMPERATURE_MODEL_ID = 4
+
     def get_dictionary(self):
         """  """
         dictionary = {
@@ -66,6 +71,12 @@ class ModelExecutionHistory(models.Model):
     std_err = models.TextField()
     externalId = models.UUIDField(null=False)
     answer = models.FileField(upload_to='modelOutput/', null=True)
+
+    """
+    download file data
+    """
+    timestampFile = models.DateTimeField(null=True, default=None)
+    downloadFile = models.FileField(upload_to='modelOuputFile/', null=True)
 
     def __str__(self):
         return u"{} {} {}".format(self.model, timezone.localtime(self.start), timezone.localtime(self.end))
