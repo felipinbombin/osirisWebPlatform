@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-# Create your views here.
 from abc import ABCMeta, abstractmethod
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -187,7 +186,7 @@ class ExcelWriter(object):
         fileField.save(self.getFileName(), ContentFile(self.stringIO.getvalue()))
 
     @abstractmethod
-    def createTemplateFile(self):
+    def createFile(self, *args):
         pass
 
 
@@ -253,7 +252,7 @@ class Step1ExcelWriter(ExcelWriter):
         usedRows = 2
         return usedRows
 
-    def createTemplateFile(self):
+    def createFile(self, *args):
         ''' create excel file based on scene data '''
 
         for line in self.scene.metroline_set.all().order_by('name'):
@@ -375,7 +374,7 @@ class Step3ExcelWriter(ExcelWriter):
         usedRows = 2
         return usedRows
 
-    def createTemplateFile(self):
+    def createFile(self, *args):
         ''' create excel file based on scene data '''
 
         for line in self.scene.metroline_set.all().order_by('name'):
@@ -433,7 +432,7 @@ class Step5ExcelWriter(ExcelWriter):
 
         return fileName
 
-    def createTemplateFile(self):
+    def createFile(self, *args):
         ''' create excel file based on scene data '''
 
         periodsNameList = list(self.scene.operationperiod_set.values_list('name', flat=True).order_by('id'))
