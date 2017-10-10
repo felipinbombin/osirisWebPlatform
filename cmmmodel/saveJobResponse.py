@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.conf import settings
 
 from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue
-from cmmmodel.views import Run
+from cmmmodel.clusterConnection import run_task
 from cmmmodel.transform.processSpeedData import ProcessSpeedData
 
 import sys
@@ -49,7 +49,7 @@ def save_model_response(external_id, output_file_name, std_out, std_err):
 
         if len(next_models) >= 1:
             ModelExecutionQueue.objects.filter(modelExecutionHistory=execution_obj).delete()
-            Run().runModel(execution_obj.scene, next_models[0], next_models[1:])
+            run_task(execution_obj.scene, next_models[0], next_models[1:])
 
 
 if __name__ == "__main__":

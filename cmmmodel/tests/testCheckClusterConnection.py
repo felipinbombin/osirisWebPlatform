@@ -1,5 +1,5 @@
 from django.test import TestCase
-from cmmmodel.views import getParamikoClient
+from cmmmodel.clusterConnection import get_paramiko_client
 
 
 class ConnectionException(Exception):
@@ -12,7 +12,7 @@ class CheckConnectionStatusTest(TestCase):
     def test_ExectCommandWithRealConnection(self):
         """  """
 
-        client = getParamikoClient()
+        client = get_paramiko_client()
         command = "ls -al osiris/"
         stdin, stdout, stderr = client.exec_command(command)
 

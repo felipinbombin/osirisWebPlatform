@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.db import transaction
 
 from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue
-from cmmmodel.views import getParamikoClient
+from cmmmodel.clusterConnection import get_paramiko_client
 
 CHECK_NUMBER = 2
 # number of checks before change state
@@ -28,7 +28,7 @@ def check_execution_is_running(client=None):
     # retrieve active job number
     command = "squeue"
     if client is None:
-        client = getParamikoClient()
+        client = get_paramiko_client()
     stdin, stdout, stderr = client.exec_command(command)
 
     # add log if there is an error with squeue
