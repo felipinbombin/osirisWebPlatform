@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
-from scene.models import MetroLine, MetroTrack, MetroLineMetric, OperationPeriod
+from cmmmodel.models import Model
+from scene.models import MetroLine, MetroLineMetric, OperationPeriod
 from viz.models import ModelAnswer
 
 import numpy
@@ -9,50 +10,43 @@ import numpy
 class ProcessData:
     __metaclass__ = ABCMeta
 
-    MODEL_ID = None
+    def __init__(self, model_id, execution_obj):
+        self.model_id = model_id
+        self.execution_obj = execution_obj
+        self.scene_obj = execution_obj.scene
 
-    def __init__(self):
-        pass
-
-    def delete_previous_data(self, scene_obj):
+    def delete_previous_data(self):
         # delete data before insert a new one
-        ModelAnswer.objects.filter(execution__model_id=self.MODEL_ID,
-                                   execution__scene=scene_obj).delete()
+        ModelAnswer.objects.filter(execution__model_id=self.model_id,
+                                   execution__scene=self.scene_obj).delete()
 
     @abstractmethod
-    def load(self, data, execution_obj):
+    def load(self, data):
+        pass
+
+    @abstractmethod
+    def createExcelFile(self, data):
         pass
 
 
 class ProcessSpeedData(ProcessData):
-    MODEL_ID = 1
 
-    def __init__(self):
-        super(ProcessSpeedData, self).__init__()
+    def __init__(self, execution_obj):
+        super(ProcessSpeedData, self).__init__(Model.SPEED_MODEL_ID, execution_obj)
 
         self.metrics = [
             {
                 "name": "velDist"
             },
             {
-                "name": "Time"
-            },
-            {
                 "name": "Speedlimit"
-            },
-            {
-                "name": "Distance"
             }
         ]
 
-    def load(self, data, execution_obj):
-        scene_obj = execution_obj.scene
-        self.delete_previous_data(execution_obj.scene)
-
-        line_objs = MetroLine.objects.prefetch_related("metrotrack_set").filter(scene=scene_obj).order_by("id")
-        operation_periods = OperationPeriod.objects.filter(scene=scene_obj).order_by("id")
-
-        self.delete_previous_data(scene_obj)
+    def load(self, data):
+        self.delete_previous_data()
+        line_objs = MetroLine.objects.prefetch_related("metrotrack_set").filter(scene=self.scene_obj).order_by("id")
+        operation_periods = OperationPeriod.objects.filter(scene=self.scene_obj).order_by("id")
 
         object_list = []
 
@@ -73,7 +67,7 @@ class ProcessSpeedData(ProcessData):
                                 values = [values]
 
                             for index, value in enumerate(values):
-                                record = ModelAnswer(execution=execution_obj, metroLine=line_obj,
+                                record = ModelAnswer(execution=self.execution_obj, metroLine=line_obj,
                                                      direction=system_direction,
                                                      operationPeriod=operation_period, metroTrack=track_obj,
                                                      attributeName=metric["name"], order=index, value=value)
@@ -81,3 +75,6 @@ class ProcessSpeedData(ProcessData):
 
             ModelAnswer.objects.bulk_create(object_list)
             del object_list[:]
+
+    def createExcelFile(self, data):
+        pass

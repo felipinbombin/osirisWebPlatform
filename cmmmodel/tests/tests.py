@@ -192,4 +192,4 @@ class ExecuteModel(TestCase):
             answer = pickle.load(answer_file)
             process_answer(answer, execution_obj)
 
-        self.assertEqual(ModelAnswer.objects.count(), 104372)
+        self.assertEqual(ModelAnswer.objects.count(), 49124)
