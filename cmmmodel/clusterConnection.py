@@ -6,12 +6,13 @@ from django.utils import timezone
 from io import BytesIO
 
 from cmmmodel.models import ModelExecutionHistory, Model, ModelExecutionQueue
+from cmmmodel.firstInput import first_input
 from scene.models import Scene
-from scene.views.InputModel import InputModel
 
 import paramiko
 import os
 import uuid
+import pickle
 
 
 class EnqueuedModelException(Exception):
@@ -61,7 +62,7 @@ def run_task(scene_obj, model_id, next_model_ids):
         external_id = uuid.uuid4()
 
         # create file with serialized input model data
-        model_input_data = InputModel(scene_obj, model_id).get_input()
+        model_input_data = get_input_data(scene_obj.id, model_id)
         input_file_name = "{}.model_input".format(external_id)
         destination = "osiris/inputs/" + input_file_name
 
@@ -115,3 +116,37 @@ def cancel_task(scene_obj, model_id):
     model_execution.save()
 
     ModelExecutionQueue.objects.filter(modelExecutionHistory=model_execution).delete()
+
+
+class ModelInputDoesNotExistException(Exception):
+    pass
+
+
+def get_input_data(scene_id, model_id):
+    """ get input data to run model """
+
+    if model_id == 999:
+        # for testing purpose
+        input_dict = {
+            "seconds": 60
+        }
+        input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
+    elif model_id == Model.SPEED_MODEL_ID:
+        input_dict = first_input(scene_id)
+        input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
+        input_dict = {
+            "first_input": input_dict,
+            "second_input": {}
+        }
+    else:
+        previous_model = model_id - 1
+        model_obj = ModelExecutionHistory.objects.filter(status=ModelExecutionHistory.OK,
+                                                         scene_id=scene_id,
+                                                         model_id=previous_model).order_by("-end").first()
+        if model_obj is None:
+            raise ModelInputDoesNotExistException
+
+        with open(model_obj.answer.path, mode="rb") as answer_file:
+            input_dict = answer_file.read()
+
+    return input_dict

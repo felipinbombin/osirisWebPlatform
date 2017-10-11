@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import transaction, IntegrityError
-
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -13,8 +12,7 @@ from scene.statusResponse import Status as sts
 
 from cmmmodel.models import ModelExecutionHistory, Model
 from cmmmodel.clusterConnection import run_task, cancel_task, EnqueuedModelException, ModelIsRunningException, \
-    IncompleteSceneException
-from scene.views.InputModel import ModelInputDoesNotExistException
+    IncompleteSceneException, ModelInputDoesNotExistException
 
 
 class Run(View):

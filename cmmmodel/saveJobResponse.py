@@ -32,6 +32,7 @@ def process_answer(answer_dict, execution_obj):
         processor.load(answer_dict)
         processor.createExcelFile(answer_dict)
 
+
 def save_model_response(external_id, output_file_name, std_out, std_err):
     """ save model response  """
 
@@ -51,6 +52,7 @@ def save_model_response(external_id, output_file_name, std_out, std_err):
         if os.path.isfile(file_path):
             with open(file_path, "rb") as answer_file:
                 answer = pickle.load(answer_file)
+                answer = answer["second_input"]
                 process_answer(answer, execution_obj)
 
         # exec next model if exists

@@ -9,12 +9,15 @@ from django.views.generic import View
 from scene.models import Scene
 from scene.statusResponse import Status
 from scene.views.SceneData import GetSceneData
-from scene.views.InputModel import speed_model_input, serialize_input
 
 from cmmmodel.views import Status as ModelStatus
 from cmmmodel.models import ModelExecutionHistory
 
 import pickle
+import datetime
+import numpy as np
+import json
+
 
 class ScenePanel(View):
     """ wizard form: first """
@@ -127,7 +130,7 @@ class ScenePanelData(View):
 
 
 class InputModelData(View):
-    """ get input model inputModel """
+    """ get input model inputModel. For debug purpose """
 
     def __init__(self):
         super(InputModelData, self).__init__()
@@ -136,14 +139,36 @@ class InputModelData(View):
     def get(self, request, sceneId):
         """ return inputModel to run models """
 
-        sceneId = int(sceneId)
-        execution = ModelExecutionHistory.objects.order_by("-start").first()
+        scene_id = int(sceneId)
+        execution = ModelExecutionHistory.objects.order_by("-start", sceneId=scene_id).first()
         with open(execution.answer.path, mode="rb") as answer_file:
             answer = pickle.load(answer_file)
 
+            class NumpyEncoder(json.JSONEncoder):
+                def default(self, obj):
+                    if isinstance(obj, np.integer):
+                        return int(obj)
+                    elif isinstance(obj, np.floating):
+                        return float(obj)
+                    elif isinstance(obj, np.ndarray):
+                        return obj.tolist()
+                    elif isinstance(obj, datetime.time):
+                        return str(obj)
+                    else:
+                        return super(NumpyEncoder, self).default(obj)
+
+            answer = json.dumps(answer, ensure_ascii=False, cls=NumpyEncoder)
+            answer = json.loads(answer)
+        """
+        a = json.dumps(response["inputModel"]["top"], ensure_ascii=False, cls=MyEncoder)
+        b = json.dumps(response["inputModel"]["sist"], ensure_ascii=False, cls=MyEncoder)
+        c = json.dumps(response["inputModel"]["oper"], ensure_ascii=False, cls=MyEncoder)
+        print(a)
+        print(b)
+        print(c)
+        """
+
         response = {"answer": answer}
         Status.getJsonStatus(Status.OK, response)
-
-        response = serialize_input(response)
 
         return JsonResponse(response, safe=False)
