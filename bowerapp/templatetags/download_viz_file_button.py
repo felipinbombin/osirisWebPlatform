@@ -7,7 +7,7 @@ register = template.Library()
 
 
 @register.simple_tag
-def download_viz_file_button(execution_obj, disabled =""):
+def download_viz_file_button(execution_obj, disabled = ""):
 
     timeStamp = execution_obj.timestampFile
 
