@@ -25,6 +25,8 @@ def table(html_id, title_list, with_checker=True):
             <thead>
               <tr>""" + checker + ths + """</tr>
             </thead>
+            <tbody>
+            </tbody>
         </table>
         """
 
