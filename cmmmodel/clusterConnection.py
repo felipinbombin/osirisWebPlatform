@@ -133,11 +133,11 @@ def get_input_data(scene_id, model_id):
         input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
     elif model_id == Model.SPEED_MODEL_ID:
         input_dict = first_input(scene_id)
-        input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
         input_dict = {
             "first_input": input_dict,
             "second_input": {}
         }
+        input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
     else:
         previous_model = model_id - 1
         model_obj = ModelExecutionHistory.objects.filter(status=ModelExecutionHistory.OK,
