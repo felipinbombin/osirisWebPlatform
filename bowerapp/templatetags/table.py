@@ -10,7 +10,7 @@ register = template.Library()
 def table(html_id, title_list, with_checker=True):
     ths = ""
     for title in title_list:
-        ths += "<th>{0}</th>".format(title.decode("utf-8"))
+        ths += "<th>{0}</th>".format(title)
 
     checker = ""
     if with_checker:
