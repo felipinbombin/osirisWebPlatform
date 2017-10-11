@@ -122,12 +122,13 @@ $(document).ready(function(){
                 }
 
                 var trackData = [];
-                delta += trackIndex !== 0?trackTimes[trackIndex - 1].time:0;
-                track.attributes.Time.forEach(function(timeData, index){
-                    trackData.push([delta + timeData, track.attributes.velDist[index]*3.6]);
+                delta += trackIndex !== 0?trackTimes[trackIndex - 1].length:0;
+                track.attributes.velDist.forEach(function(speedData, index){
+                    trackData.push([delta + index, speedData * 3.6]);
                 });
-                var speedLimit = track.attributes.Speedlimit[0];
-                var duration = track.attributes.Time[track.attributes.Time.length-1];
+                var speedLimit = track.attributes.Speedlimit[1];
+                var length = track.attributes.velDist.length;
+                var duration = track.attributes.Time[length-1];
                 var serie = {
                     type: "line",
                     name: name,
@@ -148,12 +149,23 @@ $(document).ready(function(){
                                 position: "middle"
                             }
                         },
-                        data:[[{name: speedLimit + " km/h", coord: [delta, speedLimit]}, {coord: [delta+duration, speedLimit]}]]
+                        data:[
+                            [
+                                {name: speedLimit + " km/h", coord: [delta, speedLimit]},
+                                {coord: [delta + duration, speedLimit]}
+                            ]
+                        ]
                     }
                 };
                 series.push(serie);
                 names.push(name);
-                trackTimes.push({name: name, time: duration, startStation: track.startStation, endStation: track.endStation});
+                trackTimes.push({
+                    name: name,
+                    time: duration,
+                    startStation: track.startStation,
+                    endStation: track.endStation,
+                    length: length
+                });
             });
 
             var options = {
@@ -191,7 +203,7 @@ $(document).ready(function(){
                 tableBody.append(startStationRow);
                 tableBody.append(trackRow);
                 totalTime += result.dwellTime[track.startStation] + track.time;
-                if (index+1===trackTimes.length){
+                if (index+1 === trackTimes.length){
                     var endStationRow = ("<tr><td>" + track.endStation + "</td><td>" + result.dwellTime[track.endStation].toFixed(2) + "</td></tr>");
                     tableBody.append(endStationRow);
                     totalTime += result.dwellTime[track.endStation];

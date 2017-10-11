@@ -40,6 +40,9 @@ class ProcessSpeedData(ProcessData):
             },
             {
                 "name": "Speedlimit"
+            },
+            {
+                "name": "Time"
             }
         ]
 
