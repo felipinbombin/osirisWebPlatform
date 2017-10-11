@@ -44,7 +44,7 @@ class SpeedModelViz(View):
 class SpeedModelVizData(View):
     """ data for charts  """
 
-    def getDwellTime(self, operation_period_name, metro_line_name, direction, scene_id):
+    def get_dwell_time(self, operation_period_name, metro_line_name, direction, scene_id):
         """ get station list of dwell time """
         station_list = OperationPeriodForMetroStation.objects.filter(operationPeriod__scene_id=scene_id,
                                                                      operationPeriod__name=operation_period_name,
@@ -109,7 +109,7 @@ class SpeedModelVizData(View):
 
         response = {
             "answer": groups,
-            "dwellTime": self.getDwellTime(operation_period_name, metro_line_name, direction, scene_id)
+            "dwellTime": self.get_dwell_time(operation_period_name, metro_line_name, direction, scene_id)
         }
 
         return JsonResponse(response, safe=False)
