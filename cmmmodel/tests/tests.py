@@ -190,6 +190,7 @@ class ExecuteModel(TestCase):
 
         with open(file_path, "rb") as answer_file:
             answer = pickle.load(answer_file)
+            answer = answer["second_input"]
             process_answer(answer, execution_obj)
 
-        self.assertEqual(ModelAnswer.objects.count(), 49124)
+        self.assertEqual(ModelAnswer.objects.count(), 98088)

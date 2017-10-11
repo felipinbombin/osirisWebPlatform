@@ -62,6 +62,7 @@ class SpeedModelVizTest(TestCase):
 
         with open(file_path, "rb") as answer_file:
             answer = pickle.load(answer_file)
+            answer = answer["second_input"]
             process_answer(answer, execution_obj)
 
     def test_loadHTML(self):
