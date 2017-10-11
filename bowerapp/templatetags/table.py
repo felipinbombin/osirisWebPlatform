@@ -7,10 +7,10 @@ register = template.Library()
 
 
 @register.simple_tag
-def table(html_id, columns, with_checker=True):
+def table(html_id, title_list, with_checker=True):
     ths = ""
-    for _ in range(columns):
-        ths += "<th></th>"
+    for title in title_list:
+        ths += "<th>{0}</th>".format(title.decode("utf-8"))
 
     checker = ""
     if with_checker:
