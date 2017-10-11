@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from django.http import Http404
 from django.http import JsonResponse
 from django.shortcuts import render
