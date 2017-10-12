@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
@@ -27,8 +28,8 @@ class Model(models.Model):
         }
         return dictionary
 
-    def __str__(self):
-        return "{}".format(self.name)
+    def __unicode__(self):
+        return self.name
 
 
 class PossibleQueue(models.Model):
@@ -78,8 +79,8 @@ class ModelExecutionHistory(models.Model):
     timestampFile = models.DateTimeField(null=True, default=None)
     downloadFile = models.FileField(upload_to='modelOuputFile/', null=True)
 
-    def __str__(self):
-        return u"{} {} {}".format(self.model, timezone.localtime(self.start), timezone.localtime(self.end))
+    def __unicode__(self):
+        return "{} {} {}".format(self.model, timezone.localtime(self.start), timezone.localtime(self.end))
 
     def get_dictionary(self):
         """  """
