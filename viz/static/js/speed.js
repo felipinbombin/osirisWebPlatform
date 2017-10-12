@@ -182,9 +182,6 @@ $(document).ready(function(){
                     data: names
                 },
                 series: series,
-                yAxis: {
-                    max: "dataMax"
-                },
                 xAxis: [{
                     name: "Distancia (metros)",
                     type: "value",
@@ -199,6 +196,7 @@ $(document).ready(function(){
                 options.xAxis[0].inverse = true;
             }
             $.extend(options, ECHARTS_OPTIONS);
+            options.yAxis[0]["max"] = maxSpeed;
 
             chart.clear();
             chart.setOption(options, {
