@@ -193,4 +193,4 @@ class ExecuteModel(TestCase):
             answer = answer["second_input"]
             process_answer(answer, execution_obj)
 
-        self.assertEqual(ModelAnswer.objects.count(), 98088)
+        self.assertEqual(ModelAnswer.objects.count(), 147132)

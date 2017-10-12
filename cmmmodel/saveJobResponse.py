@@ -30,7 +30,7 @@ def process_answer(answer_dict, execution_obj):
 
     if processor is not None:
         processor.load(answer_dict)
-        processor.createExcelFile(answer_dict)
+        processor.create_excel_file(answer_dict)
 
 
 def save_model_response(external_id, output_file_name, std_out, std_err):
