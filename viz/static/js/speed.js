@@ -126,7 +126,7 @@ $(document).ready(function(){
                 track.attributes.velDist.forEach(function(speedData, index){
                     trackData.push([delta + index, speedData * 3.6]);
                 });
-                var speedLimit = track.attributes.Speedlimit[1];
+                var speedLimit = track.attributes.Speedlimit[1] * 3.6;
                 var length = track.attributes.velDist.length;
                 var duration = track.attributes.Time[length-1];
                 var serie = {
@@ -152,7 +152,7 @@ $(document).ready(function(){
                         data:[
                             [
                                 {name: speedLimit + " km/h", coord: [delta, speedLimit]},
-                                {coord: [delta + duration, speedLimit]}
+                                {coord: [delta + length, speedLimit]}
                             ]
                         ]
                     }
