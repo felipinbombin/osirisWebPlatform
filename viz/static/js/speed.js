@@ -115,6 +115,7 @@ $(document).ready(function(){
             var trackTimes = [];
 
             var delta = 0;
+            var maxSpeed = 0;
             result.answer.forEach(function(track, trackIndex){
                 var name = track.startStation + " -> " + track.endStation;
                 if (direction === DIRECTION_REVERSE){
@@ -124,9 +125,17 @@ $(document).ready(function(){
                 var trackData = [];
                 delta += trackIndex !== 0?trackTimes[trackIndex - 1].length:0;
                 track.attributes.velDist.forEach(function(speedData, index){
-                    trackData.push([delta + index, speedData * 3.6]);
+                    speedData = speedData * 3.6;
+                    if (speedData > maxSpeed) {
+                        maxSpeed = speedData;
+                    }
+                    trackData.push([delta + index, speedData]);
                 });
                 var speedLimit = track.attributes.Speedlimit[1] * 3.6;
+                if (speedLimit > maxSpeed) {
+                    maxSpeed = speedLimit;
+                }
+
                 var length = track.attributes.velDist.length;
                 var duration = track.attributes.Time[length-1];
                 var serie = {
@@ -173,6 +182,9 @@ $(document).ready(function(){
                     data: names
                 },
                 series: series,
+                yAxis: {
+                    max: "dataMax"
+                },
                 xAxis: [{
                     name: "Distancia (metros)",
                     type: "value",
