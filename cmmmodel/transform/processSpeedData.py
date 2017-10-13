@@ -110,10 +110,15 @@ class ProcessSpeedData(ProcessData):
         for line_obj in line_objs:
             track_objs = list(line_obj.metrotrack_set.all().order_by("id"))
             for operation_period in operation_periods:
-                worksheet.write(current_row, 0, line_obj.name)
-                worksheet.write(current_row, 1, operation_period.name)
                 for direction in [0, 1]:
-                    for track_index, track_obj in enumerate(track_objs):
+                    worksheet.write(current_row, 0, line_obj.name)
+                    worksheet.write(current_row, 1, operation_period.name)
+
+                    track_objs_iter = track_objs
+                    if direction == 1:
+                        track_objs_iter = reversed(track_objs)
+
+                    for track_index, track_obj in enumerate(track_objs_iter):
                         current_column = 4
                         if direction == 1:
                             track_name = track_obj.get_name(direction=MetroLineMetric.REVERSE)
