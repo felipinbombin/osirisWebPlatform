@@ -228,45 +228,6 @@ class MetroConnectionStation(models.Model):
         return conn_dict
 
 
-class MetroTrack(models.Model):
-    """ connection between metro stations """
-    metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
-    isOld = models.BooleanField(default=False)
-    """ used when topological variables are updated """
-    externalId = models.UUIDField(null=False, unique=True, default=uuid.uuid4)
-    """ used to track record in wizard form, this way i know if is new record or previous """
-    name = models.CharField(max_length=100)
-    startStation = models.ForeignKey(MetroStation, 
-        related_name= 'startstation', 
-        on_delete=models.CASCADE)
-    endStation = models.ForeignKey(MetroStation, 
-        related_name= 'endstation', 
-        on_delete=models.CASCADE)
-    crossSection = models.FloatField(null=True)
-    """ unit: square meters """
-    averagePerimeter = models.FloatField(null=True)
-    """ unit: meters """
-    length = models.FloatField(null=True)
-    """ length of the stations. Unit: meters """
-    #######################################################
-    # CONSUMPTION                                         
-    #######################################################
-    auxiliariesConsumption = models.FloatField(null=True)
-    """ unit: W """
-    ventilationConsumption = models.FloatField(null=True)
-    """ unit: W """
-
-    def get_dict(self):
-        """  """
-        track_dict = {
-            "name": self.name,
-            "startStation": self.startStation.name,
-            "endStation": self.endStation.name,
-            "id": self.externalId
-        }
-        return track_dict
-
-
 class MetroLineMetric(models.Model):
     """ metric defined by chunk """
     metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
@@ -294,7 +255,54 @@ class MetroLineMetric(models.Model):
     direction = models.CharField(max_length=50, null=True, choices=DIRECTION_CHOICES)
     """ example: s0-sN|sN-s0  """
 
-    
+
+class MetroTrack(models.Model):
+    """ connection between metro stations """
+    metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
+    isOld = models.BooleanField(default=False)
+    """ used when topological variables are updated """
+    externalId = models.UUIDField(null=False, unique=True, default=uuid.uuid4)
+    """ used to track record in wizard form, this way i know if is new record or previous """
+    name = models.CharField(max_length=100)
+    startStation = models.ForeignKey(MetroStation,
+        related_name= 'startstation',
+        on_delete=models.CASCADE)
+    endStation = models.ForeignKey(MetroStation,
+        related_name= 'endstation',
+        on_delete=models.CASCADE)
+    crossSection = models.FloatField(null=True)
+    """ unit: square meters """
+    averagePerimeter = models.FloatField(null=True)
+    """ unit: meters """
+    length = models.FloatField(null=True)
+    """ length of the stations. Unit: meters """
+    #######################################################
+    # CONSUMPTION
+    #######################################################
+    auxiliariesConsumption = models.FloatField(null=True)
+    """ unit: W """
+    ventilationConsumption = models.FloatField(null=True)
+    """ unit: W """
+
+    def get_name(self, direction=MetroLineMetric.GOING):
+        """ return track name based on direction param """
+        if direction == MetroLineMetric.GOING:
+            return "{}-{}".format(self.startStation.name, self.endStation.name)
+        else:
+            # is reverse
+            return "{}-{}".format(self.endStation.name, self.startStation.name)
+
+    def get_dict(self):
+        """  """
+        track_dict = {
+            "name": self.name,
+            "startStation": self.startStation.name,
+            "endStation": self.endStation.name,
+            "id": self.externalId
+        }
+        return track_dict
+
+
 class OperationPeriod(models.Model):
     """ operation period """
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
