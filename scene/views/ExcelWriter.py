@@ -77,7 +77,7 @@ class ExcelHelper:
                           self.cellFormat)
 
     def makeHorizontalGrid(self, worksheet, upperLeftCorner, nameList, blankWidth):
-        """ make grid where first value is in the first column and next columns are blanks"""
+        """ make grid where nameList is located in the first column and next columns are blanks"""
         upperRow = upperLeftCorner[0]
         leftColumn = upperLeftCorner[1]
         rightColumn = leftColumn + blankWidth
