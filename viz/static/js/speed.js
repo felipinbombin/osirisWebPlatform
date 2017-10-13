@@ -231,4 +231,7 @@ $(document).ready(function(){
     $(window).resize(function() {
         chart.resize();
     });
+    $("#menu_toggle").click(function() {
+        chart.resize();
+    });
 });
