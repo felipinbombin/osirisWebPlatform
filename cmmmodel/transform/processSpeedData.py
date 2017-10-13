@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.utils import timezone
 
 from cmmmodel.transform.processData import ProcessData
 from cmmmodel.models import Model
@@ -67,6 +68,8 @@ class ProcessSpeedData(ProcessData):
     def create_excel_file(self, data):
 
         # NAMES
+        FILE_NAME = "Velocidad"
+
         WORKSHEET_NAME = "Speed"
         DESCRIPTION = "Descripción"
         LINE_DESCRIPTION = "Línea"
@@ -134,4 +137,6 @@ class ProcessSpeedData(ProcessData):
                         current_row += 3
 
         workbook.close()
-        self.execution_obj.downloadFile.save("prueba.xlsx", ContentFile(stringIO.getvalue()))
+        now = timezone.now()
+        self.execution_obj.timestampFile = now
+        self.execution_obj.downloadFile.save("{}_{}.xlsx".format(FILE_NAME, now), ContentFile(stringIO.getvalue()))
