@@ -77,7 +77,7 @@ class ModelExecutionHistory(models.Model):
     download file data
     """
     timestampFile = models.DateTimeField(null=True, default=None)
-    downloadFile = models.FileField(upload_to='modelOuputFile/', null=True)
+    downloadFile = models.FileField(upload_to='modelOutputFile/', null=True)
 
     def __unicode__(self):
         return "{} {} {}".format(self.model, timezone.localtime(self.start), timezone.localtime(self.end))
