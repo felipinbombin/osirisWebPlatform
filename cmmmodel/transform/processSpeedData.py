@@ -94,4 +94,4 @@ class ProcessSpeedData(ProcessData):
                             values = data[metric][line_id][direction][op_id][track_id]
 
         workbook.close()
-        self.execution_obj.downloadFile.save("prueba", ContentFile(stringIO.getvalue()))
+        self.execution_obj.downloadFile.save("prueba.xlsx", ContentFile(stringIO.getvalue()))
