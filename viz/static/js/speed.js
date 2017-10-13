@@ -15,16 +15,18 @@ $(document).ready(function(){
     var ECHARTS_OPTIONS = {
         yAxis: [{
              type: "value",
-             name: "Velocidad KM/H",
+             name: "Velocidad (km/h)",
+             nameLocation: "middle",
+             nameGap: 25,
              position: "left"
         }],
         tooltip: {
             trigger: "axis"
         },
         grid: {
-            left: "30px",
-            right: "50px",
-            containLabel: true
+            left: "5%",
+            right: "5%",
+            bottom: 75
         },
         toolbox: {
             show: true,
@@ -188,14 +190,18 @@ $(document).ready(function(){
                     nameLocation: "middle",
                     nameTextStyle: {
                         padding: 5
+                    },
+                    splitLine: {
+                        show: false
                     }
                 }]
             };
+            $.extend(options, ECHARTS_OPTIONS);
             if (direction === DIRECTION_REVERSE) {
                 options.legend.data = options.legend.data.reverse();
                 options.xAxis[0].inverse = true;
+                options.yAxis[0].position = "right";
             }
-            $.extend(options, ECHARTS_OPTIONS);
             options.yAxis[0]["max"] = maxSpeed;
 
             chart.clear();
