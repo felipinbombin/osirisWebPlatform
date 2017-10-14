@@ -17,10 +17,10 @@ def download_viz_file_button(execution_obj, disabled = ""):
     else:
         timeStamp = timezone.localtime(timeStamp).strftime("%Y-%m-%d %H:%M:%S")
 
+    # removed time: (<span id="timestamp1">{3}</span>)
     field = u"""
      <a href="{0}" class="btn btn-success btn-lg btn-block {1}">
        <i class="fa fa-file-excel-o"></i> {2}
-       (<span id="timestamp1">{3}</span>)
      </a>
     """
     buttonMessage = u"Descargar datos"
