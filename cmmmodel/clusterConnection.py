@@ -128,8 +128,7 @@ def get_input_data(scene_id, model_id):
     if model_id == 999:
         # for testing purpose
         input_dict = {
-            "seconds": 60,
-            "first_input": first_input(scene_id) # for testing purpose
+            "seconds": 60
         }
         input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
     elif model_id == Model.SPEED_MODEL_ID:

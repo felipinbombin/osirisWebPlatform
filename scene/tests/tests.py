@@ -12,13 +12,10 @@ from .testHelper import TestHelper
 
 from collections import defaultdict
 
-#from scene.views.InputModel import InputModel
-#from io import BytesIO
-#from SM import SM
+from cmmmodel.firstInput import first_input
 
 import os
 import json
-#import pickle
 
 TOPOLOGIC_FILE_NAME = u"Escenario_topologico.xlsx"
 SYSTEMIC_FILE_NAME = u"Escenario_sistemico.xlsx"
@@ -344,24 +341,5 @@ class CompleteSceneDataTest(TestCase):
         for url, file_path in zip(file_urls, file_paths):
             self.download_file(url, file_path)
 
-        """
-        # serialize speed model input
-        model_id = 1
-        input = InputModel(self.scene_obj.id, model_id)
-        # input dictionary comes serialized
-        input_dict = input.get_input()
-        unserialized = pickle.load(BytesIO(input_dict))
-
-        file_name = "hola.txt"
-        f = open(file_name, 'wb')
-        pickle.dump(unserialized, f)
-        f.close()
-        f = open(file_name, 'rb')
-        unserialized = pickle.load(f)
-        f.close()
-        os.remove(file_name)
-
-        model_answer = SM(unserialized)
-        for key in model_answer.keys():
-            print(key)
-        """
+        # generate input to run models
+        first_input(self.scene_obj.id)
