@@ -78,6 +78,8 @@ class ProcessSpeedData(ProcessData):
 
         # attribute to save
         ATTR = "velDist"
+
+        # attribute name and its reference (distance)
         ATTR_NAME = "Velocidad [m/s]"
         ATTR2_NAME = "Distancia [m]"
 

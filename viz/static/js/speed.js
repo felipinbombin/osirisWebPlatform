@@ -65,6 +65,7 @@ $(document).ready(function(){
         });
     });
 
+    var makeAjaxCall = true;
     $("#btnUpdateChart").click(function () {
         console.log("update chart");
 
@@ -111,6 +112,11 @@ $(document).ready(function(){
             attributes: ["velDist", "Speedlimit"]
         };
 
+        if(makeAjaxCall) {
+            makeAjaxCall = false;
+        } else {
+            return;
+        }
         $.getJSON(MODEL_DATA_URL, params, function(result) {
             var series = [];
             var names = [];
@@ -118,6 +124,12 @@ $(document).ready(function(){
 
             var delta = 0;
             var maxSpeed = 0;
+
+            if("status" in result) {
+                showNotificationMessage(result.status);
+                return;
+            }
+
             result.answer.forEach(function(track, trackIndex){
                 var name = track.startStation + " -> " + track.endStation;
                 if (direction === DIRECTION_REVERSE){
@@ -226,6 +238,8 @@ $(document).ready(function(){
                 }
             });
             tableBody.append($("<tr><td><strong>Tiempo total:</strong></td><td><strong>" + totalTime.toFixed(2) + "</strong></td></tr>"));
+        }).always(function(){
+            makeAjaxCall = true;
         });
     });
     $(window).resize(function() {

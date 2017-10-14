@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 class Status:
     OK = 200
@@ -16,73 +17,85 @@ class Status:
     MODEL_EXECUTION_DOES_NOT_EXIST_ERROR = 410
     MODEL_INPUT_DOES_NOT_EXIST_ERROR = 411
     INCOMPLETE_SCENE_ERROR = 412
+    LAST_MODEL_ANSWER_DATA_DOES_NOT_EXISTS_ERROR = 413
+    LAST_MODEL_FINISHED_BADLY_ERROR = 414
     GENERIC_ERROR = 499
 
     statusDict = {
+        LAST_MODEL_FINISHED_BADLY_ERROR: {
+            "code": LAST_MODEL_FINISHED_BADLY_ERROR, "title": "Última ejecución con problemas",
+            "message": "La última ejecución del modelo no terminó correctamente o está en ejecución.",
+            "type": "error"
+        },
+        LAST_MODEL_ANSWER_DATA_DOES_NOT_EXISTS_ERROR: {
+            "code": LAST_MODEL_ANSWER_DATA_DOES_NOT_EXISTS_ERROR, "title": "Sin resultados",
+            "message": "No hay resultados disponibles para el modelo.",
+            "type": "warning"
+        },
         INCOMPLETE_SCENE_ERROR: {
             "code": INCOMPLETE_SCENE_ERROR, "title": "Escenario incompleto",
             "message": "El escenario debe ser completado antes de poder ejecutar el modelo.",
-            "type": u"error"
+            "type": "error"
         },
         MODEL_INPUT_DOES_NOT_EXIST_ERROR: {
             "code": MODEL_INPUT_DOES_NOT_EXIST_ERROR, "title": "Modelo sin datos de entrada",
             "message": "No existe entrada para correr el modelo. Debe ejecutar los modelos previos.",
-            "type": u"error"
+            "type": "error"
         },
         MODEL_EXECUTION_DOES_NOT_EXIST_ERROR: {
             "code": MODEL_EXECUTION_DOES_NOT_EXIST_ERROR, "title": "Problema al detener modelo",
             "message": "La ejecución del modelo ya finalizó o fue detenido por otro usuario.",
-            "type": u"error"
+            "type": "error"
         },
         MODEL_IS_RUNNING_ERROR: {
             "code": MODEL_IS_RUNNING_ERROR, "title": "Modelo en ejecución",
             "message": "El modelo se encuentra en ejecución. Si desea iniciarlo nuevamente debe detener la ejecución actual.",
-            "type": u"error"
+            "type": "error"
         },
         ENQUEUED_MODEL_ERROR: {
             "code": ENQUEUED_MODEL_ERROR, "title": "Modelo encolado actualmente",
             "message": "El modelo ya se encuentra encolado en el sistema. Debe esperar que el modelo en ejecución termine o detenerlo.",
-            "type": u"error"
+            "type": "error"
         },
         SCENE_DOES_NOT_EXIST_ERROR: {
           "code": SCENE_DOES_NOT_EXIST_ERROR, "title": "Escenario no existe",
-          "message": "El escenario no existe en el sistema.", "type": u"error"
+          "message": "El escenario no existe en el sistema.", "type": "error"
         },
         SUCCESS_NEW_NAME: {
-          "code": SUCCESS_NEW_NAME, "title": u"Cambio exitoso",
-          "message": u"El nombre ha sido actualizado exitosamente.", "type": u"success"
+          "code": SUCCESS_NEW_NAME, "title": "Cambio exitoso",
+          "message": "El nombre ha sido actualizado exitosamente.", "type": "success"
         },
         GENERIC_ERROR: {
-          "code": GENERIC_ERROR, "title": u"Error",
-          "message": u"error genérico", "type": u"error"
+          "code": GENERIC_ERROR, "title": "Error",
+          "message": "error genérico", "type": "error"
         },
         OK: {
-          "code": OK, "title": u"Consulta exitosa",
-          "message": u":-)", "type": u"success"
+          "code": OK, "title": "Consulta exitosa",
+          "message": ":-)", "type": "success"
         },
         INVALID_SIZE_FILE_ERROR: {
-          "code": INVALID_SIZE_FILE_ERROR, "title": u"Tamaño de archivo no válido",
-          "message": u"El archivo ha superado el espacio permitido", "type": u"error"
+          "code": INVALID_SIZE_FILE_ERROR, "title": "Tamaño de archivo no válido",
+          "message": "El archivo ha superado el espacio permitido", "type": "error"
         },
         INVALID_STEP_ERROR: {
-          "code": INVALID_STEP_ERROR, "title": u"Paso no permitido",
-          "message": u"Debe completar los pasos previos", "type": u"error"
+          "code": INVALID_STEP_ERROR, "title": "Paso no permitido",
+          "message": "Debe completar los pasos previos", "type": "error"
         },
         INVALID_FORMAT_FILE_ERROR: {
-          "code": INVALID_FORMAT_FILE_ERROR, "title": u"Formato de archivo no válido",
-          "message": u"El archivo debe tener formato Excel", "type": u"error"
+          "code": INVALID_FORMAT_FILE_ERROR, "title": "Formato de archivo no válido",
+          "message": "El archivo debe tener formato Excel", "type": "error"
         },
         EXCEL_ERROR: {
-          "code": EXCEL_ERROR, "title": u"Error al procesar archivo",
-          "message": u"error description", "type": u"error"
+          "code": EXCEL_ERROR, "title": "Error al procesar archivo",
+          "message": "error description", "type": "error"
         },
         INVALID_SCENE_NAME_ERROR: {
-            "code": INVALID_SCENE_NAME_ERROR, "title": u"Error",
-            "message": u"Nombre de escenario no válido", "type": u"error"
+            "code": INVALID_SCENE_NAME_ERROR, "title": "Error",
+            "message": "Nombre de escenario no válido", "type": "error"
         },
         USER_NOT_LOGGED_ERROR: {
-            "code": USER_NOT_LOGGED_ERROR, "title": u"Error",
-            "message": u"Debe iniciar sesión nuevamente", "type": u"error"
+            "code": USER_NOT_LOGGED_ERROR, "title": "Error",
+            "message": "Debe iniciar sesión nuevamente", "type": "error"
         }
     }
 

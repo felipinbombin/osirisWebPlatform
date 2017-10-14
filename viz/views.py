@@ -8,6 +8,7 @@ from django.views.generic import View
 from itertools import groupby
 
 from scene.models import Scene, MetroLineMetric, OperationPeriodForMetroStation
+from scene.statusResponse import Status
 from cmmmodel.models import ModelExecutionHistory, Model
 from viz.models import ModelAnswer
 
@@ -59,25 +60,11 @@ class SpeedModelVizData(View):
             answer[station[0]] = station[1]
         return answer
 
-    def get(self, request, sceneId):
+    def get_model_data(self, execution_obj, metro_line_name, metro_tracks, direction, operation_period_name, attributes):
+        """ get data have gotten from execution instance """
 
-        # check that user is owner
-        try:
-            Scene.objects.get(user=request.user, id=sceneId)
-        except:
-            raise Http404
-
-        # attributes to retrieve
-        attributes = request.GET.getlist("attributes[]", []) + ["Distance", "Time"]
-        direction = request.GET.get("direction", None)
-        operation_period_name = request.GET.get("operationPeriod", None)
-        metro_line_name = request.GET.get("metroLineName", None)
-        metro_tracks = request.GET.getlist("tracks[]", [])
-
-        scene_id = int(sceneId)
-        execution = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()
         answer = ModelAnswer.objects.prefetch_related("metroTrack__endStation", "metroTrack__startStation").\
-            filter(execution=execution, attributeName__in=attributes, metroTrack__externalId__in=metro_tracks).\
+            filter(execution=execution_obj, attributeName__in=attributes, metroTrack__externalId__in=metro_tracks).\
             values_list("operationPeriod__name", "metroLine__name", "direction", "metroTrack__name",
                         "metroTrack__startStation__name", "metroTrack__endStation__name", "attributeName", "value").\
             order_by("operationPeriod__id", "metroLine__id", "direction", "metroTrack__id", "attributeName",
@@ -108,9 +95,35 @@ class SpeedModelVizData(View):
                 groupElement["attributes"][key2] = [v[7] for v in group2]
             groups.append(groupElement)
 
+        return groups
+
+    def get(self, request, sceneId):
+
+        # check that user is owner
+        try:
+            Scene.objects.get(user=request.user, id=sceneId)
+        except:
+            raise Http404
+
+        # attributes to retrieve
+        attributes = request.GET.getlist("attributes[]", []) + ["Distance", "Time"]
+        direction = request.GET.get("direction", None)
+        operation_period_name = request.GET.get("operationPeriod", None)
+        metro_line_name = request.GET.get("metroLineName", None)
+        metro_tracks = request.GET.getlist("tracks[]", [])
+
+        scene_id = int(sceneId)
+        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()
+
         response = {
-            "answer": groups,
             "dwellTime": self.get_dwell_time(operation_period_name, metro_line_name, direction, scene_id)
         }
+        if execution_obj is None:
+            Status.getJsonStatus(Status.LAST_MODEL_ANSWER_DATA_DOES_NOT_EXISTS_ERROR, response)
+        elif execution_obj.status != ModelExecutionHistory.OK:
+            Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, response)
+        else:
+            response["answer"] = self.get_model_data(execution_obj, metro_line_name, metro_tracks, direction,
+                                                     operation_period_name, attributes)
 
         return JsonResponse(response, safe=False)
