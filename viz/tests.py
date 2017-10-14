@@ -4,6 +4,8 @@ from django.utils import timezone
 
 from scene.tests.testHelper import TestHelper
 from scene.models import MetroLine, MetroStation, OperationPeriod, MetroTrack
+from scene.statusResponse import Status
+
 from cmmmodel.models import ModelExecutionHistory, Model
 from cmmmodel.saveJobResponse import process_answer
 
@@ -38,14 +40,16 @@ class SpeedModelVizTest(TestCase):
 
         stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L1) for
                     index in range(1, 11)]
-        [MetroTrack.objects.create(metroLine=L1, name="t{}".format(index),
-                                   startStation_id=stations[0].id, endStation_id=stations[0].id) for index in range(9)]
+        for index, station in enumerate(stations[:-1]):
+            MetroTrack.objects.create(metroLine=L1, name="Track{}".format(index),
+                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
 
         L2 = MetroLine.objects.create(scene=self.scene_obj, name="L2", externalId=uuid.uuid4())
-        [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L2) for index in
-         range(12, 24)]
-        [MetroTrack.objects.create(metroLine=L2, name="t{}".format(index),
-                                   startStation_id=stations[0].id, endStation_id=stations[0].id) for index in range(11)]
+        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L2) for
+                    index in range(12, 24)]
+        for index, station in enumerate(stations[:-1]):
+            MetroTrack.objects.create(metroLine=L2, name="Track{}".format(index),
+                                   startStation_id=station.id, endStation_id=stations[index + 1].id)
 
         OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP1",
                                        start="09:00:00", end="10:00:00", temperature=0, humidity=0, co2Concentration=0,
@@ -75,13 +79,54 @@ class SpeedModelVizTest(TestCase):
         URL = reverse("viz:speedModel", kwargs={"sceneId": 1000})
         self.testHelper.make_get_request(URL, {}, expected_response=None, expected_server_response_code=404)
 
-    def test_getSpeedModelData(self):
-        """ ask model output data """
+    def test_getSpeedModelDataWithExecutionRunning(self):
+        """ ask model output data with last execution status == runnning """
 
         URL = reverse("viz:speedModelData", kwargs={"sceneId": self.scene_obj.id})
+
+        params = {
+            "direction": "g",
+            "operationPeriod": "OP1",
+            "metroLineName": "L1",
+            "tracks[]": [str(mt.externalId) for mt in MetroTrack.objects.all()],
+            "attributes[]": ["velDist", "Speedlimit", "Time"]
+        }
+
+        # with error because last execution of model is running
         response = self.testHelper.make_get_request(URL, {}, expected_response=None)
         content = json.loads(response.content.decode("utf-8"))
 
-        # self.assertEqual(len(content["answer"][0]["attributes"]), 4)
-        # does not show anything because id of structures (lines, stations, etc) is different respect to file
-        self.assertEqual(len(content["answer"]), 0)
+        self.assertNotIn("answer", content.keys())
+        self.assertEqual(content["status"]["code"],
+                         Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, {})["status"]["code"])
+        self.assertEqual(content["status"]["message"],
+                         Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, {})["status"]["message"])
+
+    def test_getSpeedModelDataWithOKExecution(self):
+        """ ask model output data with last execution status ok """
+
+        URL = reverse("viz:speedModelData", kwargs={"sceneId": self.scene_obj.id})
+
+        # simulate execution finished well
+        ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
+
+        params = {
+            "direction": "g",
+            "operationPeriod": "OP1",
+            "metroLineName": "L1",
+            "tracks[]": [str(mt.externalId) for mt in MetroTrack.objects.all()],
+            "attributes[]": ["velDist", "Speedlimit", "Time"]
+        }
+
+        response = self.testHelper.make_get_request(URL, params, expected_response=None)
+        content = json.loads(response.content.decode("utf-8"))
+
+        self.assertEqual(len(content["answer"]), 9)
+        for track in  content["answer"]:
+            self.assertIn("name", track.keys())
+            self.assertIn("direction", track.keys())
+            self.assertIn("startStation", track.keys())
+            self.assertIn("endStation", track.keys())
+            self.assertIn("Speedlimit", track["attributes"])
+            self.assertIn("velDist", track["attributes"])
+            self.assertIn("Time", track["attributes"])

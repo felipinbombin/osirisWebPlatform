@@ -106,7 +106,7 @@ class SpeedModelVizData(View):
             raise Http404
 
         # attributes to retrieve
-        attributes = request.GET.getlist("attributes[]", []) + ["Distance", "Time"]
+        attributes = request.GET.getlist("attributes[]", [])
         direction = request.GET.get("direction", None)
         operation_period_name = request.GET.get("operationPeriod", None)
         metro_line_name = request.GET.get("metroLineName", None)

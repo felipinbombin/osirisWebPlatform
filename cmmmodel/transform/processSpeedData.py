@@ -40,17 +40,14 @@ class ProcessSpeedData(ProcessData):
         object_list = []
 
         for metric in self.metrics:
-            for line_obj in line_objs:
+            for line_index, line_obj in enumerate(line_objs):
                 track_objs = line_obj.metrotrack_set.all().order_by("id")
                 # metro line metrics direction = going (g) or reverse (r)
                 for direction in [0, 1]:
                     system_direction = MetroLineMetric.GOING if direction == 0 else MetroLineMetric.REVERSE
-                    for operation_period in operation_periods:
+                    for op_index, operation_period in enumerate(operation_periods):
                         for track_index, track_obj in enumerate(track_objs):
-                            line_id = line_obj.id - line_objs[0].id
-                            op_id = operation_period.id - operation_periods[0].id
-                            track_id = track_obj.id - track_objs[0].id
-                            values = data[metric["name"]][line_id][direction][op_id][track_id]
+                            values = data[metric["name"]][line_index][direction][op_index][track_index]
 
                             if not isinstance(values, numpy.ndarray):
                                 values = [values]
@@ -69,6 +66,7 @@ class ProcessSpeedData(ProcessData):
 
         # NAMES
         FILE_NAME = "Velocidad"
+        FILE_EXTENSION = ".xlsx"
 
         WORKSHEET_NAME = "Speed"
         DESCRIPTION = "Descripción"
@@ -84,9 +82,9 @@ class ProcessSpeedData(ProcessData):
         ATTR2_NAME = "Distancia [m]"
 
         # data
-        line_objs = list(MetroLine.objects.prefetch_related("metrotrack_set__startStation",
-                                                            "metrostation_set__endstation").filter(scene=self.scene_obj).order_by("id"))
-        operation_periods = list(OperationPeriod.objects.filter(scene=self.scene_obj).order_by("id"))
+        line_objs = MetroLine.objects.prefetch_related("metrotrack_set__startStation",
+                                                       "metrostation_set__endstation").filter(scene=self.scene_obj).order_by("id")
+        operation_periods = OperationPeriod.objects.filter(scene=self.scene_obj).order_by("id")
 
         stringIO = BytesIO()
         workbook = xlsxwriter.Workbook(stringIO, {'in_memory': True})
@@ -109,9 +107,9 @@ class ProcessSpeedData(ProcessData):
             current_column += 1
         current_row += 1
 
-        for line_obj in line_objs:
-            track_objs = list(line_obj.metrotrack_set.all().order_by("id"))
-            for operation_period in operation_periods:
+        for line_index, line_obj in enumerate(line_objs):
+            track_objs = line_obj.metrotrack_set.all().order_by("id")
+            for op_index, operation_period in enumerate(operation_periods):
                 for direction in [0, 1]:
                     worksheet.write(current_row, 0, line_obj.name)
                     worksheet.write(current_row, 1, operation_period.name)
@@ -128,11 +126,7 @@ class ProcessSpeedData(ProcessData):
                             track_name = track_obj.get_name()
                         worksheet.write(current_row, 2, track_name)
 
-                        line_id = line_objs.index(line_obj)
-                        op_id = operation_periods.index(operation_period)
-                        track_id = track_objs.index(track_obj)
-
-                        values = data[ATTR][line_id][direction][op_id][track_id]
+                        values = data[ATTR][line_index][direction][op_index][track_index]
 
                         worksheet.write(current_row, 3, ATTR2_NAME)
                         worksheet.write(current_row + 1, 3, ATTR_NAME)
@@ -144,6 +138,7 @@ class ProcessSpeedData(ProcessData):
                         current_row += 3
 
         workbook.close()
-        now = timezone.now()
+        now = timezone.now().replace(microsecond=0)
         self.execution_obj.timestampFile = now
-        self.execution_obj.downloadFile.save("{}_{}.xlsx".format(FILE_NAME, now), ContentFile(stringIO.getvalue()))
+        self.execution_obj.downloadFile.save("{}_{}{}".format(FILE_NAME, now, FILE_EXTENSION),
+                                             ContentFile(stringIO.getvalue()))

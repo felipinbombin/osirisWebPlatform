@@ -109,7 +109,7 @@ $(document).ready(function(){
             operationPeriod: SELECTED_OPERATION_PERIOD.val(),
             metroLineName: selectedLine,
             tracks: tracksPositions,
-            attributes: ["velDist", "Speedlimit"]
+            attributes: ["velDist", "Speedlimit", "Time"]
         };
 
         if(makeAjaxCall) {
