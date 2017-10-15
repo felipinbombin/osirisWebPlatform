@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-# Create your views here.
 from abc import ABCMeta, abstractmethod
 from django.utils import timezone
 
@@ -17,7 +16,6 @@ class ExcelReader(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, scene):
-
         scene.refresh_from_db()
         self.scene = scene
 
@@ -55,12 +53,12 @@ class Step1ExcelReader(ExcelReader):
                 station.save()
 
                 # create tracks
-                if index < len(stations)-1:
-                    nextStation = stations[index+1]
+                if index < len(stations) - 1:
+                    nextStation = stations[index + 1]
                     name = station.name + "-" + nextStation.name
                     metroTrack, created = MetroTrack.objects.get_or_create(metroLine=line, name=name,
-                                                                           defaults={"startStation":station,
-                                                                                     "endStation":nextStation})
+                                                                           defaults={"startStation": station,
+                                                                                     "endStation": nextStation})
                     if not created:
                         metroTrack.startStation = station
                         metroTrack.endStation = nextStation
@@ -152,8 +150,8 @@ class Step3ExcelReader(ExcelReader):
                 station.save()
 
                 # create tracks
-                if index < len(stations)-1:
-                    nextStation = stations[index+1]
+                if index < len(stations) - 1:
+                    nextStation = stations[index + 1]
                     name = station.name + "-" + nextStation.name
                     metroTrack = MetroTrack.objects.get(metroLine=line, name=name)
                     metroTrack.auxiliariesConsumption = worksheet.cell_value(currentRow, 8)
@@ -164,7 +162,7 @@ class Step3ExcelReader(ExcelReader):
 
             currentRow = firstRow
             for depot in depots:
-                depot.auxConsumption = worksheet.cell_value(currentRow, 12) 
+                depot.auxConsumption = worksheet.cell_value(currentRow, 12)
                 depot.ventilationConsumption = worksheet.cell_value(currentRow, 13)
                 depot.dcConsumption = worksheet.cell_value(currentRow, 14)
                 depot.save()
@@ -188,6 +186,7 @@ class Step3ExcelReader(ExcelReader):
 
         self.scene.timeStampStep3File = timezone.now()
         self.scene.save()
+
 
 class Step5ExcelReader(ExcelReader):
     """ create excel file for step 5 """
@@ -380,7 +379,7 @@ class Step5ExcelReader(ExcelReader):
 
             currentRow += 4 + SEPARATION_HEIGHT + 2
             currentColumn = 1
-            
+
             for period in periods:
                 OperationPeriodForMetroLine.objects.create(
                     operationPeriod=period,
@@ -389,7 +388,7 @@ class Step5ExcelReader(ExcelReader):
                     value=worksheet.cell_value(currentRow, currentColumn),
                     direction=None)
                 currentColumn += 1
-           
+
             currentRow += SEPARATION_HEIGHT + 3
             currentColumn = 1
 
@@ -407,6 +406,7 @@ class Step5ExcelReader(ExcelReader):
 
         self.scene.timeStampStep5File = timezone.now()
         self.scene.save()
+
 
 class Step6ExcelReader(ExcelReader):
     """ create excel file for step 6 """
