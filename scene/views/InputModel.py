@@ -1,4 +1,4 @@
-from cmmmodel.clusterConnection import  get_input_data
+from cmmmodel.clusterConnection import get_input_data
 
 
 class InputModel:

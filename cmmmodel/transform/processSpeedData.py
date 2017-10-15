@@ -99,11 +99,11 @@ class ProcessSpeedData(ProcessData):
         current_column = first_column_index
         # header
         corner = (current_row, first_column_index)
-        excel_helper.makeTitleCell(worksheet, corner, DESCRIPTION, width=2)
+        excel_helper.make_title_cell(worksheet, corner, DESCRIPTION, width=2)
         current_row += 1
         for description in [LINE_DESCRIPTION, OP_DESCRIPTION, TRACK_DESCRIPTION]:
             corner = (current_row, current_column)
-            excel_helper.makeTitleCell(worksheet, corner, description)
+            excel_helper.make_title_cell(worksheet, corner, description)
             current_column += 1
         current_row += 1
 

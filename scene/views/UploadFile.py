@@ -46,17 +46,17 @@ class UploadFile(View):
 
         return response
 
-    def post(self, request, sceneId):
+    def post(self, request, scene_id):
         """ validate and update data in server """
 
-        sceneId = int(sceneId)
+        scene_id = int(scene_id)
 
         sceneObj = Scene.objects.\
             prefetch_related('metroline_set__metrostation_set',
                              'metroline_set__metrodepot_set',
                              'metroline_set__metrotrack_set',
                              'operationperiod_set').\
-            get(user=request.user, id=sceneId)
+            get(user=request.user, id=scene_id)
 
         response = {}
 
@@ -104,7 +104,7 @@ class UploadTopologicFile(UploadFile):
 
     def processFile(self, scene, inMemoryFile):
         # validate, update and insert new data
-        Step1ExcelReader(scene).processFile(inMemoryFile)
+        Step1ExcelReader(scene).process_file(inMemoryFile)
 
         # save file
         self.updateCurrentStep(scene, scene.step1File, inMemoryFile, 2)
@@ -120,7 +120,7 @@ class UploadSystemicFile(UploadFile):
 
     def processFile(self, scene, inMemoryFile):
         # validate, update and insert new data
-        Step3ExcelReader(scene).processFile(inMemoryFile)
+        Step3ExcelReader(scene).process_file(inMemoryFile)
 
         # save file
         self.updateCurrentStep(scene, scene.step3File, inMemoryFile, 4)
@@ -136,7 +136,7 @@ class UploadOperationalFile(UploadFile):
 
     def processFile(self, scene, inMemoryFile):
         # validate, update and insert new data
-        Step5ExcelReader(scene).processFile(inMemoryFile)
+        Step5ExcelReader(scene).process_file(inMemoryFile)
         # save file
         self.updateCurrentStep(scene, scene.step5File, inMemoryFile, 6)
 
@@ -151,7 +151,7 @@ class UploadSpeedFile(UploadFile):
 
     def processFile(self, scene, inMemoryFile):
         # validate, update and insert new data
-        Step6ExcelReader(scene).processFile(inMemoryFile)
+        Step6ExcelReader(scene).process_file(inMemoryFile)
         # save file
         self.updateCurrentStep(scene, scene.step6File, inMemoryFile, 6)
 

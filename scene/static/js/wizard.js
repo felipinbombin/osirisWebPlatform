@@ -11,10 +11,10 @@ $(document).ready(function(){
     /**
      * return view model of step 'id'
      * */
-    let getViewModel = function(id, StepViewModel){
-        let stepId = "step-" + (id + 1);
-        let stepDOM = document.getElementById(stepId);
-        let viewModel = ko.dataFor(stepDOM);
+    var getViewModel = function(id, StepViewModel){
+        var stepId = "step-" + (id + 1);
+        var stepDOM = document.getElementById(stepId);
+        var viewModel = ko.dataFor(stepDOM);
 
         if (viewModel === undefined) {
             viewModel = new StepViewModel();
@@ -25,7 +25,7 @@ $(document).ready(function(){
     };
 
     // Initialize the leaveStep event
-    let wizard = $("#wizard");
+    var wizard = $("#wizard");
     wizard.on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
         return true;
     });
@@ -39,7 +39,7 @@ $(document).ready(function(){
         // activate spinjs
         spinner.spin(spinnerParentDOM);
 
-        let currentStepViewModel = null;
+        var currentStepViewModel = null;
         switch (stepNumber) {
             case 0:
                 currentStepViewModel = getViewModel(stepNumber, Step0ViewModel);
@@ -70,18 +70,18 @@ $(document).ready(function(){
         }
     });
 
-    let nextLogic = function(){
+    var nextLogic = function(){
 
         // activate spinjs
         spinner.spin(spinnerParentDOM);
 
-        let getUrl = function(stepId){
+        var getUrl = function(stepId){
             const validateURL = "/admin/scene/wizard/validate/";
             return validateURL + stepId + "/" + sceneId;
         };
 
-        let currentStepViewModel = null;
-        let currentStep = parseInt(window.location.hash.split("-")[1]) - 1;
+        var currentStepViewModel = null;
+        var currentStep = parseInt(window.location.hash.split("-")[1]) - 1;
 
         // what to do it depends of the step
         // 0, 2, 4 => get step view model
@@ -119,7 +119,7 @@ $(document).ready(function(){
             case 2:
             case 4:
                 if(currentStepViewModel.isValid()){
-                    let data = currentStepViewModel.serialize();
+                    var data = currentStepViewModel.serialize();
                     console.log(data);
                     $.post(getUrl(currentStep), data, function(answer){
                         spinner.stop();
@@ -133,18 +133,18 @@ $(document).ready(function(){
                 break;
         }
     };
-    let finalButton = $("<button></button>").text("Finalizar")
+    var finalButton = $("<button></button>").text("Finalizar")
                       .addClass("btn btn-dark")
                       .on("click", function(){
                         alert("Finish button click");
                         console.log(this);
                       });
-    let prevButton = $("<button></button>").text("Anterior")
+    var prevButton = $("<button></button>").text("Anterior")
                       .addClass("btn btn-default")
                       .on("click", function(){
                         $("#wizard").smartWizard("prev");
                       });
-    let nextButton = $("<button></button>").text("Guardar y avanzar")
+    var nextButton = $("<button></button>").text("Guardar y avanzar")
                       .addClass("btn btn-default")
                       .css("padding-right", "5px")
                       .on("click", nextLogic);

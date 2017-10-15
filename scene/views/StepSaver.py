@@ -32,6 +32,7 @@ class Step0Saver(StepSaver):
     """
     logic to save step 0 data
     """
+
     def validate(self, data):
         return True
 
@@ -43,70 +44,70 @@ class Step0Saver(StepSaver):
         MetroStation.objects.filter(metroLine__scene=self.scene).update(isOld=True)
         MetroDepot.objects.filter(metroLine__scene=self.scene).update(isOld=True)
         MetroConnection.objects.filter(scene=self.scene).update(isOld=True)
-        MetroConnectionStation.objects.filter(metroConnection__scene=self.scene).\
+        MetroConnectionStation.objects.filter(metroConnection__scene=self.scene). \
             update(isOld=True)
 
         for line in data['lines']:
-            externalId = line['id']
+            external_id = line['id']
             name = line['name']
-            if externalId:
-                lineObj = MetroLine.objects.get(scene=self.scene, externalId=externalId)
-                lineObj.name = name
-                lineObj.isOld = False
-                lineObj.save()
+            if external_id:
+                line_obj = MetroLine.objects.get(scene=self.scene, externalId=external_id)
+                line_obj.name = name
+                line_obj.isOld = False
+                line_obj.save()
             else:
-                lineObj = MetroLine.objects.create(scene=self.scene, name=name,
-                                                   externalId=uuid.uuid4())
+                line_obj = MetroLine.objects.create(scene=self.scene, name=name,
+                                                    externalId=uuid.uuid4())
 
             for station in line['stations']:
                 if station['id']:
-                    MetroStation.objects.filter(metroLine=lineObj, externalId=station['id']). \
+                    MetroStation.objects.filter(metroLine=line_obj, externalId=station['id']). \
                         update(name=station['name'], isOld=False)
                 else:
-                    MetroStation.objects.create(metroLine=lineObj, name=station['name'], externalId=uuid.uuid4())
+                    MetroStation.objects.create(metroLine=line_obj, name=station['name'], externalId=uuid.uuid4())
 
             for depot in line['depots']:
                 if depot['id']:
-                    MetroDepot.objects.filter(metroLine=lineObj, externalId=depot['id']). \
+                    MetroDepot.objects.filter(metroLine=line_obj, externalId=depot['id']). \
                         update(name=depot['name'], isOld=False)
                 else:
-                    MetroDepot.objects.create(metroLine=lineObj, name=depot['name'], externalId=uuid.uuid4())
+                    MetroDepot.objects.create(metroLine=line_obj, name=depot['name'], externalId=uuid.uuid4())
 
         for connection in data['connections']:
             # global connections
-            externalId = connection['id']
-            avgHeight = float(connection['avgHeight'])
-            avgSurface = float(connection['avgSurface'])
-            if externalId:
-                connectionObj = MetroConnection.objects.prefetch_related('stations'). \
-                    get(scene=self.scene, externalId=externalId)
-                connectionObj.name = connection['name']
-                connectionObj.avgHeight = avgHeight
-                connectionObj.avgSurface = avgSurface
-                connectionObj.isOld = False
-                connectionObj.save()
+            external_id = connection['id']
+            avg_height = float(connection['avgHeight'])
+            avg_surface = float(connection['avgSurface'])
+            if external_id:
+                connection_obj = MetroConnection.objects.prefetch_related('stations'). \
+                    get(scene=self.scene, externalId=external_id)
+                connection_obj.name = connection['name']
+                connection_obj.avgHeight = avg_height
+                connection_obj.avgSurface = avg_surface
+                connection_obj.isOld = False
+                connection_obj.save()
             else:
-                connectionObj = MetroConnection.objects.create(scene=self.scene, name=connection['name'],
-                                                               avgHeight=avgHeight, avgSurface=avgSurface,
-                                                               externalId=uuid.uuid4())
+                connection_obj = MetroConnection.objects.create(scene=self.scene, name=connection['name'],
+                                                                avgHeight=avg_height, avgSurface=avg_surface,
+                                                                externalId=uuid.uuid4())
 
-            for connectionStation in connection['stations']:
-                station = connectionStation['station']
-                line = connectionStation['line']
+            for connection_station in connection['stations']:
+                station = connection_station['station']
+                line = connection_station['line']
 
                 if station['id']:
-                    stationObj = MetroStation.objects.get(metroLine__scene=self.scene, externalId=station['id'])
+                    station_obj = MetroStation.objects.get(metroLine__scene=self.scene, externalId=station['id'])
                 else:
-                    stationObj = MetroStation.objects.get(metroLine__name=line['name'],
-                                                          metroLine__scene=self.scene, name=station['name'])
+                    station_obj = MetroStation.objects.get(metroLine__name=line['name'],
+                                                           metroLine__scene=self.scene, name=station['name'])
 
-                if connectionStation['id']:
-                    MetroConnectionStation.objects.filter(metroConnection=connectionObj,
-                                                          externalId=connectionStation['id']).update(
-                        metroStation=stationObj, isOld=False)
+                if connection_station['id']:
+                    MetroConnectionStation.objects.filter(metroConnection=connection_obj,
+                                                          externalId=connection_station['id']).update(
+                        metroStation=station_obj, isOld=False)
                 else:
-                    MetroConnectionStation.objects.create(metroConnection=connectionObj,
-                                                          metroStation=stationObj, externalId=uuid.uuid4())
+                    MetroConnectionStation.objects.create(metroConnection=connection_obj,
+                                                          metroStation=station_obj, externalId=uuid.uuid4())
 
         MetroLine.objects.filter(scene=self.scene, isOld=True).delete()
         MetroStation.objects.filter(metroLine__scene=self.scene, isOld=True).delete()
@@ -120,12 +121,12 @@ class Step0Saver(StepSaver):
             self.scene.save()
 
         # create template file for step 1
-        step1Excel = Step1ExcelWriter(self.scene)
-        step1Excel.createFile()
+        step1_excel = Step1ExcelWriter(self.scene)
+        step1_excel.create_file()
 
         # create template file for step 3
-        step3Excel = Step3ExcelWriter(self.scene)
-        step3Excel.createFile()
+        step3_excel = Step3ExcelWriter(self.scene)
+        step3_excel.create_file()
 
         return True
 
@@ -146,23 +147,23 @@ class Step2Saver(StepSaver):
         elif data is None or data == "":
             response = Status.getJsonStatus(Status.EXCEL_ERROR, {})
             response["status"]["message"] = u"El valor del campo {} no puede ser vacío.".format(attr_name, data)
-            raise(OsirisException(response))
+            raise (OsirisException(response))
 
         return True
 
     def save(self, data):
         super(Step2Saver, self).save(data)
 
-        systemicParamsData = data['systemicParams']
+        systemic_params_data = data['systemicParams']
         connections = data['connections']
 
         if SystemicParams.objects.filter(scene=self.scene).count() == 0:
             SystemicParams.objects.create(scene=self.scene)
 
-        SystemicParams.objects.filter(scene=self.scene).update(**systemicParamsData)
+        SystemicParams.objects.filter(scene=self.scene).update(**systemic_params_data)
 
         for connection in connections:
-            MetroConnection.objects.filter(scene=self.scene, externalId=connection['id'])\
+            MetroConnection.objects.filter(scene=self.scene, externalId=connection['id']) \
                 .update(consumption=connection['consumption'])
 
         return True
@@ -214,7 +215,7 @@ class Step4Saver(StepSaver):
         OperationPeriod.objects.filter(scene=self.scene, isOld=True).delete()
 
         # create template file for step 5
-        step5Excel = Step5ExcelWriter(self.scene)
-        step5Excel.createFile()
+        step5_excel = Step5ExcelWriter(self.scene)
+        step5_excel.create_file()
 
         return True

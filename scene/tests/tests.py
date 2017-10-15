@@ -58,7 +58,7 @@ class CompleteSceneDataTest(TestCase):
     def check_step_0(self):
         """ simulate upload data for step 0 """
         STEP_0_JSON_FILE_NAME = "step0_data.json"
-        STEP_0_URL = reverse("scene:validation", kwargs={"stepId": 0, "sceneId": self.scene_obj.id})
+        STEP_0_URL = reverse("scene:validation", kwargs={"step_id": 0, "scene_id": self.scene_obj.id})
 
         with open(os.path.join(self.FILE_PATH, STEP_0_JSON_FILE_NAME)) as fp:
             data = json.loads(fp.read())
@@ -83,13 +83,13 @@ class CompleteSceneDataTest(TestCase):
 
     def check_step_1(self):
         """ simulate step 1 process """
-        STEP_1_URL = reverse("scene:validation", kwargs={"stepId": 1, "sceneId": self.scene_obj.id})
+        STEP_1_URL = reverse("scene:validation", kwargs={"step_id": 1, "scene_id": self.scene_obj.id})
         self.testHelper.make_post_request(STEP_1_URL, {})
 
     def check_step_2(self):
         """ simulate step 2 process """
         STEP_2_JSON_FILE_NAME = "step2_data.json"
-        STEP_2_URL = reverse("scene:validation", kwargs={"stepId": 2, "sceneId": self.scene_obj.id})
+        STEP_2_URL = reverse("scene:validation", kwargs={"step_id": 2, "scene_id": self.scene_obj.id})
 
         with open(os.path.join(self.FILE_PATH, STEP_2_JSON_FILE_NAME)) as fp:
             data = json.loads(fp.read())
@@ -108,13 +108,13 @@ class CompleteSceneDataTest(TestCase):
 
     def check_step_3(self):
         """ simulate step 3 process """
-        STEP_3_URL = reverse("scene:validation", kwargs={"stepId": 3, "sceneId": self.scene_obj.id})
+        STEP_3_URL = reverse("scene:validation", kwargs={"step_id": 3, "scene_id": self.scene_obj.id})
         self.testHelper.make_post_request(STEP_3_URL, {})
 
     def check_step_4(self):
         """ simulate step 4 process """
         STEP_4_JSON_FILE_NAME = "step4_data.json"
-        STEP_4_URL = reverse("scene:validation", kwargs={"stepId": 4, "sceneId": self.scene_obj.id})
+        STEP_4_URL = reverse("scene:validation", kwargs={"step_id": 4, "scene_id": self.scene_obj.id})
 
         with open(os.path.join(self.FILE_PATH, STEP_4_JSON_FILE_NAME)) as fp:
             data = json.loads(fp.read())
@@ -135,17 +135,17 @@ class CompleteSceneDataTest(TestCase):
 
     def check_step_5(self):
         """ simulate step 5 process """
-        STEP_5_URL = reverse("scene:validation", kwargs={"stepId": 5, "sceneId": self.scene_obj.id})
+        STEP_5_URL = reverse("scene:validation", kwargs={"step_id": 5, "scene_id": self.scene_obj.id})
         self.testHelper.make_post_request(STEP_5_URL, {})
 
     def check_step_6(self):
         """ simulate step 6 process """
-        STEP_6_URL = reverse("scene:validation", kwargs={"stepId": 6, "sceneId": self.scene_obj.id})
+        STEP_6_URL = reverse("scene:validation", kwargs={"step_id": 6, "scene_id": self.scene_obj.id})
         self.testHelper.make_post_request(STEP_6_URL, {})
 
     def upload_topologic_file(self):
         """ simulate step 1 uploading excel file """
-        UPLOAD_TOPOLOGIC_FILE_URL = reverse("scene:uploadTopologicFile", kwargs={"sceneId": self.scene_obj.id})
+        UPLOAD_TOPOLOGIC_FILE_URL = reverse("scene:uploadTopologicFile", kwargs={"scene_id": self.scene_obj.id})
 
         # upload file
         with open(os.path.join(self.FILE_PATH, TOPOLOGIC_FILE_NAME), "rb") as fp:
@@ -198,7 +198,7 @@ class CompleteSceneDataTest(TestCase):
 
     def upload_systemic_file(self):
         """ simulate step 3 uploading excel file """
-        UPLOAD_SYSTEMIC_FILE_URL = reverse("scene:uploadSystemicFile", kwargs={"sceneId": self.scene_obj.id})
+        UPLOAD_SYSTEMIC_FILE_URL = reverse("scene:uploadSystemicFile", kwargs={"scene_id": self.scene_obj.id})
 
         # upload file
         with open(os.path.join(self.FILE_PATH, SYSTEMIC_FILE_NAME), "rb") as fp:
@@ -241,7 +241,7 @@ class CompleteSceneDataTest(TestCase):
 
     def upload_operation_file(self):
         """ simulate step 5 uploading excel file """
-        UPLOAD_OPERATION_FILE_URL = reverse("scene:uploadOperationalFile", kwargs={"sceneId": self.scene_obj.id})
+        UPLOAD_OPERATION_FILE_URL = reverse("scene:uploadOperationalFile", kwargs={"scene_id": self.scene_obj.id})
 
         # upload file
         with open(os.path.join(self.FILE_PATH, OPERATION_FILE_NAME), "rb") as fp:
@@ -280,7 +280,7 @@ class CompleteSceneDataTest(TestCase):
         """ simulate step 6 uploading excel file """
         pass
         """
-        UPLOAD_SPEED_FILE_URL = reverse("scene:uploadSpeedFile", kwargs={"sceneId": self.scene_obj.id})
+        UPLOAD_SPEED_FILE_URL = reverse("scene:uploadSpeedFile", kwargs={"scene_id": self.scene_obj.id})
         
         # upload file
         with open(os.path.join(self.FILE_PATH, SPEED_FILE_NAME), "rb") as fp:
@@ -323,14 +323,14 @@ class CompleteSceneDataTest(TestCase):
 
         # check that i can download files
         file_urls = [
-            reverse("scene:downloadStepFile", kwargs={"stepId": 1, "sceneId": self.scene_obj.id}),
-            reverse("scene:downloadStepFile", kwargs={"stepId": 3, "sceneId": self.scene_obj.id}),
-            reverse("scene:downloadStepFile", kwargs={"stepId": 5, "sceneId": self.scene_obj.id}),
-            #reverse("scene:downloadStepFile", kwargs={"stepId": 6, "sceneId": self.scene_obj.id}),
-            reverse("scene:downloadStepTemplate", kwargs={"stepId": 1, "sceneId": self.scene_obj.id}),
-            reverse("scene:downloadStepTemplate", kwargs={"stepId": 3, "sceneId": self.scene_obj.id}),
-            reverse("scene:downloadStepTemplate", kwargs={"stepId": 5, "sceneId": self.scene_obj.id}),
-            #reverse("scene:downloadStepTemplate", kwargs={"stepId": 6, "sceneId": self.scene_obj.id}),
+            reverse("scene:downloadStepFile", kwargs={"step_id": 1, "scene_id": self.scene_obj.id}),
+            reverse("scene:downloadStepFile", kwargs={"step_id": 3, "scene_id": self.scene_obj.id}),
+            reverse("scene:downloadStepFile", kwargs={"step_id": 5, "scene_id": self.scene_obj.id}),
+            #reverse("scene:downloadStepFile", kwargs={"step_id": 6, "scene_id": self.scene_obj.id}),
+            reverse("scene:downloadStepTemplate", kwargs={"step_id": 1, "scene_id": self.scene_obj.id}),
+            reverse("scene:downloadStepTemplate", kwargs={"step_id": 3, "scene_id": self.scene_obj.id}),
+            reverse("scene:downloadStepTemplate", kwargs={"step_id": 5, "scene_id": self.scene_obj.id}),
+            #reverse("scene:downloadStepTemplate", kwargs={"step_id": 6, "scene_id": self.scene_obj.id}),
         ]
         file_paths = [
             self.scene_obj.step1File.url, self.scene_obj.step3File.url, self.scene_obj.step5File.url,

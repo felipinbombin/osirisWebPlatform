@@ -156,7 +156,7 @@ $(document).ready(function () {
             spinner.spin(spinnerParentDOM);
             // retrieve model data
             var data = {
-                "sceneId": SCENE_ID
+                scene_id: SCENE_ID
             };
             $.get(MODEL_INFO_URL, data, function(response) {
                 self.updateButtonsView(response);
@@ -174,9 +174,9 @@ $(document).ready(function () {
                 }
             });
             var data = {
-                sceneId: SCENE_ID,
-                modelId: modelId,
-                nextModelIds: nextModelIds
+                scene_id: SCENE_ID,
+                model_id: modelId,
+                next_model_ids: nextModelIds
             };
             // activate spinjs
             spinner.spin(spinnerParentDOM);
@@ -203,8 +203,8 @@ $(document).ready(function () {
                 }
             });
             var data = {
-                "sceneId": SCENE_ID,
-                "modelId": modelId
+                scene_id: SCENE_ID,
+                model_id: modelId
             };
             // activate spinjs
             spinner.spin(spinnerParentDOM);

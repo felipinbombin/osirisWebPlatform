@@ -18,15 +18,18 @@ from scene.sceneExceptions import OsirisException
 
 import json
 
+
 class StepsView(View):
     """ wizard form: first  """
+
     def __init__(self):
+        super(StepsView, self).__init__()
         self.context = {}
         self.template = "scene/wizard.html"
 
-    def get(self, request, sceneId):
+    def get(self, request, scene_id):
         try:
-            self.context["scene"] = Scene.objects.get(user=request.user, id=sceneId)
+            self.context["scene"] = Scene.objects.get(user=request.user, id=scene_id)
         except:
             raise Http404
 
@@ -37,84 +40,85 @@ class ValidationStepView(View):
     """ validate data from step """
 
     def __init__(self):
+        super(ValidationStepView, self).__init__()
         self.context = {}
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super(ValidationStepView, self).dispatch(request, *args, **kwargs)
 
-    def post(self, request, stepId, sceneId):
+    def post(self, request, step_id, scene_id):
         """ validate and update data in server """
 
-        stepId = int(stepId)
-        sceneId = int(sceneId)
+        step_id = int(step_id)
+        scene_id = int(scene_id)
 
-        sceneObj = Scene.objects.prefetch_related("metroline_set__metrostation_set", 
-                       "metroline_set__metrodepot_set", "operationperiod_set").\
-                       get(user=request.user, id=sceneId)
+        scene_obj = Scene.objects.prefetch_related("metroline_set__metrostation_set",
+                                                   "metroline_set__metrodepot_set", "operationperiod_set"). \
+            get(user=request.user, id=scene_id)
         response = {}
         try:
             with transaction.atomic():
-                if stepId == 0:
+                if step_id == 0:
                     # global topologic variables
                     data = json.loads(request.body.decode("UTF-8"))
 
-                    step0Saver = Step0Saver(sceneObj)
-                    step0Saver.save(data)
+                    step0_saver = Step0Saver(scene_obj)
+                    step0_saver.save(data)
 
                     response = Status.getJsonStatus(Status.OK, response)
                     response["status"]["title"] = u"Actualización exitosa"
                     response["status"]["message"] = u"Estructura topológica creada exitosamente."
 
-                elif stepId == 1:
+                elif step_id == 1:
                     # check if file was uploaded successfully
-                    if sceneObj.currentStep >= 1:
+                    if scene_obj.currentStep >= 1:
                         Status.getJsonStatus(Status.OK, response)
                         response["status"]["title"] = u"Actualización exitosa"
                         response["status"]["message"] = u"Archivo subido exitosamente."
                     else:
                         Status.getJsonStatus(Status.INVALID_STEP_ERROR, response)
-                elif stepId == 2:
+                elif step_id == 2:
                     # global systemic variables
                     data = json.loads(request.body.decode("utf-8"))
 
-                    step2Saver = Step2Saver(sceneObj)
-                    step2Saver.save(data)
+                    step2_saver = Step2Saver(scene_obj)
+                    step2_saver.save(data)
 
                     response = Status.getJsonStatus(Status.OK, response)
                     response["status"]["title"] = u"Actualización exitosa"
                     response["status"]["message"] = u"Variables sistemicas guardadas exitosamente."
 
-                elif stepId == 3:
+                elif step_id == 3:
                     # check if file was uploaded successfully
-                    if sceneObj.currentStep >= 3:
+                    if scene_obj.currentStep >= 3:
                         Status.getJsonStatus(Status.OK, response)
                         response["status"]["title"] = u"Actualización exitosa"
                         response["status"]["message"] = u"Archivo subido exitosamente."
                     else:
                         Status.getJsonStatus(Status.INVALID_STEP_ERROR, response)
-                elif stepId == 4:
+                elif step_id == 4:
                     # global operational variables
                     data = json.loads(request.body.decode("utf-8"))
 
-                    step4Saver = Step4Saver(sceneObj)
-                    step4Saver.save(data)
+                    step4_saver = Step4Saver(scene_obj)
+                    step4_saver.save(data)
 
                     response = Status.getJsonStatus(Status.OK, response)
                     response["status"]["title"] = u"Actualización exitosa"
                     response["status"]["message"] = u"Los datos han sido guardados"
 
-                elif stepId == 5:
+                elif step_id == 5:
                     # check if file was uploaded successfully
-                    if sceneObj.currentStep >= 5:
+                    if scene_obj.currentStep >= 5:
                         Status.getJsonStatus(Status.OK, response)
                         response["status"]["title"] = u"Actualización exitosa"
                         response["status"]["message"] = u"Archivo subido exitosamente."
-                        sceneObj.status = Scene.OK
-                        sceneObj.save()
+                        scene_obj.status = Scene.OK
+                        scene_obj.save()
                     else:
                         Status.getJsonStatus(Status.INVALID_STEP_ERROR, response)
-                elif stepId == 6:
+                elif step_id == 6:
                     Status.getJsonStatus(Status.OK, response)
                     response["status"]["title"] = u"Actualización exitosa"
                     response["status"]["message"] = u"Archivo subido exitosamente."

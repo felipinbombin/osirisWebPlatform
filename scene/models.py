@@ -11,12 +11,11 @@ import uuid
 
 
 class OverwriteStorage(FileSystemStorage):
-
     # This method is actually defined in Storage
     def get_available_name(self, name, max_length):
         if self.exists(name):
             os.remove(os.path.join(settings.MEDIA_ROOT, name))
-        return name # simply returns the name passed
+        return name  # simply returns the name passed
 
 
 class Scene(models.Model):
@@ -29,7 +28,7 @@ class Scene(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     INCOMPLETE = 'In'
-    OK = 'OK' 
+    OK = 'OK'
     STATUS = (
         (INCOMPLETE, 'Incompleto'),
         (OK, 'Completo'),
@@ -178,7 +177,7 @@ class MetroDepot(models.Model):
         depot_dict = {'id': self.externalId, 'name': self.name}
 
         return depot_dict
-   
+
 
 class MetroConnection(models.Model):
     """ connection between metro stations fo different metro lines """
@@ -211,6 +210,7 @@ class MetroConnection(models.Model):
             conn_dict['stations'].append(connectionStation.get_dict())
 
         return conn_dict
+
 
 class MetroConnectionStation(models.Model):
     """ bridge between MetroStation and MetroConnection models """
@@ -265,11 +265,11 @@ class MetroTrack(models.Model):
     """ used to track record in wizard form, this way i know if is new record or previous """
     name = models.CharField(max_length=100)
     startStation = models.ForeignKey(MetroStation,
-        related_name= 'startstation',
-        on_delete=models.CASCADE)
+                                     related_name='startstation',
+                                     on_delete=models.CASCADE)
     endStation = models.ForeignKey(MetroStation,
-        related_name= 'endstation',
-        on_delete=models.CASCADE)
+                                   related_name='endstation',
+                                   on_delete=models.CASCADE)
     crossSection = models.FloatField(null=True)
     """ unit: square meters """
     averagePerimeter = models.FloatField(null=True)
@@ -362,11 +362,11 @@ class OperationPeriodForMetroLine(models.Model):
         (PERC_AC_SUBSTATION_LOSSES_FEED_ENTIRE_SYSTEM, ''),
         (PERC_DC_SUBSTATION_LOSSES, ''),
     )
-    metric = models.CharField(max_length=50, null=True, 
-                                 choices=METRIC_CHOICES)
+    metric = models.CharField(max_length=50, null=True,
+                              choices=METRIC_CHOICES)
     value = models.FloatField(null=True)
     """ unit: depends of metric """
-    direction = models.CharField(max_length=50, null=True, 
+    direction = models.CharField(max_length=50, null=True,
                                  choices=MetroLineMetric.DIRECTION_CHOICES)
 
     def get_dict(self):
@@ -382,7 +382,7 @@ class OperationPeriodForMetroStation(models.Model):
     metroStation = models.ForeignKey(MetroStation)
     VENTILATION_FLOW = 'ventilationFlow'
     DWELL_TIME = 'dwellTime'
-    PASSENGERS_IN_STATION= 'PassengersInStations'
+    PASSENGERS_IN_STATION = 'PassengersInStations'
     METRIC_CHOICES = (
         (VENTILATION_FLOW, 'm^3/s'),
         (DWELL_TIME, 'seg'),
@@ -391,7 +391,7 @@ class OperationPeriodForMetroStation(models.Model):
     metric = models.CharField(max_length=50, null=True, choices=METRIC_CHOICES)
     value = models.FloatField(null=True)
     """ unit: depends of metric """
-    direction = models.CharField(max_length=50, null=True, 
+    direction = models.CharField(max_length=50, null=True,
                                  choices=MetroLineMetric.DIRECTION_CHOICES)
 
     def get_dict(self):
@@ -414,7 +414,7 @@ class OperationPeriodForMetroTrack(models.Model):
     metric = models.CharField(max_length=50, null=True, choices=METRIC_CHOICES)
     value = models.FloatField(null=True)
     """ unit: depends of metric """
-    direction = models.CharField(max_length=50, null=True, 
+    direction = models.CharField(max_length=50, null=True,
                                  choices=MetroLineMetric.DIRECTION_CHOICES)
 
     def get_dict(self):

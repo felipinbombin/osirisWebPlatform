@@ -17,7 +17,7 @@ class ExcelHelper:
     def __init__(self, workbook):
 
         self.workbook = workbook
-        self.cellTitleFormat = self.workbook.add_format({
+        self.cell_title_format = self.workbook.add_format({
             "bold": 1,
             "border": 1,
             "align": "center",
@@ -27,7 +27,7 @@ class ExcelHelper:
             "locked": 1,
         })
 
-        self.cellLeftTitleFormat = self.workbook.add_format({
+        self.cell_left_title_format = self.workbook.add_format({
             "bold": 1,
             "border": 1,
             "align": "left",
@@ -37,7 +37,7 @@ class ExcelHelper:
             "locked": 1,
         })
 
-        self.cellFormat = self.workbook.add_format({
+        self.cell_format = self.workbook.add_format({
             "bold": 1,
             "border": 1
         })
@@ -48,60 +48,60 @@ class ExcelHelper:
         """ write a comment on cell"""
         worksheet.write_comment(row, col, text)
 
-    def makeTextCell(self, worksheet, upperLeftCorner, text, width=0,
-                     height=0, cellFormat=None):
+    def make_text_cell(self, worksheet, upper_left_corner, text, width=0,
+                       height=0, cell_format=None):
         """ merge cells and put text """
-        upperRow = upperLeftCorner[0]
-        leftColumn = upperLeftCorner[1]
+        upper_row = upper_left_corner[0]
+        left_column = upper_left_corner[1]
 
-        lowerRow = upperRow + height
-        rightColumn = leftColumn + width
+        lower_row = upper_row + height
+        right_column = left_column + width
 
         if height == 0 and width == 0:
-            worksheet.write(upperRow, leftColumn, text, cellFormat)
-            self.fitColumnWidth(worksheet, leftColumn, text)
+            worksheet.write(upper_row, left_column, text, cell_format)
+            self.fit_column_width(worksheet, left_column, text)
         else:
-            worksheet.merge_range(upperRow, leftColumn, lowerRow, rightColumn,
-                                  text, cellFormat)
+            worksheet.merge_range(upper_row, left_column, lower_row, right_column,
+                                  text, cell_format)
 
-    def makeTitleCell(self, worksheet, upperLeftCorner, text, width=0, height=0, cellFormat=None):
+    def make_title_cell(self, worksheet, upper_left_corner, text, width=0, height=0, cell_format=None):
         """ merge cells and give title format """
-        if cellFormat is None:
-            cellFormat = self.cellTitleFormat
-        self.makeTextCell(worksheet, upperLeftCorner, text, width,
-                          height, cellFormat)
+        if cell_format is None:
+            cell_format = self.cell_title_format
+        self.make_text_cell(worksheet, upper_left_corner, text, width,
+                            height, cell_format)
 
-    def makeBlankCell(self, worksheet, upperLeftCorner):
+    def make_blank_cell(self, worksheet, upper_left_corner):
         """ merge cells and give blank cell format """
-        self.makeTextCell(worksheet, upperLeftCorner, "", 0, 0,
-                          self.cellFormat)
+        self.make_text_cell(worksheet, upper_left_corner, "", 0, 0,
+                            self.cell_format)
 
-    def makeHorizontalGrid(self, worksheet, upperLeftCorner, nameList, blankWidth):
+    def make_horizontal_grid(self, worksheet, upper_left_corner, name_list, blank_width):
         """ make grid where nameList is located in the first column and next columns are blanks"""
-        upperRow = upperLeftCorner[0]
-        leftColumn = upperLeftCorner[1]
-        rightColumn = leftColumn + blankWidth
+        upper_row = upper_left_corner[0]
+        left_column = upper_left_corner[1]
+        right_column = left_column + blank_width
 
-        currentRow = upperRow
-        for name in nameList:
-            self.makeTitleCell(worksheet, (currentRow, leftColumn), name, 0, 0, self.cellLeftTitleFormat)
+        current_row = upper_row
+        for name in name_list:
+            self.make_title_cell(worksheet, (current_row, left_column), name, 0, 0, self.cell_left_title_format)
             # apply format to empty cells
-            for col in range(leftColumn + 1, rightColumn + 1):
-                self.makeBlankCell(worksheet, (currentRow, col))
-            currentRow += 1
+            for col in range(left_column + 1, right_column + 1):
+                self.make_blank_cell(worksheet, (current_row, col))
+            current_row += 1
 
-        usedRows = len(nameList)
-        return usedRows
+        used_rows = len(name_list)
+        return used_rows
 
-    def makeParamHeader(self, worksheet, upperLeftCorner, stationNameList, title, column_title_list,
-                        print_direction=True,
-                        both_directions=True, blank_rows=0):
+    def make_param_header(self, worksheet, upper_left_corner, station_name_list, title, column_title_list,
+                          print_direction=True,
+                          both_directions=True, blank_rows=0):
         """
         Build a block of cells with title, train directions and column titles
 
         :param worksheet: xlsxWritter Excel worksheet object
-        :param stationNameList: list of stations to create direction names
-        :param upperLeftCorner: location of the block
+        :param station_name_list: list of stations to create direction names
+        :param upper_left_corner: location of the block
         :param title: main title
         :param column_title_list: list of header for each column
         :param print_direction: if print direction header. Default = True. If False so bothDirection is set to False
@@ -116,32 +116,32 @@ class ExcelHelper:
 
         """
         column_title_number = len(column_title_list)
-        row = upperLeftCorner[0]
-        column = upperLeftCorner[1]
-        titleWidth = column_title_number - 1
+        row = upper_left_corner[0]
+        column = upper_left_corner[1]
+        title_width = column_title_number - 1
 
         if print_direction and both_directions:
-            titleWidth = 2 * column_title_number - 1
+            title_width = 2 * column_title_number - 1
 
-        self.makeTitleCell(worksheet, (row, column), title, titleWidth)
+        self.make_title_cell(worksheet, (row, column), title, title_width)
         row += 1
 
         if print_direction:
-            first_direction = stationNameList[0] + "-" + stationNameList[-1]
-            second_direction = stationNameList[-1] + "-" + stationNameList[0]
+            first_direction = station_name_list[0] + "-" + station_name_list[-1]
+            second_direction = station_name_list[-1] + "-" + station_name_list[0]
 
-            self.makeTitleCell(worksheet, (row, column), first_direction, column_title_number - 1)
+            self.make_title_cell(worksheet, (row, column), first_direction, column_title_number - 1)
             if both_directions:
-                self.makeTitleCell(worksheet, (row, column + column_title_number), second_direction,
-                                   column_title_number - 1)
+                self.make_title_cell(worksheet, (row, column + column_title_number), second_direction,
+                                     column_title_number - 1)
             row += 1
 
         col = 0
         for column_title in column_title_list:
-            self.makeTitleCell(worksheet, (row, column + col), column_title)
+            self.make_title_cell(worksheet, (row, column + col), column_title)
             if print_direction and both_directions:
-                self.makeTitleCell(worksheet, (row, column + column_title_number + col),
-                                   column_title)
+                self.make_title_cell(worksheet, (row, column + column_title_number + col),
+                                     column_title)
             col += 1
 
         row += 1
@@ -150,21 +150,21 @@ class ExcelHelper:
             if print_direction and both_directions:
                 length = 2 * column_title_number
             for col in range(0, length):
-                self.makeBlankCell(worksheet, (row, column + col))
+                self.make_blank_cell(worksheet, (row, column + col))
             row += 1
 
-        usedRows = row - upperLeftCorner[0]
-        return usedRows
+        used_rows = row - upper_left_corner[0]
+        return used_rows
 
-    def fitColumnWidth(self, worksheet, columnIndex, value):
+    def fit_column_width(self, worksheet, column_index, value):
 
-        while len(self.widths) <= columnIndex:
+        while len(self.widths) <= column_index:
             self.widths.append(0)
 
         width = len(value)
-        if self.widths[columnIndex] <= width:
-            self.widths[columnIndex] = width
-            worksheet.set_column(columnIndex, columnIndex, width)
+        if self.widths[column_index] <= width:
+            self.widths[column_index] = width
+            worksheet.set_column(column_index, column_index, width)
 
 
 class ExcelWriter:
@@ -178,23 +178,23 @@ class ExcelWriter:
         self.workbook = xlsxwriter.Workbook(self.stringIO, {"in_memory": True})
         self.helper = ExcelHelper(self.workbook)
 
-    def getFileName(self):
+    def get_file_name(self):
         """ name of file """
         TYPE = "generic"
         EXTENSION = "xlsx"
         NAME = self.scene.name.replace(" ", "_")
 
-        fileName = "{}_{}.{}".format(NAME, TYPE, EXTENSION)
+        file_name = "{}_{}.{}".format(NAME, TYPE, EXTENSION)
 
-        return fileName
+        return file_name
 
-    def save(self, fileField):
+    def save(self, file_field):
         """ save file in scene field """
         self.workbook.close()
-        fileField.save(self.getFileName(), ContentFile(self.stringIO.getvalue()))
+        file_field.save(self.get_file_name(), ContentFile(self.stringIO.getvalue()))
 
     @abstractmethod
-    def createFile(self, *args):
+    def create_file(self, *args):
         pass
 
 
@@ -204,15 +204,15 @@ class Step1ExcelWriter(ExcelWriter):
     def __init__(self, scene):
         super(self.__class__, self).__init__(scene)
 
-    def getFileName(self):
+    def get_file_name(self):
         """ name of file """
-        fileName = super(self.__class__, self).getFileName()
+        fileName = super(self.__class__, self).get_file_name()
         NAME = "topologico"
         fileName = fileName.replace("generic", NAME)
 
         return fileName
 
-    def makeStructureHeader(self, worksheet):
+    def make_structure_header(self, worksheet):
 
         STRUCTURE_TITLE = "Características físicas de estaciones y túneles"
         STRUCTURE_STATION_TITLE = "Estaciones"
@@ -225,20 +225,20 @@ class Step1ExcelWriter(ExcelWriter):
         STRUCTURE_2ND_LEVEL_AVG_HEIGHT_TITLE = "Altura promedio 2do nivel [m]:"
         STRUCTURE_2ND_LEVEL_AVG_SURFACE_TITLE = "Superficie 2do nivel [m^2]:"
 
-        worksheet.merge_range("A1:K1", STRUCTURE_TITLE, self.helper.cellTitleFormat)
-        worksheet.merge_range("A2:F2", STRUCTURE_STATION_TITLE, self.helper.cellTitleFormat)
-        worksheet.merge_range("H2:K2", STRUCTURE_TUNNEL_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("A3", STRUCTURE_STATION_SEGMENT_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("B3", STRUCTURE_STATION_LENGTH_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("C3", STRUCTURE_STATION_SURFACE_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("D3", STRUCTURE_STATION_PERIMETER_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("E3", STRUCTURE_2ND_LEVEL_AVG_HEIGHT_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("F3", STRUCTURE_2ND_LEVEL_AVG_SURFACE_TITLE, self.helper.cellTitleFormat)
+        worksheet.merge_range("A1:K1", STRUCTURE_TITLE, self.helper.cell_title_format)
+        worksheet.merge_range("A2:F2", STRUCTURE_STATION_TITLE, self.helper.cell_title_format)
+        worksheet.merge_range("H2:K2", STRUCTURE_TUNNEL_TITLE, self.helper.cell_title_format)
+        worksheet.write("A3", STRUCTURE_STATION_SEGMENT_TITLE, self.helper.cell_title_format)
+        worksheet.write("B3", STRUCTURE_STATION_LENGTH_TITLE, self.helper.cell_title_format)
+        worksheet.write("C3", STRUCTURE_STATION_SURFACE_TITLE, self.helper.cell_title_format)
+        worksheet.write("D3", STRUCTURE_STATION_PERIMETER_TITLE, self.helper.cell_title_format)
+        worksheet.write("E3", STRUCTURE_2ND_LEVEL_AVG_HEIGHT_TITLE, self.helper.cell_title_format)
+        worksheet.write("F3", STRUCTURE_2ND_LEVEL_AVG_SURFACE_TITLE, self.helper.cell_title_format)
 
-        worksheet.write("H3", STRUCTURE_STATION_SEGMENT_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("I3", STRUCTURE_STATION_LENGTH_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("J3", STRUCTURE_STATION_SURFACE_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("K3", STRUCTURE_STATION_PERIMETER_TITLE, self.helper.cellTitleFormat)
+        worksheet.write("H3", STRUCTURE_STATION_SEGMENT_TITLE, self.helper.cell_title_format)
+        worksheet.write("I3", STRUCTURE_STATION_LENGTH_TITLE, self.helper.cell_title_format)
+        worksheet.write("J3", STRUCTURE_STATION_SURFACE_TITLE, self.helper.cell_title_format)
+        worksheet.write("K3", STRUCTURE_STATION_PERIMETER_TITLE, self.helper.cell_title_format)
 
         # fit witdh 
         texts = [
@@ -255,49 +255,49 @@ class Step1ExcelWriter(ExcelWriter):
             STRUCTURE_STATION_PERIMETER_TITLE,
         ]
         for index, text in enumerate(texts):
-            self.helper.fitColumnWidth(worksheet, index, text)
+            self.helper.fit_column_width(worksheet, index, text)
 
-        usedRows = 2
-        return usedRows
+        used_rows = 2
+        return used_rows
 
-    def createFile(self, *args):
+    def create_file(self, *args):
         """ create excel file based on scene data """
 
         for line in self.scene.metroline_set.all().order_by("name"):
             worksheet = self.workbook.add_worksheet(line.name)
 
-            lastRow = self.makeStructureHeader(worksheet)
+            last_row = self.make_structure_header(worksheet)
 
-            stationNameList = list(line.metrostation_set.values_list("name", flat=True).order_by("id"))
-            height = self.helper.makeHorizontalGrid(worksheet, (lastRow + 1, 0),
-                                                    stationNameList, 5)
+            station_name_list = list(line.metrostation_set.values_list("name", flat=True).order_by("id"))
+            height = self.helper.make_horizontal_grid(worksheet, (last_row + 1, 0),
+                                                      station_name_list, 5)
 
-            trackNameList = []
-            trackName = "{}-".format(stationNameList[0])
-            for name in stationNameList[1:]:
-                trackName += name
-                trackNameList.append(trackName)
-                trackName = "{}-".format(name)
-            self.helper.makeHorizontalGrid(worksheet, (lastRow + 1, 7), trackNameList, 3)
+            track_name_list = []
+            track_name = "{}-".format(station_name_list[0])
+            for name in station_name_list[1:]:
+                track_name += name
+                track_name_list.append(track_name)
+                track_name = "{}-".format(name)
+            self.helper.make_horizontal_grid(worksheet, (last_row + 1, 7), track_name_list, 3)
 
-            lastRow += height + SEPARATION_HEIGHT
+            last_row += height + SEPARATION_HEIGHT
 
             # additionHeaders
             titles = ["Pendiente", "Radio de curvatura", "Límite de velocidad",
                       "Nivel (1: sobre tierra, 0: bajo tierra)"]
-            subTitles = [
+            sub_titles = [
                 ["Inicio de segmento [m]", "Fin de segmento [m]", "Pendiente [%]"],
                 ["Inicio de segmento [m]", "Fin de segmento [m]", "Radio [m]"],
                 ["Inicio de segmento [m]", "Fin de segmento [m]", "Límite [m/s]"],
                 ["Inicio de segmento [m]", "Fin de segmento [m]", "Nivel"]
             ]
-            bothDirections = [True, True, True, False]
+            both_directions = [True, True, True, False]
 
             for index, title in enumerate(titles):
-                height = self.helper.makeParamHeader(worksheet, (lastRow + 1, 0), stationNameList, title,
-                                                     subTitles[index], blank_rows=1,
-                                                     both_directions=bothDirections[index])
-                lastRow += height + SEPARATION_HEIGHT
+                height = self.helper.make_param_header(worksheet, (last_row + 1, 0), station_name_list, title,
+                                                       sub_titles[index], blank_rows=1,
+                                                       both_directions=both_directions[index])
+                last_row += height + SEPARATION_HEIGHT
 
         self.save(self.scene.step1Template)
 
@@ -308,15 +308,15 @@ class Step3ExcelWriter(ExcelWriter):
     def __init__(self, scene):
         super(self.__class__, self).__init__(scene)
 
-    def getFileName(self):
+    def get_file_name(self):
         """ name of file """
-        fileName = super(self.__class__, self).getFileName()
+        file_name = super(self.__class__, self).get_file_name()
         NAME = "sistemico"
-        fileName = fileName.replace("generic", NAME)
+        file_name = file_name.replace("generic", NAME)
 
-        return fileName
+        return file_name
 
-    def makeStructureHeader(self, worksheet):
+    def make_structure_header(self, worksheet):
 
         TITLE = "Consumo energético de estaciones, túneles y depósitos"
         STATION_TITLE = "Estaciones"
@@ -339,24 +339,24 @@ class Step3ExcelWriter(ExcelWriter):
         DEPOT_VENTILATION_CONSUMPTION_TITLE = "Consumo de ventilación [W]:"
         DEPOT_DC_CONSUMPTION_TITLE = "Consumo DC [W]:"
 
-        worksheet.merge_range("A1:O1", TITLE, self.helper.cellTitleFormat)
-        worksheet.merge_range("A2:F2", STATION_TITLE, self.helper.cellTitleFormat)
-        worksheet.merge_range("H2:J2", TUNNEL_TITLE, self.helper.cellTitleFormat)
-        worksheet.merge_range("L2:O2", DEPOT_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("A3", STATION_SEGMENT_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("B3", STATION_MIN_AUX_CONSUMPTION_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("C3", STATION_MAX_AUX_CONSUMPTION_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("D3", STATION_MIN_HVAC_CONSUMPTION_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("E3", STATION_MAX_HVAC_CONSUMPTION_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("F3", STATION_TAU_TITLE, self.helper.cellTitleFormat)
+        worksheet.merge_range("A1:O1", TITLE, self.helper.cell_title_format)
+        worksheet.merge_range("A2:F2", STATION_TITLE, self.helper.cell_title_format)
+        worksheet.merge_range("H2:J2", TUNNEL_TITLE, self.helper.cell_title_format)
+        worksheet.merge_range("L2:O2", DEPOT_TITLE, self.helper.cell_title_format)
+        worksheet.write("A3", STATION_SEGMENT_TITLE, self.helper.cell_title_format)
+        worksheet.write("B3", STATION_MIN_AUX_CONSUMPTION_TITLE, self.helper.cell_title_format)
+        worksheet.write("C3", STATION_MAX_AUX_CONSUMPTION_TITLE, self.helper.cell_title_format)
+        worksheet.write("D3", STATION_MIN_HVAC_CONSUMPTION_TITLE, self.helper.cell_title_format)
+        worksheet.write("E3", STATION_MAX_HVAC_CONSUMPTION_TITLE, self.helper.cell_title_format)
+        worksheet.write("F3", STATION_TAU_TITLE, self.helper.cell_title_format)
 
-        worksheet.write("H3", TRACK_SEGMENT_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("I3", TRACK_AUX_CONSUMPTION_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("J3", TRACK_VENTILATION_CONSUMPTION_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("L3", DEPOT_SEGMENT_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("M3", DEPOT_AUX_CONSUMPTION_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("N3", DEPOT_VENTILATION_CONSUMPTION_TITLE, self.helper.cellTitleFormat)
-        worksheet.write("O3", DEPOT_DC_CONSUMPTION_TITLE, self.helper.cellTitleFormat)
+        worksheet.write("H3", TRACK_SEGMENT_TITLE, self.helper.cell_title_format)
+        worksheet.write("I3", TRACK_AUX_CONSUMPTION_TITLE, self.helper.cell_title_format)
+        worksheet.write("J3", TRACK_VENTILATION_CONSUMPTION_TITLE, self.helper.cell_title_format)
+        worksheet.write("L3", DEPOT_SEGMENT_TITLE, self.helper.cell_title_format)
+        worksheet.write("M3", DEPOT_AUX_CONSUMPTION_TITLE, self.helper.cell_title_format)
+        worksheet.write("N3", DEPOT_VENTILATION_CONSUMPTION_TITLE, self.helper.cell_title_format)
+        worksheet.write("O3", DEPOT_DC_CONSUMPTION_TITLE, self.helper.cell_title_format)
 
         # fit witdh 
         texts = [
@@ -377,42 +377,42 @@ class Step3ExcelWriter(ExcelWriter):
             DEPOT_DC_CONSUMPTION_TITLE
         ]
         for index, text in enumerate(texts):
-            self.helper.fitColumnWidth(worksheet, index, text)
+            self.helper.fit_column_width(worksheet, index, text)
 
-        usedRows = 2
-        return usedRows
+        used_rows = 2
+        return used_rows
 
-    def createFile(self, *args):
+    def create_file(self, *args):
         """ create excel file based on scene data """
 
         for line in self.scene.metroline_set.all().order_by("name"):
             worksheet = self.workbook.add_worksheet(line.name)
 
-            lastRow = self.makeStructureHeader(worksheet)
+            last_row = self.make_structure_header(worksheet)
 
-            stationNameList = line.metrostation_set.values_list("name", flat=True).order_by("id")
-            stationHeight = self.helper.makeHorizontalGrid(worksheet, (lastRow + 1, 0),
-                                                           stationNameList, 5)
+            station_name_list = line.metrostation_set.values_list("name", flat=True).order_by("id")
+            station_height = self.helper.make_horizontal_grid(worksheet, (last_row + 1, 0),
+                                                              station_name_list, 5)
 
-            trackNameList = []
-            trackName = "{}-".format(stationNameList[0])
-            for name in stationNameList[1:]:
-                trackName += name
-                trackNameList.append(trackName)
-                trackName = "{}-".format(name)
-            self.helper.makeHorizontalGrid(worksheet, (lastRow + 1, 7), trackNameList, 2)
+            track_name_list = []
+            track_name = "{}-".format(station_name_list[0])
+            for name in station_name_list[1:]:
+                track_name += name
+                track_name_list.append(track_name)
+                track_name = "{}-".format(name)
+            self.helper.make_horizontal_grid(worksheet, (last_row + 1, 7), track_name_list, 2)
 
-            depotNameList = line.metrodepot_set.values_list("name", flat=True)
-            depotHeight = self.helper.makeHorizontalGrid(worksheet, (lastRow + 1, 11),
-                                                         depotNameList, 3)
+            depot_name_list = line.metrodepot_set.values_list("name", flat=True)
+            depot_height = self.helper.make_horizontal_grid(worksheet, (last_row + 1, 11),
+                                                            depot_name_list, 3)
 
-            lastRow += max(stationHeight, depotHeight) + SEPARATION_HEIGHT
+            last_row += max(station_height, depot_height) + SEPARATION_HEIGHT
 
             # additionHeaders
             title = "Características SESS de la línea"
-            self.helper.makeTitleCell(worksheet, (lastRow + 1, 0), title, 1)
+            self.helper.make_title_cell(worksheet, (last_row + 1, 0), title, 1)
 
-            subTitles = [
+            sub_titles = [
                 "Usable energy content [Wh]:",
                 "Charging Efficiency [%]:",
                 "Discharging Efficiency [%]:",
@@ -421,7 +421,7 @@ class Step3ExcelWriter(ExcelWriter):
                 "Energy saving mode (1 = true / 0 = false):",
                 "Power limit to feed [W]:"
             ]
-            self.helper.makeHorizontalGrid(worksheet, (lastRow + 2, 0), subTitles, 1)
+            self.helper.make_horizontal_grid(worksheet, (last_row + 2, 0), sub_titles, 1)
 
         self.save(self.scene.step3Template)
 
@@ -432,112 +432,114 @@ class Step5ExcelWriter(ExcelWriter):
     def __init__(self, scene):
         super(self.__class__, self).__init__(scene)
 
-    def getFileName(self):
+    def get_file_name(self):
         """ name of file """
-        fileName = super(self.__class__, self).getFileName()
+        file_name = super(self.__class__, self).get_file_name()
         NAME = "operación"
-        fileName = fileName.replace("generic", NAME)
+        file_name = file_name.replace("generic", NAME)
 
-        return fileName
+        return file_name
 
-    def createFile(self, *args):
+    def create_file(self, *args):
         """ create excel file based on scene data """
 
-        periodsNameList = list(self.scene.operationperiod_set.values_list("name", flat=True).order_by("id"))
+        periods_name_list = list(self.scene.operationperiod_set.values_list("name", flat=True).order_by("id"))
 
         for line in self.scene.metroline_set.all().order_by("name"):
             worksheet = self.workbook.add_worksheet(line.name)
-            stationNameList = list(line.metrostation_set.values_list("name", flat=True).order_by("id"))
+            station_name_list = list(line.metrostation_set.values_list("name", flat=True).order_by("id"))
 
-            trackNameList = []
-            trackName = "{}-".format(stationNameList[0])
-            for name in stationNameList[1:]:
-                trackName += name
-                trackNameList.append(trackName)
-                trackName = "{}-".format(name)
+            track_name_list = []
+            track_name = "{}-".format(station_name_list[0])
+            for name in station_name_list[1:]:
+                track_name += name
+                track_name_list.append(track_name)
+                track_name = "{}-".format(name)
 
-            lastRow = 0
+            last_row = 0
 
             title = "Pasajeros en estación"
-            columnTitleList = ["Estación/período"] + periodsNameList
-            lastRow += self.helper.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title,
-                                                   columnTitleList)
-            self.helper.makeHorizontalGrid(worksheet, (lastRow, 0), stationNameList, len(periodsNameList))
-            lastRow += self.helper.makeHorizontalGrid(worksheet, (lastRow, 1 + len(periodsNameList)),
-                                                      stationNameList[::-1], len(periodsNameList))
+            column_title_list = ["Estación/período"] + periods_name_list
+            last_row += self.helper.make_param_header(worksheet, (last_row, 0), station_name_list, title,
+                                                      column_title_list)
+            self.helper.make_horizontal_grid(worksheet, (last_row, 0), station_name_list, len(periods_name_list))
+            last_row += self.helper.make_horizontal_grid(worksheet, (last_row, 1 + len(periods_name_list)),
+                                                         station_name_list[::-1], len(periods_name_list))
 
-            lastRow += SEPARATION_HEIGHT
+            last_row += SEPARATION_HEIGHT
 
             title = "Pasajeros viajando entre estaciones"
-            columnTitleList = ["Túnel / Período"] + periodsNameList
-            lastRow += self.helper.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList)
-            self.helper.makeHorizontalGrid(worksheet, (lastRow, 0), trackNameList, len(periodsNameList))
-            lastRow += self.helper.makeHorizontalGrid(worksheet, (lastRow, 1 + len(periodsNameList)),
-                                                      trackNameList[::-1], len(periodsNameList))
+            column_title_list = ["Túnel / Período"] + periods_name_list
+            last_row += self.helper.make_param_header(worksheet, (last_row, 0), station_name_list, title,
+                                                      column_title_list)
+            self.helper.make_horizontal_grid(worksheet, (last_row, 0), track_name_list, len(periods_name_list))
+            last_row += self.helper.make_horizontal_grid(worksheet, (last_row, 1 + len(periods_name_list)),
+                                                         track_name_list[::-1], len(periods_name_list))
 
-            lastRow += SEPARATION_HEIGHT
+            last_row += SEPARATION_HEIGHT
 
             title = "Máximo tiempo permitido de viaje entre dos estaciones [s]"
-            columnTitleList = ["Túnel / Período"] + periodsNameList
-            lastRow += self.helper.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title, columnTitleList)
-            self.helper.makeHorizontalGrid(worksheet, (lastRow, 0), trackNameList, len(periodsNameList))
-            lastRow += self.helper.makeHorizontalGrid(worksheet, (lastRow, 1 + len(periodsNameList)),
-                                                      trackNameList[::-1], len(periodsNameList))
+            column_title_list = ["Túnel / Período"] + periods_name_list
+            last_row += self.helper.make_param_header(worksheet, (last_row, 0), station_name_list, title,
+                                                      column_title_list)
+            self.helper.make_horizontal_grid(worksheet, (last_row, 0), track_name_list, len(periods_name_list))
+            last_row += self.helper.make_horizontal_grid(worksheet, (last_row, 1 + len(periods_name_list)),
+                                                         track_name_list[::-1], len(periods_name_list))
 
-            lastRow += SEPARATION_HEIGHT
+            last_row += SEPARATION_HEIGHT
 
             title = "Tiempo de permanencia en estación [s]"
-            columnTitleList = ["Estación / Período"] + periodsNameList
-            lastRow += self.helper.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title,
-                                                   columnTitleList)
-            self.helper.makeHorizontalGrid(worksheet, (lastRow, 0), stationNameList, len(periodsNameList))
-            lastRow += self.helper.makeHorizontalGrid(worksheet, (lastRow, 1 + len(periodsNameList)),
-                                                      stationNameList[::-1], len(periodsNameList))
+            column_title_list = ["Estación / Período"] + periods_name_list
+            last_row += self.helper.make_param_header(worksheet, (last_row, 0), station_name_list, title,
+                                                      column_title_list)
+            self.helper.make_horizontal_grid(worksheet, (last_row, 0), station_name_list, len(periods_name_list))
+            last_row += self.helper.make_horizontal_grid(worksheet, (last_row, 1 + len(periods_name_list)),
+                                                         station_name_list[::-1], len(periods_name_list))
 
-            lastRow += SEPARATION_HEIGHT
+            last_row += SEPARATION_HEIGHT
 
             title = "Frecuencia de trenes"
-            columnTitleList = ["Período:"] + periodsNameList
+            column_title_list = ["Período:"] + periods_name_list
             frequency_list = ["Frecuencia [trenes/hora]"]
-            lastRow += self.helper.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title,
-                                                   columnTitleList)
-            self.helper.makeHorizontalGrid(worksheet, (lastRow, 0), frequency_list, len(periodsNameList))
-            lastRow += self.helper.makeHorizontalGrid(worksheet, (lastRow, 1 + len(periodsNameList)),
-                                                      frequency_list, len(periodsNameList))
+            last_row += self.helper.make_param_header(worksheet, (last_row, 0), station_name_list, title,
+                                                      column_title_list)
+            self.helper.make_horizontal_grid(worksheet, (last_row, 0), frequency_list, len(periods_name_list))
+            last_row += self.helper.make_horizontal_grid(worksheet, (last_row, 1 + len(periods_name_list)),
+                                                         frequency_list, len(periods_name_list))
 
-            lastRow += SEPARATION_HEIGHT
+            last_row += SEPARATION_HEIGHT
 
             title = "Porcentaje de perdida"
-            columnTitleList = ["Período:"] + periodsNameList
-            paramList = ["Percentage DC distribution Losses:",
-                         "Percentage AC substation Losses (feed entire system):",
-                         "Percentage AC substation Losses (feed AC elements):",
-                         "Percentage DC substation Losses:"]
-            lastRow += self.helper.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title,
-                                                   columnTitleList)
-            self.helper.makeHorizontalGrid(worksheet, (lastRow, 0), paramList, len(periodsNameList))
-            lastRow += self.helper.makeHorizontalGrid(worksheet, (lastRow, 1 + len(periodsNameList)),
-                                                      paramList,
-                                                      len(periodsNameList))
+            column_title_list = ["Período:"] + periods_name_list
+            param_list = ["Percentage DC distribution Losses:",
+                          "Percentage AC substation Losses (feed entire system):",
+                          "Percentage AC substation Losses (feed AC elements):",
+                          "Percentage DC substation Losses:"]
+            last_row += self.helper.make_param_header(worksheet, (last_row, 0), station_name_list, title,
+                                                      column_title_list)
+            self.helper.make_horizontal_grid(worksheet, (last_row, 0), param_list, len(periods_name_list))
+            last_row += self.helper.make_horizontal_grid(worksheet, (last_row, 1 + len(periods_name_list)),
+                                                         param_list,
+                                                         len(periods_name_list))
 
-            lastRow += SEPARATION_HEIGHT
+            last_row += SEPARATION_HEIGHT
 
             title = "Receptivity of the line [%]:"
-            columnTitleList = ["Período:"] + periodsNameList
-            lastRow += self.helper.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title,
-                                                   columnTitleList,
-                                                   print_direction=False)
-            lastRow += self.helper.makeHorizontalGrid(worksheet, (lastRow, 0), ["Receptivity [%]"],
-                                                      len(periodsNameList))
+            column_title_list = ["Período:"] + periods_name_list
+            last_row += self.helper.make_param_header(worksheet, (last_row, 0), station_name_list, title,
+                                                      column_title_list,
+                                                      print_direction=False)
+            last_row += self.helper.make_horizontal_grid(worksheet, (last_row, 0), ["Receptivity [%]"],
+                                                         len(periods_name_list))
 
-            lastRow += SEPARATION_HEIGHT
+            last_row += SEPARATION_HEIGHT
 
             title = "Flujo de ventilación [m^3/s]"
-            columnTitleList = ["Estación / Período"] + periodsNameList
-            lastRow += self.helper.makeParamHeader(worksheet, (lastRow, 0), stationNameList, title,
-                                                   columnTitleList,
-                                                   print_direction=False)
-            lastRow += self.helper.makeHorizontalGrid(worksheet, (lastRow, 0), stationNameList,
-                                                      len(periodsNameList))
+            column_title_list = ["Estación / Período"] + periods_name_list
+            last_row += self.helper.make_param_header(worksheet, (last_row, 0), station_name_list, title,
+                                                      column_title_list,
+                                                      print_direction=False)
+            last_row += self.helper.make_horizontal_grid(worksheet, (last_row, 0), station_name_list,
+                                                         len(periods_name_list))
 
         self.save(self.scene.step5Template)

@@ -15,10 +15,10 @@
       {% download_scene_file_button stepId=1 scene=scene %}
     </div>
     <div class="col-md-6 col-sm-6 col-xs-12">
-      <a href="{% url 'scene:downloadStepTemplate' stepId=1 sceneId=scene.id %}" class="btn btn-info btn-lg btn-block btn-excel"><i class="fa fa-file-excel-o fa-5x"></i><br /><h1>Descargar plantilla</h1></a>
+      <a href="{% url 'scene:downloadStepTemplate' step_id=1 scene_id=scene.id %}" class="btn btn-info btn-lg btn-block btn-excel"><i class="fa fa-file-excel-o fa-5x"></i><br /><h1>Descargar plantilla</h1></a>
     </div>
     <div class="col-md-6 col-sm-6 col-xs-12">
-      <form id="step2form" action='{% url "scene:uploadTopologicFile" sceneId=scene.id %}' class="dropzone">
+      <form id="step2form" action='{% url "scene:uploadTopologicFile" scene_id=scene.id %}' class="dropzone">
       </form>
     </div>
   </div>

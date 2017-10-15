@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+
 class Status:
     OK = 200
     SUCCESS_NEW_NAME = 201
@@ -58,36 +59,36 @@ class Status:
             "type": "error"
         },
         SCENE_DOES_NOT_EXIST_ERROR: {
-          "code": SCENE_DOES_NOT_EXIST_ERROR, "title": "Escenario no existe",
-          "message": "El escenario no existe en el sistema.", "type": "error"
+            "code": SCENE_DOES_NOT_EXIST_ERROR, "title": "Escenario no existe",
+            "message": "El escenario no existe en el sistema.", "type": "error"
         },
         SUCCESS_NEW_NAME: {
-          "code": SUCCESS_NEW_NAME, "title": "Cambio exitoso",
-          "message": "El nombre ha sido actualizado exitosamente.", "type": "success"
+            "code": SUCCESS_NEW_NAME, "title": "Cambio exitoso",
+            "message": "El nombre ha sido actualizado exitosamente.", "type": "success"
         },
         GENERIC_ERROR: {
-          "code": GENERIC_ERROR, "title": "Error",
-          "message": "error genérico", "type": "error"
+            "code": GENERIC_ERROR, "title": "Error",
+            "message": "error genérico", "type": "error"
         },
         OK: {
-          "code": OK, "title": "Consulta exitosa",
-          "message": ":-)", "type": "success"
+            "code": OK, "title": "Consulta exitosa",
+            "message": ":-)", "type": "success"
         },
         INVALID_SIZE_FILE_ERROR: {
-          "code": INVALID_SIZE_FILE_ERROR, "title": "Tamaño de archivo no válido",
-          "message": "El archivo ha superado el espacio permitido", "type": "error"
+            "code": INVALID_SIZE_FILE_ERROR, "title": "Tamaño de archivo no válido",
+            "message": "El archivo ha superado el espacio permitido", "type": "error"
         },
         INVALID_STEP_ERROR: {
-          "code": INVALID_STEP_ERROR, "title": "Paso no permitido",
-          "message": "Debe completar los pasos previos", "type": "error"
+            "code": INVALID_STEP_ERROR, "title": "Paso no permitido",
+            "message": "Debe completar los pasos previos", "type": "error"
         },
         INVALID_FORMAT_FILE_ERROR: {
-          "code": INVALID_FORMAT_FILE_ERROR, "title": "Formato de archivo no válido",
-          "message": "El archivo debe tener formato Excel", "type": "error"
+            "code": INVALID_FORMAT_FILE_ERROR, "title": "Formato de archivo no válido",
+            "message": "El archivo debe tener formato Excel", "type": "error"
         },
         EXCEL_ERROR: {
-          "code": EXCEL_ERROR, "title": "Error al procesar archivo",
-          "message": "error description", "type": "error"
+            "code": EXCEL_ERROR, "title": "Error al procesar archivo",
+            "message": "error description", "type": "error"
         },
         INVALID_SCENE_NAME_ERROR: {
             "code": INVALID_SCENE_NAME_ERROR, "title": "Error",
@@ -109,5 +110,5 @@ class Status:
             status["message"] = message
 
         jsonObj["status"] = status
- 
+
         return jsonObj

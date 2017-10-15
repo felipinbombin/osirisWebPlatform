@@ -27,12 +27,12 @@ class ScenePanel(View):
         self.context = {}
         self.template = "scene/scenePanel.html"
 
-    def get(self, request, sceneId):
+    def get(self, request, scene_id):
 
-        #try:
-        scene_obj = Scene.objects.get(user=request.user, id=sceneId)
+        # try:
+        scene_obj = Scene.objects.get(user=request.user, id=scene_id)
         self.context["scene"] = scene_obj
-        self.context["data"] = GetSceneData().getData(request, sceneId)
+        self.context["data"] = GetSceneData().get_data(request, scene_id)
         self.context["barWidth"] = int(float(scene_obj.currentStep) / 7 * 100)
         if scene_obj.status == Scene.INCOMPLETE:
             status_label = "FALTA COMPLETAR PASO {}".format(scene_obj.currentStep + 1)
@@ -41,7 +41,7 @@ class ScenePanel(View):
         self.context["status_label"] = status_label
 
         self.context["models"] = ModelStatus().resume_status(scene_obj)
-        #except:
+        # except:
         #    raise Http404
 
         return render(request, self.template, self.context)
@@ -104,25 +104,25 @@ class ScenePanelData(View):
         super(ScenePanelData, self).__init__()
         self.context = {}
 
-    def get(self, request, sceneId):
+    def get(self, request, scene_id):
         """ return inputModel of step 1 """
 
-        sceneId = int(sceneId)
+        scene_id = int(scene_id)
         scene = Scene.objects.prefetch_related("metroline_set__metrostation_set",
                                                "metroline_set__metrodepot_set",
                                                "metroline_set__metrotrack_set__startStation",
                                                "metroline_set__metrotrack_set__endStation"). \
-            get(user=request.user, id=sceneId)
+            get(user=request.user, id=scene_id)
 
         lines = []
         for line in scene.metroline_set.all():
             lines.append(line.get_dict())
 
-        connectionsDict = []
+        connections_dict = []
         for connection in scene.metroconnection_set.all():
-            connectionsDict.append(connection.get_dict())
+            connections_dict.append(connection.get_dict())
 
-        response = {"lines": lines, "connections": connectionsDict}
+        response = {"lines": lines, "connections": connections_dict}
 
         Status.getJsonStatus(Status.OK, response)
 
@@ -136,10 +136,10 @@ class InputModelData(View):
         super(InputModelData, self).__init__()
         self.context = {}
 
-    def get(self, request, sceneId):
+    def get(self, request, scene_id):
         """ return inputModel to run models """
 
-        scene_id = int(sceneId)
+        scene_id = int(scene_id)
         execution = ModelExecutionHistory.objects.order_by("-start", sceneId=scene_id).first()
         with open(execution.answer.path, mode="rb") as answer_file:
             answer = pickle.load(answer_file)
