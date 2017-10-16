@@ -63,3 +63,13 @@ class SceneDataPanel(TestCase):
         self.testHelper.make_post_request(URL, {})
 
         self.assertRaises(Scene.DoesNotExist, Scene.objects.get, id=self.scene_obj.id)
+
+    def test_loadPanelWebPage(self):
+        """ load html """
+        URL = reverse("scene:panel", kwargs={"scene_id": self.scene_obj.id})
+        self.testHelper.make_get_request(URL, {}, expected_response=None)
+
+    def test_loadPanelDataWebPage(self):
+        """ load html """
+        URL = reverse("scene:panelData", kwargs={"scene_id": self.scene_obj.id})
+        self.testHelper.make_get_request(URL, {}, expected_response=None)

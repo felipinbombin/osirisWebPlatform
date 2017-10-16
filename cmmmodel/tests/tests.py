@@ -44,7 +44,7 @@ class ExecuteModel(TestCase):
         """ ask for model status through url """
         STATUS_URL = reverse("cmmmodel:status")
         data = {
-            "sceneId": self.scene_obj.id
+            "scene_id": self.scene_obj.id
         }
         return self.testHelper.make_get_request(STATUS_URL, data, expected_response=None)
 
@@ -52,8 +52,8 @@ class ExecuteModel(TestCase):
         """  """
         RUN_URL = reverse("cmmmodel:run")
         data = {
-            "sceneId": self.scene_obj.id,
-            "modelId": TEST_MODEL_ID
+            "scene_id": self.scene_obj.id,
+            "model_id": TEST_MODEL_ID
         }
 
         return self.testHelper.make_post_request(RUN_URL, data, expected_response=expected_response)
@@ -62,8 +62,8 @@ class ExecuteModel(TestCase):
         """  """
         STOP_URL = reverse("cmmmodel:stop")
         data = {
-            "sceneId": self.scene_obj.id,
-            "modelId": TEST_MODEL_ID
+            "scene_id": self.scene_obj.id,
+            "model_id": TEST_MODEL_ID
         }
 
         return self.testHelper.make_post_request(STOP_URL, data, expected_response=expected_response)

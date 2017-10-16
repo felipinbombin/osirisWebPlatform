@@ -8,25 +8,25 @@ register = template.Library()
 
 
 @register.simple_tag
-def download_scene_file_button(stepId, scene, disabled =""):
-    url = reverse("scene:downloadStepFile", kwargs={"stepId":stepId, "sceneId":scene.id})
+def download_scene_file_button(step_id, scene, disabled=""):
+    url = reverse("scene:downloadStepFile", kwargs={"step_id": step_id, "scene_id": scene.id})
 
-    if stepId == 1:
-        timeStamp = scene.timeStampStep1File
-    elif stepId == 3:
-        timeStamp = scene.timeStampStep3File
-    elif stepId == 5:
-        timeStamp = scene.timeStampStep5File
-    elif stepId == 6:
-        timeStamp = scene.timeStampStep6File
+    if step_id == 1:
+        time_stamp = scene.timeStampStep1File
+    elif step_id == 3:
+        time_stamp = scene.timeStampStep3File
+    elif step_id == 5:
+        time_stamp = scene.timeStampStep5File
+    elif step_id == 6:
+        time_stamp = scene.timeStampStep6File
     else:
-        timeStamp = None
+        time_stamp = None
 
-    if timeStamp is None:
-        timeStamp = ""
+    if time_stamp is None:
+        time_stamp = ""
         disabled = "disabled"
     else:
-        timeStamp = timezone.localtime(timeStamp).strftime("%Y-%m-%d %H:%M:%S")
+        time_stamp = timezone.localtime(time_stamp).strftime("%Y-%m-%d %H:%M:%S")
 
     field = u"""
      <a href="{}" class="btn btn-success btn-lg btn-block {}">
@@ -34,5 +34,5 @@ def download_scene_file_button(stepId, scene, disabled =""):
        (<span id="timestamp1">{}</span>)
      </a>
     """
-    buttonMessage = u"Descargar ultimo archivo subido"
-    return format_html(field, url, disabled, buttonMessage, timeStamp)
+    button_message = u"Descargar ultimo archivo subido"
+    return format_html(field, url, disabled, button_message, time_stamp)

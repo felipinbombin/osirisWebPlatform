@@ -11,8 +11,8 @@ from django.db import transaction
 from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue
 from cmmmodel.clusterConnection import get_paramiko_client
 
-CHECK_NUMBER = 2
 # number of checks before change state
+CHECK_NUMBER = 2
 
 logger = logging.getLogger(__name__)
 
@@ -82,4 +82,3 @@ def check_execution_is_running(client=None):
             ModelExecutionQueue.objects.filter(modelExecutionHistory=active_execution).delete()
 
         active_execution.save()
-

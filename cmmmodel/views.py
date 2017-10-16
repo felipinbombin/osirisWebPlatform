@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from scene.models import Scene
-from scene.statusResponse import Status as sts
+from scene.statusResponse import Status as StatusResponse
 
 from cmmmodel.models import ModelExecutionHistory, Model
 from cmmmodel.clusterConnection import run_task, cancel_task, EnqueuedModelException, ModelIsRunningException, \
@@ -24,8 +24,8 @@ class Run(View):
 
     def post(self, request):
         """  """
-        scene_id = int(request.POST.get("sceneId"))
-        model_id = int(request.POST.get("modelId"))
+        scene_id = int(request.POST.get("scene_id"))
+        model_id = int(request.POST.get("model_id"))
         next_model_ids = [int(next_model_id) for next_model_id in request.POST.getlist("nextModelIds[]")]
 
         response = {}
@@ -34,20 +34,20 @@ class Run(View):
             run_task(scene_obj, model_id, next_model_ids)
 
             response["models"] = Status().resume_status(scene_obj)
-            sts.getJsonStatus(sts.OK, response)
+            StatusResponse.getJsonStatus(StatusResponse.OK, response)
         except Scene.DoesNotExist:
-            sts.getJsonStatus(sts.SCENE_DOES_NOT_EXIST_ERROR, response)
+            StatusResponse.getJsonStatus(StatusResponse.SCENE_DOES_NOT_EXIST_ERROR, response)
         except ModelInputDoesNotExistException:
-            sts.getJsonStatus(sts.MODEL_INPUT_DOES_NOT_EXIST_ERROR, response)
+            StatusResponse.getJsonStatus(StatusResponse.MODEL_INPUT_DOES_NOT_EXIST_ERROR, response)
         except EnqueuedModelException:
-            sts.getJsonStatus(sts.ENQUEUED_MODEL_ERROR, response)
+            StatusResponse.getJsonStatus(StatusResponse.ENQUEUED_MODEL_ERROR, response)
         except ModelIsRunningException:
-            sts.getJsonStatus(sts.MODEL_IS_RUNNING_ERROR, response)
+            StatusResponse.getJsonStatus(StatusResponse.MODEL_IS_RUNNING_ERROR, response)
         except IncompleteSceneException:
-            sts.getJsonStatus(sts.INCOMPLETE_SCENE_ERROR, response)
-        #except Exception as e:
-        #    sts.getJsonStatus(sts.GENERIC_ERROR, response)
-        #    response["status"]["message"] = str(e)
+            StatusResponse.getJsonStatus(StatusResponse.INCOMPLETE_SCENE_ERROR, response)
+        except Exception as e:
+            StatusResponse.getJsonStatus(StatusResponse.GENERIC_ERROR, response)
+            response["status"]["message"] = str(e)
 
         return JsonResponse(response, safe=False)
 
@@ -61,8 +61,8 @@ class Stop(View):
 
     def post(self, request):
         """ validate and update data in server """
-        scene_id = int(request.POST.get("sceneId"))
-        model_id = int(request.POST.get("modelId"))
+        scene_id = int(request.POST.get("scene_id"))
+        model_id = int(request.POST.get("model_id"))
 
         response = {}
         try:
@@ -70,11 +70,11 @@ class Stop(View):
                 scene_obj = Scene.objects.get(user=request.user, id=scene_id)
                 cancel_task(scene_obj, model_id)
                 response["models"] = Status().resume_status(scene_obj)
-                sts.getJsonStatus(sts.OK, response)
+                StatusResponse.getJsonStatus(StatusResponse.OK, response)
         except ModelExecutionHistory.DoesNotExist:
-            sts.getJsonStatus(sts.MODEL_EXECUTION_DOES_NOT_EXIST_ERROR, response)
+            StatusResponse.getJsonStatus(StatusResponse.MODEL_EXECUTION_DOES_NOT_EXIST_ERROR, response)
         except IntegrityError as e:
-            sts.getJsonStatus(sts.GENERIC_ERROR, response)
+            StatusResponse.getJsonStatus(StatusResponse.GENERIC_ERROR, response)
             response["status"]["message"] = str(e)
 
         return JsonResponse(response, safe=False)
@@ -113,7 +113,7 @@ class Status(View):
 
     def get(self, request):
 
-        scene_id = int(request.GET.get("sceneId"))
+        scene_id = int(request.GET.get("scene_id"))
         scene_obj = Scene.objects.get(user=request.user, id=scene_id)
 
         return JsonResponse(self.resume_status(scene_obj), safe=False)

@@ -84,7 +84,7 @@ class ModelExecutionHistory(models.Model):
 
     def get_dictionary(self):
         """  """
-        status = [user_message for (code, user_message) in self.STATUS if self.status==code][0]
+        status = [user_message for (code, user_message) in self.STATUS if self.status == code][0]
         dictionary = {
             "start": self.start,
             "end": self.end,

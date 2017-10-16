@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
+import pickle
 import django
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "osirisWebPlatform.settings")
 django.setup()
 
@@ -11,9 +14,6 @@ from django.conf import settings
 from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue, Model
 from cmmmodel.clusterConnection import run_task
 from cmmmodel.transform.processSpeedData import ProcessSpeedData
-
-import sys
-import pickle
 
 
 def process_answer(answer_dict, execution_obj):

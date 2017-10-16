@@ -343,3 +343,14 @@ class CompleteSceneDataTest(TestCase):
 
         # generate input to run models
         first_input(self.scene_obj.id)
+
+        # load html for scene and return scene data
+        page_urls = [
+            reverse("scene:wizard", kwargs={"scene_id": self.scene_obj.id}),
+            reverse("scene:getSceneData", kwargs={"scene_id": self.scene_obj.id}),
+            reverse("scene:panel", kwargs={"scene_id": self.scene_obj.id}),
+            reverse("scene:panelData", kwargs={"scene_id": self.scene_obj.id})
+        ]
+
+        for url in page_urls:
+            self.testHelper.make_get_request(url, {}, expected_response=None)

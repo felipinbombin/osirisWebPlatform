@@ -16,7 +16,6 @@ import xlsxwriter
 
 
 class ProcessSpeedData(ProcessData):
-
     def __init__(self, execution_obj):
         super(ProcessSpeedData, self).__init__(Model.SPEED_MODEL_ID, execution_obj)
 
@@ -83,11 +82,12 @@ class ProcessSpeedData(ProcessData):
 
         # data
         line_objs = MetroLine.objects.prefetch_related("metrotrack_set__startStation",
-                                                       "metrostation_set__endstation").filter(scene=self.scene_obj).order_by("id")
+                                                       "metrostation_set__endstation").filter(
+            scene=self.scene_obj).order_by("id")
         operation_periods = OperationPeriod.objects.filter(scene=self.scene_obj).order_by("id")
 
-        stringIO = BytesIO()
-        workbook = xlsxwriter.Workbook(stringIO, {'in_memory': True})
+        string_io = BytesIO()
+        workbook = xlsxwriter.Workbook(string_io, {'in_memory': True})
         excel_helper = ExcelHelper(workbook)
 
         worksheet = workbook.add_worksheet(WORKSHEET_NAME)
@@ -141,4 +141,4 @@ class ProcessSpeedData(ProcessData):
         now = timezone.now().replace(microsecond=0)
         self.execution_obj.timestampFile = now
         self.execution_obj.downloadFile.save("{}_{}{}".format(FILE_NAME, now, FILE_EXTENSION),
-                                             ContentFile(stringIO.getvalue()))
+                                             ContentFile(string_io.getvalue()))

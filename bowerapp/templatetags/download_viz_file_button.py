@@ -9,13 +9,13 @@ register = template.Library()
 @register.simple_tag
 def download_viz_file_button(execution_obj, disabled = ""):
 
-    timeStamp = execution_obj.timestampFile
+    time_stamp = execution_obj.timestampFile
 
-    if timeStamp is None:
-        timeStamp = ""
+    if time_stamp is None:
+        time_stamp = ""
         disabled = "disabled"
     else:
-        timeStamp = timezone.localtime(timeStamp).strftime("%Y-%m-%d %H:%M:%S")
+        time_stamp = timezone.localtime(time_stamp).strftime("%Y-%m-%d %H:%M:%S")
 
     # removed time: (<span id="timestamp1">{3}</span>)
     field = u"""
@@ -23,9 +23,9 @@ def download_viz_file_button(execution_obj, disabled = ""):
        <i class="fa fa-file-excel-o"></i> {2}
      </a>
     """
-    buttonMessage = u"Descargar datos"
+    button_message = u"Descargar datos"
     path = ""
     if execution_obj.downloadFile:
         path = execution_obj.downloadFile.url
 
-    return format_html(field, path, disabled, buttonMessage, timeStamp)
+    return format_html(field, path, disabled, button_message, time_stamp)
