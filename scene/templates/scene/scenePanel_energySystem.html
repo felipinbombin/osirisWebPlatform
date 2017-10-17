@@ -1,7 +1,169 @@
-{% load download_scene_file_button %}
+{% load download_scene_file_button i18n humanize %}
 {% download_scene_file_button step_id=3 scene=scene %}
-<ul>
-{% for key, value in data.systemicParams.items %}
-    <li>{{ key }}: {{ value }}</li>
-{% endfor %}
-</ul>
+
+{% with d=data.systemicParams %}
+<div class="col-md-4 col-sm-4 col-xs-12">
+<div class="panel panel-default">
+   <!-- Default panel contents -->
+   <div class="panel-heading">{% trans "Características de tren: Fuerzas" %}</div>
+   <!-- Table -->
+   <table class="table table-striped">
+     <thead>
+       <tr>
+         <th>#</th>
+         <th>{% trans "Atributo" %}</th>
+         <th>{% trans "Valor" %}</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr><th scope="row">1</th><td>{% trans "Masa" %}</td><td>{{ d.mass|intcomma }}</td></tr>
+       <tr><th scope="row">2</th><td>{% trans "Masa inercial" %}</td><td>{{ d.inercialMass|intcomma }}</td></tr>
+       <tr><th scope="row">3</th><td>{% trans "Máxima aceleración permitida" %}</td><td>{{ d.maxAccelerationAllowed|intcomma }}</td></tr>
+       <tr><th scope="row">4</th><td>{% trans "Máxima fuerza inicial permitida" %}</td><td>{{ d.maxStartingForceAllowed|intcomma }}</td></tr>
+       <tr><th scope="row">5</th><td>{% trans "Máxima fuerza de frenado permitida" %}</td><td>{{ d.maxBrakingForceAllowed|intcomma }}</td></tr>
+       <tr><th scope="row">6</th><td>{% trans "Velocidad de cambio de regimen del motor" %}</td><td>{{ d.speedOfMotorRegimeChange|intcomma }}</td></tr>
+       <tr><th scope="row">7</th><td>{% trans "Potencia máxima" %}</td><td>{{ d.maxPower|intcomma }}</td></tr>
+       <tr><th scope="row">8</th><td>{% trans "Potencia máxima" %}</td><td>{{ d.maxSpeedAllowed|intcomma }}</td></tr>
+     </tbody>
+   </table>
+</div>
+<div class="panel panel-default">
+   <!-- Default panel contents -->
+   <div class="panel-heading">{% trans "Parámetros de Davis" %}</div>
+   <!-- Table -->
+   <table class="table table-striped">
+     <thead>
+       <tr>
+         <th>#</th>
+         <th>{% trans "Atributo" %}</th>
+         <th>{% trans "Valor" %}</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr><th scope="row">1</th><td>{% trans "A" %}</td><td>{{ d.davisParameterA|intcomma }}</td></tr>
+       <tr><th scope="row">2</th><td>{% trans "B" %}</td><td>{{ d.davisParameterB|intcomma }}</td></tr>
+       <tr><th scope="row">3</th><td>{% trans "C" %}</td><td>{{ d.davisParameterC|intcomma }}</td></tr>
+       <tr><th scope="row">4</th><td>{% trans "D" %}</td><td>{{ d.davisParameterD|intcomma }}</td></tr>
+       <tr><th scope="row">5</th><td>{% trans "E" %}</td><td>{{ d.davisParameterE|intcomma }}</td></tr>
+     </tbody>
+   </table>
+</div>
+</div>
+<div class="col-md-4 col-sm-4 col-xs-12">
+<div class="panel panel-default">
+   <!-- Default panel contents -->
+   <div class="panel-heading">{% trans "Características de tren: Tracción" %}</div>
+   <!-- Table -->
+   <table class="table table-striped">
+     <thead>
+       <tr>
+         <th>#</th>
+         <th>{% trans "Atributo" %}</th>
+         <th>{% trans "Valor" %}</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr><th scope="row">1</th><td>{% trans "Eficiencia del sistema de tracción" %}</td><td>{{ d.tractionSystemEfficiency|intcomma }}</td></tr>
+       <tr><th scope="row">2</th><td>{% trans "Eficiencia del sistema de frenos" %}</td><td>{{ d.brakingSystemEfficiency|intcomma }}</td></tr>
+       <tr><th scope="row">3</th><td>{% trans "Umbral de freno eléctrico" %}</td><td>{{ d.electricalBrakeTreshold|intcomma }}</td></tr>
+       <tr><th scope="row">4</th><td>{% trans "Umbral de freno electromecánico" %}</td><td>{{ d.electroMechanicalBrakeThreshold|intcomma }}</td></tr>
+     </tbody>
+   </table>
+</div>
+<div class="panel panel-default">
+   <!-- Default panel contents -->
+   <div class="panel-heading">{% trans "Características de tren: Energía" %}</div>
+   <!-- Table -->
+   <table class="table table-striped">
+     <thead>
+       <tr>
+         <th>#</th>
+         <th>{% trans "Atributo" %}</th>
+         <th>{% trans "Valor" %}</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr><th scope="row">1</th><td>{% trans "Consumo HVAC" %}</td><td>{{ d.hvacConsumption|intcomma }}</td></tr>
+       <tr><th scope="row">2</th><td>{% trans "Consumo de auxiliares" %}</td><td>{{ d.auxiliariesConsumption|intcomma }}</td></tr>
+       <tr><th scope="row">3</th><td>{% trans "Resistencia del terminal de trenes" %}</td><td>{{ d.trainsTerminalResistance|intcomma }}</td></tr>
+       <tr><th scope="row">4</th><td>{% trans "Votaje DC de terminal de trenes" %}</td><td>{{ d.voltageDCTrainsTerminals|intcomma }}</td></tr>
+     </tbody>
+   </table>
+</div>
+<div class="panel panel-default">
+   <!-- Default panel contents -->
+   <div class="panel-heading">{% trans "Características de tren: Modelo de tracción CMM" %}</div>
+   <!-- Table -->
+   <table class="table table-striped">
+     <thead>
+       <tr>
+         <th>#</th>
+         <th>{% trans "Atributo" %}</th>
+         <th>{% trans "Valor" %}</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr><th scope="row">1</th><td>{% trans "OBESS charge efficiency" %}</td><td>{{ d.obessChargeEfficiency|intcomma }}</td></tr>
+       <tr><th scope="row">2</th><td>{% trans "OBESS discharge efficiency" %}</td><td>{{ d.obessDischargeEfficiency|intcomma }}</td></tr>
+       <tr><th scope="row">3</th><td>{% trans "OBESS Usable energy content" %}</td><td>{{ d.obessUsableEnergyContent|intcomma }}</td></tr>
+       <tr><th scope="row">4</th><td>{% trans "Maximun discharge power" %}</td><td>{{ d.maxDischargePower|intcomma }}</td></tr>
+       <tr><th scope="row">5</th><td>{% trans "Maximum energy saving possible per hour" %}</td><td>{{ d.maxEnergySavingPossiblePerHour|intcomma }}</td></tr>
+       <tr><th scope="row">6</th><td>{% trans "Power limit to feed" %}</td><td>{{ d.powerLimitToFeed|intcomma }}</td></tr>
+     </tbody>
+   </table>
+</div>
+</div>
+<div class="col-md-4 col-sm-4 col-xs-12">
+<div class="panel panel-default">
+   <!-- Default panel contents -->
+   <div class="panel-heading">{% trans "Características de tren: Estructura" %}</div>
+   <!-- Table -->
+   <table class="table table-striped">
+     <thead>
+       <tr>
+         <th>#</th>
+         <th>{% trans "Atributo" %}</th>
+         <th>{% trans "Valor" %}</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr><th scope="row">1</th><td>{% trans "Largo" %}</td><td>{{ d.length|intcomma }}</td></tr>
+       <tr><th scope="row">2</th><td>{% trans "Número de carros" %}</td><td>{{ d.numberOfCars|intcomma }}</td></tr>
+       <tr><th scope="row">3</th><td>{% trans "Ancho de carro" %}</td><td>{{ d.carWidth|intcomma }}</td></tr>
+       <tr><th scope="row">4</th><td>{% trans "Altura de carro" %}</td><td>{{ d.carHeight|intcomma }}</td></tr>
+       <tr><th scope="row">5</th><td>{% trans "Espesor de paredes del carro" %}</td><td>{{ d.vehicleWallThickness|intcomma }}</td></tr>
+       <tr><th scope="row">6</th><td>{% trans "Conductividad térmica de pared del carro" %}</td><td>{{ d.heatConductivityOfTheVehicleWall|intcomma }}</td></tr>
+       <tr><th scope="row">7</th><td>{% trans "Cabin Volume Factor" %}</td><td>{{ d.cabinVolumeFactor|intcomma }}</td></tr>
+       <tr><th scope="row">8</th><td>{% trans "Capacidad de pasajeros del tren" %}</td><td>{{ d.trainPassengerCapacity|intcomma }}</td></tr>
+       <tr><th scope="row">9</th><td>{% trans "HRS Extra Power" %}</td><td>{{ d.hrsExtraPower|intcomma }}</td></tr>
+       <tr><th scope="row">10</th><td>{% trans "On Board Energy Storage System" %}</td><td>{{ d.onBoardEnergyStorageSystem|intcomma }}</td></tr>
+       <tr><th scope="row">11</th><td>{% trans "Storage Capacity Weighting" %}</td><td>{{ d.storageCapacityWeighting|intcomma }}</td></tr>
+     </tbody>
+   </table>
+</div>
+</div>
+<div class="col-md-4 col-sm-4 col-xs-12">
+<div class="panel panel-default">
+   <!-- Default panel contents -->
+   <div class="panel-heading">{% trans "Conjunto de puntos HVAC" %}</div>
+   <!-- Table -->
+   <table class="table table-striped">
+     <thead>
+       <tr>
+         <th>#</th>
+         <th>{% trans "Atributo" %}</th>
+         <th>{% trans "T<sub>out</sub>[°C]" %}</th>
+         <th>{% trans "T<sup>in</sup>[°C]" %}</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr><th scope="row">1</th><td>{% trans "Punto 1" %}</td><td>{{ d.point1Tout|intcomma }}</td><td>{{ d.point1Tin|intcomma }}</td></tr>
+       <tr><th scope="row">1</th><td>{% trans "Punto 2" %}</td><td>{{ d.point2Tout|intcomma }}</td><td>{{ d.point2Tin|intcomma }}</td></tr>
+       <tr><th scope="row">1</th><td>{% trans "Punto 3" %}</td><td>{{ d.point3Tout|intcomma }}</td><td>{{ d.point3Tin|intcomma }}</td></tr>
+       <tr><th scope="row">1</th><td>{% trans "Punto 4" %}</td><td>{{ d.point4Tout|intcomma }}</td><td>{{ d.point4Tin|intcomma }}</td></tr>
+       <tr><th scope="row">1</th><td>{% trans "Punto 5" %}</td><td>{{ d.point5Tout|intcomma }}</td><td>{{ d.point5Tin|intcomma }}</td></tr>
+     </tbody>
+   </table>
+</div>
+</div>
+{% endwith %}

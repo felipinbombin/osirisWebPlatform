@@ -1,8 +1,8 @@
-{% load download_scene_file_button i18n join_by_attr_arrow join_by_attr print_connection_description %}
+{% load humanize download_scene_file_button i18n join_by_attr_arrow join_by_attr print_connection_description %}
 {% download_scene_file_button step_id=1 scene=scene %}
  <div class="panel panel-default">
    <!-- Default panel contents -->
-     <div class="panel-heading">{% trans "Líneas" %}</div>
+   <div class="panel-heading">{% trans "Líneas" %}</div>
    <!-- Table -->
    <table class="table table-striped">
      <thead>
@@ -48,8 +48,8 @@
          <th scope="row">{{ forloop.counter }}</th>
          <td>{{ connection.name }}</td>
          <td>{{ connection.stations|print_connection_description|safe }}</td>
-         <td>{{ connection.avgHeight }}</td>
-         <td>{{ connection.avgSurface }}</td>
+         <td>{{ connection.avgHeight|intcomma }}</td>
+         <td>{{ connection.avgSurface|intcomma }}</td>
        </tr>
        {% endfor %}
      </tbody>

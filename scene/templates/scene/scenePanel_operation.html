@@ -1,4 +1,4 @@
-{% load download_scene_file_button i18n read_only_field %}
+{% load humanize download_scene_file_button i18n read_only_field %}
    {% download_scene_file_button step_id=5 scene=scene %}
  <div class="panel panel-default">
    <!-- Default panel contents -->
@@ -6,11 +6,11 @@
    <div class="panel-body">
        <div class="col-md-6 col-sm-6 col-sx-12">
            {% trans "Masa promedio de pasajero" as label %}
-           {% read_only_field label data.operation.averageMassOfAPassanger "Kg" %}
+           {% read_only_field label data.operation.averageMassOfAPassanger|intcomma "Kg" %}
        </div>
        <div class="col-md-6 col-sm-6 col-sx-12">
            {% trans "Temperatura anual promedio" as label %}
-           {% read_only_field label data.operation.annualTemperatureAverage "°C" %}
+           {% read_only_field label data.operation.annualTemperatureAverage|intcomma "°C" %}
        </div>
    </div>
  </div>
@@ -38,11 +38,11 @@
          <td>{{ period.name }}</td>
          <td>{{ period.start }}</td>
          <td>{{ period.end }}</td>
-         <td>{{ period.temperature }}</td>
-         <td>{{ period.humidity }}</td>
-         <td>{{ period.co2Concentration }}</td>
-         <td>{{ period.solarRadiation }}</td>
-         <td>{{ period.sunElevationAngle }}</td>
+         <td>{{ period.temperature|intcomma }}</td>
+         <td>{{ period.humidity|intcomma }}</td>
+         <td>{{ period.co2Concentration|intcomma }}</td>
+         <td>{{ period.solarRadiation|intcomma }}</td>
+         <td>{{ period.sunElevationAngle|intcomma }}</td>
        </tr>
        {% endfor %}
      </tbody>
