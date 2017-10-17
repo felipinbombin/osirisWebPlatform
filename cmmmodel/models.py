@@ -28,7 +28,7 @@ class Model(models.Model):
         }
         return dictionary
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -79,7 +79,7 @@ class ModelExecutionHistory(models.Model):
     timestampFile = models.DateTimeField(null=True, default=None)
     downloadFile = models.FileField(upload_to='modelOutputFile/', null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} {} {}".format(self.model, timezone.localtime(self.start), timezone.localtime(self.end))
 
     def get_dictionary(self):
