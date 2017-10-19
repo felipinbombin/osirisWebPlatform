@@ -57,6 +57,22 @@ class SceneDataPanel(TestCase):
         self.scene_obj.refresh_from_db()
         self.assertEqual(self.scene_obj.name, previous_name)
 
+    def test_ChangeNameSceneDoesNotExist(self):
+        """ change name of scen that does not exist """
+        URL = reverse("scene:changeSceneName", kwargs={"scene_id": 1000})
+        new_name = ""
+        data = {
+            "new_name": new_name
+        }
+        self.testHelper.make_post_request(URL, data,
+                                          expected_response=Status.getJsonStatus(Status.USER_NOT_LOGGED_ERROR, {}))
+
+    def test_DeleteSceneDoesNotExist(self):
+        """ delete scene that does not exist """
+        URL = reverse("scene:deleteScene", kwargs={"scene_id": 100})
+        self.testHelper.make_post_request(URL, {},
+                                          expected_response=Status.getJsonStatus(Status.USER_NOT_LOGGED_ERROR, {}))
+
     def test_DeleteScene(self):
         """ delete scene """
         URL = reverse("scene:deleteScene", kwargs={"scene_id": self.scene_obj.id})

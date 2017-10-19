@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from abc import ABCMeta, abstractmethod
 from .ExcelWriter import Step1ExcelWriter, Step3ExcelWriter, Step5ExcelWriter
 from scene.models import MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation, SystemicParams, \
@@ -18,10 +19,19 @@ class StepSaver:
     def __init__(self, scene):
         self.scene = scene
 
-    @abstractmethod
-    def validate(self, data):
+    def validate(self, data, attr_name=None):
         # if found an error throw an exception with user message
-        pass
+        if isinstance(data, dict):
+            for key, value in data.items():
+                self.validate(value, key)
+        if isinstance(data, list):
+            for el in data:
+                self.validate(el)
+        # id attribute is used to identify if entity exists in database, if it does not exist internalId field too
+        elif (data is None or data == "") and (attr_name != "id" and attr_name != "internalId"):
+            response = Status.getJsonStatus(Status.EXCEL_ERROR, {})
+            response["status"]["message"] = "El valor del campo {} no puede ser vacío.".format(attr_name, data)
+            raise (OsirisException(response))
 
     def save(self, data):
         # validate data before saved
@@ -32,9 +42,6 @@ class Step0Saver(StepSaver):
     """
     logic to save step 0 data
     """
-
-    def validate(self, data):
-        return True
 
     def save(self, data):
         super(Step0Saver, self).save(data)
@@ -136,21 +143,6 @@ class Step2Saver(StepSaver):
     logic to save step 2 data
     """
 
-    def validate(self, data, attr_name=None):
-        """ check inputs before save """
-        if isinstance(data, dict):
-            for key, value in data.items():
-                self.validate(value, key)
-        if isinstance(data, list):
-            for el in data:
-                self.validate(el)
-        elif data is None or data == "":
-            response = Status.getJsonStatus(Status.EXCEL_ERROR, {})
-            response["status"]["message"] = u"El valor del campo {} no puede ser vacío.".format(attr_name, data)
-            raise (OsirisException(response))
-
-        return True
-
     def save(self, data):
         super(Step2Saver, self).save(data)
 
@@ -173,9 +165,6 @@ class Step4Saver(StepSaver):
     """
     logic to save step 4 data
     """
-
-    def validate(self, data):
-        return True
 
     def save(self, data):
         super(Step4Saver, self).save(data)
