@@ -45,15 +45,17 @@ def model_button(scene_obj, model, column):
             status = execution['status']
 
     last_execution_table = u"""
-        <p class="text-center"> Última ejecución</p>
-        <table class="table table-striped table-bordered">
-          <tbody>
-            <tr><td>Inicio</td><td class="startDate">{0}</td></tr>
-            <tr><td>Fin</td><td class="endDate">{1}</td></tr>
-            <tr><td>Duración</td><td class="duration">{2}</td></tr>
-            <tr><td>Estado</td><td class="status">{3}</td></tr>
-          </tbody>
-        </table>
+        <div class="panel panel-default">
+          <div class="panel-heading text-center">Última ejecución</div>
+            <table class="table table-striped">
+              <tbody>
+                <tr><td class="text-right">Inicio:</td><td class="startDate">{0}</td></tr>
+                <tr><td class="text-right">Fin:</td><td class="endDate">{1}</td></tr>
+                <tr><td class="text-right">Duración:</td><td class="duration">{2}</td></tr>
+                <tr><td class="text-right">Estado:</td><td class="status">{3}</td></tr>
+              </tbody>
+            </table>
+        </div>
         """.format(start, end, duration, status)
 
     field= u"""
