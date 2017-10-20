@@ -87,7 +87,7 @@ $(document).ready(function(){
             showNotificationMessage(status);
             return;
         } else if (station2Index - station1Index < 0) {
-            direction = "r"; // reverse
+            direction = DIRECTION_REVERSE; // reverse
         }
 
         // identify tracks to retrieve
@@ -140,9 +140,7 @@ $(document).ready(function(){
                 delta += trackIndex !== 0?trackTimes[trackIndex - 1].length:0;
                 track.attributes.velDist.forEach(function(speedData, index){
                     speedData = speedData * 3.6;
-                    if (speedData > maxSpeed) {
-                        maxSpeed = speedData;
-                    }
+                    maxSpeed = Math.max(speedData, maxSpeed);
                     trackData.push([delta + index, speedData]);
                 });
                 var speedLimit = track.attributes.Speedlimit[1] * 3.6;
@@ -211,8 +209,6 @@ $(document).ready(function(){
             $.extend(options, ECHARTS_OPTIONS);
             if (direction === DIRECTION_REVERSE) {
                 options.legend.data = options.legend.data.reverse();
-                options.xAxis[0].inverse = true;
-                options.yAxis[0].position = "right";
             }
             options.yAxis[0]["max"] = maxSpeed;
 
