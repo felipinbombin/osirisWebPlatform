@@ -134,8 +134,8 @@ def get_input_data(scene_id, model_id):
     elif model_id == Model.SPEED_MODEL_ID:
         input_dict = first_input(scene_id)
         input_dict = {
-            "first_input": input_dict,
-            "second_input": {}
+            "input": input_dict,
+            "output": {}
         }
         input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
     else:

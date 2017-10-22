@@ -7,7 +7,7 @@ from scene.tests.testHelper import TestHelper
 from scene.models import Scene
 from scene.statusResponse import Status as st
 
-from cmmmodel.models import ModelExecutionQueue, Model, ModelExecutionHistory
+from cmmmodel.models import ModelExecutionQueue, Model, ModelExecutionHistory, PossibleQueue
 from cmmmodel.views import Status
 from cmmmodel.saveJobResponse import save_model_response, process_answer
 
@@ -55,6 +55,7 @@ class ExecuteModel(TestCase):
             "scene_id": self.scene_obj.id,
             "model_id": TEST_MODEL_ID
         }
+        PossibleQueue.objects.create(start_id=TEST_MODEL_ID, follow_id=TEST_MODEL_ID)
 
         return self.testHelper.make_post_request(RUN_URL, data, expected_response=expected_response)
 
