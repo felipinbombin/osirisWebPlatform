@@ -26,7 +26,7 @@ class Run(View):
         """  """
         scene_id = int(request.POST.get("scene_id"))
         model_id = int(request.POST.get("model_id"))
-        next_model_ids = [int(next_model_id) for next_model_id in request.POST.getlist("nextModelIds[]")]
+        next_model_ids = [int(next_model_id) for next_model_id in request.POST.getlist("next_model_ids[]")]
 
         response = {}
         try:
