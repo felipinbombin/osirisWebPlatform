@@ -55,7 +55,6 @@ class ExecuteModel(TestCase):
             "scene_id": self.scene_obj.id,
             "model_id": TEST_MODEL_ID
         }
-        PossibleQueue.objects.create(start_id=TEST_MODEL_ID, follow_id=TEST_MODEL_ID)
 
         return self.testHelper.make_post_request(RUN_URL, data, expected_response=expected_response)
 
