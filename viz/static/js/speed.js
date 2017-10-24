@@ -219,15 +219,20 @@ $(document).ready(function(){
             var tableBody = $("#timeTable tbody");
             tableBody.empty();
             trackTimes.forEach(function(track, index){
-                var startStationRow = ("<tr><td>" + track.startStation + "</td><td>" + result.dwellTime[track.startStation].toFixed(2) + "</td></tr>");
+                var startStation = direction===DIRECTION_REVERSE?track.endStation:track.startStation;
+                var startStationDwellTime = result.dwellTime[startStation].toFixed(2);
+                var startStationRow = ("<tr><td>" + startStation + "</td><td>" + startStationDwellTime + "</td></tr>");
                 var trackRow = $("<tr><td>" + track.name + "</td><td>" + track.time.toFixed(2) + "</td></tr>");
+
                 tableBody.append(startStationRow);
                 tableBody.append(trackRow);
-                totalTime += result.dwellTime[track.startStation] + track.time;
+                totalTime += result.dwellTime[startStation] + track.time;
                 if (index+1 === trackTimes.length){
-                    var endStationRow = ("<tr><td>" + track.endStation + "</td><td>" + result.dwellTime[track.endStation].toFixed(2) + "</td></tr>");
+                    var endStation = direction===DIRECTION_GOING?track.endStation:track.startStation;
+                    var endStationDwellTime = result.dwellTime[endStation].toFixed(2);
+                    var endStationRow = ("<tr><td>" + endStation + "</td><td>" + endStationDwellTime + "</td></tr>");
                     tableBody.append(endStationRow);
-                    totalTime += result.dwellTime[track.endStation];
+                    totalTime += result.dwellTime[endStation];
                 }
             });
             tableBody.append($("<tr><td><strong>Tiempo total:</strong></td><td><strong>" + totalTime.toFixed(2) + "</strong></td></tr>"));
