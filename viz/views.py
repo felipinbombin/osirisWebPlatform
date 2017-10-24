@@ -84,9 +84,9 @@ class SpeedModelVizData(View):
             attr1, attr2, attr3, attr4, attr5 = key.split("_-_")
             # group by track
             groupElement = {
-                "direction": attr2,
-                "startStation": attr3,
-                "endStation": attr4,
+                "direction": attr3,
+                "startStation": attr4,
+                "endStation": attr5,
                 "attributes": {}
             }
             for key2, group2 in groupby(group, lambda row: row[5]):
