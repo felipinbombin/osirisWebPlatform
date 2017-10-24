@@ -52,7 +52,7 @@ def save_model_response(external_id, output_file_name, std_out, std_err):
         if os.path.isfile(file_path):
             with open(file_path, "rb") as answer_file:
                 answer = pickle.load(answer_file)
-                answer = answer["second_input"]
+                answer = answer["output"]
                 process_answer(answer, execution_obj)
 
         # exec next model if exists
