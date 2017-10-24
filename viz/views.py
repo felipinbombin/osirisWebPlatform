@@ -65,7 +65,7 @@ class SpeedModelVizData(View):
 
         answer = ModelAnswer.objects.prefetch_related("metroTrack__endStation", "metroTrack__startStation").\
             filter(execution=execution_obj, attributeName__in=attributes, metroTrack__externalId__in=metro_tracks).\
-            values_list("operationPeriod__name", "metroLine__name", "direction", "metroTrack__name",
+            values_list("operationPeriod__name", "metroLine__name", "direction",
                         "metroTrack__startStation__name", "metroTrack__endStation__name", "attributeName", "value").\
             order_by("operationPeriod__id", "metroLine__id", "direction", "metroTrack__id", "attributeName",
                      "order")
@@ -80,19 +80,18 @@ class SpeedModelVizData(View):
 
         # groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
         groups = []
-        for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3], row[4], row[5])):
-            attr1, attr2, attr3, attr4, attr5, attr6 = key.split("_-_")
+        for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3], row[4])):
+            attr1, attr2, attr3, attr4, attr5 = key.split("_-_")
             # group by track
             groupElement = {
-                "name": attr4,
-                "direction": attr3,
-                "startStation": attr5,
-                "endStation": attr6,
+                "direction": attr2,
+                "startStation": attr3,
+                "endStation": attr4,
                 "attributes": {}
             }
-            for key2, group2 in groupby(group, lambda row: row[6]):
+            for key2, group2 in groupby(group, lambda row: row[5]):
                 #groups[attr1][attr2][attr3][attr4].append({"name": key2, "value": [v[5] for v in group2]})
-                groupElement["attributes"][key2] = [v[7] for v in group2]
+                groupElement["attributes"][key2] = [v[6] for v in group2]
             groups.append(groupElement)
 
         if direction == MetroLineMetric.REVERSE:
