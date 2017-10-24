@@ -92,6 +92,8 @@ class SpeedModelVizData(View):
             }
             for key2, group2 in groupby(group, lambda row: row[6]):
                 #groups[attr1][attr2][attr3][attr4].append({"name": key2, "value": [v[5] for v in group2]})
+                if attr3 == MetroLineMetric.REVERSE:
+                    group2.reverse()
                 groupElement["attributes"][key2] = [v[7] for v in group2]
             groups.append(groupElement)
 
