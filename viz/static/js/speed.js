@@ -207,9 +207,6 @@ $(document).ready(function(){
                 }]
             };
             $.extend(options, ECHARTS_OPTIONS);
-            if (direction === DIRECTION_REVERSE) {
-                options.legend.data = options.legend.data.reverse();
-            }
             options.yAxis[0]["max"] = maxSpeed;
 
             chart.clear();
