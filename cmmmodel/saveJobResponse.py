@@ -21,6 +21,7 @@ def process_answer(answer_dict, execution_obj):
     processor = None
     if execution_obj.model_id == Model.SPEED_MODEL_ID:
         processor = ProcessSpeedData(execution_obj)
+        answer_dict = answer_dict["SM"]
     elif execution_obj.model_id == Model.STRONG_MODEL_ID:
         pass
     elif execution_obj.model_id == Model.ENERGY_MODEL_ID:

@@ -63,8 +63,6 @@ class ProcessSpeedData(ProcessData):
 
     def create_excel_file(self, data):
 
-        # unwrap model data
-        data = data["SM"]
         # NAMES
         FILE_NAME = "Velocidad"
         FILE_EXTENSION = ".xlsx"
