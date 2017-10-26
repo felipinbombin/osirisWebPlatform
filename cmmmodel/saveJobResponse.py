@@ -14,6 +14,7 @@ from django.conf import settings
 from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue, Model
 from cmmmodel.clusterConnection import run_task
 from cmmmodel.transform.processSpeedData import ProcessSpeedData
+from cmmmodel.transform.processStrongData import ProcessStrongData
 
 
 def process_answer(answer_dict, execution_obj):
@@ -23,7 +24,8 @@ def process_answer(answer_dict, execution_obj):
         processor = ProcessSpeedData(execution_obj)
         answer_dict = answer_dict["SM"]
     elif execution_obj.model_id == Model.STRONG_MODEL_ID:
-        pass
+        processor = ProcessStrongData(execution_obj)
+        answer_dict = answer_dict["FM"]
     elif execution_obj.model_id == Model.ENERGY_MODEL_ID:
         pass
     elif execution_obj.model_id == Model.TEMPERATURE_MODEL_ID:

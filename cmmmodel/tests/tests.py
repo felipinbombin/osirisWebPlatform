@@ -185,12 +185,29 @@ class ExecuteModel(TestCase):
     def test_processSpeedAnswer(self):
         """ test load data from speed model output dict based on situation of file """
         file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
-        file_path = os.path.join("cmmmodel", os.path.join("tests", file_name))
+        file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
 
-        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=1, externalId=uuid.uuid4(),
-                                                             start=timezone.now())
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=Model.SPEED_MODEL_ID,
+                                                             externalId=uuid.uuid4(), start=timezone.now())
+
+        with open(file_path, "rb") as answer_file:
+            answer = pickle.load(answer_file)
+            answer = answer["output"]
+            process_answer(answer, execution_obj)
+
+        self.assertEqual(ModelAnswer.objects.count(), 147132)
+
+    def test_processStrongAnswer(self):
+        """ test load data from speed model output dict based on situation of file """
+        file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
+        file_path = os.path.join("cmmmodel", "tests", file_name)
+
+        self.create_topologic_system()
+
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=Model.STRONG_MODEL_ID,
+                                                             externalId=uuid.uuid4(), start=timezone.now())
 
         with open(file_path, "rb") as answer_file:
             answer = pickle.load(answer_file)
