@@ -21,13 +21,13 @@ class ProcessStrongData(ProcessData):
 
         self.metrics = [
             {
-                "name": "velDist"
+                "name": "Potencia_drive_LR"
             },
             {
-                "name": "Speedlimit"
+                "name": "Tiempo_LR"
             },
             {
-                "name": "Time"
+                "name": "Potencia_ESS_LR"
             }
         ]
 
