@@ -165,11 +165,8 @@ class ExecuteModel(TestCase):
         meh.refresh_from_db()
         self.assertEqual(meh.status, ModelExecutionHistory.ERROR)
 
-    def test_processAnswer(self):
-        """ test load data from speed model output dict based on situation of file """
-        file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
-        file_path = os.path.join("cmmmodel", os.path.join("tests", file_name))
-
+    def create_topologic_system(self):
+        """ create fake topologic system to test process data answer (for viz and excel file) """
         L1 = MetroLine.objects.create(scene=self.scene_obj, name="L1", externalId=uuid.uuid4())
         [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L1) for index in range(1, 11)]
         [MetroTrack.objects.create(metroLine=L1, name="t{}".format(index), startStation_id=(index+1), endStation_id=(index+1)) for index in range(9)]
@@ -185,12 +182,19 @@ class ExecuteModel(TestCase):
                                        start="10:00:00", end="11:00:00", temperature=0, humidity=0, co2Concentration=0,
                                        solarRadiation=0, sunElevationAngle=0)
 
+    def test_processSpeedAnswer(self):
+        """ test load data from speed model output dict based on situation of file """
+        file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
+        file_path = os.path.join("cmmmodel", os.path.join("tests", file_name))
+
+        self.create_topologic_system()
+
         execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=1, externalId=uuid.uuid4(),
                                                              start=timezone.now())
 
         with open(file_path, "rb") as answer_file:
             answer = pickle.load(answer_file)
-            answer = answer["second_input"]
+            answer = answer["output"]
             process_answer(answer, execution_obj)
 
         self.assertEqual(ModelAnswer.objects.count(), 147132)

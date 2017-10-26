@@ -66,7 +66,7 @@ class SpeedModelVizTest(TestCase):
 
         with open(file_path, "rb") as answer_file:
             answer = pickle.load(answer_file)
-            answer = answer["second_input"]
+            answer = answer["output"]
             process_answer(answer, execution_obj)
 
     def test_loadHTML(self):
@@ -123,7 +123,6 @@ class SpeedModelVizTest(TestCase):
 
         self.assertEqual(len(content["answer"]), 9)
         for track in  content["answer"]:
-            self.assertIn("name", track.keys())
             self.assertIn("direction", track.keys())
             self.assertIn("startStation", track.keys())
             self.assertIn("endStation", track.keys())
