@@ -62,7 +62,7 @@ class SpeedModelVizTest(TestCase):
                                                              externalId=uuid.uuid4(), start=timezone.now())
 
         file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
-        file_path = os.path.join("cmmmodel", os.path.join("tests", file_name))
+        file_path = os.path.join("cmmmodel", "tests", file_name)
 
         with open(file_path, "rb") as answer_file:
             answer = pickle.load(answer_file)

@@ -141,7 +141,7 @@ class ExecuteModel(TestCase):
 
         # create execution record
         file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
-        file_path = os.path.join("..", os.path.join("..", os.path.join("cmmmodel", os.path.join("tests", file_name))))
+        file_path = os.path.join("..", "..", "cmmmodel", "tests", file_name)
         std_out = ""
         std_err = ""
         external_id = uuid.uuid4()
@@ -201,7 +201,7 @@ class ExecuteModel(TestCase):
 
     def test_processStrongAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
+        file_name = "6a9b3d69-1bb6-4582-9b72-ed2c591976a1.output"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()

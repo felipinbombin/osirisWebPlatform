@@ -134,7 +134,7 @@ KEY_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'keys')
 
 # to manipulate remote execution
 PYTHON_COMMAND = "PYTHONPATH={} {}".format(BASE_DIR,
-                                           os.path.join(BASE_DIR, os.path.join('myenv', os.path.join('bin', 'python'))))
+                                           os.path.join(BASE_DIR, 'myenv', 'bin', 'python'))
 # folder to save model answer sent by cmm cluster
 MODEL_OUTPUT_PATH = os.path.join(MEDIA_ROOT, "modelOutput")
 
