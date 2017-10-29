@@ -1,0 +1,66 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static inline_select columns header panel update_button table download_viz_file_button %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  {% with "components/gentelella/vendors/" as gentelella_static %}
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.css" %}" rel="stylesheet">
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.css" %}" rel="stylesheet">
+    <link href="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.css" %}" rel="stylesheet">
+  {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+<div class="col-md-12 col-sm-12 col-xs-12">
+  {% trans "Modelo de velocidad" as title %}
+  {% header title scene.name %}
+
+  {% inline_select "Línea:" "lineFilter" metro_lines as line_select %}
+  {% columns 2 2 12 line_select as col1 %}
+
+  {% inline_select "Dirección:" "directionFilter" directions as direction_select %}
+  {% columns 2 2 12 direction_select as col2 %}
+
+  {% inline_select "Período de operación:" "operationPeriodFilter" op_periods as operation_hour_select %}
+  {% columns 3 3 12 operation_hour_select as col3 %}
+
+  {% update_button "btnUpdateChart" "Actualizar datos" as update_button %}
+  {% columns 12 12 12 update_button as col4 %}
+
+  {% panel "fa-filter" "Filtro" col1|add:col2|add:col3|add:col4 %}
+</div>
+</div>
+
+<div class="row">
+    {% with barChart='<div id="chart" style="height:400px;"></div>' %}
+        {% panel "fa-bar-chart" "Consumo de potencia" barChart as chart_panel %}
+
+        {% download_viz_file_button execution_obj as download_button %}
+        {% panel "" "" download_button as download_panel %}
+
+        {% columns 9 9 12 chart_panel %}
+        {% columns 3 3 12 download_panel %}
+    {% endwith %}
+</div>
+{% endblock %}
+
+{% block extrajs %}
+  {% with "components/gentelella/vendors/" as gentelella_static %}
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.buttons.js" %}"></script>
+    <script src="{% static gentelella_static|add:"pnotify/dist/pnotify.nonblock.js" %}"></script>
+  {% endwith %}
+  <script src="{% static "components/echarts/dist/echarts.min.js" %}"></script>
+  <script src="{% static "js/echartsTheme.js" %}"></script>
+  <script src="{% static "components/spin.js/spin.min.js" %}"></script>
+  <script src="{% static "js/user.notification.js" %}"></script>
+  <script src="{% static "js/spinConfig.js" %}"></script>
+  <script src="{% static "js/strong.js" %}"></script>
+{% endblock %}
