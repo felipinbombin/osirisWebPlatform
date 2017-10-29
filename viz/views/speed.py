@@ -22,9 +22,8 @@ class SpeedModelViz(View):
 
     def get(self, request, sceneId):
         try:
-            scene_obj = Scene.objects.prefetch_related("metroline_set", "metroline_set__metrostation_set").\
+            scene_obj = Scene.objects.prefetch_related("metroline_set__metrostation_set").\
                 get(user=request.user, id=sceneId)
-
         except:
             raise Http404
 

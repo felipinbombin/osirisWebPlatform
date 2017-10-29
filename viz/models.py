@@ -10,7 +10,7 @@ class ModelAnswer(models.Model):
     metroLine = models.ForeignKey(MetroLine)
     direction = models.CharField(max_length=1)
     operationPeriod = models.ForeignKey(OperationPeriod)
-    metroTrack = models.ForeignKey(MetroTrack)
+    metroTrack = models.ForeignKey(MetroTrack, null=True)
     attributeName = models.CharField(max_length=100)
     order = models.IntegerField()
     value = models.FloatField()

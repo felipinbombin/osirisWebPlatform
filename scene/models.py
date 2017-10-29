@@ -64,6 +64,34 @@ class Scene(models.Model):
         return self.name
 
 
+class MetroLineMetric(models.Model):
+    """ metric defined by chunk """
+    metroLine = models.ForeignKey("MetroLine", on_delete=models.CASCADE)
+    # metric
+    SLOPE = 'S'
+    CURVE_RADIUS = 'CR'
+    SPEED_LIMIT = 'SL'
+    GROUND = 'G'
+    METRIC_CHOICES = (
+        (SLOPE, ''),
+        (CURVE_RADIUS, ''),
+        (SPEED_LIMIT, ''),
+        (GROUND, '')
+    )
+    metric = models.CharField(max_length=50, choices=METRIC_CHOICES)
+    end = models.FloatField(null=True)
+    start = models.FloatField(null=True)
+    value = models.FloatField(null=True)
+    GOING = 'g'
+    REVERSE = 'r'
+    DIRECTION_CHOICES = (
+        (GOING, ''),
+        (REVERSE, '')
+    )
+    direction = models.CharField(max_length=50, null=True, choices=DIRECTION_CHOICES)
+    """ example: s0-sN|sN-s0  """
+
+
 class MetroLine(models.Model):
     """ metro line """
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
@@ -92,6 +120,15 @@ class MetroLine(models.Model):
 
     class Meta:
         unique_together = ('scene', 'name',)
+
+    def get_name(self, direction=MetroLineMetric.GOING):
+        """ return line name based on direction param """
+        metro_stations = list(self.metrostation_set.all())
+        if direction == MetroLineMetric.GOING:
+            return "{}-{}".format(metro_stations[0].name, metro_stations[-1].name)
+        else:
+            # is reverse
+            return "{}-{}".format(metro_stations[1].name, metro_stations[0].name)
 
     def get_dict(self):
         """ dict """
@@ -226,34 +263,6 @@ class MetroConnectionStation(models.Model):
         conn_dict = {'id': self.externalId, 'station': self.metroStation.get_dict()}
 
         return conn_dict
-
-
-class MetroLineMetric(models.Model):
-    """ metric defined by chunk """
-    metroLine = models.ForeignKey(MetroLine, on_delete=models.CASCADE)
-    # metric
-    SLOPE = 'S'
-    CURVE_RADIUS = 'CR'
-    SPEED_LIMIT = 'SL'
-    GROUND = 'G'
-    METRIC_CHOICES = (
-        (SLOPE, ''),
-        (CURVE_RADIUS, ''),
-        (SPEED_LIMIT, ''),
-        (GROUND, '')
-    )
-    metric = models.CharField(max_length=50, choices=METRIC_CHOICES)
-    end = models.FloatField(null=True)
-    start = models.FloatField(null=True)
-    value = models.FloatField(null=True)
-    GOING = 'g'
-    REVERSE = 'r'
-    DIRECTION_CHOICES = (
-        (GOING, ''),
-        (REVERSE, '')
-    )
-    direction = models.CharField(max_length=50, null=True, choices=DIRECTION_CHOICES)
-    """ example: s0-sN|sN-s0  """
 
 
 class MetroTrack(models.Model):
