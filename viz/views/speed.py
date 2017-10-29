@@ -15,6 +15,7 @@ from viz.models import ModelAnswer
 
 class SpeedModelViz(View):
     """ wizard form: first  """
+
     def __init__(self):
         super(SpeedModelViz, self).__init__()
         self.context = {}
@@ -22,7 +23,7 @@ class SpeedModelViz(View):
 
     def get(self, request, sceneId):
         try:
-            scene_obj = Scene.objects.prefetch_related("metroline_set__metrostation_set").\
+            scene_obj = Scene.objects.prefetch_related("metroline_set__metrostation_set"). \
                 get(user=request.user, id=sceneId)
         except:
             raise Http404
@@ -31,13 +32,19 @@ class SpeedModelViz(View):
         self.context["metro_lines"] = [metro_line_obj.name for metro_line_obj in
                                        scene_obj.metroline_set.all().order_by("id")]
         self.context["metro_stations"] = [metro_station_obj.name for metro_station_obj in
-                                          scene_obj.metroline_set.all().order_by("id")[0].metrostation_set.all().order_by("id")]
+                                          scene_obj.metroline_set.all().order_by("id")[
+                                              0].metrostation_set.all().order_by("id")]
         self.context["metro_stations2"] = [metro_station_obj.name for metro_station_obj in
-                                          scene_obj.metroline_set.all().order_by("id")[0].metrostation_set.all().order_by("-id")]
-        self.context["op_periods"] = [{"value": op_period_obj.name, "item": "{} ({} - {})".format(op_period_obj.name,op_period_obj.start,op_period_obj.end)} for op_period_obj in
-                                       scene_obj.operationperiod_set.all().order_by("id")]
+                                           scene_obj.metroline_set.all().order_by("id")[
+                                               0].metrostation_set.all().order_by("-id")]
+        self.context["op_periods"] = [{"value": op_period_obj.name,
+                                       "item": "{} ({} - {})".format(op_period_obj.name, op_period_obj.start,
+                                                                     op_period_obj.end)} for op_period_obj in
+                                      scene_obj.operationperiod_set.all().order_by("id")]
         self.context["table_titles"] = ["Sección", "Tiempo (seg)"]
-        self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj, model_id=Model.SPEED_MODEL_ID).order_by("-id").first()
+        self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj,
+                                                                             model_id=Model.SPEED_MODEL_ID).order_by(
+            "-id").first()
 
         return render(request, self.template, self.context)
 
@@ -51,7 +58,7 @@ class SpeedModelVizData(View):
                                                                      operationPeriod__name=operation_period_name,
                                                                      metroStation__metroLine__name=metro_line_name,
                                                                      direction=direction,
-                                                                     metric=OperationPeriodForMetroStation.DWELL_TIME).\
+                                                                     metric=OperationPeriodForMetroStation.DWELL_TIME). \
             order_by("metroStation_id").values_list("metroStation__name", "value")
 
         answer = {}
@@ -59,13 +66,14 @@ class SpeedModelVizData(View):
             answer[station[0]] = station[1]
         return answer
 
-    def get_model_data(self, execution_obj, metro_line_name, metro_tracks, direction, operation_period_name, attributes):
+    def get_model_data(self, execution_obj, metro_line_name, metro_tracks, direction, operation_period_name,
+                       attributes):
         """ get data have gotten from execution instance """
 
-        answer = ModelAnswer.objects.prefetch_related("metroTrack__endStation", "metroTrack__startStation").\
-            filter(execution=execution_obj, attributeName__in=attributes, metroTrack__externalId__in=metro_tracks).\
+        answer = ModelAnswer.objects.prefetch_related("metroTrack__endStation", "metroTrack__startStation"). \
+            filter(execution=execution_obj, attributeName__in=attributes, metroTrack__externalId__in=metro_tracks). \
             values_list("operationPeriod__name", "metroLine__name", "direction",
-                        "metroTrack__startStation__name", "metroTrack__endStation__name", "attributeName", "value").\
+                        "metroTrack__startStation__name", "metroTrack__endStation__name", "attributeName", "value"). \
             order_by("operationPeriod__id", "metroLine__id", "direction", "metroTrack__id", "attributeName",
                      "order")
 
@@ -79,7 +87,8 @@ class SpeedModelVizData(View):
 
         # groups = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : defaultdict(list))))
         groups = []
-        for key, group in groupby(answer, lambda row : "{}_-_{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3], row[4])):
+        for key, group in groupby(answer,
+                                  lambda row: "{}_-_{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3], row[4])):
             attr1, attr2, attr3, attr4, attr5 = key.split("_-_")
             # group by track
             groupElement = {
@@ -89,7 +98,7 @@ class SpeedModelVizData(View):
                 "attributes": {}
             }
             for key2, group2 in groupby(group, lambda row: row[5]):
-                #groups[attr1][attr2][attr3][attr4].append({"name": key2, "value": [v[5] for v in group2]})
+                # groups[attr1][attr2][attr3][attr4].append({"name": key2, "value": [v[5] for v in group2]})
                 groupElement["attributes"][key2] = [v[6] for v in group2]
             groups.append(groupElement)
 
@@ -114,7 +123,8 @@ class SpeedModelVizData(View):
         metro_tracks = request.GET.getlist("tracks[]", [])
 
         scene_id = int(sceneId)
-        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=1).order_by("-id").first()
+        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.SPEED_MODEL_ID). \
+            order_by("-id").first()
 
         response = {
             "dwellTime": self.get_dwell_time(operation_period_name, metro_line_name, direction, scene_id)
