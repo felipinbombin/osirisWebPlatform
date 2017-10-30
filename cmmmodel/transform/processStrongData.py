@@ -83,12 +83,12 @@ class ProcessStrongData(ProcessData):
         TRACK_DESCRIPTION = "Túnel"
 
         # attribute to save
-        ATTRS = ["Tiempo_LR", "Potencia_ESS_LR", "Potencia_ESS_LR", "Potencia_ESS_LR",
-                 "Tiempo_RL", "Potencia_ESS_LR", "Potencia_ESS_RL", "Potencia_ESS_LR"]
+        ATTRS = ["Tiempo_LR", "Potencia_drive_LR", "Potencia_ESS_LR",
+                 "Tiempo_RL", "Potencia_drive_LR", "Potencia_ESS_RL"]
 
         # attribute name and its reference (distance)
-        ATTR_NAMES = ["Time [s]", "Consumed Traction Power[W]", "Provided ESS Power[W]", "Power Available to HRS[W]",
-                      "Time [s]", "Consumed Traction Power[W]", "Provided ESS Power[W]", "Power Available to HRS[W]"]
+        ATTR_NAMES = ["Time [s]", "Consumed Traction Power[W]", "Provided ESS Power[W]",
+                      "Time [s]", "Consumed Traction Power[W]", "Provided ESS Power[W]"]
 
         # data
         line_objs = MetroLine.objects.prefetch_related("metrostation_set").filter(
