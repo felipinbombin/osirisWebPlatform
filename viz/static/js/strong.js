@@ -113,6 +113,9 @@ $(document).ready(function(){
 
         if(makeAjaxCall) {
             makeAjaxCall = false;
+            var loadingIcon = " " + $("<i>").addClass("fa fa-cog fa-spin fa-2x fa-fw")[0].outerHTML;
+            var previousMessage = $(this).html();
+            var button = $(this).append(loadingIcon);
         } else {
             return;
         }
@@ -214,6 +217,7 @@ $(document).ready(function(){
             });
         }).always(function(){
             makeAjaxCall = true;
+            button.html(previousMessage);
         });
     });
     $(window).resize(function() {
