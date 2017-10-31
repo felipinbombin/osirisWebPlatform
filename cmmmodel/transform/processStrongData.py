@@ -127,7 +127,7 @@ class ProcessStrongData(ProcessData):
                         worksheet.write(current_row, 1, operation_period.name)
                         system_direction = MetroLineMetric.GOING if attr[-2:] == "LR" else MetroLineMetric.REVERSE
                         worksheet.write(current_row, 2, line_obj.get_name(system_direction))
-                    values = data[attr][line_index][op_index][0]
+                    values = data[attr][line_index][op_index]
                     current_column = 4
                     for time, value in enumerate(values):
                         worksheet.write(current_row, current_column, time)
