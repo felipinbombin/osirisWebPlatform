@@ -132,7 +132,17 @@ class MetroLine(models.Model):
 
     def get_dict(self):
         """ dict """
-        line_dict = {'id': self.externalId, 'name': self.name, 'stations': [], 'depots': [], 'tracks': []}
+        line_dict = {
+            'id': self.externalId,
+            'name': self.name,
+            'stations': [],
+            'depots': [],
+            'tracks': [],
+             "directionNames": {
+                 MetroLineMetric.GOING: self.get_direction_name(),
+                 MetroLineMetric.REVERSE: self.get_direction_name(MetroLineMetric.REVERSE)
+            }
+        }
 
         for station in self.metrostation_set.all().order_by('id'):
             line_dict['stations'].append(station.get_dict())
@@ -235,7 +245,7 @@ class MetroConnection(models.Model):
     consumption = models.FloatField(null=True)
     """ unit: Watts """
 
-    class meta:
+    class Meta:
         unique_together = ('scene', 'name',)
 
     def get_dict(self):
