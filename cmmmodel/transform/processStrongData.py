@@ -84,7 +84,7 @@ class ProcessStrongData(ProcessData):
 
         # attribute to save
         ATTRS = ["Tiempo_LR", "Potencia_drive_LR", "Potencia_ESS_LR",
-                 "Tiempo_RL", "Potencia_drive_LR", "Potencia_ESS_RL"]
+                 "Tiempo_RL", "Potencia_drive_RL", "Potencia_ESS_RL"]
 
         # attribute name and its reference (distance)
         ATTR_NAMES = ["Time [s]", "Consumed Traction Power[W]", "Provided ESS Power[W]",
@@ -122,7 +122,7 @@ class ProcessStrongData(ProcessData):
                     worksheet.write(current_row + attr_name_index, 3, attr_name)
 
                 for attr_index, attr in enumerate(ATTRS):
-                    if attr_index % 4:
+                    if not attr_index % (len(ATTRS)/2):
                         worksheet.write(current_row, 0, line_obj.name)
                         worksheet.write(current_row, 1, operation_period.name)
                         system_direction = MetroLineMetric.GOING if attr[-2:] == "LR" else MetroLineMetric.REVERSE
@@ -130,11 +130,10 @@ class ProcessStrongData(ProcessData):
                     values = data[attr][line_index][op_index]
                     current_column = 4
                     for time, value in enumerate(values):
-                        worksheet.write(current_row, current_column, time)
-                        worksheet.write(current_row + 1, current_column, value)
+                        worksheet.write(current_row, current_column, value)
                         current_column += 1
-
-                current_row += 3
+                    current_row += 1
+                current_row += 1
 
         workbook.close()
         now = timezone.now().replace(microsecond=0)

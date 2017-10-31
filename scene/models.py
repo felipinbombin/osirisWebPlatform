@@ -123,12 +123,12 @@ class MetroLine(models.Model):
 
     def get_name(self, direction=MetroLineMetric.GOING):
         """ return line name based on direction param """
-        metro_stations = list(self.metrostation_set.all())
+        metro_stations = list(self.metrostation_set.all().order_by("id"))
         if direction == MetroLineMetric.GOING:
             return "{}-{}".format(metro_stations[0].name, metro_stations[-1].name)
         else:
             # is reverse
-            return "{}-{}".format(metro_stations[1].name, metro_stations[0].name)
+            return "{}-{}".format(metro_stations[-1].name, metro_stations[0].name)
 
     def get_dict(self):
         """ dict """
