@@ -1,9 +1,9 @@
-$(document).ready(function(){
+$(document).ready(function () {
     "use strict";
 
     // selectors
     var SELECTED_LINE = $("#lineFilter");
-    var DIRECTION = $("#directionFilter");
+    var SELECTED_DIRECTION = $("#directionFilter");
     var SELECTED_OPERATION_PERIOD = $("#operationPeriodFilter");
 
     var PATH_NAME = window.location.pathname.split("/");
@@ -13,11 +13,11 @@ $(document).ready(function(){
 
     var ECHARTS_OPTIONS = {
         yAxis: [{
-             type: "value",
-             name: "Potencia (W)",
-             nameLocation: "middle",
-             nameGap: 25,
-             position: "left"
+            type: "value",
+            name: "Potencia (W)",
+            nameLocation: "middle",
+            nameGap: 25,
+            position: "left"
         }],
         tooltip: {
             trigger: "axis"
@@ -30,7 +30,11 @@ $(document).ready(function(){
         toolbox: {
             show: true,
             feature: {
-                saveAsImage: {show: true, title: "Guardar imagen", name: "Potencia a lo largo de línea " + SELECTED_LINE.val()},
+                saveAsImage: {
+                    show: true,
+                    title: "Guardar imagen",
+                    name: "Potencia a lo largo de línea " + SELECTED_LINE.val()
+                },
                 dataZoom: {yAxisIndex: false, title: {zoom: "zoom", back: "volver"}}
             },
             left: "center",
@@ -39,28 +43,23 @@ $(document).ready(function(){
     };
     var chart = echarts.init(document.getElementById("chart"), theme);
     var linesInfo = {};
+    var DIRECTION_GOING = "g";
+    var DIRECTION_REVERSE = "r";
 
     // retrieve scene data
     $.getJSON(SCENE_DATA_URL, function (sceneData) {
-        sceneData.lines.forEach(function(metroLineData){
+        sceneData.lines.forEach(function (metroLineData) {
             linesInfo[metroLineData.name] = {
-                stations: [],
-                tracks: []
+                directionNames: metroLineData.directionNames
             };
-            metroLineData.stations.forEach(function(station){
-                linesInfo[metroLineData.name].stations.push(station.name);
-            });
-            linesInfo[metroLineData.name].tracks = metroLineData.tracks;
         });
-        $("#lineFilter").change(function(){
-            ORIGIN_STATION.empty();
-            DESTINATION_STATION.empty();
-            linesInfo[SELECTED_LINE.val()].stations.forEach(function(station){
-                var option = $("<option></option>").attr("value", station).text(station);
-                ORIGIN_STATION.append(option);
-                DESTINATION_STATION.prepend(option.clone());
+        $("#lineFilter").change(function () {
+            SELECTED_DIRECTION.empty();
+            var directionNames = linesInfo[SELECTED_LINE.val()].directionNames;
+            [DIRECTION_GOING, DIRECTION_REVERSE].forEach(function (key) {
+                var option = $("<option></option>").attr("value", key).text(directionNames[key]);
+                SELECTED_DIRECTION.append(option);
             });
-            DESTINATION_STATION[0].selectedIndex = 0;
         });
     });
 
@@ -68,50 +67,19 @@ $(document).ready(function(){
     $("#btnUpdateChart").click(function () {
         console.log("update chart");
 
-        var DIRECTION_GOING = "g";
-        var DIRECTION_REVERSE = "r";
-        var selectedLine = SELECTED_LINE.val();
-
-        // detect direction
-        var direction = DIRECTION_GOING; // default direction: going
-        var station1Index = linesInfo[selectedLine].stations.indexOf(ORIGIN_STATION.val());
-        var station2Index = linesInfo[selectedLine].stations.indexOf(DESTINATION_STATION.val());
-
-        if (station2Index - station1Index === 0) {
-            var status = {
-                message: "La estación de origen y la estación de destino deben ser distintas.",
-                title: "Error",
-                type: "error"
-            };
-            showNotificationMessage(status);
-            return;
-        } else if (station2Index - station1Index < 0) {
-            direction = DIRECTION_REVERSE; // reverse
-        }
-
-        // identify tracks to retrieve
-        var tracksPositions = [];
-        if (direction === DIRECTION_GOING) {
-            for (var i = station1Index; i < station2Index; i++) {
-                tracksPositions.push(linesInfo[selectedLine].tracks[i].id);
-            }
-        // reverse
-        } else {
-            for (var i = station1Index - 1; i >= station2Index; i--) {
-                tracksPositions.push(linesInfo[selectedLine].tracks[i].id);
-            }
-        }
-
+        var attributes = ["Tiempo_", "Potencia_drive_", "Potencia_ESS_"];
+        attributes = attributes.map(function (el) {
+            return el + (SELECTED_DIRECTION.val() === DIRECTION_GOING ? "LR" : "RL");
+        });
         // get data
         var params = {
-            direction: direction,
+            direction: SELECTED_DIRECTION.val(),
             operationPeriod: SELECTED_OPERATION_PERIOD.val(),
-            metroLineName: selectedLine,
-            tracks: tracksPositions,
-            attributes: ["velDist", "Speedlimit", "Time"]
+            metroLineName: SELECTED_LINE.val(),
+            attributes: attributes
         };
 
-        if(makeAjaxCall) {
+        if (makeAjaxCall) {
             makeAjaxCall = false;
             var loadingIcon = " " + $("<i>").addClass("fa fa-cog fa-spin fa-2x fa-fw")[0].outerHTML;
             var previousMessage = $(this).html();
@@ -119,7 +87,7 @@ $(document).ready(function(){
         } else {
             return;
         }
-        $.getJSON(MODEL_DATA_URL, params, function(result) {
+        $.getJSON(MODEL_DATA_URL, params, function (result) {
             var series = [];
             var names = [];
             var trackTimes = [];
@@ -127,20 +95,20 @@ $(document).ready(function(){
             var delta = 0;
             var maxSpeed = 0;
 
-            if("status" in result) {
+            if ("status" in result) {
                 showNotificationMessage(result.status);
                 return;
             }
 
-            result.answer.forEach(function(track, trackIndex){
+            result.answer.forEach(function (track, trackIndex) {
                 var name = track.startStation + " -> " + track.endStation;
-                if (direction === DIRECTION_REVERSE){
+                if (direction === DIRECTION_REVERSE) {
                     name = track.endStation + " -> " + track.startStation;
                 }
 
                 var trackData = [];
-                delta += trackIndex !== 0?trackTimes[trackIndex - 1].length:0;
-                track.attributes.velDist.forEach(function(speedData, index){
+                delta += trackIndex !== 0 ? trackTimes[trackIndex - 1].length : 0;
+                track.attributes.velDist.forEach(function (speedData, index) {
                     speedData = speedData * 3.6;
                     maxSpeed = Math.max(speedData, maxSpeed);
                     trackData.push([delta + index, speedData]);
@@ -151,7 +119,7 @@ $(document).ready(function(){
                 }
 
                 var length = track.attributes.velDist.length;
-                var duration = track.attributes.Time[length-1];
+                var duration = track.attributes.Time[length - 1];
                 var serie = {
                     type: "line",
                     name: name,
@@ -172,7 +140,7 @@ $(document).ready(function(){
                                 position: "middle"
                             }
                         },
-                        data:[
+                        data: [
                             [
                                 {name: speedLimit + " km/h", coord: [delta, speedLimit]},
                                 {coord: [delta + length, speedLimit]}
@@ -215,15 +183,15 @@ $(document).ready(function(){
             chart.setOption(options, {
                 notMerge: true
             });
-        }).always(function(){
+        }).always(function () {
             makeAjaxCall = true;
             button.html(previousMessage);
         });
     });
-    $(window).resize(function() {
+    $(window).resize(function () {
         chart.resize();
     });
-    $("#menu_toggle").click(function() {
+    $("#menu_toggle").click(function () {
         chart.resize();
     });
 });
