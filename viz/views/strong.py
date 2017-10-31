@@ -31,7 +31,7 @@ class StrongModelViz(View):
         self.context["scene"] = scene_obj
         self.context["metro_lines"] = [metro_line_obj.name for metro_line_obj in
                                        scene_obj.metroline_set.all().order_by("id")]
-        self.context["directions"] = [scene_obj.metroline_set.all().order_by("id")[0].get_name(direction) for direction
+        self.context["directions"] = [scene_obj.metroline_set.all().order_by("id")[0].get_direction_name(direction) for direction
                                       in [MetroLineMetric.GOING, MetroLineMetric.REVERSE]]
         self.context["op_periods"] = [{"value": op_period_obj.name,
                                        "item": "{} ({} - {})".format(op_period_obj.name, op_period_obj.start,

@@ -121,7 +121,7 @@ class MetroLine(models.Model):
     class Meta:
         unique_together = ('scene', 'name',)
 
-    def get_name(self, direction=MetroLineMetric.GOING):
+    def get_direction_name(self, direction=MetroLineMetric.GOING):
         """ return line name based on direction param """
         metro_stations = list(self.metrostation_set.all().order_by("id"))
         if direction == MetroLineMetric.GOING:
