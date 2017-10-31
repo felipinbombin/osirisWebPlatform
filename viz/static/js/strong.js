@@ -90,72 +90,30 @@ $(document).ready(function () {
         $.getJSON(MODEL_DATA_URL, params, function (result) {
             var series = [];
             var names = [];
-            var trackTimes = [];
-
-            var delta = 0;
-            var maxSpeed = 0;
 
             if ("status" in result) {
                 showNotificationMessage(result.status);
                 return;
             }
 
-            result.answer.forEach(function (track, trackIndex) {
-                var name = track.startStation + " -> " + track.endStation;
-                if (direction === DIRECTION_REVERSE) {
-                    name = track.endStation + " -> " + track.startStation;
-                }
-
-                var trackData = [];
-                delta += trackIndex !== 0 ? trackTimes[trackIndex - 1].length : 0;
-                track.attributes.velDist.forEach(function (speedData, index) {
-                    speedData = speedData * 3.6;
-                    maxSpeed = Math.max(speedData, maxSpeed);
-                    trackData.push([delta + index, speedData]);
-                });
-                var speedLimit = track.attributes.Speedlimit[1] * 3.6;
-                if (speedLimit > maxSpeed) {
-                    maxSpeed = speedLimit;
-                }
-
-                var length = track.attributes.velDist.length;
-                var duration = track.attributes.Time[length - 1];
-                var serie = {
-                    type: "line",
-                    name: name,
-                    data: trackData,
-                    yAxisIndex: 0,
-                    smooth: true,
-                    showSymbol: false,
-                    markLine: {
-                        silent: true,
-                        symbol: "circle",
-                        lineStyle: {
-                            normal: {
-                                color: "red"
-                            }
-                        },
-                        label: {
-                            normal: {
-                                position: "middle"
-                            }
-                        },
-                        data: [
-                            [
-                                {name: speedLimit + " km/h", coord: [delta, speedLimit]},
-                                {coord: [delta + length, speedLimit]}
-                            ]
-                        ]
-                    }
-                };
-                series.push(serie);
-                names.push(name);
-                trackTimes.push({
-                    name: name,
-                    time: duration,
-                    startStation: track.startStation,
-                    endStation: track.endStation,
-                    length: length
+            result.answer.forEach(function (line) {
+                attributes.slice(1).forEach(function (attr) {
+                    var data = [];
+                    line.attributes[attr].forEach(function (value, index){
+                        var x = line.attributes[attributes[0]][index];
+                        var y = value;
+                        data.push([x, y]);
+                    });
+                    var serie = {
+                        type: "line",
+                        name: attr,
+                        data: line.attributes[attr],
+                        yAxisIndex: 0,
+                        smooth: true,
+                        showSymbol: false
+                    };
+                    series.push(serie);
+                    names.push(attr);
                 });
             });
 
@@ -165,7 +123,7 @@ $(document).ready(function () {
                 },
                 series: series,
                 xAxis: [{
-                    name: "Distancia (metros)",
+                    name: "Tiempo (seg.)",
                     type: "value",
                     nameLocation: "middle",
                     nameTextStyle: {
@@ -177,7 +135,6 @@ $(document).ready(function () {
                 }]
             };
             $.extend(options, ECHARTS_OPTIONS);
-            options.yAxis[0]["max"] = maxSpeed;
 
             chart.clear();
             chart.setOption(options, {
