@@ -167,19 +167,29 @@ class ExecuteModel(TestCase):
 
     def create_topologic_system(self):
         """ create fake topologic system to test process data answer (for viz and excel file) """
+
         L1 = MetroLine.objects.create(scene=self.scene_obj, name="L1", externalId=uuid.uuid4())
-        [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L1) for index in range(1, 11)]
-        [MetroTrack.objects.create(metroLine=L1, name="t{}".format(index), startStation_id=(index+1), endStation_id=(index+1)) for index in range(9)]
+
+        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L1) for
+                    index in range(1, 11)]
+        for index, station in enumerate(stations[:-1]):
+            MetroTrack.objects.create(metroLine=L1, name="Track{}".format(index),
+                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
 
         L2 = MetroLine.objects.create(scene=self.scene_obj, name="L2", externalId=uuid.uuid4())
-        [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L2) for index in range(12, 24)]
-        [MetroTrack.objects.create(metroLine=L2, name="t{}".format(index), startStation_id=(index+12), endStation_id=(index+12)) for index in range(11)]
+        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L2) for
+                    index in range(12, 24)]
+        for index, station in enumerate(stations[:-1]):
+            MetroTrack.objects.create(metroLine=L2, name="Track{}".format(index),
+                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
 
         OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP1",
-                                       start="09:00:00", end="10:00:00", temperature=0, humidity=0, co2Concentration=0,
+                                       start="09:00:00", end="10:00:00", temperature=0, humidity=0,
+                                       co2Concentration=0,
                                        solarRadiation=0, sunElevationAngle=0)
         OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP2",
-                                       start="10:00:00", end="11:00:00", temperature=0, humidity=0, co2Concentration=0,
+                                       start="10:00:00", end="11:00:00", temperature=0, humidity=0,
+                                       co2Concentration=0,
                                        solarRadiation=0, sunElevationAngle=0)
 
     def test_processSpeedAnswer(self):

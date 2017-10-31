@@ -191,17 +191,15 @@ class StrongModelVizTest(ModelVizTest):
             "direction": "g",
             "operationPeriod": "OP1",
             "metroLineName": "L1",
-            "attributes[]": ["velDist", "Speedlimit", "Time"]
+            "attributes[]": ["Tiempo_LR", "Potencia_drive_LR", "Potencia_ESS_LR"]
         }
 
         response = self.testHelper.make_get_request(URL, params, expected_response=None)
         content = json.loads(response.content.decode("utf-8"))
 
-        self.assertEqual(len(content["answer"]), 9)
-        for track in content["answer"]:
-            self.assertIn("direction", track.keys())
-            self.assertIn("startStation", track.keys())
-            self.assertIn("endStation", track.keys())
-            self.assertIn("Speedlimit", track["attributes"])
-            self.assertIn("velDist", track["attributes"])
-            self.assertIn("Time", track["attributes"])
+        self.assertEqual(len(content["answer"]), 1)
+        for line in content["answer"]:
+            self.assertIn("direction", line.keys())
+            self.assertIn("Tiempo_LR", line["attributes"])
+            self.assertIn("Potencia_drive_LR", line["attributes"])
+            self.assertIn("Potencia_ESS_LR", line["attributes"])
