@@ -1,6 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, LiveServerTestCase
 from django.urls import reverse
 from django.utils import timezone
+from django.conf import settings
+
+from splinter import Browser
 
 from scene.tests.testHelper import TestHelper
 from scene.models import MetroLine, MetroStation, OperationPeriod, MetroTrack
@@ -101,7 +104,7 @@ class SpeedModelVizTest(ModelVizTest):
         }
 
         # with error because last execution of model is running
-        response = self.testHelper.make_get_request(URL, {}, expected_response=None)
+        response = self.testHelper.make_get_request(URL, params, expected_response=None)
         content = json.loads(response.content.decode("utf-8"))
 
         self.assertNotIn("answer", content.keys())
@@ -138,6 +141,7 @@ class SpeedModelVizTest(ModelVizTest):
             self.assertIn("velDist", track["attributes"])
             self.assertIn("Time", track["attributes"])
 
+
 class StrongModelVizTest(ModelVizTest):
     """ test web page to see output of strong model """
 
@@ -170,7 +174,7 @@ class StrongModelVizTest(ModelVizTest):
         }
 
         # with error because last execution of model is running
-        response = self.testHelper.make_get_request(URL, {}, expected_response=None)
+        response = self.testHelper.make_get_request(URL, params, expected_response=None)
         content = json.loads(response.content.decode("utf-8"))
 
         self.assertNotIn("answer", content.keys())
@@ -203,3 +207,58 @@ class StrongModelVizTest(ModelVizTest):
             self.assertIn("Tiempo_LR", line["attributes"])
             self.assertIn("Potencia_drive_LR", line["attributes"])
             self.assertIn("Potencia_ESS_LR", line["attributes"])
+
+
+class JavascriptTest(LiveServerTestCase):
+    """ You need put phantomjs in path visible por system """
+
+    def setUp(self):
+        self.url = self.live_server_url
+        self.helper = TestHelper(self)
+        self.username = "felipe"
+        self.password = "andres"
+        self.helper.create_logged_client(username=self.username, password=self.password)
+
+    def login(self, browser):
+        browser.fill("username", self.username)
+        browser.fill("password", self.password)
+        browser.find_by_value("Iniciar sesión").click()
+
+    def create_scene(self, browser):
+        """ create scene through webpage """
+
+        # create scene
+        browser.find_link_by_partial_href("admin/scene").click()
+        browser.find_link_by_partial_href("scene/add").click()
+        browser.fill("name", "scene_test")
+        browser.find_by_name("_save").click()
+
+        # create topologic variables
+        browser.find_by_id("addLine").click()
+        browser.fill()
+
+        browser.find_by_id("addDepot").click()
+
+        browser.find_by_id("addConnection").click()
+
+        print(browser.html)
+
+    def test_loadChart(self):
+        """ load web page and press button to show chart """
+        executable = "phantomjs"
+        if os.name == "nt":
+            executable += ".exe"
+        executable_path = {
+            'executable_path': os.path.join(settings.BASE_DIR, "viz", "tests", "phantomjs", executable)
+        }
+
+        with Browser("phantomjs", **executable_path) as browser:
+            # Visit URL
+            browser.visit(self.url)
+            self.login(browser)
+            self.create_scene(browser)
+
+
+            #browser.find_by_value("Escenario 5").click()
+
+            #print(browser.html)

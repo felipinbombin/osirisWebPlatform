@@ -19,7 +19,7 @@
           <div class="clearfix"></div>
         </div>
         <div class="col-md-6 col-sm-6 col-xs-12">
-          <button type="submit" class="pull-right btn btn-success btn-sm" data-bind="click: openAddLineForm">
+          <button id="addLine" type="submit" class="pull-right btn btn-success btn-sm" data-bind="click: openAddLineForm">
             <i class="fa fa-plus" aria-hidden="true"></i> agregar
           </button>
         </div>
@@ -58,7 +58,7 @@
           <div class="clearfix"></div>
         </div>
         <div class="col-md-6 col-sm-6 col-xs-12">
-          <button type="submit" class="pull-right btn btn-success btn-sm" 
+          <button id="addDepot" type="submit" class="pull-right btn btn-success btn-sm"
             data-bind="click: showAddDepotDialog, enable: lines().length > 0">
             <i class="fa fa-plus" aria-hidden="true"></i> agregar
           </button>
@@ -98,7 +98,7 @@
           <div class="clearfix"></div>
         </div>
         <div class="col-md-6 col-sm-6 col-xs-12">
-          <button type="submit" class="pull-right btn btn-success btn-sm" 
+          <button id="addConnection" type="submit" class="pull-right btn btn-success btn-sm"
             data-bind="click: openAddConnectionDialog, enable: lines().length > 0">
             <i class="fa fa-plus" aria-hidden="true"></i> agregar
           </button>
@@ -146,13 +146,13 @@
           <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12">Nombre</label>
             <div class="col-md-9 col-sm-9 col-xs-12">
-              <input type="text" class="form-control" data-bind="value: lineName">
+              <input id="lineName" type="text" class="form-control" data-bind="value: lineName">
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12"># estaciones</label>
             <div class="col-md-9 col-sm-9 col-xs-12">
-              <input type="text" class="form-control" data-bind="value: stationsQuantity">
+              <input id="stationQuantity" type="text" class="form-control" data-bind="value: stationsQuantity">
             </div>
           </div>
         </div>

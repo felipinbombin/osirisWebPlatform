@@ -17,12 +17,10 @@ class TestHelper():
         self.testInstance = testInstance
         self.client = self.create_logged_client()
 
-    def create_logged_client(self):
+    def create_logged_client(self, username="F", password="F"):
         """ get test logged test client  """
 
         # log in inputs
-        username = "Felipinbombin"
-        password = "Felipinbombin"
         email = "a@b.cl"
 
         # create user on django contrib user model
