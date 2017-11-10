@@ -1,4 +1,5 @@
-from django.test import TestCase, LiveServerTestCase
+from django.test import TestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
@@ -209,15 +210,14 @@ class StrongModelVizTest(ModelVizTest):
             self.assertIn("Potencia_ESS_LR", line["attributes"])
 
 
-class JavascriptTest(LiveServerTestCase):
+class JavascriptTest(StaticLiveServerTestCase):
     """ You need put phantomjs in path visible por system """
 
     def setUp(self):
         self.url = self.live_server_url
-        self.helper = TestHelper(self)
         self.username = "felipe"
         self.password = "andres"
-        self.helper.create_logged_client(username=self.username, password=self.password)
+        self.helper = TestHelper(self, username=self.username, password=self.password)
 
     def login(self, browser):
         browser.fill("username", self.username)
@@ -234,30 +234,46 @@ class JavascriptTest(LiveServerTestCase):
         browser.find_by_name("_save").click()
 
         # create topologic variables
+
+        import time
+        time.sleep(3)
+        # first line
         browser.find_by_id("addLine").click()
-        browser.fill()
+        browser.find_by_id("stationQuantity").fill(10)
+        browser.find_by_id("createLine").click()
 
-        browser.find_by_id("addDepot").click()
+        # second line
+        browser.find_by_id("addLine").click()
+        browser.find_by_id("stationQuantity").fill(12)
+        browser.find_by_id("createLine").click()
 
-        browser.find_by_id("addConnection").click()
+        #browser.find_by_id("addDepot").click()
 
-        print(browser.html)
+        #browser.find_by_id("addConnection").click()
 
     def test_loadChart(self):
         """ load web page and press button to show chart """
         executable = "phantomjs"
+        browser = "phantomjs"
+
+        executable = "chromedriver"
+        browser = "chrome"
+
         if os.name == "nt":
             executable += ".exe"
         executable_path = {
-            'executable_path': os.path.join(settings.BASE_DIR, "viz", "tests", "phantomjs", executable)
+            'executable_path': os.path.join(settings.BASE_DIR, "viz", "tests", "driver", executable)
         }
 
-        with Browser("phantomjs", **executable_path) as browser:
+        # browser.driver.save_screenshot('your_screenshot.png')
+
+        with Browser(browser, **executable_path) as browser:
+            browser.driver.set_window_size(1120, 550)
             # Visit URL
             browser.visit(self.url)
+
             self.login(browser)
             self.create_scene(browser)
-
 
             #browser.find_by_value("Escenario 5").click()
 

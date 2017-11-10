@@ -12,12 +12,12 @@ import json
 
 class TestHelper():
 
-    def __init__(self, testInstance):
+    def __init__(self, testInstance, username="F", password="F"):
         """ constructor """
         self.testInstance = testInstance
-        self.client = self.create_logged_client()
+        self.client = self.create_logged_client(username, password)
 
-    def create_logged_client(self, username="F", password="F"):
+    def create_logged_client(self, username, password):
         """ get test logged test client  """
 
         # log in inputs

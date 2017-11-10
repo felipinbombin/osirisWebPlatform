@@ -354,3 +354,5 @@ class CompleteSceneDataTest(TestCase):
 
         for url in page_urls:
             self.testHelper.make_get_request(url, {}, expected_response=None)
+
+        # check javascript of wizard
