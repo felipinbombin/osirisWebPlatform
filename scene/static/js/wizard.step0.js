@@ -3,31 +3,31 @@
 /**************************************************
 * STEP 0
 ***************************************************/
-let Station = function (name) {
-    let self = this;
+var Station = function (name) {
+    var self = this;
     self.id = null;
     self.name = ko.observable(name);
 };
-let Depot = function (name) {
-    let self = this;
+var Depot = function (name) {
+    var self = this;
     self.id = null;
     self.name = ko.observable(name);
 };
-let Line = function (name) {
-    let self = this;
+var Line = function (name) {
+    var self = this;
     self.id = null;
     self.name = ko.observable(name);
     self.stations = ko.observableArray();
     self.depots = ko.observableArray();
 };
-let ConnectionStation = function () {
-    let self = this;
+var ConnectionStation = function () {
+    var self = this;
     self.id = null;
     self.line = ko.observable();
     self.station = ko.observable();
 };
-let Connection = function (name) {
-    let self = this;
+var Connection = function (name) {
+    var self = this;
     self.id = null;
     self.name = ko.observable(name);
     self.stations = ko.observableArray();
@@ -35,10 +35,10 @@ let Connection = function (name) {
     self.avgSurface = ko.observable();
     self.consumption = ko.observable();
     self.description = ko.computed(function () {
-        let name = "";
-        let arrow = "<i class='fa fa-arrows-h fa-lg' aria-hidden='true'></i>";
-        let stationsNumber = self.stations().length;
-        for (let i = 0; i < stationsNumber; i++) {
+        var name = "";
+        var arrow = "<i class='fa fa-arrows-h fa-lg' aria-hidden='true'></i>";
+        var stationsNumber = self.stations().length;
+        for (var i = 0; i < stationsNumber; i++) {
             try {
                 name += self.stations()[i].line().name() + "-" + self.stations()[i].station().name();
             } catch (err) {
@@ -52,12 +52,12 @@ let Connection = function (name) {
     });
 };
 
-let Step0ViewModel = function () {
-    let self = this;
+var Step0ViewModel = function () {
+    var self = this;
 
     self.lines = ko.observableArray();
     self.depotsQuantity = ko.computed(function () {
-        let quantity = 0;
+        var quantity = 0;
         self.lines().forEach(function(el) {
             quantity += el.depots().length;
         });
@@ -69,15 +69,15 @@ let Step0ViewModel = function () {
      * FORM TO ADD LINE
      ***************************************************/
     self.showAddLineDialog = ko.observable(false);
-    let AddLineFormLogic = function () {
-        let self = this;
+    var AddLineFormLogic = function () {
+        var self = this;
         self.lineName = ko.observable(null);
         self.stationsQuantity = ko.observable(0);
     };
     self.addLineFormLogic = new AddLineFormLogic();
     self.openAddLineForm = function () {
         const LINE_NAME_PREFIX = "L";
-        let defaultLineName = LINE_NAME_PREFIX + (self.lines().length + 1);
+        var defaultLineName = LINE_NAME_PREFIX + (self.lines().length + 1);
         self.addLineFormLogic.lineName(defaultLineName);
         self.addLineFormLogic.stationsQuantity(1);
         self.showAddLineDialog(true);
@@ -86,11 +86,11 @@ let Step0ViewModel = function () {
         const STATION_NAME_PREFIX = "S";
 
         if (self.isValidLineForm()) {
-            let addForm = self.addLineFormLogic;
-            let line = new Line(addForm.lineName());
-            for (let i = 0; i < addForm.stationsQuantity(); i++) {
-                let stationName = STATION_NAME_PREFIX + (i + 1);
-                let station = new Station(stationName);
+            var addForm = self.addLineFormLogic;
+            var line = new Line(addForm.lineName());
+            for (var i = 0; i < addForm.stationsQuantity(); i++) {
+                var stationName = STATION_NAME_PREFIX + (i + 1);
+                var station = new Station(stationName);
                 line.stations.push(station);
             }
             self.lines.push(line);
@@ -99,11 +99,11 @@ let Step0ViewModel = function () {
     };
     self.removeLine = function () {
         // delete connection if has an station of the line
-        let deleteConnection = false;
-        for (let i = 0; i < self.connections().length; i++) {
-            let connection = self.connections()[i];
-            for (let j = 0; j < connection.stations().length; j++) {
-                let station = connection.stations()[j];
+        var deleteConnection = false;
+        for (var i = 0; i < self.connections().length; i++) {
+            var connection = self.connections()[i];
+            for (var j = 0; j < connection.stations().length; j++) {
+                var station = connection.stations()[j];
                 if (station.line() === this) {
                     deleteConnection = true;
                 }
@@ -123,8 +123,8 @@ let Step0ViewModel = function () {
     self.selectedStations = ko.observableArray();
     self.openEditStationsForm = function () {
         self.selectedStations.removeAll();
-        let stations = this.stations();
-        for (let i = 0; i < stations.length; i++) {
+        var stations = this.stations();
+        for (var i = 0; i < stations.length; i++) {
             self.selectedStations.push(stations[i]);
         }
         self.showEditStationsDialog(true);
@@ -133,8 +133,8 @@ let Step0ViewModel = function () {
      * FORM TO ADD CONNECTIONS
      ***************************************************/
     self.showAddConnectionDialog = ko.observable(false);
-    let addConnectionFormLogic = function () {
-        let self = this;
+    var addConnectionFormLogic = function () {
+        var self = this;
         self.connectionName = ko.observable();
         self.connectionStations = ko.observableArray();
         self.avgHeight = ko.observable();
@@ -148,7 +148,7 @@ let Step0ViewModel = function () {
     };
     self.addConnectionFormLogic = new addConnectionFormLogic();
     self.openAddConnectionDialog = function () {
-        let addForm = self.addConnectionFormLogic;
+        var addForm = self.addConnectionFormLogic;
         addForm.connectionName("");
         addForm.avgHeight("");
         addForm.avgSurface("");
@@ -156,12 +156,12 @@ let Step0ViewModel = function () {
         self.showAddConnectionDialog(true);
     };
     self.addConnection = function () {
-        let addForm = self.addConnectionFormLogic;
+        var addForm = self.addConnectionFormLogic;
         if (self.isValidConnectionForm()) {
-            let connection = new Connection(addForm.connectionName());
+            var connection = new Connection(addForm.connectionName());
             connection.avgHeight(addForm.avgHeight());
             connection.avgSurface(addForm.avgSurface());
-            for (let i = 0; i < addForm.connectionStations().length; i++) {
+            for (var i = 0; i < addForm.connectionStations().length; i++) {
                 connection.stations.push(addForm.connectionStations()[i]);
             }
 
@@ -178,16 +178,16 @@ let Step0ViewModel = function () {
      * FORM TO ADD DEPOTS
      ***************************************************/
     self.showAddDepotDialog = ko.observable(false);
-    let addDepotFormLogic = function () {
-        let self = this;
+    var addDepotFormLogic = function () {
+        var self = this;
         self.name = ko.observable();
         self.line = ko.observable();
 
         self.updateDefaultDepotName = function (newLine) {
-            let line = newLine || self.line();
+            var line = newLine || self.line();
             if (line === undefined) return;
             const DEPOT_NAME_PREFIX = "D";
-            let defaultDepotName = DEPOT_NAME_PREFIX + (line.depots().length + 1);
+            var defaultDepotName = DEPOT_NAME_PREFIX + (line.depots().length + 1);
             self.name(defaultDepotName);
         };
         // each time line is updated
@@ -196,14 +196,14 @@ let Step0ViewModel = function () {
     self.addDepotFormLogic = new addDepotFormLogic();
     self.addDepot = function () {
         if (self.isValidDepotForm()) {
-            let depot = new Depot(self.addDepotFormLogic.name());
+            var depot = new Depot(self.addDepotFormLogic.name());
             self.addDepotFormLogic.line().depots.push(depot);
             self.showAddDepotDialog(false);
             self.addDepotFormLogic.updateDefaultDepotName();
         }
     };
     self.removeDepot = function () {
-        let depot = this;
+        var depot = this;
         self.lines().forEach(function(el) {
             el.depots.remove(depot)
         });
@@ -214,14 +214,14 @@ let Step0ViewModel = function () {
      * FORMS VALIDATION
      ***************************************************/
     self.isValidLineForm = function () {
-        let addForm = self.addLineFormLogic;
+        var addForm = self.addLineFormLogic;
 
-        let reasons = [];
-        let isValidLineName = true;
-        let isValidStationNumber = true;
+        var reasons = [];
+        var isValidLineName = true;
+        var isValidStationNumber = true;
 
-        let name = addForm.lineName();
-        let stationNumber = addForm.stationsQuantity();
+        var name = addForm.lineName();
+        var stationNumber = addForm.stationsQuantity();
 
         if (name === null || name === "" || !name.length) {
             reasons.push("El nombre no puede ser vacío.");
@@ -233,7 +233,7 @@ let Step0ViewModel = function () {
                 isValidLineName = false;
             }
 
-            for (let i = 0; i < self.lines().length; i++) {
+            for (var i = 0; i < self.lines().length; i++) {
                 if (name === self.lines()[i].name()) {
                     reasons.push("Ya existe una línea con ese nombre.");
                     isValidLineName = false;
@@ -256,12 +256,12 @@ let Step0ViewModel = function () {
     };
 
     self.isValidDepotForm = function () {
-        let addForm = self.addDepotFormLogic;
+        var addForm = self.addDepotFormLogic;
 
-        let reasons = [];
-        let isValidName = true;
+        var reasons = [];
+        var isValidName = true;
 
-        let name = addForm.name();
+        var name = addForm.name();
 
         if (name === null || name === "" || !name.length) {
             reasons.push("El nombre no puede ser vacío.");
@@ -272,9 +272,9 @@ let Step0ViewModel = function () {
                 reasons.push("El nombre no puede tener un largo mayor a 50 caracteres.");
                 isValidName = false;
             }
-            for (let i = 0; i < self.lines().length; i++) {
+            for (var i = 0; i < self.lines().length; i++) {
                 if (addForm.line().name() === self.lines()[i].name()) {
-                    for (let j = 0; j < self.lines()[i].depots().length; j++) {
+                    for (var j = 0; j < self.lines()[i].depots().length; j++) {
                         if (name === self.lines()[i].depots()[j].name()) {
                             reasons.push("Ya existe un depósito con ese nombre.");
                             isValidName = false;
@@ -293,20 +293,20 @@ let Step0ViewModel = function () {
     };
 
     self.isValidConnectionForm = function () {
-        let addForm = self.addConnectionFormLogic;
+        var addForm = self.addConnectionFormLogic;
 
-        let reasons = [];
-        let isValidStationQuantity = true;
-        let isValidConnectionName = true;
-        let isValidAvgHeight = true;
-        let isValidAvgSurface = true;
-        let isValidLines = true;
+        var reasons = [];
+        var isValidStationQuantity = true;
+        var isValidConnectionName = true;
+        var isValidAvgHeight = true;
+        var isValidAvgSurface = true;
+        var isValidLines = true;
 
-        let name = addForm.connectionName();
-        let stationNumber = addForm.connectionStations().length;
-        let avgHeight = addForm.avgHeight();
-        let avgSurface = addForm.avgSurface();
-        let stations = addForm.connectionStations();
+        var name = addForm.connectionName();
+        var stationNumber = addForm.connectionStations().length;
+        var avgHeight = addForm.avgHeight();
+        var avgSurface = addForm.avgSurface();
+        var stations = addForm.connectionStations();
 
         if (name === null || name === "" || !name.length) {
             reasons.push("El nombre no puede ser vacío.");
@@ -317,7 +317,7 @@ let Step0ViewModel = function () {
                 reasons.push("El nombre no puede tener un largo mayor a 50 caracteres.");
                 isValidConnectionName = false;
             }
-            for (let i = 0; i < self.connections().length; i++) {
+            for (var i = 0; i < self.connections().length; i++) {
                 if (name === self.connections()[i].name()) {
                     reasons.push("Ya existe una conexión con ese nombre.");
                     isValidConnectionName = false;
@@ -340,8 +340,8 @@ let Step0ViewModel = function () {
             isValidAvgHeight = false;
         }
 
-        let set = new Set();
-        for (let i = 0; i < stations.length; i++) {
+        var set = new Set();
+        for (var i = 0; i < stations.length; i++) {
             set.add(stations[i].line().name());
         }
         if (set.size !== stationNumber) {
@@ -365,9 +365,9 @@ let Step0ViewModel = function () {
      * VALIDATION LOGIC
      ***************************************************/
     self.showWarningList = function (reasons) {
-        let message = "Hemos detectado los siguientes problemas:";
+        var message = "Hemos detectado los siguientes problemas:";
         message += "<ul>";
-        for (let i = 0; i < reasons.length; i++) {
+        for (var i = 0; i < reasons.length; i++) {
             message += "<li>" + reasons[i] + "</li>";
         }
         message += "</ul>";
@@ -376,7 +376,7 @@ let Step0ViewModel = function () {
     };
 
     self.showMessage = function (message, title, type) {
-        let msg = {
+        var msg = {
             message: message,
             title: title,
             type: type
@@ -388,7 +388,7 @@ let Step0ViewModel = function () {
      * EXTERNAL VALIDATION LOGIC
      ***************************************************/
     self.serialize = function () {
-        let serialize = {
+        var serialize = {
             lines: this.lines(),
             connections: this.connections(),
         };
@@ -396,7 +396,7 @@ let Step0ViewModel = function () {
     };
 
     self.isValid = function () {
-        let msg = {
+        var msg = {
             message: "",
             title: "Error",
             type: "error"
@@ -415,21 +415,21 @@ let Step0ViewModel = function () {
     };
 
     self.update = function (data) {
-        let lines = data["lines"];
-        let connections = data["connections"];
+        var lines = data["lines"];
+        var connections = data["connections"];
 
         self.connections.removeAll();
         self.lines.removeAll();
 
-        let stationList = {};
+        var stationList = {};
 
         lines.forEach(function (el) {
-            let line = new Line();
+            var line = new Line();
             line.name(el.name);
             line.id = el.id;
 
             el.stations.forEach(function (el) {
-                let station = new Station();
+                var station = new Station();
                 station.name(el.name);
                 station.id = el.id;
                 line.stations.push(station);
@@ -440,7 +440,7 @@ let Step0ViewModel = function () {
                 }
             });
             el.depots.forEach(function (el) {
-                let depot = new Depot();
+                var depot = new Depot();
                 depot.name(el.name);
                 depot.id = el.id;
                 line.depots.push(depot);
@@ -449,13 +449,13 @@ let Step0ViewModel = function () {
         });
 
         connections.forEach(function (el) {
-            let connection = new Connection(el.name);
+            var connection = new Connection(el.name);
             connection.id = el.id;
             connection.avgHeight(el.avgHeight);
             connection.avgSurface(el.avgSurface);
 
             el.stations.forEach(function (connStation) {
-                let connectionStation = new ConnectionStation();
+                var connectionStation = new ConnectionStation();
                 connectionStation.id = connStation.id;
                 connectionStation.line(stationList[connStation.station.id].line);
                 connectionStation.station(stationList[connStation.station.id].station);
