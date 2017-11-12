@@ -199,7 +199,7 @@
           <div class="form-group">
             <label class="control-label col-md-2 col-sm-2 col-xs-12">Nombre:</label>
             <div class="col-md-10 col-sm-10 col-xs-12">
-              <input type="text" class="form-control" data-bind="value: connectionName">
+              <input id="connectionName" type="text" class="form-control" data-bind="value: connectionName">
             </div>
           </div>
           <hr />
@@ -208,7 +208,7 @@
             <div class="panel panel-info">
               <div class="panel-heading">
                 Estaciones participantes:
-                <button type="button" class="btn btn-success btn-xs pull-right" 
+                <button id="addConnectionStation" type="button" class="btn btn-success btn-xs pull-right"
                   data-bind="click : addConnectionStation">
                   <i class="fa fa-plus" aria-hidden="true"></i> Agregar estación
                 </button>
@@ -216,15 +216,15 @@
               <div class="panel-body" data-bind="foreach: connectionStations">
                 <div class="row">
                   <div class="form-group col-md-4 col-sm-4 col-xs-12">
-                    <select class="form-control" 
-                      data-bind="options: $root.lines, 
+                    <select name="connectionStationLine" class="form-control"
+                      data-bind="options: $root.lines,
                                  optionsText: 'name', 
                                  value: line">
                     </select>
                   </div>
                   <!-- ko with : line -->
                   <div class="form-group col-md-4 col-sm-4 col-xs-12">
-                    <select class="form-control" 
+                    <select name="connectionStationName" class="form-control"
                       data-bind="options: stations,
                                  optionsText: 'name',
                                  value: $parent.station">
@@ -232,7 +232,7 @@
                   </div>
                   <!-- /ko  -->
                   <div class="form-group col-md-4 col-sm-4 col-xs-12">
-                    <button type="button" class="btn btn-danger btn-block" 
+                    <button name="deleteConnectionStation" type="button" class="btn btn-danger btn-block"
                       data-bind="click: $parent.deleteConnectionStation">Eliminar</button>
                   </div>
                 </div>
@@ -244,7 +244,7 @@
               <label class="control-label col-md-4 col-sm-4 col-xs-12">Altura promedio</label>
               <div class="col-md-8 col-sm-8 col-xs-12">
                 <div class="input-group demo2 colorpicker-element">
-                  <input type="number" class="form-control" data-bind="value: avgHeight">
+                  <input id="avgHeight" type="number" class="form-control" data-bind="value: avgHeight">
                   <span class="input-group-addon">m</span>
                 </div>
               </div>
@@ -253,7 +253,7 @@
               <label class="control-label col-md-4 col-sm-4 col-xs-12">Superifcie promedio</label>
               <div class="col-md-8 col-sm-8 col-xs-12">
                 <div class="input-group demo2 colorpicker-element">
-                  <input type="number" class="form-control" data-bind="value: avgSurface">
+                  <input id="avgSurface" type="number" class="form-control" data-bind="value: avgSurface">
                   <span class="input-group-addon">m<sup>2</sup></span>
                 </div>
               </div>
@@ -263,7 +263,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success" data-bind="click : $parent.addConnection" autofocus>Crear</button>
+        <button id="createConnection" type="button" class="btn btn-success" data-bind="click : $parent.addConnection" autofocus>Crear</button>
       </div>
     </div>
   </div>
@@ -282,7 +282,7 @@
           <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12">Línea</label>
             <div class="col-md-9 col-sm-9 col-xs-12">
-              <select class="form-control" data-bind="options: $root.lines, 
+              <select id="depotLineName" class="form-control" data-bind="options: $root.lines,
                                                       optionsText: 'name', 
                                                       value: line">
               </select>
@@ -291,13 +291,13 @@
           <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12">Nombre</label>
             <div class="col-md-9 col-sm-9 col-xs-12">
-              <input type="text" class="form-control" data-bind="value: name">
+              <input id="depotName" type="text" class="form-control" data-bind="value: name">
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success" data-bind="click : $root.addDepot" autofocus>Crear</button>
+        <button id="createDepot" type="button" class="btn btn-success" data-bind="click : $root.addDepot" autofocus>Crear</button>
       </div>
     </div>
   </div>
