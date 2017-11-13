@@ -5,22 +5,21 @@ from django.test import TestCase
 from django.urls import reverse
 from django.conf import settings
 
-from scene.models import MetroLineMetric
-from scene.statusResponse import Status
-
-from .testHelper import TestHelper
-
 from collections import defaultdict
 
+from scene.models import MetroLineMetric
+from scene.statusResponse import Status
 from cmmmodel.firstInput import first_input
+from .testHelper import TestHelper
 
 import os
 import json
 
-TOPOLOGIC_FILE_NAME = u"Escenario_topologico.xlsx"
-SYSTEMIC_FILE_NAME = u"Escenario_sistemico.xlsx"
-OPERATION_FILE_NAME = u"Escenario_operacion.xlsx"
-SPEED_FILE_NAME = u"Escenario_velocidad.xlsx"
+TOPOLOGIC_FILE_NAME = "Escenario_topologico.xlsx"
+SYSTEMIC_FILE_NAME = "Escenario_sistemico.xlsx"
+OPERATION_FILE_NAME = "Escenario_operacion.xlsx"
+SPEED_FILE_NAME = "Escenario_velocidad.xlsx"
+
 
 class CompleteSceneDataTest(TestCase):
     """
@@ -278,8 +277,6 @@ class CompleteSceneDataTest(TestCase):
 
     def upload_speed_file(self):
         """ simulate step 6 uploading excel file """
-        pass
-        """
         UPLOAD_SPEED_FILE_URL = reverse("scene:uploadSpeedFile", kwargs={"scene_id": self.scene_obj.id})
         
         # upload file
@@ -291,13 +288,10 @@ class CompleteSceneDataTest(TestCase):
             status = json.loads(response.content.decode("utf-8"))["status"]
             self.assertEqual(status["code"], Status.getJsonStatus(Status.OK, {})["status"]["code"])
 
-            self.load_scene_obj()
-
+            self.scene_obj = self.testHelper.get_scene_obj(self.scene_name, with_related=True)
             # now check changes
-            ...
 
         self.assertIsNotNone(self.scene_obj.timeStampStep6File)
-        """
 
     def download_file(self, url, file_path):
         """ check that url to download template files and files uploaded by users works """
@@ -316,27 +310,25 @@ class CompleteSceneDataTest(TestCase):
         self.check_step_4()
         self.upload_operation_file()
         self.check_step_5()
-        """
         self.upload_speed_file()
         self.check_step_6()
-        """
 
         # check that i can download files
         file_urls = [
             reverse("scene:downloadStepFile", kwargs={"step_id": 1, "scene_id": self.scene_obj.id}),
             reverse("scene:downloadStepFile", kwargs={"step_id": 3, "scene_id": self.scene_obj.id}),
             reverse("scene:downloadStepFile", kwargs={"step_id": 5, "scene_id": self.scene_obj.id}),
-            #reverse("scene:downloadStepFile", kwargs={"step_id": 6, "scene_id": self.scene_obj.id}),
+            reverse("scene:downloadStepFile", kwargs={"step_id": 6, "scene_id": self.scene_obj.id}),
             reverse("scene:downloadStepTemplate", kwargs={"step_id": 1, "scene_id": self.scene_obj.id}),
             reverse("scene:downloadStepTemplate", kwargs={"step_id": 3, "scene_id": self.scene_obj.id}),
             reverse("scene:downloadStepTemplate", kwargs={"step_id": 5, "scene_id": self.scene_obj.id}),
-            #reverse("scene:downloadStepTemplate", kwargs={"step_id": 6, "scene_id": self.scene_obj.id}),
+            reverse("scene:downloadStepTemplate", kwargs={"step_id": 6, "scene_id": self.scene_obj.id}),
         ]
         file_paths = [
             self.scene_obj.step1File.url, self.scene_obj.step3File.url, self.scene_obj.step5File.url,
-            #self.scene_obj.step6File.url,
+            self.scene_obj.step6File.url,
             self.scene_obj.step1Template.url, self.scene_obj.step3Template.url, self.scene_obj.step5Template.url,
-            # self.scene_obj.step6Template.url,
+            self.scene_obj.step6Template.url,
         ]
         for url, file_path in zip(file_urls, file_paths):
             self.download_file(url, file_path)
@@ -354,5 +346,3 @@ class CompleteSceneDataTest(TestCase):
 
         for url in page_urls:
             self.testHelper.make_get_request(url, {}, expected_response=None)
-
-        # check javascript of wizard

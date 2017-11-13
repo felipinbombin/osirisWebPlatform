@@ -5,6 +5,8 @@ from abc import ABCMeta, abstractmethod
 from io import BytesIO
 from django.core.files.base import ContentFile
 
+from scene.models import MetroLineMetric
+
 import xlsxwriter
 
 # row between blocks in worksheet
@@ -543,3 +545,76 @@ class Step5ExcelWriter(ExcelWriter):
                                                          len(periods_name_list))
 
         self.save(self.scene.step5Template)
+
+
+class Step6ExcelWriter(ExcelWriter):
+    """ create excel file for step 6 """
+
+    def __init__(self, scene):
+        super(self.__class__, self).__init__(scene)
+
+    def get_file_name(self):
+        """ name of file """
+        file_name = super(self.__class__, self).get_file_name()
+        NAME = "velocidad_entrada"
+        file_name = file_name.replace("generic", NAME)
+
+        return file_name
+
+    def create_file(self, *args):
+        """ create excel file based on scene data """
+        WORKSHEET_NAME = "Speed"
+        DESCRIPTION = "Descripción"
+        LINE_DESCRIPTION = "Línea"
+        OP_DESCRIPTION = "Período operación"
+        TRACK_DESCRIPTION = "Túnel"
+
+        ATTR_NAMES = ["Distancia [m]", "Velocidad [m/s]"]
+
+        line_objs = self.scene.metroline_set.all().order_by("name")
+        operation_periods = self.scene.operationperiod_set.all().order_by("id")
+
+        worksheet = self.workbook.add_worksheet(WORKSHEET_NAME)
+
+        first_column_index = 0
+        first_row_index = 0
+
+        current_row = first_row_index
+        current_column = first_column_index
+
+        # header
+        corner = (current_row, first_column_index)
+        self.helper.make_title_cell(worksheet, corner, DESCRIPTION, width=2)
+        current_row += 1
+        for description in [LINE_DESCRIPTION, OP_DESCRIPTION, TRACK_DESCRIPTION]:
+            corner = (current_row, current_column)
+            self.helper.make_title_cell(worksheet, corner, description)
+            current_column += 1
+        current_row += 1
+
+        for line_index, line_obj in enumerate(line_objs):
+            track_objs = line_obj.metrotrack_set.all().order_by("id")
+            for op_index, operation_period in enumerate(operation_periods):
+                for direction, track_objs in zip([MetroLineMetric.GOING, MetroLineMetric.REVERSE],
+                                                 [track_objs, reversed(track_objs)]):
+                    worksheet.write(current_row, 0, line_obj.name)
+                    worksheet.write(current_row, 1, operation_period.name)
+
+                    for track_index, track_obj in enumerate(track_objs):
+                        current_column = 4
+                        track_name = track_obj.get_name(direction=direction)
+                        worksheet.write(current_row, 2, track_name)
+
+                        for index, attr_name in enumerate(ATTR_NAMES):
+                            worksheet.write(current_row + index, 3, attr_name)
+
+                        values = range(track_obj.length + 1)
+
+                        for distance, value in enumerate(values):
+                            worksheet.write(current_row, current_column, distance)
+                            worksheet.write(current_row + 1, current_column, None)
+                            current_column += 1
+
+                        current_row += 3
+
+        self.save(self.scene.step6Template)

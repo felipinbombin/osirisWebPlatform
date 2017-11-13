@@ -289,7 +289,7 @@ class JavascriptTest(StaticLiveServerTestCase):
         """  upload topologic file """
         file_path = os.path.join(settings.BASE_DIR, "scene", "tests", "Escenario_topologico.xlsx")
         browser.find_by_id("step2form").click()
-        browser.attach_file("file", file_path)
+        #browser.attach_file("file", file_path)
 
     def create_scene(self, browser):
         """ create scene through webpage """

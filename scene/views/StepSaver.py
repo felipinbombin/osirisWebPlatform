@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from abc import ABCMeta, abstractmethod
-from .ExcelWriter import Step1ExcelWriter, Step3ExcelWriter, Step5ExcelWriter
+from .ExcelWriter import Step1ExcelWriter, Step3ExcelWriter, Step5ExcelWriter, Step6ExcelWriter
 from scene.models import MetroConnection, MetroLine, MetroStation, MetroDepot, MetroConnectionStation, SystemicParams, \
     OperationPeriod
 from scene.sceneExceptions import OsirisException
@@ -134,6 +134,10 @@ class Step0Saver(StepSaver):
         # create template file for step 3
         step3_excel = Step3ExcelWriter(self.scene)
         step3_excel.create_file()
+
+        # create template file for step 6
+        step6_excel = Step6ExcelWriter(self.scene)
+        step6_excel.create_file()
 
         return True
 
