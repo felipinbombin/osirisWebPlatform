@@ -15,7 +15,7 @@ $(document).ready(function () {
         yAxis: [{
             type: "value",
             name: "Potencia (W)",
-            nameLocation: "start",
+            nameLocation: "end",
             nameGap: 25,
             position: "left"
         }],
