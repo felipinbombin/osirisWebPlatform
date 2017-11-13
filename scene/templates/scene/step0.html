@@ -219,7 +219,7 @@
                     <select name="connectionStationLine" class="form-control"
                       data-bind="options: $root.lines,
                                  optionsText: 'name', 
-                                 value: line">
+                                 value: line, attr: {name: $element.name + $index()}">
                     </select>
                   </div>
                   <!-- ko with : line -->
@@ -227,12 +227,12 @@
                     <select name="connectionStationName" class="form-control"
                       data-bind="options: stations,
                                  optionsText: 'name',
-                                 value: $parent.station">
+                                 value: $parent.station, , attr: {name: $element.name + $index()}">
                     </select>
                   </div>
                   <!-- /ko  -->
                   <div class="form-group col-md-4 col-sm-4 col-xs-12">
-                    <button name="deleteConnectionStation" type="button" class="btn btn-danger btn-block"
+                    <button id="deleteConnectionStation" type="button" class="btn btn-danger btn-block"
                       data-bind="click: $parent.deleteConnectionStation">Eliminar</button>
                   </div>
                 </div>
