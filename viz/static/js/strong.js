@@ -119,7 +119,7 @@ $(document).ready(function () {
                 series: series,
                 xAxis: [{
                     name: "Tiempo (seg.)",
-                    type: "value",
+                    type: "category",
                     nameLocation: "middle",
                     nameTextStyle: {
                         padding: 5
