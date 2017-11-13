@@ -127,8 +127,8 @@ class ProcessSpeedData(ProcessData):
 
                         values = data[ATTR][line_index][direction][op_index][track_index]
 
-                        for index,attr_name in enumerate(ATTR_NAMES):
-                            worksheet.write(current_row + index, 3, ATTR_NAMES[0])
+                        for index, attr_name in enumerate(ATTR_NAMES):
+                            worksheet.write(current_row + index, 3, attr_name)
 
                         for distance, value in enumerate(values):
                             worksheet.write(current_row, current_column, distance)
