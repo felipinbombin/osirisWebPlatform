@@ -77,8 +77,7 @@ class ProcessSpeedData(ProcessData):
         ATTR = "velDist"
 
         # attribute name and its reference (distance)
-        ATTR_NAME = "Velocidad [m/s]"
-        ATTR2_NAME = "Distancia [m]"
+        ATTR_NAMES = ["Distancia [m]", "Velocidad [m/s]"]
 
         # data
         line_objs = MetroLine.objects.prefetch_related("metrotrack_set__startStation",
@@ -128,8 +127,9 @@ class ProcessSpeedData(ProcessData):
 
                         values = data[ATTR][line_index][direction][op_index][track_index]
 
-                        worksheet.write(current_row, 3, ATTR2_NAME)
-                        worksheet.write(current_row + 1, 3, ATTR_NAME)
+                        for index,attr_name in enumerate(ATTR_NAMES):
+                            worksheet.write(current_row + index, 3, ATTR_NAMES[0])
+
                         for distance, value in enumerate(values):
                             worksheet.write(current_row, current_column, distance)
                             worksheet.write(current_row + 1, current_column, value)
