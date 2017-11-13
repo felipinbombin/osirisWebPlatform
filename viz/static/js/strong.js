@@ -15,9 +15,9 @@ $(document).ready(function () {
         yAxis: [{
             type: "value",
             name: "Potencia (W)",
-            nameLocation: "middle",
+            nameLocation: "start",
             nameGap: 25,
-            position: "top"
+            position: "left"
         }],
         tooltip: {
             trigger: "axis"
