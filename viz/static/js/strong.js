@@ -17,13 +17,13 @@ $(document).ready(function () {
             name: "Potencia (W)",
             nameLocation: "middle",
             nameGap: 25,
-            position: "left"
+            position: "top"
         }],
         tooltip: {
             trigger: "axis"
         },
         grid: {
-            left: "5%",
+            left: "10%",
             right: "5%",
             bottom: 75
         },
@@ -95,14 +95,10 @@ $(document).ready(function () {
                 showNotificationMessage(result.status);
                 return;
             }
-
+            var xData = null;
             result.answer.forEach(function (line) {
+                xData = line.attributes[attributes[0]];
                 attributes.slice(1).forEach(function (attr) {
-                    var data = [];
-                    line.attributes[attr].forEach(function (y, index){
-                        var x = line.attributes[attributes[0]][index];
-                        data.push([x, y]);
-                    });
                     var serie = {
                         type: "line",
                         name: attr,
@@ -130,7 +126,8 @@ $(document).ready(function () {
                     },
                     splitLine: {
                         show: false
-                    }
+                    },
+                    data: xData
                 }]
             };
             $.extend(options, ECHARTS_OPTIONS);
