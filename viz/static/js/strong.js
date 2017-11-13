@@ -99,9 +99,8 @@ $(document).ready(function () {
             result.answer.forEach(function (line) {
                 attributes.slice(1).forEach(function (attr) {
                     var data = [];
-                    line.attributes[attr].forEach(function (value, index){
+                    line.attributes[attr].forEach(function (y, index){
                         var x = line.attributes[attributes[0]][index];
-                        var y = value;
                         data.push([x, y]);
                     });
                     var serie = {
