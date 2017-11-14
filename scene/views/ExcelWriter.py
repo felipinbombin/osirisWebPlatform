@@ -593,7 +593,7 @@ class Step6ExcelWriter(ExcelWriter):
         current_row += 1
 
         for line_index, line_obj in enumerate(line_objs):
-            track_objs = line_obj.metrotrack_set.all().order_by("id")
+            track_objs = list(line_obj.metrotrack_set.all().order_by("id"))
             for op_index, operation_period in enumerate(operation_periods):
                 for direction, track_objs in zip([MetroLineMetric.GOING, MetroLineMetric.REVERSE],
                                                  [track_objs, reversed(track_objs)]):
