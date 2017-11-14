@@ -608,7 +608,7 @@ class Step6ExcelWriter(ExcelWriter):
                         for index, attr_name in enumerate(ATTR_NAMES):
                             worksheet.write(current_row + index, 3, attr_name)
 
-                        values = range(track_obj.length + 1)
+                        values = range(int(track_obj.length) + 1)
 
                         for distance, value in enumerate(values):
                             worksheet.write(current_row, current_column, distance)
