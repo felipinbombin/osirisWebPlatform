@@ -44,8 +44,8 @@ class Scene(models.Model):
     step5Template = models.FileField(upload_to='step5Template/', null=True, storage=OverwriteStorage())
     step5File = models.FileField(upload_to='step5File/', null=True, storage=OverwriteStorage())
     timeStampStep5File = models.DateTimeField(null=True)
-    step6Template = models.FileField(upload_to='step5Template/', null=True, storage=OverwriteStorage())
-    step6File = models.FileField(upload_to='step5File/', null=True, storage=OverwriteStorage())
+    step6Template = models.FileField(upload_to='ste6Template/', null=True, storage=OverwriteStorage())
+    step6File = models.FileField(upload_to='step6File/', null=True, storage=OverwriteStorage())
     timeStampStep6File = models.DateTimeField(null=True)
     #######################################################
     # GLOBAL CONDITION
