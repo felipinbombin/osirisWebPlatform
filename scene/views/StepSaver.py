@@ -135,10 +135,6 @@ class Step0Saver(StepSaver):
         step3_excel = Step3ExcelWriter(self.scene)
         step3_excel.create_file()
 
-        # create template file for step 6
-        step6_excel = Step6ExcelWriter(self.scene)
-        step6_excel.create_file()
-
         return True
 
 
@@ -210,5 +206,9 @@ class Step4Saver(StepSaver):
         # create template file for step 5
         step5_excel = Step5ExcelWriter(self.scene)
         step5_excel.create_file()
+
+        # create template file for step 6
+        step6_excel = Step6ExcelWriter(self.scene)
+        step6_excel.create_file()
 
         return True

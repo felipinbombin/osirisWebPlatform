@@ -10,6 +10,7 @@ from scene.statusResponse import Status
 
 import json
 
+
 class TestHelper():
 
     def __init__(self, testInstance, username="F", password="F"):
@@ -56,10 +57,10 @@ class TestHelper():
                                            "metroline_set__metrostation_set",
                                            "metroline_set__metrotrack_set",
                                            "metroline_set__metrolinemetric_set",
+                                           "operationperiod_set",
                                            "systemicparams_set",
                                            "metroconnection_set")
         return query.get(name=name)
-
 
     def __process_response(self, response, expected_server_response_code, expected_response):
         """  """

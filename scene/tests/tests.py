@@ -300,7 +300,6 @@ class CompleteSceneDataTest(TestCase):
 
     def test_FillAllSteps(self):
         """ simulate correct process to create a escene """
-
         self.check_step_0()
         self.upload_topologic_file()
         self.check_step_1()
