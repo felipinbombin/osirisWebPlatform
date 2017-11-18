@@ -228,7 +228,7 @@ class ExecuteModel(TestCase):
 
     def test_processEnergyAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "6a9b3d69-1bb6-4582-9b72-ed2c591976a1.output"
+        file_name = "261fe0ff-5e87-4d26-866a-5496cc1bf064.output"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
