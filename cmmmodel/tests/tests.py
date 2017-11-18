@@ -225,3 +225,20 @@ class ExecuteModel(TestCase):
             process_answer(answer, execution_obj)
 
         self.assertEqual(ModelAnswer.objects.count(), 26649)
+
+    def test_processEnergyAnswer(self):
+        """ test load data from speed model output dict based on situation of file """
+        file_name = "6a9b3d69-1bb6-4582-9b72-ed2c591976a1.output"
+        file_path = os.path.join("cmmmodel", "tests", file_name)
+
+        self.create_topologic_system()
+
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=Model.ENERGY_MODEL_ID,
+                                                             externalId=uuid.uuid4(), start=timezone.now())
+
+        with open(file_path, "rb") as answer_file:
+            answer = pickle.load(answer_file)
+            answer = answer["output"]
+            process_answer(answer, execution_obj)
+
+        self.assertEqual(ModelAnswer.objects.count(), 26649)

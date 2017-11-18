@@ -416,7 +416,7 @@ class Step6ExcelReader(ExcelReader):
 
     def process_file(self, in_memory_file):
         """ read excel file and retrieve data """
-        #workbook = xlrd.open_workbook(file_contents=in_memory_file.read())
+        workbook = xlrd.open_workbook(file_contents=in_memory_file.read())
 
         # process file
 
