@@ -51,27 +51,12 @@ class ProcessEnergyData(ProcessData):
 
         line_objs = MetroLine.objects.filter(scene=self.scene_obj).order_by("id")
         self.process_total_consumption(len(line_objs), data)
+        self.process_train_consumption(len(line_objs), data)
+        self.process_track_consumption(len(line_objs), data)
+        self.process_station_consumption(len(line_objs), data)
+        self.process_depot_consumption(len(line_objs), data)
 
         operation_periods = OperationPeriod.objects.filter(scene=self.scene_obj).order_by("id")
-
-        object_list = []
-
-        for metric in self.metrics:
-            for line_index, line_obj in enumerate(line_objs):
-                for op_index, operation_period in enumerate(operation_periods):
-                    values = data[metric["name"]][line_index][op_index]
-                    if not isinstance(values, numpy.ndarray):
-                        values = [values]
-
-                    for index, value in enumerate(values):
-                        record = ModelAnswer(execution=self.execution_obj, metroLine=line_obj,
-                                             direction=metric["direction"], metroTrack=None,
-                                             operationPeriod=operation_period,
-                                             attributeName=metric["name"], order=index, value=value)
-                        object_list.append(record)
-
-            ModelAnswer.objects.bulk_create(object_list)
-            del object_list[:]
 
     def process_total_consumption(self, line_number, data):
 
@@ -108,8 +93,106 @@ class ProcessEnergyData(ProcessData):
             ModelAnswer.objects.create(execution=self.execution_obj, metroLine=None, direction=None, metroTrack=None,
                                        operationPeriod=None, attributeName=name,  order=index, value=value)
 
-    def create_excel_file(self, data):
+    def process_train_consumption(self, line_number, data):
 
+        au = 0
+        h = 0
+        t = 0
+        o = 0
+        tr = 0
+        ore = 0
+        tl = 0
+
+        factor = 0.000277778 / 1000
+        for k in range(line_number):
+            for s in range(2):
+                au += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 0] * factor
+                h += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 1] * factor
+                t += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 2] * factor
+                o += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 3] * factor
+                tr += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 4] * factor
+                ore += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 5] * factor
+                tl += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 6] * factor
+
+        prefix = "trainConsumption"
+        names = ["%s_auxiliaries" % prefix,
+                 "%s_hvac" % prefix,
+                 "%s_traction" % prefix,
+                 "%s_obess" % prefix,
+                 "%s_tractionRecovery" % prefix,
+                 "%s_obessRecovery" % prefix,
+                 "%s_terminalLosses" % prefix,
+                 ]
+        values = [au, h, t, o, tr, ore, tl]
+        for index, name, value in zip(range(len(names)),names, values):
+            ModelAnswer.objects.create(execution=self.execution_obj, metroLine=None, direction=None, metroTrack=None,
+                                       operationPeriod=None, attributeName=name,  order=index, value=value)
+
+    def process_track_consumption(self, line_number, data):
+
+        au = 0
+        v = 0
+        dc = 0
+        se = 0
+        lns = 0
+        factor = 0.000277778 / 1000
+        for k in range(line_number):
+            au += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][0] * factor
+            v += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][1] * factor
+            dc += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][2] * factor
+            se += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][3] * factor
+            lns += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][4] * factor
+
+        prefix = "trackConsumption"
+        names = ["%s_auxiliaries" % prefix,
+                 "%s_ventilation" % prefix,
+                 "%s_dcDistributionLosses" % prefix,
+                 "%s_dcSessLosses" % prefix,
+                 "%s_noSavingCapacityLosses" % prefix
+                 ]
+        values = [au, v, dc, se, lns]
+        for index, name, value in zip(range(len(names)),names, values):
+            ModelAnswer.objects.create(execution=self.execution_obj, metroLine=None, direction=None, metroTrack=None,
+                                       operationPeriod=None, attributeName=name,  order=index, value=value)
+
+    def process_station_consumption(self, line_number, data):
+
+        au = 0
+        v = 0
+        factor = 0.000277778 / 1000
+        for k in range(line_number):
+            au += data['Stations']['Lines'][k]['E_Aux'] * factor
+            v += data['Stations']['Lines'][k]['E_HVAC'] * factor
+
+        prefix = "stationConsumption"
+        names = ["%s_auxiliaries" % prefix,
+                 "%s_ventilation" % prefix
+                 ]
+        values = [au, v]
+        for index, name, value in zip(range(len(names)),names, values):
+            ModelAnswer.objects.create(execution=self.execution_obj, metroLine=None, direction=None, metroTrack=None,
+                                       operationPeriod=None, attributeName=name,  order=index, value=value)
+
+    def process_depot_consumption(self, line_number, data):
+
+        au = 0
+        v = 0
+        factor = 0.000277778 / 1000
+        for k in range(line_number):
+            au += data['Depots']['Lines'][k]['E_Aux'] * factor
+            v += data['Depots']['Lines'][k]['E_HVAC'] * factor
+
+        prefix = "depotConsumption"
+        names = ["%s_auxiliaries" % prefix,
+                 "%s_ventilation" % prefix
+                 ]
+        values = [au, v]
+        for index, name, value in zip(range(len(names)),names, values):
+            ModelAnswer.objects.create(execution=self.execution_obj, metroLine=None, direction=None, metroTrack=None,
+                                       operationPeriod=None, attributeName=name,  order=index, value=value)
+
+    def create_excel_file(self, data):
+        return
         # NAMES
         FILE_NAME = "Energía"
         FILE_EXTENSION = ".xlsx"
