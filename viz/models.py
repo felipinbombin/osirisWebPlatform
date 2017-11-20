@@ -7,9 +7,9 @@ from scene.models import MetroLine, MetroTrack, OperationPeriod
 class ModelAnswer(models.Model):
     """ model answer by execution """
     execution = models.ForeignKey(ModelExecutionHistory, on_delete=models.CASCADE)
-    metroLine = models.ForeignKey(MetroLine)
-    direction = models.CharField(max_length=1)
-    operationPeriod = models.ForeignKey(OperationPeriod)
+    metroLine = models.ForeignKey(MetroLine, null=True)
+    direction = models.CharField(max_length=1, null=True)
+    operationPeriod = models.ForeignKey(OperationPeriod, null=True)
     metroTrack = models.ForeignKey(MetroTrack, null=True)
     attributeName = models.CharField(max_length=100)
     order = models.IntegerField()
