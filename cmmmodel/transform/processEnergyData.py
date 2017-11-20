@@ -48,7 +48,10 @@ class ProcessEnergyData(ProcessData):
 
     def load(self, data):
         self.delete_previous_data()
+
         line_objs = MetroLine.objects.filter(scene=self.scene_obj).order_by("id")
+        self.process_total_consumption(len(line_objs), data)
+
         operation_periods = OperationPeriod.objects.filter(scene=self.scene_obj).order_by("id")
 
         object_list = []
@@ -70,10 +73,45 @@ class ProcessEnergyData(ProcessData):
             ModelAnswer.objects.bulk_create(object_list)
             del object_list[:]
 
+    def process_total_consumption(self, line_number, data):
+
+        t1 = 0
+        s1 = 0
+        tr1 = 0
+        ss1 = 0
+        r1 = 0
+
+        for k in range(line_number):
+            s1 += data['Stations']['Lines'][k]['E_HVAC'] + data['Stations']['Lines'][k]['E_Aux']
+            tr1 += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1]
+            ss1 += sum(data['SS']['Lines'][k]['Energy'][-1, :])
+
+            for s in range(2):
+                t1 += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, :]
+                r1 += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 4]
+
+        t2 = (sum(t1[0:3]) + t1[-1]) / 1000000
+        s2 = s1 / 1000000
+        tr2 = (tr1[0:1] + tr1[3]) / 1000000
+        ss2 = ss1 / 1000000
+        r2 = r1 / 1000000
+
+        prefix = "totalConsumption"
+        names = ["%s_trains" % prefix,
+                 "%s_stations" % prefix,
+                 "%s_tracks" % prefix,
+                 "%s_substations" % prefix,
+                 "%s_recoveredEnergy" % prefix,
+                 ]
+        values = [t2, s2, tr2, ss2, r2]
+        for index, name, value in zip(range(len(names)),names, values):
+            ModelAnswer.objects.create(execution=self.execution_obj, metroLine=None, direction=None, metroTrack=None,
+                                       operationPeriod=None, attributeName=name,  order=index, value=value)
+
     def create_excel_file(self, data):
 
         # NAMES
-        FILE_NAME = "Fuerza"
+        FILE_NAME = "Energía"
         FILE_EXTENSION = ".xlsx"
 
         WORKSHEET_NAME = "Traction"

@@ -31,7 +31,6 @@ def process_answer(answer_dict, execution_obj):
     elif execution_obj.model_id == Model.ENERGY_MODEL_ID:
         processor = ProcessEnergyData(execution_obj)
         answer_dict = answer_dict["EM"]
-        print(answer_dict.keys())
     elif execution_obj.model_id == Model.TEMPERATURE_MODEL_ID:
         pass
 
