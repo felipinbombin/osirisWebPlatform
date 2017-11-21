@@ -7,7 +7,7 @@ from django.views.generic import View
 
 from itertools import groupby
 
-from scene.models import Scene, MetroLineMetric
+from scene.models import Scene
 from scene.statusResponse import Status
 from cmmmodel.models import ModelExecutionHistory, Model
 from viz.models import ModelAnswer
@@ -28,21 +28,15 @@ class EnergyModelViz(View):
         except:
             raise Http404
 
-        charts = [
-            "Total - Consumptions",
-            "Total - Energy Breakdown",
-            "Trains - Consumption",
-            "Trains - Energy Breakdown",
-            "Tracks - Consumption",
-            "Tracks - Energy Breakdown",
-            "Stations - Consumption",
-            "Stations - Energy Breakdown",
-            "Depots - Consumption",
-            "Depots - Energy Breakdown",
-        ]
-        self.context["charts"] = [{"value": index,
-                                   "item": name} for index, name in enumerate(charts)]
+        from cmmmodel.transform.processEnergyData import ProcessEnergyData
 
+        charts = []
+        for id in ProcessEnergyData.prefix:
+            charts.append({
+                "value": id,
+                "item": id
+            })
+        self.context["charts"] = charts
         self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj,
                                                                              model_id=Model.ENERGY_MODEL_ID).order_by(
             "-id").first()

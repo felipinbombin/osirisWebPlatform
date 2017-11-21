@@ -14,15 +14,17 @@ import xlsxwriter
 
 
 class ProcessEnergyData(ProcessData):
+
+    prefix = [
+        "totalConsumption",
+        "trainConsumption",
+        "trackConsumption",
+        "stationConsumption",
+        "depotConsumption"
+    ]
+
     def __init__(self, execution_obj):
         super(ProcessEnergyData, self).__init__(Model.ENERGY_MODEL_ID, execution_obj)
-        self.prefix = [
-            "totalConsumption",
-            "trainConsumption",
-            "trackConsumption",
-            "stationConsumption",
-            "depotConsumption"
-        ]
 
     def load(self, data):
         self.delete_previous_data()

@@ -8,7 +8,31 @@ $(document).ready(function () {
     var SCENE_ID = parseInt(PATH_NAME[PATH_NAME.length - 1]);
     var MODEL_DATA_URL = "/viz/energy/data/" + SCENE_ID;
 
-    var ECHARTS_OPTIONS = {
+    var ECHARTS_PIE_OPTIONS = {
+        tooltip: {
+            trigger: "item"
+        },
+        series: [{
+            type: "pie",
+            radius: "60%",
+            center: ["50%", "60%"],
+            data: [],
+            animationType: "scale",
+            animationEasing: "elasticOut",
+            animationDelay: function () {
+                return Math.random() * 200;
+            },
+            label: {
+                normal: {
+                    formatter: function (params) {
+                        var number = Number(params.value).toLocaleString();
+                        return params.data.name + "\n" + params.percent + "% (" + number + ")";
+                    }
+                }
+            }
+        }]
+    };
+    var ECHARTS_BAR_OPTIONS = {
         yAxis: [{
             type: "value",
             name: "Potencia (W)",
@@ -39,14 +63,6 @@ $(document).ready(function () {
         }
     };
     var chart = echarts.init(document.getElementById("chart"), theme);
-
-    var charts = [{
-        chartOpts: {},
-        attributes: []
-    },{
-        chartOpts: {},
-        attributes: []
-    }];
 
     var makeAjaxCall = true;
     $("#btnUpdateChart").click(function () {
