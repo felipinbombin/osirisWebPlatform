@@ -90,40 +90,18 @@ $(document).ready(function () {
                 showNotificationMessage(result.status);
                 return;
             }
-            var xData = null;
+            var data = [];
             result.answer.forEach(function (group) {
-                xData = line.attributes[attributes[0]];
-                attributes.forEach(function (attr) {
-                    var serie = {
-                        type: "line",
-                        name: attr,
-                        data: line.attributes[attr],
-                        yAxisIndex: 0,
-                        smooth: true,
-                        showSymbol: false
-                    };
-                    series.push(serie);
-                    names.push(attr);
+                var pieSerie = $.extend(true, {}, ECHARTS_PIE_OPTIONS);
+                attributes.forEach(function (attr, key) {
+                    data.push({value: attr, name: key});
                 });
+                pieSerie.series[0].data = data;
+                series.push(pieSerie);
             });
 
             var options = {
-                legend: {
-                    data: names
-                },
-                series: series,
-                xAxis: [{
-                    name: "Tiempo (seg.)",
-                    type: "category",
-                    nameLocation: "middle",
-                    nameTextStyle: {
-                        padding: 5
-                    },
-                    splitLine: {
-                        show: false
-                    },
-                    data: xData
-                }]
+                series: series
             };
             $.extend(options, ECHARTS_OPTIONS);
 
