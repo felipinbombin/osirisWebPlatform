@@ -82,7 +82,7 @@ class EnergyModelVizData(View):
             raise Http404
 
         # attributes to retrieve
-        prefix = request.GET.get("prefix")
+        prefix = request.GET.get("prefix", "")
 
         scene_id = int(sceneId)
         execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.ENERGY_MODEL_ID). \
