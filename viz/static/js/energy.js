@@ -71,7 +71,7 @@ $(document).ready(function () {
         var chartId = SELECTED_CHART.val();
         // get data
         var params = {
-            attributes: chartId
+            prefix: chartId
         };
 
         if (makeAjaxCall) {
@@ -91,9 +91,9 @@ $(document).ready(function () {
                 return;
             }
             var xData = null;
-            result.answer.forEach(function (line) {
+            result.answer.forEach(function (group) {
                 xData = line.attributes[attributes[0]];
-                attributes.slice(1).forEach(function (attr) {
+                attributes.forEach(function (attr) {
                     var serie = {
                         type: "line",
                         name: attr,
