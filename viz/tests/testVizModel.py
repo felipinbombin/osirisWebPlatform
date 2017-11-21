@@ -18,82 +18,72 @@ import os
 import json
 
 
-class ModelVizTest(TestCase):
-    fixtures = ["models", "possibleQueue"]
+def create_fake_execution(scene_obj, model_id, file_path):
+    """  create record of execution """
+    l1 = MetroLine.objects.create(scene=scene_obj, name="L1", externalId=uuid.uuid4())
 
-    def set_up(self, model_id, file_path, username="felipe", password="andres"):
-        """
-            create user and log in
-        """
-        self.testHelper = TestHelper(self, username, password)
+    stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=l1) for
+                index in range(1, 11)]
+    for index, station in enumerate(stations[:-1]):
+        MetroTrack.objects.create(metroLine=l1, name="Track{}".format(index),
+                                  startStation_id=station.id, endStation_id=stations[index + 1].id)
 
-        self.client = self.testHelper.get_logged_client()
+    l2 = MetroLine.objects.create(scene=scene_obj, name="L2", externalId=uuid.uuid4())
+    stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=l2) for
+                index in range(12, 24)]
+    for index, station in enumerate(stations[:-1]):
+        MetroTrack.objects.create(metroLine=l2, name="Track{}".format(index),
+                                  startStation_id=station.id, endStation_id=stations[index + 1].id)
 
-        # create scene
-        self.scene_name = "test scene name"
-        self.scene_obj = self.testHelper.create_scene(self.scene_name)
+    OperationPeriod.objects.create(scene=scene_obj, externalId=uuid.uuid4(), name="OP1",
+                                   start="09:00:00", end="10:00:00", temperature=0, humidity=0,
+                                   co2Concentration=0,
+                                   solarRadiation=0, sunElevationAngle=0)
+    OperationPeriod.objects.create(scene=scene_obj, externalId=uuid.uuid4(), name="OP2",
+                                   start="10:00:00", end="11:00:00", temperature=0, humidity=0,
+                                   co2Concentration=0,
+                                   solarRadiation=0, sunElevationAngle=0)
 
-        self.create_fake_execution(model_id, file_path)
+    execution_obj = ModelExecutionHistory.objects.create(scene=scene_obj, model_id=model_id,
+                                                         externalId=uuid.uuid4(), start=timezone.now())
 
-    def create_fake_execution(self, model_id, file_path):
-        """  create record of execution """
-
-        L1 = MetroLine.objects.create(scene=self.scene_obj, name="L1", externalId=uuid.uuid4())
-
-        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L1) for
-                    index in range(1, 11)]
-        for index, station in enumerate(stations[:-1]):
-            MetroTrack.objects.create(metroLine=L1, name="Track{}".format(index),
-                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
-
-        L2 = MetroLine.objects.create(scene=self.scene_obj, name="L2", externalId=uuid.uuid4())
-        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=L2) for
-                    index in range(12, 24)]
-        for index, station in enumerate(stations[:-1]):
-            MetroTrack.objects.create(metroLine=L2, name="Track{}".format(index),
-                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
-
-        OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP1",
-                                       start="09:00:00", end="10:00:00", temperature=0, humidity=0,
-                                       co2Concentration=0,
-                                       solarRadiation=0, sunElevationAngle=0)
-        OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP2",
-                                       start="10:00:00", end="11:00:00", temperature=0, humidity=0,
-                                       co2Concentration=0,
-                                       solarRadiation=0, sunElevationAngle=0)
-
-        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=model_id,
-                                                             externalId=uuid.uuid4(), start=timezone.now())
-
-        with open(file_path, "rb") as answer_file:
-            answer = pickle.load(answer_file)
-            answer = answer["output"]
-            process_answer(answer, execution_obj)
+    with open(file_path, "rb") as answer_file:
+        answer = pickle.load(answer_file)
+        answer = answer["output"]
+        process_answer(answer, execution_obj)
 
 
-class SpeedModelVizTest(ModelVizTest):
+class SpeedModelVizTest(TestCase):
     """ test web page to see output of speed model """
+    fixtures = ["models", "possibleQueue"]
 
     def setUp(self):
         file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
-        self.set_up(Model.SPEED_MODEL_ID, file_path)
+        self.test_helper = TestHelper(self)
+        self.client = self.test_helper.get_logged_client()
+
+        # create scene
+        scene_name = "test scene name"
+        self.scene_obj = self.test_helper.create_scene(scene_name)
+
+        create_fake_execution(self.scene_obj, Model.SPEED_MODEL_ID, file_path)
 
     def test_loadHTML(self):
         """ ask for speed output html file """
 
-        URL = reverse("viz:speedModel", kwargs={"sceneId": self.scene_obj.id})
-        self.testHelper.make_get_request(URL, {}, expected_response=None)
+        url = reverse("viz:speedModel", kwargs={"sceneId": self.scene_obj.id})
+        self.test_helper.make_get_request(url, {}, expected_response=None)
 
         # get error 404 because scene id does not exist
-        URL = reverse("viz:speedModel", kwargs={"sceneId": 1000})
-        self.testHelper.make_get_request(URL, {}, expected_response=None, expected_server_response_code=404)
+        url = reverse("viz:speedModel", kwargs={"sceneId": 1000})
+        self.test_helper.make_get_request(url, {}, expected_response=None, expected_server_response_code=404)
 
     def test_getSpeedModelDataWithExecutionRunning(self):
         """ ask model output data with last execution status == runnning """
 
-        URL = reverse("viz:speedModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:speedModelData", kwargs={"sceneId": self.scene_obj.id})
 
         params = {
             "direction": "g",
@@ -104,7 +94,7 @@ class SpeedModelVizTest(ModelVizTest):
         }
 
         # with error because last execution of model is running
-        response = self.testHelper.make_get_request(URL, params, expected_response=None)
+        response = self.test_helper.make_get_request(url, params, expected_response=None)
         content = json.loads(response.content.decode("utf-8"))
 
         self.assertNotIn("answer", content.keys())
@@ -116,7 +106,7 @@ class SpeedModelVizTest(ModelVizTest):
     def test_getSpeedModelDataWithOKExecution(self):
         """ ask model output data with last execution status ok """
 
-        URL = reverse("viz:speedModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:speedModelData", kwargs={"sceneId": self.scene_obj.id})
 
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
@@ -129,7 +119,7 @@ class SpeedModelVizTest(ModelVizTest):
             "attributes[]": ["velDist", "Speedlimit", "Time"]
         }
 
-        response = self.testHelper.make_get_request(URL, params, expected_response=None)
+        response = self.test_helper.make_get_request(url, params, expected_response=None)
         content = json.loads(response.content.decode("utf-8"))
 
         self.assertEqual(len(content["answer"]), 9)
@@ -142,29 +132,37 @@ class SpeedModelVizTest(ModelVizTest):
             self.assertIn("Time", track["attributes"])
 
 
-class StrongModelVizTest(ModelVizTest):
+class StrongModelVizTest(TestCase):
     """ test web page to see output of strong model """
+    fixtures = ["models", "possibleQueue"]
 
     def setUp(self):
         file_name = "6a9b3d69-1bb6-4582-9b72-ed2c591976a1.output"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
-        self.set_up(Model.STRONG_MODEL_ID, file_path)
+        self.test_helper = TestHelper(self)
+        self.client = self.test_helper.get_logged_client()
+
+        # create scene
+        scene_name = "test scene name"
+        self.scene_obj = self.test_helper.create_scene(scene_name)
+
+        create_fake_execution(self.scene_obj, Model.STRONG_MODEL_ID, file_path)
 
     def test_loadHTML(self):
         """ ask for strong output html file """
 
-        URL = reverse("viz:strongModel", kwargs={"sceneId": self.scene_obj.id})
-        self.testHelper.make_get_request(URL, {}, expected_response=None)
+        url = reverse("viz:strongModel", kwargs={"sceneId": self.scene_obj.id})
+        self.test_helper.make_get_request(url, {}, expected_response=None)
 
         # get error 404 because scene id does not exist
-        URL = reverse("viz:strongModel", kwargs={"sceneId": 1000})
-        self.testHelper.make_get_request(URL, {}, expected_response=None, expected_server_response_code=404)
+        url = reverse("viz:strongModel", kwargs={"sceneId": 1000})
+        self.test_helper.make_get_request(url, {}, expected_response=None, expected_server_response_code=404)
 
     def test_getStrongModelDataWithExecutionRunning(self):
         """ ask model output data with last execution status == runnning """
 
-        URL = reverse("viz:strongModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:strongModelData", kwargs={"sceneId": self.scene_obj.id})
 
         params = {
             "direction": "g",
@@ -174,7 +172,7 @@ class StrongModelVizTest(ModelVizTest):
         }
 
         # with error because last execution of model is running
-        response = self.testHelper.make_get_request(URL, params, expected_response=None)
+        response = self.test_helper.make_get_request(url, params, expected_response=None)
         content = json.loads(response.content.decode("utf-8"))
 
         self.assertNotIn("answer", content.keys())
@@ -186,7 +184,7 @@ class StrongModelVizTest(ModelVizTest):
     def test_getStrongModelDataWithOKExecution(self):
         """ ask model output data with last execution status ok """
 
-        URL = reverse("viz:strongModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:strongModelData", kwargs={"sceneId": self.scene_obj.id})
 
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
@@ -198,7 +196,7 @@ class StrongModelVizTest(ModelVizTest):
             "attributes[]": ["Tiempo_LR", "Potencia_drive_LR", "Potencia_ESS_LR"]
         }
 
-        response = self.testHelper.make_get_request(URL, params, expected_response=None)
+        response = self.test_helper.make_get_request(url, params, expected_response=None)
         content = json.loads(response.content.decode("utf-8"))
 
         self.assertEqual(len(content["answer"]), 1)
@@ -209,36 +207,44 @@ class StrongModelVizTest(ModelVizTest):
             self.assertIn("Potencia_ESS_LR", line["attributes"])
 
 
-class EnergyModelVizTest(ModelVizTest):
+class EnergyModelVizTest(TestCase):
     """ test web page to see output of energy model """
+    fixtures = ["models", "possibleQueue"]
 
     def setUp(self):
         file_name = "261fe0ff-5e87-4d26-866a-5496cc1bf064.output"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
-        self.set_up(Model.ENERGY_MODEL_ID, file_path)
+        self.test_helper = TestHelper(self)
+        self.client = self.test_helper.get_logged_client()
+
+        # create scene
+        scene_name = "test scene name"
+        self.scene_obj = self.test_helper.create_scene(scene_name)
+
+        create_fake_execution(self.scene_obj, Model.ENERGY_MODEL_ID, file_path)
 
     def test_loadHTML(self):
         """ ask for strong output html file """
 
-        URL = reverse("viz:energyModel", kwargs={"sceneId": self.scene_obj.id})
-        self.testHelper.make_get_request(URL, {}, expected_response=None)
+        url = reverse("viz:energyModel", kwargs={"sceneId": self.scene_obj.id})
+        self.test_helper.make_get_request(url, {}, expected_response=None)
 
         # get error 404 because scene id does not exist
-        URL = reverse("viz:energyModel", kwargs={"sceneId": 1000})
-        self.testHelper.make_get_request(URL, {}, expected_response=None, expected_server_response_code=404)
+        url = reverse("viz:energyModel", kwargs={"sceneId": 1000})
+        self.test_helper.make_get_request(url, {}, expected_response=None, expected_server_response_code=404)
 
     def test_getEnergyModelDataWithExecutionRunning(self):
         """ ask model output data with last execution status == runnning """
 
-        URL = reverse("viz:energyModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:energyModelData", kwargs={"sceneId": self.scene_obj.id})
 
         params = {
             "prefix": "totalConsumption",
         }
 
         # with error because last execution of model is running
-        response = self.testHelper.make_get_request(URL, params, expected_response=None)
+        response = self.test_helper.make_get_request(url, params, expected_response=None)
         content = json.loads(response.content.decode("utf-8"))
 
         self.assertNotIn("answer", content.keys())
@@ -250,7 +256,7 @@ class EnergyModelVizTest(ModelVizTest):
     def test_getEnergyModelDataWithOKExecution(self):
         """ ask model output data with last execution status ok """
 
-        URL = reverse("viz:energyModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:energyModelData", kwargs={"sceneId": self.scene_obj.id})
 
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
@@ -259,7 +265,7 @@ class EnergyModelVizTest(ModelVizTest):
             "prefix": "totalConsumption",
         }
 
-        response = self.testHelper.make_get_request(URL, params, expected_response=None)
+        response = self.test_helper.make_get_request(url, params, expected_response=None)
         content = json.loads(response.content.decode("utf-8"))
 
         self.assertEqual(len(content["answer"]), 1)
@@ -281,7 +287,17 @@ class JavascriptEnergyModelVizTest(StaticLiveServerTestCase):
 
         username = "felipe"
         password = "felipe"
-        ModelVizTest().set_up(Model.ENERGY_MODEL_ID, file_path, username, password)
+
+        self.test_helper = TestHelper(self, username=username, password=password)
+        # create scene
+        scene_name = "test scene name"
+        self.scene_obj = self.test_helper.create_scene(scene_name)
+
+        create_fake_execution(self.scene_obj, Model.ENERGY_MODEL_ID, file_path)
+
+        # simulate execution finished well
+        ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
+
         self.splinterHelper = SplinterTestHelper()
         self.browser = self.splinterHelper.get_browser()
         self.browser.visit(self.live_server_url)
@@ -291,5 +307,6 @@ class JavascriptEnergyModelVizTest(StaticLiveServerTestCase):
         # visit energy answer
         url = reverse("viz:energyModel", kwargs={"sceneId": Scene.objects.first().id})
         self.browser.visit(self.live_server_url + url)
+        self.browser.find_by_id("btnUpdateChart").click()
         import time
-        time.sleep(10)
+        time.sleep(1160)

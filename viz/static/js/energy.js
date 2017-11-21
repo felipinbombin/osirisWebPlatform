@@ -8,6 +8,26 @@ $(document).ready(function () {
     var SCENE_ID = parseInt(PATH_NAME[PATH_NAME.length - 1]);
     var MODEL_DATA_URL = "/viz/energy/data/" + SCENE_ID;
 
+    var ECHARTS_COMMON_OPTIONS = {
+        toolbox: {
+            show: true,
+            feature: {
+                saveAsImage: {
+                    show: true,
+                    title: "Guardar imagen",
+                    name: SELECTED_CHART.val()
+                },
+                dataZoom: {yAxisIndex: false, title: {zoom: "zoom", back: "volver"}}
+            },
+            left: "center",
+            bottom: "15px"
+        },
+        grid: {
+            left: "10%",
+            right: "5%",
+            bottom: 75
+        }
+    };
     var ECHARTS_PIE_OPTIONS = {
         tooltip: {
             trigger: "item"
@@ -15,7 +35,7 @@ $(document).ready(function () {
         series: [{
             type: "pie",
             radius: "60%",
-            center: ["50%", "60%"],
+            center: ["50%", "50%"],
             data: [],
             animationType: "scale",
             animationEasing: "elasticOut",
@@ -33,45 +53,47 @@ $(document).ready(function () {
         }]
     };
     var ECHARTS_BAR_OPTIONS = {
+        tooltip: {
+            trigger: "axis"
+        },
         yAxis: [{
             type: "value",
-            name: "Potencia (W)",
+            name: "Energía (MWh)",
             nameLocation: "end",
             nameGap: 25,
             position: "left"
         }],
-        tooltip: {
-            trigger: "axis"
-        },
-        grid: {
-            left: "10%",
-            right: "5%",
-            bottom: 75
-        },
-        toolbox: {
-            show: true,
-            feature: {
-                saveAsImage: {
-                    show: true,
-                    title: "Guardar imagen",
-                    name: SELECTED_CHART.val()
-                },
-                dataZoom: {yAxisIndex: false, title: {zoom: "zoom", back: "volver"}}
+        xAxis: [{
+            name: "Origen",
+            type: "category",
+            nameLocation: "middle",
+            nameTextStyle: {
+                padding: 5
             },
-            left: "center",
-            bottom: "15px"
-        }
+            splitLine: {
+                show: false
+            },
+            data: []
+        }],
+        series: [{
+            type: "bar",
+            data: [],
+            yAxisIndex: 0,
+            smooth: true,
+            showSymbol: false
+        }]
     };
-    var chart = echarts.init(document.getElementById("chart"), theme);
+    $.extend(true, ECHARTS_PIE_OPTIONS, ECHARTS_COMMON_OPTIONS);
+    delete ECHARTS_PIE_OPTIONS.toolbox.feature.dataZoom;
+    $.extend(true, ECHARTS_BAR_OPTIONS, ECHARTS_COMMON_OPTIONS);
+    var pieChart = echarts.init(document.getElementById("pieChart"), theme);
+    var barChart = echarts.init(document.getElementById("barChart"), theme);
 
     var makeAjaxCall = true;
     $("#btnUpdateChart").click(function () {
         console.log("update chart");
-
-        var chartId = SELECTED_CHART.val();
-        // get data
         var params = {
-            prefix: chartId
+            prefix: SELECTED_CHART.val()
         };
 
         if (makeAjaxCall) {
@@ -83,30 +105,38 @@ $(document).ready(function () {
             return;
         }
         $.getJSON(MODEL_DATA_URL, params, function (result) {
-            var series = [];
-            var names = [];
-
             if ("status" in result) {
                 showNotificationMessage(result.status);
                 return;
             }
+
             var data = [];
             result.answer.forEach(function (group) {
-                var pieSerie = $.extend(true, {}, ECHARTS_PIE_OPTIONS);
-                group.attributes.forEach(function (attr, key) {
+                $.each(group.attributes, function (key, attr) {
                     data.push({value: attr, name: key});
                 });
-                pieSerie.series[0].data = data;
-                series.push(pieSerie);
             });
 
-            var options = {
-                series: series
-            };
-            $.extend(options, ECHARTS_OPTIONS);
+            var pieOptions = {};
+            $.extend(pieOptions, ECHARTS_PIE_OPTIONS);
+            pieOptions.series[0].data = data;
 
-            chart.clear();
-            chart.setOption(options, {
+            pieChart.clear();
+            pieChart.setOption(pieOptions, {
+                notMerge: true
+            });
+
+            var barOptions = {};
+            $.extend(barOptions, ECHARTS_BAR_OPTIONS);
+            barOptions.series[0].data = data.map(function (el) {
+                return el.value;
+            });
+            barOptions.xAxis[0].data = data.map(function (el) {
+                return el.name;
+            });
+
+            barChart.clear();
+            barChart.setOption(barOptions, {
                 notMerge: true
             });
         }).always(function () {
@@ -115,9 +145,11 @@ $(document).ready(function () {
         });
     });
     $(window).resize(function () {
-        chart.resize();
+        pieChart.resize();
+        barChart.resize();
     });
     $("#menu_toggle").click(function () {
-        chart.resize();
+        pieChart.resize();
+        barChart.resize();
     });
 });

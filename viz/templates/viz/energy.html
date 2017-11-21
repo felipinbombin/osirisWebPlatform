@@ -33,8 +33,10 @@
 </div>
 
 <div class="row">
-    {% with barChart='<div id="chart" style="height:400px;"></div>' %}
-        {% panel "fa-bar-chart" "Consumo de potencia" barChart as chart_panel %}
+    {% with barChart='<div id="barChart" style="height:400px;"></div>' pieChart='<div id="pieChart" style="height:400px;"></div>' %}
+        {% columns 6 12 12 barChart as col1 %}
+        {% columns 6 12 12 pieChart as col2 %}
+        {% panel "fa-bar-chart" "Consumo de energía" col1|add:col2 as chart_panel %}
 
         {% download_viz_file_button execution_obj as download_button %}
         {% panel "" "" download_button as download_panel %}
