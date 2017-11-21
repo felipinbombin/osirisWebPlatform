@@ -290,7 +290,6 @@ class JavascriptEnergyModelVizTest(StaticLiveServerTestCase):
     def test_javascript(self):
         # visit energy answer
         url = reverse("viz:energyModel", kwargs={"sceneId": Scene.objects.first().id})
-        print(url)
         self.browser.visit(self.live_server_url + url)
         import time
         time.sleep(10)
