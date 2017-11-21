@@ -93,7 +93,7 @@ $(document).ready(function () {
             var data = [];
             result.answer.forEach(function (group) {
                 var pieSerie = $.extend(true, {}, ECHARTS_PIE_OPTIONS);
-                attributes.forEach(function (attr, key) {
+                group.attributes.forEach(function (attr, key) {
                     data.push({value: attr, name: key});
                 });
                 pieSerie.series[0].data = data;

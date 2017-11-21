@@ -2,32 +2,30 @@ from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.utils import timezone
-from django.conf import settings
-
-from splinter import Browser
 
 from scene.tests.testHelper import TestHelper
-from scene.models import MetroLine, MetroStation, OperationPeriod, MetroTrack
+from scene.models import MetroLine, MetroStation, OperationPeriod, MetroTrack, Scene
 from scene.statusResponse import Status
 
 from cmmmodel.models import ModelExecutionHistory, Model
 from cmmmodel.saveJobResponse import process_answer
 
+from viz.tests.splinterHelper import SplinterTestHelper
+
 import uuid
 import pickle
 import os
 import json
-import time
 
 
 class ModelVizTest(TestCase):
     fixtures = ["models", "possibleQueue"]
 
-    def set_up(self, model_id, file_path):
+    def set_up(self, model_id, file_path, username="felipe", password="andres"):
         """
             create user and log in
         """
-        self.testHelper = TestHelper(self)
+        self.testHelper = TestHelper(self, username, password)
 
         self.client = self.testHelper.get_logged_client()
 
@@ -273,128 +271,26 @@ class EnergyModelVizTest(ModelVizTest):
             self.assertIn("trains", line["attributes"])
 
 
-class JavascriptTest(StaticLiveServerTestCase):
-    """ You need put phantomjs in path visible por system """
+class JavascriptEnergyModelVizTest(StaticLiveServerTestCase):
+    """ test web page to see output of energy model """
+    fixtures = ["models", "possibleQueue"]
 
     def setUp(self):
-        self.url = self.live_server_url
-        self.username = "felipe"
-        self.password = "andres"
-        self.helper = TestHelper(self, username=self.username, password=self.password)
+        file_name = "261fe0ff-5e87-4d26-866a-5496cc1bf064.output"
+        file_path = os.path.join("cmmmodel", "tests", file_name)
 
-    def login(self, browser):
-        browser.fill("username", self.username)
-        browser.fill("password", self.password)
-        browser.find_by_value("Iniciar sesión").click()
+        username = "felipe"
+        password = "felipe"
+        ModelVizTest().set_up(Model.ENERGY_MODEL_ID, file_path, username, password)
+        self.splinterHelper = SplinterTestHelper()
+        self.browser = self.splinterHelper.get_browser()
+        self.browser.visit(self.live_server_url)
+        self.splinterHelper.login(username, password)
 
-    def go_next_step(self, browser):
-        """ move to next step """
-        time.sleep(0.5)
-        browser.find_by_text("Guardar y avanzar").click()
-
-    def complete_step_0(self, browser):
-        """ fill all data for step 0 """
-        line_names = ["L1", "L2"]
-        station_quantities = [10, 12]
-
-        connection_name = "ConnectionL1L2"
-        avg_height = "7.2"
-        avg_surface = "4300"
-        connection_stations = ["S5", "S6"]
-
-        # first metro line
-        time.sleep(0.5)
-        browser.find_by_id("addLine").click()
-        time.sleep(0.5)
-        browser.find_by_id("stationQuantity").fill(station_quantities[0])
-        browser.find_by_id("createLine").click()
-
-        # second metro line
-        time.sleep(0.5)
-        browser.find_by_id("addLine").click()
-        time.sleep(0.5)
-        browser.find_by_id("stationQuantity").fill(station_quantities[1])
-        browser.find_by_id("createLine").click()
-
-        # create depots
-        time.sleep(0.5)
-        browser.find_by_id("addDepot").click()
-        time.sleep(0.5)
-        browser.find_by_id("depotLineName")
-        browser.find_option_by_text(line_names[0]).click()
-        browser.find_by_id("createDepot").click()
-
-        time.sleep(0.5)
-        browser.find_by_id("addDepot").click()
-        time.sleep(0.5)
-        browser.find_option_by_text(line_names[1]).click()
-        browser.find_by_id("createDepot").click()
-
-        # create connection
-        time.sleep(0.5)
-        browser.find_by_id("addConnection").click()
-        time.sleep(0.5)
-        browser.find_by_id("connectionName").fill(connection_name)
-        browser.find_by_id("avgHeight").fill(avg_height)
-        browser.find_by_id("avgSurface").fill(avg_surface)
-
-        browser.find_by_id("addConnectionStation").click()
-        browser.find_by_id("addConnectionStation").click()
-
-        for index, connection_station_name in enumerate(connection_stations):
-            browser.select_by_text("connectionStationLine%s" % index, line_names[index])
-            browser.select_by_text("connectionStationName%s" % index, connection_station_name)
-
-        browser.find_by_id("createConnection").click()
-
-    def complete_step_1(self, browser):
-        """  upload topologic file """
-        file_path = os.path.join(settings.BASE_DIR, "scene", "tests", "Escenario_topologico.xlsx")
-        browser.find_by_id("step2form").click()
-        #browser.attach_file("file", file_path)
-
-    def create_scene(self, browser):
-        """ create scene through webpage """
-
-        # create scene
-        browser.find_link_by_partial_href("admin/scene").click()
-        browser.find_link_by_partial_href("scene/add").click()
-        browser.fill("name", "scene_test")
-        browser.find_by_name("_save").click()
-
-        # create topologic variables
-        self.complete_step_0(browser)
-        self.go_next_step(browser)
-        self.complete_step_1(browser)
-        self.go_next_step(browser)
-
-        time.sleep(30)
-        #browser.find_by_id("addConnection").click()
-
-    def test_loadChart(self):
-        """ load web page and press button to show chart """
-        executable = "phantomjs"
-        browser = "phantomjs"
-
-        executable = "chromedriver"
-        browser = "chrome"
-
-        if os.name == "nt":
-            executable += ".exe"
-        executable_path = {
-            'executable_path': os.path.join(settings.BASE_DIR, "viz", "tests", "driver", executable)
-        }
-
-        # browser.driver.save_screenshot('your_screenshot.png')
-
-        with Browser(browser, **executable_path) as browser:
-            browser.driver.set_window_size(1120, 550)
-            # Visit URL
-            browser.visit(self.url)
-
-            self.login(browser)
-            self.create_scene(browser)
-
-            #browser.find_by_value("Escenario 5").click()
-
-            #print(browser.html)
+    def test_javascript(self):
+        # visit energy answer
+        url = reverse("viz:energyModel", kwargs={"sceneId": Scene.objects.first().id})
+        print(url)
+        self.browser.visit(self.live_server_url + url)
+        import time
+        time.sleep(10)
