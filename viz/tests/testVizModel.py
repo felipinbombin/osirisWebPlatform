@@ -303,10 +303,12 @@ class JavascriptEnergyModelVizTest(StaticLiveServerTestCase):
         self.browser.visit(self.live_server_url)
         self.splinterHelper.login(username, password)
 
+    def tearDown(self):
+        self.browser.quit()
+
     def test_javascript(self):
         # visit energy answer
         url = reverse("viz:energyModel", kwargs={"sceneId": Scene.objects.first().id})
         self.browser.visit(self.live_server_url + url)
         self.browser.find_by_id("btnUpdateChart").click()
-        import time
-        time.sleep(1160)
+        self.assertEquals(len(self.browser.find_by_tag("canvas")), 2)
