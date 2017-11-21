@@ -71,7 +71,7 @@ $(document).ready(function () {
         var chartId = SELECTED_CHART.val();
         // get data
         var params = {
-            attributes: charts[chartId].attributes
+            attributes: chartId
         };
 
         if (makeAjaxCall) {
