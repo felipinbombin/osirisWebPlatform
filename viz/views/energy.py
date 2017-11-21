@@ -53,37 +53,23 @@ class EnergyModelViz(View):
 class EnergyModelVizData(View):
     """ data for charts  """
 
-    def get_model_data(self, execution_obj, metro_line_name, direction, operation_period_name, attributes):
+    def get_model_data(self, execution_obj, prefix):
         """ get data have gotten from execution instance """
 
-        answer = ModelAnswer.objects.prefetch_related("metroTrack__endStation", "metroTrack__startStation"). \
-            filter(execution=execution_obj, attributeName__in=attributes). \
-            values_list("operationPeriod__name", "metroLine__name", "direction", "attributeName", "value"). \
-            order_by("operationPeriod__id", "metroLine__id", "direction", "metroTrack__id", "attributeName",
-                     "order")
-
-        if direction is not None:
-            direction = MetroLineMetric.GOING if direction == "g" else MetroLineMetric.REVERSE
-            answer = answer.filter(direction=direction)
-        if operation_period_name is not None:
-            answer = answer.filter(operationPeriod__name=operation_period_name)
-        if metro_line_name is not None:
-            answer = answer.filter(metroLine__name=metro_line_name)
+        answer = ModelAnswer.objects.prefetch_related(). \
+            filter(execution=execution_obj, attributeName__startswith=prefix).values_list("attributeName", "value"). \
+            order_by("attributeName", "order")
 
         groups = []
-        for key, group in groupby(answer, lambda row: "{}_-_{}_-_{}".format(row[0], row[1], row[2])):
-            attr1, attr2, attr3 = key.split("_-_")
-            # group by track
+        for key, group in groupby(answer, lambda row: "{}".format(row[0].split("_")[0])):
+            # group by key
             groupElement = {
-                "direction": attr3,
+                "prefix": key,
                 "attributes": {}
             }
-            for key2, group2 in groupby(group, lambda row: row[3]):
-                groupElement["attributes"][key2] = [v[4] for v in group2]
+            for key2, value in group:
+                groupElement["attributes"][key2.split("_")[1]] = value
             groups.append(groupElement)
-
-        if direction == MetroLineMetric.REVERSE:
-            groups.reverse()
 
         return groups
 
@@ -96,10 +82,7 @@ class EnergyModelVizData(View):
             raise Http404
 
         # attributes to retrieve
-        attributes = request.GET.getlist("attributes[]", [])
-        direction = request.GET.get("direction", None)
-        operation_period_name = request.GET.get("operationPeriod", None)
-        metro_line_name = request.GET.get("metroLineName", None)
+        prefix = request.GET.get("prefix")
 
         scene_id = int(sceneId)
         execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.STRONG_MODEL_ID). \
@@ -111,7 +94,6 @@ class EnergyModelVizData(View):
         elif execution_obj.status != ModelExecutionHistory.OK:
             Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, response)
         else:
-            response["answer"] = self.get_model_data(execution_obj, metro_line_name, direction,
-                                                     operation_period_name, attributes)
+            response["answer"] = self.get_model_data(execution_obj, prefix)
 
         return JsonResponse(response, safe=False)

@@ -211,6 +211,68 @@ class StrongModelVizTest(ModelVizTest):
             self.assertIn("Potencia_ESS_LR", line["attributes"])
 
 
+class EnergyModelVizTest(ModelVizTest):
+    """ test web page to see output of energy model """
+
+    def setUp(self):
+        file_name = "261fe0ff-5e87-4d26-866a-5496cc1bf064.output"
+        file_path = os.path.join("cmmmodel", "tests", file_name)
+
+        self.set_up(Model.ENERGY_MODEL_ID, file_path)
+
+    def test_loadHTML(self):
+        """ ask for strong output html file """
+
+        URL = reverse("viz:energyModel", kwargs={"sceneId": self.scene_obj.id})
+        self.testHelper.make_get_request(URL, {}, expected_response=None)
+
+        # get error 404 because scene id does not exist
+        URL = reverse("viz:energyModel", kwargs={"sceneId": 1000})
+        self.testHelper.make_get_request(URL, {}, expected_response=None, expected_server_response_code=404)
+
+    def test_getEnergyModelDataWithExecutionRunning(self):
+        """ ask model output data with last execution status == runnning """
+
+        URL = reverse("viz:energyModelData", kwargs={"sceneId": self.scene_obj.id})
+
+        params = {
+            "prefix": "totalConsumption",
+        }
+
+        # with error because last execution of model is running
+        response = self.testHelper.make_get_request(URL, params, expected_response=None)
+        content = json.loads(response.content.decode("utf-8"))
+
+        self.assertNotIn("answer", content.keys())
+        self.assertEqual(content["status"]["code"],
+                         Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, {})["status"]["code"])
+        self.assertEqual(content["status"]["message"],
+                         Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, {})["status"]["message"])
+
+    def test_getEnergyModelDataWithOKExecution(self):
+        """ ask model output data with last execution status ok """
+
+        URL = reverse("viz:energyModelData", kwargs={"sceneId": self.scene_obj.id})
+
+        # simulate execution finished well
+        ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
+
+        params = {
+            "prefix": "totalConsumption",
+        }
+
+        response = self.testHelper.make_get_request(URL, params, expected_response=None)
+        content = json.loads(response.content.decode("utf-8"))
+
+        self.assertEqual(len(content["answer"]), 1)
+        for line in content["answer"]:
+            print(line)
+            self.assertIn("direction", line.keys())
+            self.assertIn("Tiempo_LR", line["attributes"])
+            self.assertIn("Potencia_drive_LR", line["attributes"])
+            self.assertIn("Potencia_ESS_LR", line["attributes"])
+
+
 class JavascriptTest(StaticLiveServerTestCase):
     """ You need put phantomjs in path visible por system """
 
