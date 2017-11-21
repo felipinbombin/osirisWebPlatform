@@ -16,6 +16,7 @@ import uuid
 import pickle
 import os
 import json
+import time
 
 
 def create_fake_execution(scene_obj, model_id, file_path):
@@ -52,14 +53,18 @@ def create_fake_execution(scene_obj, model_id, file_path):
         answer = answer["output"]
         process_answer(answer, execution_obj)
 
+speed_file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
+strong_file_name = "6a9b3d69-1bb6-4582-9b72-ed2c591976a1.output"
+energy_file_name = "261fe0ff-5e87-4d26-866a-5496cc1bf064.output"
+thermal_file_name = ""
+
 
 class SpeedModelVizTest(TestCase):
     """ test web page to see output of speed model """
     fixtures = ["models", "possibleQueue"]
 
     def setUp(self):
-        file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
-        file_path = os.path.join("cmmmodel", "tests", file_name)
+        file_path = os.path.join("cmmmodel", "tests", speed_file_name)
 
         self.test_helper = TestHelper(self)
         self.client = self.test_helper.get_logged_client()
@@ -137,8 +142,7 @@ class StrongModelVizTest(TestCase):
     fixtures = ["models", "possibleQueue"]
 
     def setUp(self):
-        file_name = "6a9b3d69-1bb6-4582-9b72-ed2c591976a1.output"
-        file_path = os.path.join("cmmmodel", "tests", file_name)
+        file_path = os.path.join("cmmmodel", "tests", strong_file_name)
 
         self.test_helper = TestHelper(self)
         self.client = self.test_helper.get_logged_client()
@@ -212,8 +216,7 @@ class EnergyModelVizTest(TestCase):
     fixtures = ["models", "possibleQueue"]
 
     def setUp(self):
-        file_name = "261fe0ff-5e87-4d26-866a-5496cc1bf064.output"
-        file_path = os.path.join("cmmmodel", "tests", file_name)
+        file_path = os.path.join("cmmmodel", "tests", energy_file_name)
 
         self.test_helper = TestHelper(self)
         self.client = self.test_helper.get_logged_client()
@@ -277,13 +280,12 @@ class EnergyModelVizTest(TestCase):
             self.assertIn("trains", line["attributes"])
 
 
-class JavascriptEnergyModelVizTest(StaticLiveServerTestCase):
+class JavascriptModelVizTest(StaticLiveServerTestCase):
     """ test web page to see output of energy model """
     fixtures = ["models", "possibleQueue"]
 
     def setUp(self):
-        file_name = "261fe0ff-5e87-4d26-866a-5496cc1bf064.output"
-        file_path = os.path.join("cmmmodel", "tests", file_name)
+        self.dir_path = os.path.join("cmmmodel", "tests")
 
         username = "felipe"
         password = "felipe"
@@ -293,11 +295,7 @@ class JavascriptEnergyModelVizTest(StaticLiveServerTestCase):
         scene_name = "test scene name"
         self.scene_obj = self.test_helper.create_scene(scene_name)
 
-        create_fake_execution(self.scene_obj, Model.ENERGY_MODEL_ID, file_path)
-
-        # simulate execution finished well
-        ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
-
+        # connect to browser
         self.splinterHelper = SplinterTestHelper()
         self.browser = self.splinterHelper.get_browser()
         self.browser.visit(self.live_server_url)
@@ -306,9 +304,45 @@ class JavascriptEnergyModelVizTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def test_javascript(self):
+    def test_speed_model_javascript(self):
+        file_path = os.path.join(self.dir_path, speed_file_name)
+
+        create_fake_execution(self.scene_obj, Model.SPEED_MODEL_ID, file_path)
+        # simulate execution finished well
+        ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
+
         # visit energy answer
-        url = reverse("viz:energyModel", kwargs={"sceneId": Scene.objects.first().id})
+        url = reverse("viz:speedModel", kwargs={"sceneId": self.scene_obj.id})
+        self.browser.visit(self.live_server_url + url)
+
+        self.browser.is_element_not_present_by_css("disabled", wait_time=5)
+        self.browser.find_by_id("btnUpdateChart").click()
+        self.assertTrue(self.browser.is_element_present_by_tag("canvas", wait_time=5))
+
+    def test_strong_model_javascript(self):
+        file_path = os.path.join(self.dir_path, strong_file_name)
+
+        create_fake_execution(self.scene_obj, Model.STRONG_MODEL_ID, file_path)
+        # simulate execution finished well
+        ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
+
+        # visit energy answer
+        url = reverse("viz:strongModel", kwargs={"sceneId": self.scene_obj.id})
+        self.browser.visit(self.live_server_url + url)
+
+        self.browser.is_element_not_present_by_css("disabled", wait_time=5)
+        self.browser.find_by_id("btnUpdateChart").click()
+        self.assertTrue(self.browser.is_element_present_by_tag("canvas", wait_time=5))
+
+    def test_energy_model_javascript(self):
+        file_path = os.path.join(self.dir_path, energy_file_name)
+
+        create_fake_execution(self.scene_obj, Model.ENERGY_MODEL_ID, file_path)
+        # simulate execution finished well
+        ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
+
+        # visit energy answer
+        url = reverse("viz:energyModel", kwargs={"sceneId": self.scene_obj.id})
         self.browser.visit(self.live_server_url + url)
         self.browser.find_by_id("btnUpdateChart").click()
-        self.assertEquals(len(self.browser.find_by_tag("canvas")), 2)
+        self.assertTrue(self.browser.is_element_present_by_tag("canvas", wait_time=5))

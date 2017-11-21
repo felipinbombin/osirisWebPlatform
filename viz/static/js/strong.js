@@ -2,6 +2,9 @@ $(document).ready(function () {
     "use strict";
 
     // selectors
+    var UPDATE_BUTTON = $("#btnUpdateChart");
+    UPDATE_BUTTON.addClass("disabled");
+
     var SELECTED_LINE = $("#lineFilter");
     var SELECTED_DIRECTION = $("#directionFilter");
     var SELECTED_OPERATION_PERIOD = $("#operationPeriodFilter");
@@ -61,6 +64,7 @@ $(document).ready(function () {
                 SELECTED_DIRECTION.append(option);
             });
         });
+        UPDATE_BUTTON.removeClass("disabled");
     });
 
     var makeAjaxCall = true;

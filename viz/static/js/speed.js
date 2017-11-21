@@ -2,6 +2,9 @@ $(document).ready(function(){
     "use strict";
 
     // selectors
+    var UPDATE_BUTTON = $("#btnUpdateChart");
+    UPDATE_BUTTON.addClass("disabled");
+
     var SELECTED_LINE = $("#lineFilter");
     var ORIGIN_STATION = $("#originStationFilter");
     var DESTINATION_STATION = $("#destinationStationFilter");
@@ -63,10 +66,11 @@ $(document).ready(function(){
             });
             DESTINATION_STATION[0].selectedIndex = 0;
         });
+        UPDATE_BUTTON.removeClass("disabled");
     });
 
     var makeAjaxCall = true;
-    $("#btnUpdateChart").click(function () {
+    UPDATE_BUTTON.click(function () {
         console.log("update chart");
 
         var DIRECTION_GOING = "g";
