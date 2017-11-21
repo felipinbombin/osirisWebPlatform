@@ -85,7 +85,7 @@ class EnergyModelVizData(View):
         prefix = request.GET.get("prefix")
 
         scene_id = int(sceneId)
-        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.STRONG_MODEL_ID). \
+        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.ENERGY_MODEL_ID). \
             order_by("-id").first()
 
         response = {}

@@ -266,11 +266,11 @@ class EnergyModelVizTest(ModelVizTest):
 
         self.assertEqual(len(content["answer"]), 1)
         for line in content["answer"]:
-            print(line)
-            self.assertIn("direction", line.keys())
-            self.assertIn("Tiempo_LR", line["attributes"])
-            self.assertIn("Potencia_drive_LR", line["attributes"])
-            self.assertIn("Potencia_ESS_LR", line["attributes"])
+            self.assertIn("prefix", line.keys())
+            self.assertIn("recoveredEnergy", line["attributes"])
+            self.assertIn("substations", line["attributes"])
+            self.assertIn("tracks", line["attributes"])
+            self.assertIn("trains", line["attributes"])
 
 
 class JavascriptTest(StaticLiveServerTestCase):
