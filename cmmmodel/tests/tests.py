@@ -140,7 +140,7 @@ class ExecuteModel(TestCase):
         self.scene_obj.save()
 
         # create execution record
-        file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
+        file_name = "speed.output"
         file_path = os.path.join("..", "..", "cmmmodel", "tests", file_name)
         std_out = ""
         std_err = ""
@@ -194,7 +194,7 @@ class ExecuteModel(TestCase):
 
     def test_processSpeedAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
+        file_name = "speed.output"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
@@ -211,7 +211,7 @@ class ExecuteModel(TestCase):
 
     def test_processStrongAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "6a9b3d69-1bb6-4582-9b72-ed2c591976a1.output"
+        file_name = "strong.output"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
@@ -224,11 +224,11 @@ class ExecuteModel(TestCase):
             answer = answer["output"]
             process_answer(answer, execution_obj)
 
-        self.assertEqual(ModelAnswer.objects.count(), 26649)
+        self.assertEqual(ModelAnswer.objects.count(), 27657)
 
     def test_processEnergyAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "261fe0ff-5e87-4d26-866a-5496cc1bf064.output"
+        file_name = "energy.output"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
