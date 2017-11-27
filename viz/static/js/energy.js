@@ -83,7 +83,7 @@ $(document).ready(function () {
             showSymbol: false,
             itemStyle: {
                 normal: {
-                    color: "yellow"
+                    color: "#f2ee13"
                 }
             }
         }]
