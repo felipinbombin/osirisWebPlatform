@@ -18,18 +18,22 @@
 {% block content %}
 
 <div class="row">
-<div class="col-md-12 col-sm-12 col-xs-12">
-  {% trans "Modelo de fuerza" as title %}
-  {% header title scene.name %}
+    {% trans "Modelo de fuerza" as title %}
+    {% header title scene.name as title_header %}
+    {% columns 12 12 12 title_header %}
 
-  {% inline_select "Gráfico:" "chartFilter" charts as chart_select %}
-  {% columns 2 2 12 chart_select as col1 %}
+    {% inline_select "Gráfico:" "chartFilter" charts as chart_select %}
+    {% columns 4 4 12 chart_select as col1 %}
 
-  {% update_button "btnUpdateChart" "Actualizar datos" as update_button %}
-  {% columns 12 12 12 update_button as col2 %}
+    {% update_button "btnUpdateChart" "Actualizar datos" as update_button %}
+    {% columns 12 12 12 update_button as col2 %}
 
-  {% panel "fa-filter" "Filtro" col1|add:col2 %}
-</div>
+    {% panel "fa-filter" "Filtro" col1|add:col2 as filter_panel %}
+    {% columns 9 9 12 filter_panel %}
+
+    {% download_viz_file_button execution_obj as download_button %}
+    {% panel "" "" download_button as download_panel %}
+    {% columns 3 3 12 download_panel %}
 </div>
 
 <div class="row">
@@ -38,11 +42,8 @@
         {% columns 6 12 12 pieChart as col2 %}
         {% panel "fa-bar-chart" "Consumo de energía" col1|add:col2 as chart_panel %}
 
-        {% download_viz_file_button execution_obj as download_button %}
-        {% panel "" "" download_button as download_panel %}
+        {% columns 12 12 12 chart_panel %}
 
-        {% columns 9 9 12 chart_panel %}
-        {% columns 3 3 12 download_panel %}
     {% endwith %}
 </div>
 {% endblock %}
