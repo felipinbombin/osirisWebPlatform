@@ -21,10 +21,10 @@ class StrongModelViz(View):
         self.context = {}
         self.template = "viz/strong.html"
 
-    def get(self, request, sceneId):
+    def get(self, request, scene_id):
         try:
             scene_obj = Scene.objects.prefetch_related("metroline_set__metrostation_set"). \
-                get(user=request.user, id=sceneId)
+                get(user=request.user, id=scene_id)
         except:
             raise Http404
 
@@ -70,25 +70,25 @@ class StrongModelVizData(View):
         for key, group in groupby(answer, lambda row: "{}_-_{}_-_{}".format(row[0], row[1], row[2])):
             attr1, attr2, attr3 = key.split("_-_")
             # group by track
-            groupElement = {
+            group_element = {
                 "direction": attr3,
                 "attributes": {}
             }
             for key2, group2 in groupby(group, lambda row: row[3]):
-                groupElement["attributes"][key2] = [v[4] for v in group2]
-            groups.append(groupElement)
+                group_element["attributes"][key2] = [v[4] for v in group2]
+            groups.append(group_element)
 
         if direction == MetroLineMetric.REVERSE:
             groups.reverse()
 
         return groups
 
-    def get(self, request, sceneId):
+    def get(self, request, scene_id):
 
         # check that user is owner
         try:
-            Scene.objects.get(user=request.user, id=sceneId)
-        except:
+            Scene.objects.get(user=request.user, id=scene_id)
+        except Scene.DoesNotExist:
             raise Http404
 
         # attributes to retrieve
@@ -97,7 +97,7 @@ class StrongModelVizData(View):
         operation_period_name = request.GET.get("operationPeriod", None)
         metro_line_name = request.GET.get("metroLineName", None)
 
-        scene_id = int(sceneId)
+        scene_id = int(scene_id)
         execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.STRONG_MODEL_ID). \
             order_by("-id").first()
 

@@ -4,42 +4,43 @@ from django.http import Http404
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import View
+from django.utils.translation import ugettext as _
 
 from itertools import groupby
 
 from scene.models import Scene
 from scene.statusResponse import Status
+
 from cmmmodel.models import ModelExecutionHistory, Model
+from cmmmodel.transform.processEnergyData import ProcessEnergyData
+
 from viz.models import ModelAnswer
 
 
 class EnergyModelViz(View):
-    """ wizard form: first  """
 
     def __init__(self):
         super(EnergyModelViz, self).__init__()
         self.context = {}
         self.template = "viz/energy.html"
 
-    def get(self, request, sceneId):
+    def get(self, request, scene_id):
         try:
             scene_obj = Scene.objects.prefetch_related("metroline_set__metrostation_set"). \
-                get(user=request.user, id=sceneId)
-        except:
+                get(user=request.user, id=scene_id)
+        except Scene.DoesNotExist:
             raise Http404
 
-        from cmmmodel.transform.processEnergyData import ProcessEnergyData
-
         charts = []
-        for id in ProcessEnergyData.prefix:
+        for item in ProcessEnergyData.dictionary:
             charts.append({
-                "value": id,
-                "item": id
+                "value": item["code"],
+                "item": _(item["name"])
             })
         self.context["charts"] = charts
         self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj,
-                                                                             model_id=Model.ENERGY_MODEL_ID).order_by(
-            "-id").first()
+                                                                             model_id=Model.ENERGY_MODEL_ID). \
+            order_by("-id").first()
 
         return render(request, self.template, self.context)
 
@@ -57,28 +58,29 @@ class EnergyModelVizData(View):
         groups = []
         for key, group in groupby(answer, lambda row: "{}".format(row[0].split("_")[0])):
             # group by key
-            groupElement = {
+            group_element = {
                 "prefix": key,
                 "attributes": {}
             }
             for key2, value in group:
-                groupElement["attributes"][key2.split("_")[1]] = value
-            groups.append(groupElement)
+                code = key2.split("_")[1]
+                group_element["attributes"][code] = value
+            groups.append(group_element)
 
         return groups
 
-    def get(self, request, sceneId):
+    def get(self, request, scene_id):
 
         # check that user is owner
         try:
-            Scene.objects.get(user=request.user, id=sceneId)
-        except:
+            Scene.objects.get(user=request.user, id=scene_id)
+        except Scene.DoesNotExist:
             raise Http404
 
         # attributes to retrieve
         prefix = request.GET.get("prefix", "")
 
-        scene_id = int(sceneId)
+        scene_id = int(scene_id)
         execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.ENERGY_MODEL_ID). \
             order_by("-id").first()
 

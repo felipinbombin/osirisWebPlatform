@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from scene.tests.testHelper import TestHelper
-from scene.models import MetroLine, MetroStation, OperationPeriod, MetroTrack, Scene
+from scene.models import MetroLine, MetroStation, OperationPeriod, MetroTrack
 from scene.statusResponse import Status
 
 from cmmmodel.models import ModelExecutionHistory, Model
@@ -16,7 +16,6 @@ import uuid
 import pickle
 import os
 import json
-import time
 
 
 def create_fake_execution(scene_obj, model_id, file_path):
@@ -53,6 +52,7 @@ def create_fake_execution(scene_obj, model_id, file_path):
         answer = answer["output"]
         process_answer(answer, execution_obj)
 
+
 speed_file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
 strong_file_name = "6a9b3d69-1bb6-4582-9b72-ed2c591976a1.output"
 energy_file_name = "261fe0ff-5e87-4d26-866a-5496cc1bf064.output"
@@ -78,17 +78,17 @@ class SpeedModelVizTest(TestCase):
     def test_loadHTML(self):
         """ ask for speed output html file """
 
-        url = reverse("viz:speedModel", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:speedModel", kwargs={"scene_id": self.scene_obj.id})
         self.test_helper.make_get_request(url, {}, expected_response=None)
 
         # get error 404 because scene id does not exist
-        url = reverse("viz:speedModel", kwargs={"sceneId": 1000})
+        url = reverse("viz:speedModel", kwargs={"scene_id": 1000})
         self.test_helper.make_get_request(url, {}, expected_response=None, expected_server_response_code=404)
 
     def test_getSpeedModelDataWithExecutionRunning(self):
         """ ask model output data with last execution status == runnning """
 
-        url = reverse("viz:speedModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:speedModelData", kwargs={"scene_id": self.scene_obj.id})
 
         params = {
             "direction": "g",
@@ -111,7 +111,7 @@ class SpeedModelVizTest(TestCase):
     def test_getSpeedModelDataWithOKExecution(self):
         """ ask model output data with last execution status ok """
 
-        url = reverse("viz:speedModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:speedModelData", kwargs={"scene_id": self.scene_obj.id})
 
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
@@ -156,17 +156,17 @@ class StrongModelVizTest(TestCase):
     def test_loadHTML(self):
         """ ask for strong output html file """
 
-        url = reverse("viz:strongModel", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:strongModel", kwargs={"scene_id": self.scene_obj.id})
         self.test_helper.make_get_request(url, {}, expected_response=None)
 
         # get error 404 because scene id does not exist
-        url = reverse("viz:strongModel", kwargs={"sceneId": 1000})
+        url = reverse("viz:strongModel", kwargs={"scene_id": 1000})
         self.test_helper.make_get_request(url, {}, expected_response=None, expected_server_response_code=404)
 
     def test_getStrongModelDataWithExecutionRunning(self):
         """ ask model output data with last execution status == runnning """
 
-        url = reverse("viz:strongModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:strongModelData", kwargs={"scene_id": self.scene_obj.id})
 
         params = {
             "direction": "g",
@@ -188,7 +188,7 @@ class StrongModelVizTest(TestCase):
     def test_getStrongModelDataWithOKExecution(self):
         """ ask model output data with last execution status ok """
 
-        url = reverse("viz:strongModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:strongModelData", kwargs={"scene_id": self.scene_obj.id})
 
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
@@ -230,17 +230,17 @@ class EnergyModelVizTest(TestCase):
     def test_loadHTML(self):
         """ ask for strong output html file """
 
-        url = reverse("viz:energyModel", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:energyModel", kwargs={"scene_id": self.scene_obj.id})
         self.test_helper.make_get_request(url, {}, expected_response=None)
 
         # get error 404 because scene id does not exist
-        url = reverse("viz:energyModel", kwargs={"sceneId": 1000})
+        url = reverse("viz:energyModel", kwargs={"scene_id": 1000})
         self.test_helper.make_get_request(url, {}, expected_response=None, expected_server_response_code=404)
 
     def test_getEnergyModelDataWithExecutionRunning(self):
         """ ask model output data with last execution status == runnning """
 
-        url = reverse("viz:energyModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:energyModelData", kwargs={"scene_id": self.scene_obj.id})
 
         params = {
             "prefix": "totalConsumption",
@@ -259,7 +259,7 @@ class EnergyModelVizTest(TestCase):
     def test_getEnergyModelDataWithOKExecution(self):
         """ ask model output data with last execution status ok """
 
-        url = reverse("viz:energyModelData", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:energyModelData", kwargs={"scene_id": self.scene_obj.id})
 
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
@@ -312,7 +312,7 @@ class JavascriptModelVizTest(StaticLiveServerTestCase):
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
 
         # visit energy answer
-        url = reverse("viz:speedModel", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:speedModel", kwargs={"scene_id": self.scene_obj.id})
         self.browser.visit(self.live_server_url + url)
 
         self.browser.is_element_not_present_by_css("disabled", wait_time=5)
@@ -327,7 +327,7 @@ class JavascriptModelVizTest(StaticLiveServerTestCase):
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
 
         # visit energy answer
-        url = reverse("viz:strongModel", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:strongModel", kwargs={"scene_id": self.scene_obj.id})
         self.browser.visit(self.live_server_url + url)
 
         self.browser.is_element_not_present_by_css("disabled", wait_time=5)
@@ -342,7 +342,7 @@ class JavascriptModelVizTest(StaticLiveServerTestCase):
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
 
         # visit energy answer
-        url = reverse("viz:energyModel", kwargs={"sceneId": self.scene_obj.id})
+        url = reverse("viz:energyModel", kwargs={"scene_id": self.scene_obj.id})
         self.browser.visit(self.live_server_url + url)
         self.browser.find_by_id("btnUpdateChart").click()
         self.assertTrue(self.browser.is_element_present_by_tag("canvas", wait_time=5))

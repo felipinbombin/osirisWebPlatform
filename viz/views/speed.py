@@ -21,11 +21,11 @@ class SpeedModelViz(View):
         self.context = {}
         self.template = "viz/speed.html"
 
-    def get(self, request, sceneId):
+    def get(self, request, scene_id):
         try:
             scene_obj = Scene.objects.prefetch_related("metroline_set__metrostation_set"). \
-                get(user=request.user, id=sceneId)
-        except:
+                get(user=request.user, id=scene_id)
+        except Scene.DoesNotExist:
             raise Http404
 
         self.context["scene"] = scene_obj
@@ -58,7 +58,7 @@ class SpeedModelVizData(View):
                                                                      operationPeriod__name=operation_period_name,
                                                                      metroStation__metroLine__name=metro_line_name,
                                                                      direction=direction,
-                                                                     metric=OperationPeriodForMetroStation.DWELL_TIME). \
+                                                                     metric=OperationPeriodForMetroStation.DWELL_TIME).\
             order_by("metroStation_id").values_list("metroStation__name", "value")
 
         answer = {}
@@ -91,7 +91,7 @@ class SpeedModelVizData(View):
                                   lambda row: "{}_-_{}_-_{}_-_{}_-_{}".format(row[0], row[1], row[2], row[3], row[4])):
             attr1, attr2, attr3, attr4, attr5 = key.split("_-_")
             # group by track
-            groupElement = {
+            group_element = {
                 "direction": attr3,
                 "startStation": attr4,
                 "endStation": attr5,
@@ -99,20 +99,20 @@ class SpeedModelVizData(View):
             }
             for key2, group2 in groupby(group, lambda row: row[5]):
                 # groups[attr1][attr2][attr3][attr4].append({"name": key2, "value": [v[5] for v in group2]})
-                groupElement["attributes"][key2] = [v[6] for v in group2]
-            groups.append(groupElement)
+                group_element["attributes"][key2] = [v[6] for v in group2]
+            groups.append(group_element)
 
         if direction == MetroLineMetric.REVERSE:
             groups.reverse()
 
         return groups
 
-    def get(self, request, sceneId):
+    def get(self, request, scene_id):
 
         # check that user is owner
         try:
-            Scene.objects.get(user=request.user, id=sceneId)
-        except:
+            Scene.objects.get(user=request.user, id=scene_id)
+        except Scene.DoesNotExist:
             raise Http404
 
         # attributes to retrieve
@@ -122,7 +122,7 @@ class SpeedModelVizData(View):
         metro_line_name = request.GET.get("metroLineName", None)
         metro_tracks = request.GET.getlist("tracks[]", [])
 
-        scene_id = int(sceneId)
+        scene_id = int(scene_id)
         execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.SPEED_MODEL_ID). \
             order_by("-id").first()
 

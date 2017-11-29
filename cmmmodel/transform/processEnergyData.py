@@ -14,13 +14,12 @@ import xlsxwriter
 
 
 class ProcessEnergyData(ProcessData):
-
-    prefix = [
-        "totalConsumption",
-        "trainConsumption",
-        "trackConsumption",
-        "stationConsumption",
-        "depotConsumption"
+    dictionary = [
+        {"code": "totalConsumption", "name": "Total consumption"},
+        {"code": "trainConsumption", "name": "Trains consumption"},
+        {"code": "trackConsumption", "name": "Tracks consumption"},
+        {"code": "stationConsumption", "name": "Stations consumption"},
+        {"code": "depotConsumption", "name": "Depots consumption"}
     ]
 
     def __init__(self, execution_obj):
@@ -41,7 +40,7 @@ class ProcessEnergyData(ProcessData):
         for names, values in consumptions:
             for index, name, value in zip(range(len(names)), names, values):
                 ModelAnswer.objects.create(execution=self.execution_obj, metroLine=None, direction=None,
-                                           metroTrack=None, operationPeriod=None, attributeName=name,  order=index,
+                                           metroTrack=None, operationPeriod=None, attributeName=name, order=index,
                                            value=value)
 
     def create_excel_file(self, data):
@@ -55,14 +54,6 @@ class ProcessEnergyData(ProcessData):
         item = "Item"
         unit = "[MWh]"
         percentage = "%"
-
-        titles = [
-            "Total consumption",
-            "Trains consumption",
-            "Tracks consumption",
-            "Stations consumption",
-            "Depots consumption",
-        ]
 
         string_io = BytesIO()
         workbook = xlsxwriter.Workbook(string_io, {'in_memory': True})
@@ -87,6 +78,8 @@ class ProcessEnergyData(ProcessData):
             self.get_station_consumption(line_number, data),
             self.get_depot_consumption(line_number, data)
         ]
+
+        titles = [title["name"] for title in self.dictionary]
 
         for title, (names, values) in zip(titles, consumptions):
 
@@ -144,13 +137,13 @@ class ProcessEnergyData(ProcessData):
         ss2 = ss1 / 1000000
         r2 = r1 / 1000000
 
-        names = ["%s_trains" % self.prefix[0],
-                 "%s_stations" % self.prefix[0],
-                 "%s_tracks" % self.prefix[0],
-                 "%s_substations" % self.prefix[0],
-                 "%s_recoveredEnergy" % self.prefix[0],
+        names = ["%s_trains" % self.dictionary[0]["code"],
+                 "%s_stations" % self.dictionary[0]["code"],
+                 "%s_tracks" % self.dictionary[0]["code"],
+                 "%s_substations" % self.dictionary[0]["code"],
+                 "%s_recoveredEnergy" % self.dictionary[0]["code"],
                  ]
-        #TODO: remove [0]
+        # TODO: remove [0]
         values = [t2, s2[0], tr2[0], ss2, r2]
 
         return names, values
@@ -176,13 +169,13 @@ class ProcessEnergyData(ProcessData):
                 ore += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 5] * factor
                 tl += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 6] * factor
 
-        names = ["%s_auxiliaries" %self.prefix[1],
-                 "%s_hvac" %self.prefix[1],
-                 "%s_traction" %self.prefix[1],
-                 "%s_obess" %self.prefix[1],
-                 "%s_tractionRecovery" %self.prefix[1],
-                 "%s_obessRecovery" %self.prefix[1],
-                 "%s_terminalLosses" %self.prefix[1],
+        names = ["%s_auxiliaries" % self.dictionary[1]["code"],
+                 "%s_hvac" % self.dictionary[1]["code"],
+                 "%s_traction" % self.dictionary[1]["code"],
+                 "%s_obess" % self.dictionary[1]["code"],
+                 "%s_tractionRecovery" % self.dictionary[1]["code"],
+                 "%s_obessRecovery" % self.dictionary[1]["code"],
+                 "%s_terminalLosses" % self.dictionary[1]["code"],
                  ]
         values = [au, h, t, o, tr, ore, tl]
 
@@ -203,11 +196,11 @@ class ProcessEnergyData(ProcessData):
             se += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][3] * factor
             lns += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][4] * factor
 
-        names = ["%s_auxiliaries" %self.prefix[2],
-                 "%s_ventilation" %self.prefix[2],
-                 "%s_dcDistributionLosses" %self.prefix[2],
-                 "%s_dcSessLosses" %self.prefix[2],
-                 "%s_noSavingCapacityLosses" %self.prefix[2]
+        names = ["%s_auxiliaries" % self.dictionary[2]["code"],
+                 "%s_ventilation" % self.dictionary[2]["code"],
+                 "%s_dcDistributionLosses" % self.dictionary[2]["code"],
+                 "%s_dcSessLosses" % self.dictionary[2]["code"],
+                 "%s_noSavingCapacityLosses" % self.dictionary[2]["code"]
                  ]
         values = [au, v, dc, se, lns]
 
@@ -222,8 +215,8 @@ class ProcessEnergyData(ProcessData):
             au += data['Stations']['Lines'][k]['E_Aux'] * factor
             v += data['Stations']['Lines'][k]['E_HVAC'] * factor
 
-        names = ["%s_auxiliaries" % self.prefix[3],
-                 "%s_ventilation" % self.prefix[3]
+        names = ["%s_auxiliaries" % self.dictionary[3]["code"],
+                 "%s_ventilation" % self.dictionary[3]["code"]
                  ]
         # TODO: remove [0]
         values = [au[0], v[0]]
@@ -239,8 +232,8 @@ class ProcessEnergyData(ProcessData):
             au += data['Depots']['Lines'][k]['E_aux'] * factor
             v += data['Depots']['Lines'][k]['E_vent'] * factor
 
-        names = ["%s_auxiliaries" % self.prefix[4],
-                 "%s_ventilation" % self.prefix[4]
+        names = ["%s_auxiliaries" % self.dictionary[4]["code"],
+                 "%s_ventilation" % self.dictionary[4]["code"]
                  ]
         values = [au, v]
 
