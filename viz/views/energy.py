@@ -4,7 +4,6 @@ from django.http import Http404
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import View
-from django.utils.translation import ugettext as _
 
 from itertools import groupby
 
@@ -35,7 +34,7 @@ class EnergyModelViz(View):
         for item in ProcessEnergyData.dictionary:
             charts.append({
                 "value": item["code"],
-                "item": _(item["name"])
+                "item": item["name"]
             })
         self.context["charts"] = charts
         self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj,

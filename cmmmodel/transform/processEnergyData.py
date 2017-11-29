@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from django.utils import timezone
 from django.core.files.base import ContentFile
+from django.utils.translation import ugettext as _
 
 from io import BytesIO
 
@@ -15,11 +16,11 @@ import xlsxwriter
 
 class ProcessEnergyData(ProcessData):
     dictionary = [
-        {"code": "totalConsumption", "name": "Total consumption"},
-        {"code": "trainConsumption", "name": "Trains consumption"},
-        {"code": "trackConsumption", "name": "Tracks consumption"},
-        {"code": "stationConsumption", "name": "Stations consumption"},
-        {"code": "depotConsumption", "name": "Depots consumption"}
+        {"code": "totalConsumption", "name": _("Total consumption")},
+        {"code": "trainConsumption", "name": _("Trains consumption")},
+        {"code": "trackConsumption", "name": _("Tracks consumption")},
+        {"code": "stationConsumption", "name": _("Stations consumption")},
+        {"code": "depotConsumption", "name": _("Depots consumption")}
     ]
 
     def __init__(self, execution_obj):
