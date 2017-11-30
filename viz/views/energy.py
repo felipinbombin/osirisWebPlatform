@@ -59,7 +59,7 @@ class EnergyModelVizData(View):
         for key, group in groupby(answer, lambda row: "{}".format(row[0].split("_")[0])):
             # group by key
             group_element = {
-                "prefix": key,
+                "prefix": _((filter(lambda x: x["code"]==key, ProcessEnergyData.dictionary))[0]["name"]),
                 "attributes": {}
             }
             for key2, value in group:
