@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-29 22:39-0300\n"
+"POT-Creation-Date: 2017-11-29 23:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\viz\templates\viz\energy.html:21
-msgid "Energy model"
-msgstr "Modelo de energía"
-
 #: .\viz\templates\viz\energy.html:25
 msgid "Chart:"
 msgstr "Gráfico"
 
-#: .\viz\templates\viz\energy.html:29
+#: .\viz\templates\viz\energy.html:29 .\viz\templates\viz\speed.html:41
+#: .\viz\templates\viz\strong.html:37
 msgid "Update data"
 msgstr "Actualizar datos"
 
-#: .\viz\templates\viz\energy.html:33
+#: .\viz\templates\viz\energy.html:33 .\viz\templates\viz\speed.html:45
+#: .\viz\templates\viz\strong.html:41
 msgid "Filter"
 msgstr "Filtro"
 
@@ -38,13 +36,51 @@ msgstr "Filtro"
 msgid "Energy consumption"
 msgstr "Consumo de energía"
 
+#: .\viz\templates\viz\energy.html:21
+msgid "Energy model"
+msgstr "Modelo de energía"
+
 #: .\viz\templates\viz\speed.html:22
-msgid "Modelo de velocidad"
-msgstr ""
+msgid "Speed model"
+msgstr "Modelo de velocidad"
+
+#: .\viz\templates\viz\speed.html:25 .\viz\templates\viz\strong.html:25
+msgid "Line:"
+msgstr "Línea:"
+
+#: .\viz\templates\viz\speed.html:29
+msgid "Origin station:"
+msgstr "Estación de origen:"
+
+#: .\viz\templates\viz\speed.html:33
+msgid "Destination station:"
+msgstr "Estación de destino"
+
+#: .\viz\templates\viz\speed.html:37 .\viz\templates\viz\strong.html:33
+msgid "Operation period:"
+msgstr "Período de operación:"
+
+#: .\viz\templates\viz\speed.html:52
+msgid "speed VS distance"
+msgstr "Velocidad vs distancia"
+
+#: .\viz\templates\viz\speed.html:56
+msgid "Station times"
+msgstr "Tiempo en estaciones"
 
 #: .\viz\templates\viz\strong.html:22
-msgid "Modelo de fuerza"
-msgstr ""
+#, fuzzy
+#| msgid "Energy model"
+msgid "Strong model"
+msgstr "Modelo de energía"
+
+#: .\viz\templates\viz\strong.html:29
+msgid "Direction:"
+msgstr "Dirección:"
+
+#: .\viz\templates\viz\strong.html:48
+msgid "Power consumption"
+msgstr "Consumo de potencias"
 
 msgid "Total consumption"
 msgstr "Consumo total"
@@ -55,8 +91,8 @@ msgstr "Consumo de trenes"
 msgid "Tracks consumption"
 msgstr "Consumo de túneles"
 
-msgid "Stations consumption"
-msgstr "Consumo de estaciones"
-
 msgid "Depots consumption"
 msgstr "Consumo de depósitos"
+
+msgid "Stations consumption"
+msgstr "Consumo de estaciones"
