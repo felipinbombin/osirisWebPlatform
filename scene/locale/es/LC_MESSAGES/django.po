@@ -1,0 +1,381 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-11-29 22:39-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\scene\templates\scene\scenePanel.html:31
+#: .\scene\templates\scene\scenePanel.html:115
+msgid "Cambiar nombre"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:32
+#: .\scene\templates\scene\scenePanel.html:134
+msgid "Eliminar"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:45
+msgid "Estado"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:59
+msgid "Editar escenario"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:66
+msgid "Topología"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:68
+msgid "Sistémico"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:70
+msgid "Operación"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:72
+msgid "Velocidad"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:102
+msgid "Cambiar nombre de escenario"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:107
+#: .\scene\templates\scene\scenePanel_operation.html:24
+#: .\scene\templates\scene\scenePanel_topology.html:11
+#: .\scene\templates\scene\scenePanel_topology.html:39
+msgid "Nombre"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:127
+msgid "Eliminar Escenario"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:130
+msgid "¿Está seguro que desea eliminar el escenario?"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:131
+msgid "RECUERDE QUE ESTA OPERACIÓN ES IRREVERSIBLE."
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel.html:135
+msgid "Cancelar"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:8
+msgid "Características de tren: Fuerzas"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:14
+#: .\scene\templates\scene\scenePanel_energySystem.html:38
+#: .\scene\templates\scene\scenePanel_energySystem.html:61
+#: .\scene\templates\scene\scenePanel_energySystem.html:81
+#: .\scene\templates\scene\scenePanel_energySystem.html:101
+#: .\scene\templates\scene\scenePanel_energySystem.html:125
+#: .\scene\templates\scene\scenePanel_energySystem.html:154
+msgid "Atributo"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:15
+#: .\scene\templates\scene\scenePanel_energySystem.html:39
+#: .\scene\templates\scene\scenePanel_energySystem.html:62
+#: .\scene\templates\scene\scenePanel_energySystem.html:82
+#: .\scene\templates\scene\scenePanel_energySystem.html:102
+#: .\scene\templates\scene\scenePanel_energySystem.html:126
+msgid "Valor"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:19
+msgid "Masa"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:20
+msgid "Masa inercial"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:21
+msgid "Máxima aceleración permitida"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:22
+msgid "Máxima fuerza inicial permitida"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:23
+msgid "Máxima fuerza de frenado permitida"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:24
+msgid "Velocidad de cambio de regimen del motor"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:25
+#: .\scene\templates\scene\scenePanel_energySystem.html:26
+msgid "Potencia máxima"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:32
+msgid "Parámetros de Davis"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:43
+msgid "A"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:44
+msgid "B"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:45
+msgid "C"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:46
+msgid "D"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:47
+msgid "E"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:55
+msgid "Características de tren: Tracción"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:66
+msgid "Eficiencia del sistema de tracción"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:67
+msgid "Eficiencia del sistema de frenos"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:68
+msgid "Umbral de freno eléctrico"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:69
+msgid "Umbral de freno electromecánico"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:75
+msgid "Características de tren: Energía"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:86
+msgid "Consumo HVAC"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:87
+msgid "Consumo de auxiliares"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:88
+msgid "Resistencia del terminal de trenes"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:89
+msgid "Votaje DC de terminal de trenes"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:95
+msgid "Características de tren: Modelo de tracción CMM"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:106
+msgid "OBESS charge efficiency"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:107
+msgid "OBESS discharge efficiency"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:108
+msgid "OBESS Usable energy content"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:109
+msgid "Maximun discharge power"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:110
+msgid "Maximum energy saving possible per hour"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:111
+msgid "Power limit to feed"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:119
+msgid "Características de tren: Estructura"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:130
+msgid "Largo"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:131
+msgid "Número de carros"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:132
+msgid "Ancho de carro"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:133
+msgid "Altura de carro"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:134
+msgid "Espesor de paredes del carro"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:135
+msgid "Conductividad térmica de pared del carro"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:136
+msgid "Cabin Volume Factor"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:137
+msgid "Capacidad de pasajeros del tren"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:138
+msgid "HRS Extra Power"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:139
+msgid "On Board Energy Storage System"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:140
+msgid "Storage Capacity Weighting"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:148
+msgid "Conjunto de puntos HVAC"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:155
+msgid "T<sub>out</sub>[°C]"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:156
+msgid "T<sup>in</sup>[°C]"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:160
+msgid "Punto 1"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:161
+msgid "Punto 2"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:162
+msgid "Punto 3"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:163
+msgid "Punto 4"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_energySystem.html:164
+msgid "Punto 5"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_models.html:7
+msgid "Modelos"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:5
+msgid "Variables globales"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:8
+msgid "Masa promedio de pasajero"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:12
+msgid "Temperatura anual promedio"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:18
+msgid "Períodos"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:25
+msgid "Inicio"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:26
+msgid "Fin"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:27
+msgid "Temperatura"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:28
+msgid "Humedad"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:29
+msgid "Concentración CO<sub>2</sub>"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:30
+msgid "Radiación solar"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_operation.html:31
+msgid "Ángulo de elevación del sol"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_topology.html:5
+msgid "Líneas"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_topology.html:12
+msgid "N° Estaciones"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_topology.html:13
+#: .\scene\templates\scene\scenePanel_topology.html:40
+msgid "Estaciones"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_topology.html:14
+msgid "Depósitos"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_topology.html:33
+msgid "Conexiones"
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_topology.html:41
+msgid "Alt. prom."
+msgstr ""
+
+#: .\scene\templates\scene\scenePanel_topology.html:42
+msgid "Sup. prom."
+msgstr ""

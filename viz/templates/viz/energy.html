@@ -18,17 +18,20 @@
 {% block content %}
 
 <div class="row">
-    {% trans "Modelo de fuerza" as title %}
+    {% trans "Energy model" as title %}
     {% header title scene.name as title_header %}
     {% columns 12 12 12 title_header %}
 
-    {% inline_select "Gráfico:" "chartFilter" charts as chart_select %}
+    {% trans "Chart:" as select_label %}
+    {% inline_select select_label "chartFilter" charts as chart_select %}
     {% columns 4 4 12 chart_select as col1 %}
 
-    {% update_button "btnUpdateChart" "Actualizar datos" as update_button %}
+    {% trans "Update data" as button_label %}
+    {% update_button "btnUpdateChart" button_label as update_button %}
     {% columns 12 12 12 update_button as col2 %}
 
-    {% panel "fa-filter" "Filtro" col1|add:col2 as filter_panel %}
+    {% trans "Filter" as filter_label %}
+    {% panel "fa-filter" filter_label col1|add:col2 as filter_panel %}
     {% columns 9 9 12 filter_panel %}
 
     {% download_viz_file_button execution_obj as download_button %}
@@ -40,7 +43,8 @@
     {% with barChart='<div id="barChart" style="height:400px;"></div>' pieChart='<div id="pieChart" style="height:400px;"></div>' %}
         {% columns 6 12 12 barChart as col1 %}
         {% columns 6 12 12 pieChart as col2 %}
-        {% panel "fa-bar-chart" "Consumo de energía" col1|add:col2 as chart_panel %}
+        {% trans "Energy consumption" as chart_panel_label %}
+        {% panel "fa-bar-chart" chart_panel_label col1|add:col2 as chart_panel %}
 
         {% columns 12 12 12 chart_panel %}
 

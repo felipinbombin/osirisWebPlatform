@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-11-29 22:39-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\viz\templates\viz\energy.html:21
+msgid "Energy model"
+msgstr "Modelo de energía"
+
+#: .\viz\templates\viz\energy.html:25
+msgid "Chart:"
+msgstr "Gráfico"
+
+#: .\viz\templates\viz\energy.html:29
+msgid "Update data"
+msgstr "Actualizar datos"
+
+#: .\viz\templates\viz\energy.html:33
+msgid "Filter"
+msgstr "Filtro"
+
+#: .\viz\templates\viz\energy.html:46
+msgid "Energy consumption"
+msgstr "Consumo de energía"
+
+#: .\viz\templates\viz\speed.html:22
+msgid "Modelo de velocidad"
+msgstr ""
+
+#: .\viz\templates\viz\strong.html:22
+msgid "Modelo de fuerza"
+msgstr ""
+
+msgid "Total consumption"
+msgstr "Consumo total"
+
+msgid "Trains consumption"
+msgstr "Consumo de trenes"
+
+msgid "Tracks consumption"
+msgstr "Consumo de túneles"
+
+msgid "Stations consumption"
+msgstr "Consumo de estaciones"
+
+msgid "Depots consumption"
+msgstr "Consumo de depósitos"
