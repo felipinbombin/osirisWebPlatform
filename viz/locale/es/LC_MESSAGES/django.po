@@ -69,8 +69,6 @@ msgid "Station times"
 msgstr "Tiempo en estaciones"
 
 #: .\viz\templates\viz\strong.html:22
-#, fuzzy
-#| msgid "Energy model"
 msgid "Strong model"
 msgstr "Modelo de energía"
 
