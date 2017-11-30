@@ -28,8 +28,8 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <li><a data-bind="click: openForm"><i class="fa fa-header" aria-hidden="true"></i> {% trans "Cambiar nombre" %}</a></li>
-            <li><a data-bind="click: showDeleteDialog"><i class="fa fa-trash" aria-hidden="true"></i> {% trans "Eliminar" %}</a></li>
+            <li><a data-bind="click: openForm"><i class="fa fa-header" aria-hidden="true"></i> {% trans "Change name" %}</a></li>
+            <li><a data-bind="click: showDeleteDialog"><i class="fa fa-trash" aria-hidden="true"></i> {% trans "Delete" %}</a></li>
           </ul>
         </span>
       </h1>
@@ -42,7 +42,7 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
       <div class="x_panel">
         <div class="x_title">
-          <h2>{% trans "Estado" %}: {{ status_label }} <small></small></h2>
+          <h2>{% trans "State" %}: {{ status_label }} <small></small></h2>
           <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -56,20 +56,20 @@
             </div>
             <div class="col-md-2 col-sm-2 col-sx-12">
       <a href="{% url 'scene:wizard' scene_id=scene.id %}"type="button" class="pull-right btn btn-success btn-xs btn-block">
-        <i class="fa fa-edit" aria-hidden="true"></i> {% trans "Editar escenario" %}
+        <i class="fa fa-edit" aria-hidden="true"></i> {% trans "Edit scene" %}
       </a>
             </div>
           </div>
 
           <div class="" role="tabpanel" data-example-id="togglable-tabs">
             <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-              <li role="presentation" class="active"><a href="#tab_content1" id="tab1" role="tab" data-toggle="tab" aria-expanded="true">{% trans "Topología" %}</a>
+              <li role="presentation" class="active"><a href="#tab_content1" id="tab1" role="tab" data-toggle="tab" aria-expanded="true">{% trans "Topology" %}</a>
               </li>
-              <li role="presentation" class=""><a href="#tab_content2" role="tab" id="tab2" data-toggle="tab" aria-expanded="false">{% trans "Sistémico" %}</a>
+              <li role="presentation" class=""><a href="#tab_content2" role="tab" id="tab2" data-toggle="tab" aria-expanded="false">{% trans "Sistemic" %}</a>
               </li>
-              <li role="presentation" class=""><a href="#tab_content3" role="tab" id="tab3" data-toggle="tab" aria-expanded="false">{% trans "Operación" %}</a>
+              <li role="presentation" class=""><a href="#tab_content3" role="tab" id="tab3" data-toggle="tab" aria-expanded="false">{% trans "Operation" %}</a>
                </li>
-              <li role="presentation" class=""><a href="#tab_content4" role="tab" id="tab4" data-toggle="tab" aria-expanded="false">{% trans "Velocidad" %}</a>
+              <li role="presentation" class=""><a href="#tab_content4" role="tab" id="tab4" data-toggle="tab" aria-expanded="false">{% trans "Speed" %}</a>
                </li>
              </ul>
 
@@ -99,12 +99,12 @@
         <div class="modal-content" data-bind="with: changeNameFormLogic">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">{% trans "Cambiar nombre de escenario" %}</h4>
+            <h4 class="modal-title">{% trans "Change scene name" %}</h4>
           </div>
           <div class="modal-body">
             <div class="form-horizontal form-label-left">
               <div class="form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12">{% trans "Nombre" %}</label>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">{% trans "Name" %}</label>
                 <div class="col-md-9 col-sm-9 col-xs-12">
                   <input type="text" class="form-control" data-bind="value: name">
                 </div>
@@ -124,7 +124,7 @@
         <div class="modal-content" data-bind="with: changeNameFormLogic">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">{% trans "Eliminar Escenario" %}</h4>
+            <h4 class="modal-title">{% trans "Delete scene" %}</h4>
           </div>
           <div class="modal-body">
               {% trans "¿Está seguro que desea eliminar el escenario?" %}<br />

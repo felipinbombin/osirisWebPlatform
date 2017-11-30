@@ -20,52 +20,52 @@ msgstr ""
 
 #: .\scene\templates\scene\scenePanel.html:31
 #: .\scene\templates\scene\scenePanel.html:115
-msgid "Cambiar nombre"
-msgstr ""
+msgid "Change name"
+msgstr "Cambiar nombre"
 
 #: .\scene\templates\scene\scenePanel.html:32
 #: .\scene\templates\scene\scenePanel.html:134
-msgid "Eliminar"
-msgstr ""
+msgid "Delete"
+msgstr "Eliminar"
 
 #: .\scene\templates\scene\scenePanel.html:45
-msgid "Estado"
-msgstr ""
+msgid "State"
+msgstr "Estado"
 
 #: .\scene\templates\scene\scenePanel.html:59
-msgid "Editar escenario"
-msgstr ""
+msgid "Edit scene"
+msgstr "Editar escenario"
 
 #: .\scene\templates\scene\scenePanel.html:66
-msgid "Topología"
-msgstr ""
+msgid "Topology"
+msgstr "Topología"
 
 #: .\scene\templates\scene\scenePanel.html:68
-msgid "Sistémico"
-msgstr ""
+msgid "Systemic"
+msgstr "Sistémico"
 
 #: .\scene\templates\scene\scenePanel.html:70
-msgid "Operación"
-msgstr ""
+msgid "Operation"
+msgstr "Operación"
 
 #: .\scene\templates\scene\scenePanel.html:72
-msgid "Velocidad"
-msgstr ""
+msgid "Speed"
+msgstr "Velocidad"
 
 #: .\scene\templates\scene\scenePanel.html:102
-msgid "Cambiar nombre de escenario"
-msgstr ""
+msgid "Change scene name"
+msgstr "Cambiar nombre de escenario"
 
 #: .\scene\templates\scene\scenePanel.html:107
 #: .\scene\templates\scene\scenePanel_operation.html:24
 #: .\scene\templates\scene\scenePanel_topology.html:11
 #: .\scene\templates\scene\scenePanel_topology.html:39
-msgid "Nombre"
-msgstr ""
+msgid "Name"
+msgstr "Nombre"
 
 #: .\scene\templates\scene\scenePanel.html:127
-msgid "Eliminar Escenario"
-msgstr ""
+msgid "Delete scene"
+msgstr "Eliminar Escenario"
 
 #: .\scene\templates\scene\scenePanel.html:130
 msgid "¿Está seguro que desea eliminar el escenario?"
