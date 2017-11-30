@@ -32,10 +32,10 @@ class EnergyModelViz(View):
             raise Http404
 
         charts = []
-        for item in ProcessEnergyData.dictionary:
+        for key in ProcessEnergyData.dictionary_group.keys():
             charts.append({
-                "value": item["code"],
-                "item": _(item["name"])
+                "value": key,
+                "item": _(ProcessEnergyData.dictionary_group[key])
             })
         self.context["charts"] = charts
         self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj,
@@ -51,6 +51,7 @@ class EnergyModelVizData(View):
     def get_model_data(self, execution_obj, prefix):
         """ get data have gotten from execution instance """
 
+        prefix = ProcessEnergyData.dictionary_group[prefix]
         answer = ModelAnswer.objects.prefetch_related(). \
             filter(execution=execution_obj, attributeName__startswith=prefix).values_list("attributeName", "value"). \
             order_by("attributeName", "order")
@@ -59,12 +60,12 @@ class EnergyModelVizData(View):
         for key, group in groupby(answer, lambda row: "{}".format(row[0].split("_")[0])):
             # group by key
             group_element = {
-                "prefix": _([x["name"] for x in ProcessEnergyData.dictionary if x["code"]==key][0]),
+                "prefix": key,
                 "attributes": {}
             }
             for key2, value in group:
                 code = key2.split("_")[1]
-                group_element["attributes"][code] = value
+                group_element["attributes"][_(code)] = value
             groups.append(group_element)
 
         return groups

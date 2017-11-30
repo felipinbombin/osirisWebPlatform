@@ -9,6 +9,7 @@ from scene.statusResponse import Status
 
 from cmmmodel.models import ModelExecutionHistory, Model
 from cmmmodel.saveJobResponse import process_answer
+from cmmmodel.transform.processEnergyData import ProcessEnergyData
 
 from viz.tests.splinterHelper import SplinterTestHelper
 
@@ -51,6 +52,7 @@ def create_fake_execution(scene_obj, model_id, file_path):
         answer = pickle.load(answer_file)
         answer = answer["output"]
         process_answer(answer, execution_obj)
+
 
 speed_file_name = "speed.output"
 strong_file_name = "strong.output"
@@ -273,10 +275,10 @@ class EnergyModelVizTest(TestCase):
         self.assertEqual(len(content["answer"]), 1)
         for line in content["answer"]:
             self.assertIn("prefix", line.keys())
-            self.assertIn("recoveredEnergy", line["attributes"])
-            self.assertIn("substations", line["attributes"])
-            self.assertIn("tracks", line["attributes"])
-            self.assertIn("trains", line["attributes"])
+            self.assertIn(ProcessEnergyData.dictionary_detail["recoveredEnergy"], line["attributes"])
+            self.assertIn(ProcessEnergyData.dictionary_detail["substations"], line["attributes"])
+            self.assertIn(ProcessEnergyData.dictionary_detail["tracks"], line["attributes"])
+            self.assertIn(ProcessEnergyData.dictionary_detail["trains"], line["attributes"])
 
 
 class JavascriptModelVizTest(StaticLiveServerTestCase):
