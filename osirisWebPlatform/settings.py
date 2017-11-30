@@ -14,6 +14,9 @@ import os
 import osirisWebPlatform.keys.database as database
 import osirisWebPlatform.keys.secret_key as secretKey
 
+from django.utils.translation import ugettext_lazy as _
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -122,6 +125,12 @@ USE_TZ = True
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale')
 ]
+
+LANGUAGES = (
+#    ('en', _('English')),
+    ('es', _('Spanish')),
+)
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 STATIC_URL = '/static/'
