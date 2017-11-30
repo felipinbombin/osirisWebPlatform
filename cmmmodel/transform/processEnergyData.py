@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from django.utils import timezone
 from django.core.files.base import ContentFile
+from django.utils.translation import ugettext as _
 
 from io import BytesIO
 
@@ -15,31 +16,31 @@ import xlsxwriter
 
 class ProcessEnergyData(ProcessData):
     dictionary_group = {
-        "totalConsumption": "Total consumption",
-        "trainConsumption": "Trains consumption",
-        "trackConsumption": "Tracks consumption",
-        "stationConsumption": "Stations consumption",
-        "depotConsumption": "Depots consumption"
+        "totalConsumption": _("Total consumption"),
+        "trainConsumption": _("Trains consumption"),
+        "trackConsumption": _("Tracks consumption"),
+        "stationConsumption": _("Stations consumption"),
+        "depotConsumption": _("Depots consumption")
     }
     dictionary_detail = {
-        "trains": "Trains",
-        "stations": "Stations",
-        "tracks": "Tracks",
-        "substations": "Substations",
-        "recoveredEnergy": "Recovered energy",
+        "trains": _("Trains"),
+        "stations": _("Stations"),
+        "tracks": _("Tracks"),
+        "substations": _("Substations"),
+        "recoveredEnergy": _("Recovered energy"),
 
-        "auxiliaries": "Auxiliaries",
-        "hvac": "HVAC",
-        "traction": "Traction",
-        "obess": "OBESS",
-        "tractionRecovery": "Traction recovery",
-        "obessRecovery": "OBESS recovery",
-        "terminalLosses": "Terminal losses",
+        "auxiliaries": _("Auxiliaries"),
+        "hvac": _("HVAC"),
+        "traction": _("Traction"),
+        "obess": _("OBESS"),
+        "tractionRecovery": _("Traction recovery"),
+        "obessRecovery": _("OBESS recovery"),
+        "terminalLosses": _("Terminal losses"),
 
-        "ventilation": "Ventilation",
-        "dcDistributionLosses": "DC distribution losses",
-        "dcSessLosses": "DC SESS losses",
-        "noSavingCapacityLosses": "No saving capacity losses",
+        "ventilation": _("Ventilation"),
+        "dcDistributionLosses": _("DC distribution losses"),
+        "dcSessLosses": _("DC SESS losses"),
+        "noSavingCapacityLosses": _("No saving capacity losses"),
     }
 
     def __init__(self, execution_obj):

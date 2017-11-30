@@ -79,18 +79,3 @@ msgstr "Dirección:"
 #: .\viz\templates\viz\strong.html:48
 msgid "Power consumption"
 msgstr "Consumo de potencias"
-
-msgid "Total consumption"
-msgstr "Consumo total"
-
-msgid "Trains consumption"
-msgstr "Consumo de trenes"
-
-msgid "Tracks consumption"
-msgstr "Consumo de túneles"
-
-msgid "Depots consumption"
-msgstr "Consumo de depósitos"
-
-msgid "Stations consumption"
-msgstr "Consumo de estaciones"

@@ -20,7 +20,7 @@ msgstr ""
 
 #: .\osirisWebPlatform\settings.py:131
 msgid "Spanish"
-msgstr ""
+msgstr "Español"
 
 #: .\templates\admin\actions.html:7
 msgid "Run the selected action"

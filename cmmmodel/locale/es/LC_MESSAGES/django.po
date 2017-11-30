@@ -17,3 +17,66 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Total consumption"
+msgstr "Consumo total"
+
+msgid "Trains consumption"
+msgstr "Consumo de trenes"
+
+msgid "Tracks consumption"
+msgstr "Consumo de túneles"
+
+msgid "Depots consumption"
+msgstr "Consumo de depósitos"
+
+msgid "Stations consumption"
+msgstr "Consumo de estaciones"
+
+msgid "Trains"
+msgstr "Trenes"
+
+msgid "Stations"
+msgstr "Estaciones"
+
+msgid "Tracks"
+msgstr "Túneles"
+
+msgid "Substations"
+msgstr "Subestaciones"
+
+msgid "Recovered energy"
+msgstr ""
+
+msgid "Auxiliaries"
+msgstr "Auxiliares"
+
+msgid "HVAC"
+msgstr ""
+
+msgid "Traction"
+msgstr "Tracción"
+
+msgid "OBESS"
+msgstr ""
+
+msgid "Traction recovery"
+msgstr ""
+
+msgid "OBESS recovery"
+msgstr ""
+
+msgid "Terminal losses"
+msgstr ""
+
+msgid "Ventilation"
+msgstr "Ventilación"
+
+msgid "DC distribution losses"
+msgstr ""
+
+msgid "DC SESS losses"
+msgstr ""
+
+msgid "No saving capacity losses"
+msgstr ""
