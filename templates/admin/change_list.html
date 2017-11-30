@@ -89,6 +89,15 @@
         {{ cl.formset.non_form_errors }}
       {% endif %}
 
+      {% block filters %}
+        {% if cl.has_filters %}
+          <div id="changelist-filter">
+            <h2>{% trans 'Filter' %}</h2>
+            {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+          </div>
+        {% endif %}
+      {% endblock %}
+
       <form id="changelist-form" method="post"{% if cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>{% csrf_token %}
       {% if cl.formset %}
         <div>{{ cl.formset.management_form }}</div>

@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django import template
 from django.utils.html import format_html
 from django.utils import timezone
+from django.utils.translation import ugettext as _
 
 register = template.Library()
 
@@ -18,12 +21,12 @@ def download_viz_file_button(execution_obj, disabled = ""):
         time_stamp = timezone.localtime(time_stamp).strftime("%Y-%m-%d %H:%M:%S")
 
     # removed time: (<span id="timestamp1">{3}</span>)
-    field = u"""
+    field = """
      <a href="{0}" class="btn btn-success btn-lg btn-block {1}">
        <i class="fa fa-file-excel-o"></i> {2}
      </a>
     """
-    button_message = u"Descargar datos"
+    button_message = _("Descargar datos")
     path = ""
     if execution_obj.downloadFile:
         path = execution_obj.downloadFile.url
