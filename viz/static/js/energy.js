@@ -16,8 +16,8 @@ $(document).ready(function () {
                     show: true,
                     title: "Guardar imagen",
                     name: SELECTED_CHART.val()
-                },
-                dataZoom: {yAxisIndex: false, title: {zoom: "zoom", back: "volver"}}
+                }
+                //dataZoom: {yAxisIndex: false, title: {zoom: "zoom", back: "volver"}}
             },
             left: "center",
             bottom: "15px"
@@ -64,7 +64,7 @@ $(document).ready(function () {
             position: "left"
         }],
         xAxis: [{
-            name: "Origen",
+            //name: "Origen",
             type: "category",
             nameLocation: "middle",
             nameTextStyle: {
@@ -89,7 +89,6 @@ $(document).ready(function () {
         }]
     };
     $.extend(true, ECHARTS_PIE_OPTIONS, ECHARTS_COMMON_OPTIONS);
-    delete ECHARTS_PIE_OPTIONS.toolbox.feature.dataZoom;
     $.extend(true, ECHARTS_BAR_OPTIONS, ECHARTS_COMMON_OPTIONS);
     var pieChart = echarts.init(document.getElementById("pieChart"), theme);
     var barChart = echarts.init(document.getElementById("barChart"), theme);
