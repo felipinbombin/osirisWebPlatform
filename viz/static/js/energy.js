@@ -80,7 +80,12 @@ $(document).ready(function () {
             data: [],
             yAxisIndex: 0,
             smooth: true,
-            showSymbol: false
+            showSymbol: false,
+            itemStyle: {
+                normal: {
+                    color: "#f2ee13"
+                }
+            }
         }]
     };
     $.extend(true, ECHARTS_PIE_OPTIONS, ECHARTS_COMMON_OPTIONS);

@@ -52,10 +52,9 @@ def create_fake_execution(scene_obj, model_id, file_path):
         answer = answer["output"]
         process_answer(answer, execution_obj)
 
-
-speed_file_name = "44b4f769-c8c1-468b-9a35-491e4c1cea89.output"
-strong_file_name = "6a9b3d69-1bb6-4582-9b72-ed2c591976a1.output"
-energy_file_name = "261fe0ff-5e87-4d26-866a-5496cc1bf064.output"
+speed_file_name = "speed.output"
+strong_file_name = "strong.output"
+energy_file_name = "energy.output"
 thermal_file_name = ""
 
 
