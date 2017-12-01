@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-29 22:36-0300\n"
+"POT-Creation-Date: 2017-12-01 20:07-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,65 +18,86 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: .\cmmmodel\transform\processEnergyData.py:19
 msgid "Total consumption"
 msgstr "Consumo total"
 
+#: .\cmmmodel\transform\processEnergyData.py:20
 msgid "Trains consumption"
 msgstr "Consumo de trenes"
 
+#: .\cmmmodel\transform\processEnergyData.py:21
 msgid "Tracks consumption"
 msgstr "Consumo de túneles"
 
-msgid "Depots consumption"
-msgstr "Consumo de depósitos"
-
+#: .\cmmmodel\transform\processEnergyData.py:22
 msgid "Stations consumption"
 msgstr "Consumo de estaciones"
 
+#: .\cmmmodel\transform\processEnergyData.py:23
+msgid "Depots consumption"
+msgstr "Consumo de depósitos"
+
+#: .\cmmmodel\transform\processEnergyData.py:26
 msgid "Trains"
 msgstr "Trenes"
 
+#: .\cmmmodel\transform\processEnergyData.py:27
 msgid "Stations"
 msgstr "Estaciones"
 
+#: .\cmmmodel\transform\processEnergyData.py:28
 msgid "Tracks"
 msgstr "Túneles"
 
+#: .\cmmmodel\transform\processEnergyData.py:29
 msgid "Substations"
 msgstr "Subestaciones"
 
+#: .\cmmmodel\transform\processEnergyData.py:30
 msgid "Recovered energy"
 msgstr ""
 
+#: .\cmmmodel\transform\processEnergyData.py:32
 msgid "Auxiliaries"
 msgstr "Auxiliares"
 
+#: .\cmmmodel\transform\processEnergyData.py:33
 msgid "HVAC"
 msgstr ""
 
+#: .\cmmmodel\transform\processEnergyData.py:34
 msgid "Traction"
 msgstr "Tracción"
 
+#: .\cmmmodel\transform\processEnergyData.py:35
 msgid "OBESS"
 msgstr ""
 
+#: .\cmmmodel\transform\processEnergyData.py:36
 msgid "Traction recovery"
 msgstr ""
 
+#: .\cmmmodel\transform\processEnergyData.py:37
 msgid "OBESS recovery"
 msgstr ""
 
+#: .\cmmmodel\transform\processEnergyData.py:38
 msgid "Terminal losses"
 msgstr ""
 
+#: .\cmmmodel\transform\processEnergyData.py:40
 msgid "Ventilation"
 msgstr "Ventilación"
 
+#: .\cmmmodel\transform\processEnergyData.py:41
 msgid "DC distribution losses"
 msgstr ""
 
+#: .\cmmmodel\transform\processEnergyData.py:42
 msgid "DC SESS losses"
 msgstr ""
 
+#: .\cmmmodel\transform\processEnergyData.py:43
 msgid "No saving capacity losses"
 msgstr ""
