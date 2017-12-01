@@ -127,12 +127,12 @@
             <h4 class="modal-title">{% trans "Delete scene" %}</h4>
           </div>
           <div class="modal-body">
-              {% trans "¿Está seguro que desea eliminar el escenario?" %}<br />
-              <span class="text-danger">{% trans "RECUERDE QUE ESTA OPERACIÓN ES IRREVERSIBLE." %}</span>
+              {% trans "Are you sure?" %}<br />
+              <span class="text-danger">{% trans "THIS OPERATION CAN NOT BE REVERSED." %}</span>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-bind="click : $root.delete">{% trans "Eliminar" %}</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancelar" %}</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
           </div>
         </div>
       </div>

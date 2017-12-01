@@ -68,16 +68,16 @@ msgid "Delete scene"
 msgstr "Eliminar Escenario"
 
 #: .\scene\templates\scene\scenePanel.html:130
-msgid "¿Está seguro que desea eliminar el escenario?"
-msgstr ""
+msgid "Are you sure?"
+msgstr "¿Está seguro que desea eliminar el escenario?"
 
 #: .\scene\templates\scene\scenePanel.html:131
-msgid "RECUERDE QUE ESTA OPERACIÓN ES IRREVERSIBLE."
-msgstr ""
+msgid "THIS OPERATION CAN NOT BE REVERSED."
+msgstr "RECUERDE QUE ESTA OPERACIÓN ES IRREVERSIBLE."
 
 #: .\scene\templates\scene\scenePanel.html:135
-msgid "Cancelar"
-msgstr ""
+msgid "Cancel"
+msgstr "Cancelar"
 
 #: .\scene\templates\scene\scenePanel_energySystem.html:8
 msgid "Características de tren: Fuerzas"
@@ -90,8 +90,8 @@ msgstr ""
 #: .\scene\templates\scene\scenePanel_energySystem.html:101
 #: .\scene\templates\scene\scenePanel_energySystem.html:125
 #: .\scene\templates\scene\scenePanel_energySystem.html:154
-msgid "Atributo"
-msgstr ""
+msgid "Attribute"
+msgstr "Atributo"
 
 #: .\scene\templates\scene\scenePanel_energySystem.html:15
 #: .\scene\templates\scene\scenePanel_energySystem.html:39
@@ -99,8 +99,8 @@ msgstr ""
 #: .\scene\templates\scene\scenePanel_energySystem.html:82
 #: .\scene\templates\scene\scenePanel_energySystem.html:102
 #: .\scene\templates\scene\scenePanel_energySystem.html:126
-msgid "Valor"
-msgstr ""
+msgid "Value"
+msgstr "Valor"
 
 #: .\scene\templates\scene\scenePanel_energySystem.html:19
 msgid "Masa"
