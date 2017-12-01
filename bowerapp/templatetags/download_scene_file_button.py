@@ -37,5 +37,5 @@ def download_scene_file_button(step_id, scene, disabled=""):
        (<span id="timestamp1">{}</span>)
      </a>
     """
-    button_message = _("Descargar ultimo archivo subido")
+    button_message = _("Download last uploaded file")
     return format_html(field, url, disabled, button_message, time_stamp)

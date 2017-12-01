@@ -17,15 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: .\bowerapp\templatetags\download_scene_file_button.py:40
+msgid "Download last uploaded file"
+msgstr "Descargar ultimo archivo subido"
 
-#: .\myadmin\admin.py:26
-msgid "Personal info"
-msgstr ""
-
-#: .\myadmin\admin.py:27
-msgid "Permissions"
-msgstr ""
-
-#: .\myadmin\admin.py:28
-msgid "Important dates"
-msgstr ""
+#: .\bowerapp\templatetags\download_viz_file_button.py:29
+msgid "Download data"
+msgstr "Descargar datos"

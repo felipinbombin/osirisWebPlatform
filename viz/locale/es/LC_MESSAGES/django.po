@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-29 23:19-0300\n"
+"POT-Creation-Date: 2017-12-01 20:07-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\viz\templates\viz\energy.html:21
+msgid "Energy model"
+msgstr "Modelo de energía"
 
 #: .\viz\templates\viz\energy.html:25
 msgid "Chart:"
@@ -35,10 +39,6 @@ msgstr "Filtro"
 #: .\viz\templates\viz\energy.html:46
 msgid "Energy consumption"
 msgstr "Consumo de energía"
-
-#: .\viz\templates\viz\energy.html:21
-msgid "Energy model"
-msgstr "Modelo de energía"
 
 #: .\viz\templates\viz\speed.html:22
 msgid "Speed model"

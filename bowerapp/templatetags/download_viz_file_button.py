@@ -26,7 +26,7 @@ def download_viz_file_button(execution_obj, disabled = ""):
        <i class="fa fa-file-excel-o"></i> {2}
      </a>
     """
-    button_message = _("Descargar datos")
+    button_message = _("Download data")
     path = ""
     if execution_obj.downloadFile:
         path = execution_obj.downloadFile.url
