@@ -31,4 +31,4 @@ class SplinterTestHelper:
     def login(self, username, password):
         self.browser.fill("username", username)
         self.browser.fill("password", password)
-        self.browser.find_by_value("Iniciar sesión").click()
+        self.browser.find_by_value("Log in").click()

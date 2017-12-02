@@ -13,7 +13,7 @@
     "pk": 2,
     "fields": {
       "name": "Fuerza",
-      "vizURL": "/viz/strong/{0}",
+      "vizURL": "/viz/force/{0}",
       "clusterExecutionId": "F"
     }
   },

@@ -55,7 +55,7 @@ def create_fake_execution(scene_obj, model_id, file_path):
 
 
 speed_file_name = "speed.output"
-strong_file_name = "strong.output"
+force_file_name = "force.output"
 energy_file_name = "energy.output"
 thermal_file_name = ""
 
@@ -138,12 +138,12 @@ class SpeedModelVizTest(TestCase):
             self.assertIn("Time", track["attributes"])
 
 
-class StrongModelVizTest(TestCase):
-    """ test web page to see output of strong model """
+class ForceModelVizTest(TestCase):
+    """ test web page to see output of force model """
     fixtures = ["models", "possibleQueue"]
 
     def setUp(self):
-        file_path = os.path.join("cmmmodel", "tests", strong_file_name)
+        file_path = os.path.join("cmmmodel", "tests", force_file_name)
 
         self.test_helper = TestHelper(self)
         self.client = self.test_helper.get_logged_client()
@@ -152,22 +152,22 @@ class StrongModelVizTest(TestCase):
         scene_name = "test scene name"
         self.scene_obj = self.test_helper.create_scene(scene_name)
 
-        create_fake_execution(self.scene_obj, Model.STRONG_MODEL_ID, file_path)
+        create_fake_execution(self.scene_obj, Model.FORCE_MODEL_ID, file_path)
 
     def test_loadHTML(self):
-        """ ask for strong output html file """
+        """ ask for force output html file """
 
-        url = reverse("viz:strongModel", kwargs={"scene_id": self.scene_obj.id})
+        url = reverse("viz:forceModel", kwargs={"scene_id": self.scene_obj.id})
         self.test_helper.make_get_request(url, {}, expected_response=None)
 
         # get error 404 because scene id does not exist
-        url = reverse("viz:strongModel", kwargs={"scene_id": 1000})
+        url = reverse("viz:forceModel", kwargs={"scene_id": 1000})
         self.test_helper.make_get_request(url, {}, expected_response=None, expected_server_response_code=404)
 
-    def test_getStrongModelDataWithExecutionRunning(self):
+    def test_getForceModelDataWithExecutionRunning(self):
         """ ask model output data with last execution status == runnning """
 
-        url = reverse("viz:strongModelData", kwargs={"scene_id": self.scene_obj.id})
+        url = reverse("viz:forceModelData", kwargs={"scene_id": self.scene_obj.id})
 
         params = {
             "direction": "g",
@@ -186,10 +186,10 @@ class StrongModelVizTest(TestCase):
         self.assertEqual(content["status"]["message"],
                          Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, {})["status"]["message"])
 
-    def test_getStrongModelDataWithOKExecution(self):
+    def test_getForceModelDataWithOKExecution(self):
         """ ask model output data with last execution status ok """
 
-        url = reverse("viz:strongModelData", kwargs={"scene_id": self.scene_obj.id})
+        url = reverse("viz:forceModelData", kwargs={"scene_id": self.scene_obj.id})
 
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
@@ -229,7 +229,7 @@ class EnergyModelVizTest(TestCase):
         create_fake_execution(self.scene_obj, Model.ENERGY_MODEL_ID, file_path)
 
     def test_loadHTML(self):
-        """ ask for strong output html file """
+        """ ask for energy output html file """
 
         url = reverse("viz:energyModel", kwargs={"scene_id": self.scene_obj.id})
         self.test_helper.make_get_request(url, {}, expected_response=None)
@@ -320,15 +320,15 @@ class JavascriptModelVizTest(StaticLiveServerTestCase):
         self.browser.find_by_id("btnUpdateChart").click()
         self.assertTrue(self.browser.is_element_present_by_tag("canvas", wait_time=5))
 
-    def test_strong_model_javascript(self):
-        file_path = os.path.join(self.dir_path, strong_file_name)
+    def test_force_model_javascript(self):
+        file_path = os.path.join(self.dir_path, force_file_name)
 
-        create_fake_execution(self.scene_obj, Model.STRONG_MODEL_ID, file_path)
+        create_fake_execution(self.scene_obj, Model.FORCE_MODEL_ID, file_path)
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
 
         # visit energy answer
-        url = reverse("viz:strongModel", kwargs={"scene_id": self.scene_obj.id})
+        url = reverse("viz:forceModel", kwargs={"scene_id": self.scene_obj.id})
         self.browser.visit(self.live_server_url + url)
 
         self.browser.is_element_not_present_by_css("disabled", wait_time=5)

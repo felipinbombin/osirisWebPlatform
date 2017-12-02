@@ -11,7 +11,7 @@ $(document).ready(function () {
 
     var PATH_NAME = window.location.pathname.split("/");
     var SCENE_ID = parseInt(PATH_NAME[PATH_NAME.length - 1]);
-    var MODEL_DATA_URL = "/viz/strong/data/" + SCENE_ID;
+    var MODEL_DATA_URL = "/viz/force/data/" + SCENE_ID;
     var SCENE_DATA_URL = "/admin/scene/panel/data/" + SCENE_ID;
 
     var ECHARTS_OPTIONS = {

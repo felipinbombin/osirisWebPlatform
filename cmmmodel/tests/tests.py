@@ -209,14 +209,14 @@ class ExecuteModel(TestCase):
 
         self.assertEqual(ModelAnswer.objects.count(), 147132)
 
-    def test_processStrongAnswer(self):
+    def test_processForceAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "strong.output"
+        file_name = "force.output"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
 
-        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=Model.STRONG_MODEL_ID,
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=Model.FORCE_MODEL_ID,
                                                              externalId=uuid.uuid4(), start=timezone.now())
 
         with open(file_path, "rb") as answer_file:

@@ -13,13 +13,13 @@ from cmmmodel.models import ModelExecutionHistory, Model
 from viz.models import ModelAnswer
 
 
-class StrongModelViz(View):
+class ForceModelViz(View):
     """ wizard form: first  """
 
     def __init__(self):
-        super(StrongModelViz, self).__init__()
+        super(ForceModelViz, self).__init__()
         self.context = {}
-        self.template = "viz/strong.html"
+        self.template = "viz/force.html"
 
     def get(self, request, scene_id):
         try:
@@ -40,13 +40,13 @@ class StrongModelViz(View):
                                                                      op_period_obj.end)} for op_period_obj in
                                       scene_obj.operationperiod_set.all().order_by("id")]
         self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj,
-                                                                             model_id=Model.STRONG_MODEL_ID).order_by(
+                                                                             model_id=Model.FORCE_MODEL_ID).order_by(
             "-id").first()
 
         return render(request, self.template, self.context)
 
 
-class StrongModelVizData(View):
+class ForceModelVizData(View):
     """ data for charts  """
 
     def get_model_data(self, execution_obj, metro_line_name, direction, operation_period_name, attributes):
@@ -98,7 +98,7 @@ class StrongModelVizData(View):
         metro_line_name = request.GET.get("metroLineName", None)
 
         scene_id = int(scene_id)
-        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.STRONG_MODEL_ID). \
+        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.FORCE_MODEL_ID). \
             order_by("-id").first()
 
         response = {}

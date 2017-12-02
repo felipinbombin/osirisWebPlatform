@@ -14,7 +14,7 @@ class Model(models.Model):
     vizURL = models.CharField(max_length=100)
 
     SPEED_MODEL_ID = 1
-    STRONG_MODEL_ID = 2
+    FORCE_MODEL_ID = 2
     ENERGY_MODEL_ID = 3
     TEMPERATURE_MODEL_ID = 4
 

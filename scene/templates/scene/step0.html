@@ -15,12 +15,12 @@
     <div class="x_panel">
       <div class="row x_title">
         <div class="col-md-6 col-sm-6 col-xs-12">
-          <h2>Líneas de metro (<strong data-bind="text: lines().length"></strong>)</h2>
+          <h2>{% trans "Líneas de metro" %} (<strong data-bind="text: lines().length"></strong>)</h2>
           <div class="clearfix"></div>
         </div>
         <div class="col-md-6 col-sm-6 col-xs-12">
           <button id="addLine" type="submit" class="pull-right btn btn-success btn-sm" data-bind="click: openAddLineForm">
-            <i class="fa fa-plus" aria-hidden="true"></i> agregar
+            <i class="fa fa-plus" aria-hidden="true"></i> {% trans "agregar" %}
           </button>
         </div>
       </div>
@@ -30,10 +30,10 @@
           <table class="table table-striped" data-bind="visible: lines().length>0">
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th># estaciones</th>
-                <th>Editar estaciones</th>
-                <th>Eliminar línea</th>
+                <th>{% trans "Nombre" %}</th>
+                <th>{% trans "# estaciones" %}</th>
+                <th>{% trans "Editar estaciones" %}</th>
+                <th>{% trans "Eliminar línea" %}</th>
               </tr>
             </thead>
             <tbody data-bind="foreach: lines">
@@ -70,9 +70,9 @@
           <table class="table table-striped" data-bind="visible: depotsQuantity()>0">
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Línea</th>
-                <th>Eliminar</th>
+                <th>{% trans "Nombre" %}</th>
+                <th>{% trans "Línea" %}</th>
+                <th>{% trans "Eliminar" %}</th>
               </tr>
             </thead>
             <tbody data-bind="foreach: lines">
@@ -80,7 +80,7 @@
               <tr>
                 <td data-bind="text: name"></td>
                 <td data-bind="text: $parent.name"></td>
-                <td><button type="button" class="btn btn-danger btn-xs" data-bind="click: $root.removeDepot">Eliminar</button></td>
+                <td><button type="button" class="btn btn-danger btn-xs" data-bind="click: $root.removeDepot">{% trans "Eliminar" %}</button></td>
               </tr>
               <!-- /ko -->
             </tbody>
@@ -110,11 +110,11 @@
           <table class="table table-striped" data-bind="visible: connections().length>0">
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Estaciones</th>
-                <th>Alt. prom.(m)</th>
-                <th>Sup. prom.(m<sup>2</sup>)</th>
-                <th>Eliminar</th>
+                <th>{% trans "Nombre" %}</th>
+                <th>{% trans "Estaciones" %}</th>
+                <th>{% trans "Alt. prom.(m)" %}</th>
+                <th>{% trans "Sup. prom.(m<sup>2</sup>)" %}</th>
+                <th>{% trans "Eliminar" %}</th>
               </tr>
             </thead>
             <tbody data-bind="foreach: connections">
@@ -139,18 +139,18 @@
     <div class="modal-content" data-bind="with: addLineFormLogic">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Agregar Línea</h4>
+        <h4 class="modal-title">{% trans "Agregar Línea" %}</h4>
       </div>
       <div class="modal-body">
         <div class="form-horizontal form-label-left">
           <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12">Nombre</label>
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{% trans "Nombre" %}</label>
             <div class="col-md-9 col-sm-9 col-xs-12">
               <input id="lineName" type="text" class="form-control" data-bind="value: lineName">
             </div>
           </div>
           <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12"># estaciones</label>
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{% trans "# estaciones" %}</label>
             <div class="col-md-9 col-sm-9 col-xs-12">
               <input id="stationQuantity" type="text" class="form-control" data-bind="value: stationsQuantity">
             </div>
@@ -170,7 +170,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Editar estaciones</h4>
+        <h4 class="modal-title">{% trans "Editar estaciones" %}</h4>
       </div>
       <div class="modal-body">
         <div class="form-horizontal form-label-left" data-bind="foreach: selectedStations">
@@ -192,7 +192,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Agregar Conexión</h4>
+        <h4 class="modal-title">{% trans "Agregar Conexión" %}</h4>
       </div>
       <div class="modal-body">
         <div class="form-horizontal form-label-left">
@@ -207,10 +207,10 @@
           <div class="col-md-6 col-sm-6 col-xs-12">
             <div class="panel panel-info">
               <div class="panel-heading">
-                Estaciones participantes:
+                {% trans "Estaciones participantes:" %}
                 <button id="addConnectionStation" type="button" class="btn btn-success btn-xs pull-right"
                   data-bind="click : addConnectionStation">
-                  <i class="fa fa-plus" aria-hidden="true"></i> Agregar estación
+                  <i class="fa fa-plus" aria-hidden="true"></i> {% trans "Agregar estación" %}
                 </button>
               </div>
               <div class="panel-body" data-bind="foreach: connectionStations">
@@ -275,12 +275,12 @@
     <div class="modal-content" data-bind="with: addDepotFormLogic">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Agregar Depósito</h4>
+        <h4 class="modal-title">{% trans "Agregar Depósito" %}</h4>
       </div>
       <div class="modal-body">
         <div class="form-horizontal form-label-left">
           <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12">Línea</label>
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{% trans "Línea" %}</label>
             <div class="col-md-9 col-sm-9 col-xs-12">
               <select id="depotLineName" class="form-control" data-bind="options: $root.lines,
                                                       optionsText: 'name', 
@@ -289,7 +289,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12">Nombre</label>
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{% trans "Nombre" %}</label>
             <div class="col-md-9 col-sm-9 col-xs-12">
               <input id="depotName" type="text" class="form-control" data-bind="value: name">
             </div>

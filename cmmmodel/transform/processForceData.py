@@ -15,9 +15,9 @@ import numpy
 import xlsxwriter
 
 
-class ProcessStrongData(ProcessData):
+class ProcessForceData(ProcessData):
     def __init__(self, execution_obj):
-        super(ProcessStrongData, self).__init__(Model.STRONG_MODEL_ID, execution_obj)
+        super(ProcessForceData, self).__init__(Model.FORCE_MODEL_ID, execution_obj)
 
         self.metrics = [
             {

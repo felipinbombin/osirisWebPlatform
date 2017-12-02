@@ -27,12 +27,12 @@ msgid "Chart:"
 msgstr "Gráfico"
 
 #: .\viz\templates\viz\energy.html:29 .\viz\templates\viz\speed.html:41
-#: .\viz\templates\viz\strong.html:37
+#: .\viz\templates\viz\force.html:37
 msgid "Update data"
 msgstr "Actualizar datos"
 
 #: .\viz\templates\viz\energy.html:33 .\viz\templates\viz\speed.html:45
-#: .\viz\templates\viz\strong.html:41
+#: .\viz\templates\viz\force.html:41
 msgid "Filter"
 msgstr "Filtro"
 
@@ -44,7 +44,7 @@ msgstr "Consumo de energía"
 msgid "Speed model"
 msgstr "Modelo de velocidad"
 
-#: .\viz\templates\viz\speed.html:25 .\viz\templates\viz\strong.html:25
+#: .\viz\templates\viz\speed.html:25 .\viz\templates\viz\force.html:25
 msgid "Line:"
 msgstr "Línea:"
 
@@ -56,7 +56,7 @@ msgstr "Estación de origen:"
 msgid "Destination station:"
 msgstr "Estación de destino"
 
-#: .\viz\templates\viz\speed.html:37 .\viz\templates\viz\strong.html:33
+#: .\viz\templates\viz\speed.html:37 .\viz\templates\viz\force.html:33
 msgid "Operation period:"
 msgstr "Período de operación:"
 
@@ -68,14 +68,14 @@ msgstr "Velocidad vs distancia"
 msgid "Station times"
 msgstr "Tiempo en estaciones"
 
-#: .\viz\templates\viz\strong.html:22
-msgid "Strong model"
-msgstr "Modelo de energía"
+#: .\viz\templates\viz\force.html:22
+msgid "Force model"
+msgstr "Modelo de fuerza"
 
-#: .\viz\templates\viz\strong.html:29
+#: .\viz\templates\viz\force.html:29
 msgid "Direction:"
 msgstr "Dirección:"
 
-#: .\viz\templates\viz\strong.html:48
+#: .\viz\templates\viz\force.html:48
 msgid "Power consumption"
 msgstr "Consumo de potencias"
