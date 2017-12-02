@@ -80,8 +80,8 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: .\scene\templates\scene\scenePanel_energySystem.html:8
-msgid "Características de tren: Fuerzas"
-msgstr ""
+msgid "train characteristics: Forces"
+msgstr "Características de tren: Fuerzas"
 
 #: .\scene\templates\scene\scenePanel_energySystem.html:14
 #: .\scene\templates\scene\scenePanel_energySystem.html:38
@@ -228,8 +228,8 @@ msgid "Características de tren: Estructura"
 msgstr ""
 
 #: .\scene\templates\scene\scenePanel_energySystem.html:130
-msgid "Largo"
-msgstr ""
+msgid "Length"
+msgstr "Largo"
 
 #: .\scene\templates\scene\scenePanel_energySystem.html:131
 msgid "Número de carros"
