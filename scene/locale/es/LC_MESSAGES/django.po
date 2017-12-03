@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-01 20:07-0300\n"
+"POT-Creation-Date: 2017-12-02 22:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,6 +25,9 @@ msgstr "Cambiar nombre"
 
 #: .\scene\templates\scene\scenePanel.html:32
 #: .\scene\templates\scene\scenePanel.html:134
+#: .\scene\templates\scene\step0.html:75 .\scene\templates\scene\step0.html:83
+#: .\scene\templates\scene\step0.html:117
+#: .\scene\templates\scene\step0.html:236
 msgid "Delete"
 msgstr "Eliminar"
 
@@ -60,6 +63,10 @@ msgstr "Cambiar nombre de escenario"
 #: .\scene\templates\scene\scenePanel_operation.html:24
 #: .\scene\templates\scene\scenePanel_topology.html:11
 #: .\scene\templates\scene\scenePanel_topology.html:39
+#: .\scene\templates\scene\step0.html:33 .\scene\templates\scene\step0.html:73
+#: .\scene\templates\scene\step0.html:113
+#: .\scene\templates\scene\step0.html:147
+#: .\scene\templates\scene\step0.html:292
 msgid "Name"
 msgstr "Nombre"
 
@@ -304,8 +311,8 @@ msgid "Punto 5"
 msgstr ""
 
 #: .\scene\templates\scene\scenePanel_models.html:7
-msgid "Modelos"
-msgstr ""
+msgid "Models"
+msgstr "Modelos"
 
 #: .\scene\templates\scene\scenePanel_operation.html:5
 msgid "Variables globales"
@@ -324,53 +331,55 @@ msgid "Períodos"
 msgstr ""
 
 #: .\scene\templates\scene\scenePanel_operation.html:25
-msgid "Inicio"
-msgstr ""
+msgid "Start"
+msgstr "Inicio"
 
 #: .\scene\templates\scene\scenePanel_operation.html:26
-msgid "Fin"
-msgstr ""
+msgid "End"
+msgstr "Fin"
 
 #: .\scene\templates\scene\scenePanel_operation.html:27
-msgid "Temperatura"
-msgstr ""
+msgid "Temperature"
+msgstr "Temperatura"
 
 #: .\scene\templates\scene\scenePanel_operation.html:28
-msgid "Humedad"
-msgstr ""
+msgid "Humidity"
+msgstr "Humedad"
 
 #: .\scene\templates\scene\scenePanel_operation.html:29
-msgid "Concentración CO<sub>2</sub>"
-msgstr ""
+msgid "CO<sub>2</sub> Concentration"
+msgstr "Concentración CO<sub>2</sub>"
 
 #: .\scene\templates\scene\scenePanel_operation.html:30
-msgid "Radiación solar"
-msgstr ""
+msgid "Solar radiation"
+msgstr "Radiación solar"
 
 #: .\scene\templates\scene\scenePanel_operation.html:31
-msgid "Ángulo de elevación del sol"
-msgstr ""
+msgid "Sun elevation angle"
+msgstr "Ángulo de elevación del sol"
 
 #: .\scene\templates\scene\scenePanel_topology.html:5
-msgid "Líneas"
-msgstr ""
+msgid "Lines"
+msgstr "Líneas"
 
 #: .\scene\templates\scene\scenePanel_topology.html:12
-msgid "N° Estaciones"
-msgstr ""
+#: .\scene\templates\scene\step0.html:34 .\scene\templates\scene\step0.html:153
+msgid "Station number"
+msgstr "N° estaciones"
 
 #: .\scene\templates\scene\scenePanel_topology.html:13
 #: .\scene\templates\scene\scenePanel_topology.html:40
-msgid "Estaciones"
-msgstr ""
+#: .\scene\templates\scene\step0.html:114
+msgid "Stations"
+msgstr "Estaciones"
 
 #: .\scene\templates\scene\scenePanel_topology.html:14
-msgid "Depósitos"
-msgstr ""
+msgid "Depots"
+msgstr "Depósitos"
 
 #: .\scene\templates\scene\scenePanel_topology.html:33
-msgid "Conexiones"
-msgstr ""
+msgid "Connections"
+msgstr "Conexiones"
 
 #: .\scene\templates\scene\scenePanel_topology.html:41
 msgid "Alt. prom."
@@ -379,3 +388,114 @@ msgstr ""
 #: .\scene\templates\scene\scenePanel_topology.html:42
 msgid "Sup. prom."
 msgstr ""
+
+#: .\scene\templates\scene\step0.html:18
+msgid "Metro lines"
+msgstr "Líneas de metro"
+
+#: .\scene\templates\scene\step0.html:23 .\scene\templates\scene\step0.html:63
+#: .\scene\templates\scene\step0.html:103
+msgid "Add"
+msgstr "Agregar"
+
+#: .\scene\templates\scene\step0.html:35 .\scene\templates\scene\step0.html:173
+msgid "Edit stations"
+msgstr "Editar estaciones"
+
+#: .\scene\templates\scene\step0.html:36
+msgid "Delete line"
+msgstr "Eliminar línea"
+
+#: .\scene\templates\scene\step0.html:74 .\scene\templates\scene\step0.html:283
+msgid "Line"
+msgstr "Línea"
+
+#: .\scene\templates\scene\step0.html:115
+msgid "Alt. prom.(m)"
+msgstr ""
+
+#: .\scene\templates\scene\step0.html:116
+msgid "Sup. prom.(m<sup>2</sup>)"
+msgstr ""
+
+#: .\scene\templates\scene\step0.html:142
+msgid "Add line"
+msgstr "Agregar línea"
+
+#: .\scene\templates\scene\step0.html:195
+msgid "Add connection"
+msgstr "Agregar conexión"
+
+#: .\scene\templates\scene\step0.html:210
+msgid "Involved stations:"
+msgstr "Estaciones involucradas"
+
+#: .\scene\templates\scene\step0.html:213
+msgid "Add station"
+msgstr "Agregar estación"
+
+#: .\scene\templates\scene\step0.html:266
+#: .\scene\templates\scene\step0.html:300
+msgid "Create"
+msgstr "Crear"
+
+#: .\scene\templates\scene\step0.html:278
+msgid "Add depot"
+msgstr "Agregar depósito"
+
+#: .\scene\templates\scene\step2.html:8 .\scene\templates\scene\step2.html:41
+#: .\scene\templates\scene\step2.html:137
+#: .\scene\templates\scene\step2.html:151
+#: .\scene\templates\scene\step2.html:165
+msgid "Características de tren:"
+msgstr ""
+
+#: .\scene\templates\scene\step2.html:8
+msgid "Fuerzas"
+msgstr ""
+
+#: .\scene\templates\scene\step2.html:41
+msgid "Estructura"
+msgstr ""
+
+#: .\scene\templates\scene\step2.html:137
+msgid "Traction"
+msgstr "Tracción"
+
+#: .\scene\templates\scene\step2.html:151
+msgid "Energy"
+msgstr "Energía"
+
+#: .\scene\templates\scene\step2.html:165
+msgid "Modelo de tracción CMM"
+msgstr ""
+
+#: .\scene\templates\scene\stepsHeader.html:6
+msgid "Topologic variables"
+msgstr "Variables topológicas"
+
+#: .\scene\templates\scene\stepsHeader.html:12
+msgid "Topologic file"
+msgstr "Archivo topológico"
+
+#: .\scene\templates\scene\stepsHeader.html:18
+msgid "Systemic variables"
+msgstr "Variables sistemicas"
+
+#: .\scene\templates\scene\stepsHeader.html:24
+msgid "Systemic file"
+msgstr "Archivo sistemico"
+
+#: .\scene\templates\scene\stepsHeader.html:30
+#, fuzzy
+#| msgid "Operation variables "
+msgid "Operation variables"
+msgstr "Variables operacionales"
+
+#: .\scene\templates\scene\stepsHeader.html:36
+msgid "Operation file"
+msgstr "Archivo operacional"
+
+#: .\scene\templates\scene\stepsHeader.html:42
+msgid "Speed file"
+msgstr "Archivo de velocidades"
