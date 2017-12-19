@@ -16,6 +16,7 @@ from cmmmodel.clusterConnection import run_task
 from cmmmodel.transform.processSpeedData import ProcessSpeedData
 from cmmmodel.transform.processForceData import ProcessForceData
 from cmmmodel.transform.processEnergyData import ProcessEnergyData
+from cmmmodel.transform.processThermalData import ProcessThermalData
 
 
 def process_answer(answer_dict, execution_obj):
@@ -31,8 +32,9 @@ def process_answer(answer_dict, execution_obj):
     elif execution_obj.model_id == Model.ENERGY_MODEL_ID:
         processor = ProcessEnergyData(execution_obj)
         answer_dict = answer_dict["EM"]
-    elif execution_obj.model_id == Model.TEMPERATURE_MODEL_ID:
-        pass
+    elif execution_obj.model_id == Model.THERMAL_MODEL_ID:
+        processor = ProcessThermalData(execution_obj)
+        answer_dict = answer_dict["TM"]
 
     if processor is not None:
         processor.load(answer_dict)

@@ -16,7 +16,7 @@ class Model(models.Model):
     SPEED_MODEL_ID = 1
     FORCE_MODEL_ID = 2
     ENERGY_MODEL_ID = 3
-    TEMPERATURE_MODEL_ID = 4
+    THERMAL_MODEL_ID = 4
 
     def get_dictionary(self):
         """  """

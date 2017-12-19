@@ -31,7 +31,7 @@
     "pk": 4,
     "fields": {
       "name": "Temperatura",
-      "vizURL": "/viz/temperature/{0}",
+      "vizURL": "/viz/heat/{0}",
       "clusterExecutionId": "T"
     }
   }

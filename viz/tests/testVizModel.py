@@ -57,7 +57,7 @@ def create_fake_execution(scene_obj, model_id, file_path):
 speed_file_name = "speed.output"
 force_file_name = "force.output"
 energy_file_name = "energy.output"
-thermal_file_name = ""
+thermal_file_name = "heat.output"
 
 
 class SpeedModelVizTest(TestCase):
@@ -261,6 +261,79 @@ class EnergyModelVizTest(TestCase):
         """ ask model output data with last execution status ok """
 
         url = reverse("viz:energyModelData", kwargs={"scene_id": self.scene_obj.id})
+
+        # simulate execution finished well
+        ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
+
+        params = {
+            "prefix": "totalConsumption",
+        }
+
+        response = self.test_helper.make_get_request(url, params, expected_response=None)
+        content = json.loads(response.content.decode("utf-8"))
+
+        self.assertEqual(len(content["answer"]), 1)
+        for line in content["answer"]:
+            self.assertIn("prefix", line.keys())
+            self.assertIn(ProcessEnergyData.dictionary_detail["recoveredEnergy"], line["attributes"])
+            self.assertIn(ProcessEnergyData.dictionary_detail["substations"], line["attributes"])
+            self.assertIn(ProcessEnergyData.dictionary_detail["tracks"], line["attributes"])
+            self.assertIn(ProcessEnergyData.dictionary_detail["trains"], line["attributes"])
+
+
+from unittest import skip
+
+
+@skip("TODO: remove this when thermal model works")
+class ThermalModelVizTest(TestCase):
+    """ test web page to see output of thermal model """
+    fixtures = ["models", "possibleQueue"]
+
+    def setUp(self):
+        file_path = os.path.join("cmmmodel", "tests", thermal_file_name)
+
+        self.test_helper = TestHelper(self)
+        self.client = self.test_helper.get_logged_client()
+
+        # create scene
+        scene_name = "test scene name"
+        self.scene_obj = self.test_helper.create_scene(scene_name)
+
+        create_fake_execution(self.scene_obj, Model.THERMAL_MODEL_ID, file_path)
+
+    def test_loadHTML(self):
+        """ ask for energy output html file """
+
+        url = reverse("viz:thermalModel", kwargs={"scene_id": self.scene_obj.id})
+        self.test_helper.make_get_request(url, {}, expected_response=None)
+
+        # get error 404 because scene id does not exist
+        url = reverse("viz:thermalModel", kwargs={"scene_id": 1000})
+        self.test_helper.make_get_request(url, {}, expected_response=None, expected_server_response_code=404)
+
+    def test_getThermalModelDataWithExecutionRunning(self):
+        """ ask model output data with last execution status == runnning """
+
+        url = reverse("viz:thermalModelData", kwargs={"scene_id": self.scene_obj.id})
+
+        params = {
+            "prefix": "totalConsumption",
+        }
+
+        # with error because last execution of model is running
+        response = self.test_helper.make_get_request(url, params, expected_response=None)
+        content = json.loads(response.content.decode("utf-8"))
+
+        self.assertNotIn("answer", content.keys())
+        self.assertEqual(content["status"]["code"],
+                         Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, {})["status"]["code"])
+        self.assertEqual(content["status"]["message"],
+                         Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, {})["status"]["message"])
+
+    def test_getThermalModelDataWithOKExecution(self):
+        """ ask model output data with last execution status ok """
+
+        url = reverse("viz:thermalModelData", kwargs={"scene_id": self.scene_obj.id})
 
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)

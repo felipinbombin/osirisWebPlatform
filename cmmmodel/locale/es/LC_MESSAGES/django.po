@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-02 22:54-0300\n"
+"POT-Creation-Date: 2017-12-19 05:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,65 +39,117 @@ msgid "Depots consumption"
 msgstr "Consumo de depósitos"
 
 #: .\cmmmodel\transform\processEnergyData.py:26
+#: .\cmmmodel\transform\processThermalData.py:28
 msgid "Trains"
 msgstr "Trenes"
 
 #: .\cmmmodel\transform\processEnergyData.py:27
+#: .\cmmmodel\transform\processThermalData.py:29
 msgid "Stations"
 msgstr "Estaciones"
 
 #: .\cmmmodel\transform\processEnergyData.py:28
+#: .\cmmmodel\transform\processThermalData.py:30
 msgid "Tracks"
 msgstr "Túneles"
 
 #: .\cmmmodel\transform\processEnergyData.py:29
+#: .\cmmmodel\transform\processThermalData.py:31
 msgid "Substations"
 msgstr "Subestaciones"
 
 #: .\cmmmodel\transform\processEnergyData.py:30
+#: .\cmmmodel\transform\processThermalData.py:32
 msgid "Recovered energy"
 msgstr ""
 
 #: .\cmmmodel\transform\processEnergyData.py:32
+#: .\cmmmodel\transform\processThermalData.py:34
 msgid "Auxiliaries"
 msgstr "Auxiliares"
 
 #: .\cmmmodel\transform\processEnergyData.py:33
+#: .\cmmmodel\transform\processThermalData.py:35
 msgid "HVAC"
 msgstr ""
 
 #: .\cmmmodel\transform\processEnergyData.py:34
+#: .\cmmmodel\transform\processThermalData.py:36
 msgid "Traction"
 msgstr "Tracción"
 
 #: .\cmmmodel\transform\processEnergyData.py:35
+#: .\cmmmodel\transform\processThermalData.py:37
 msgid "OBESS"
 msgstr ""
 
 #: .\cmmmodel\transform\processEnergyData.py:36
+#: .\cmmmodel\transform\processThermalData.py:38
 msgid "Traction recovery"
 msgstr ""
 
 #: .\cmmmodel\transform\processEnergyData.py:37
+#: .\cmmmodel\transform\processThermalData.py:39
 msgid "OBESS recovery"
 msgstr ""
 
 #: .\cmmmodel\transform\processEnergyData.py:38
+#: .\cmmmodel\transform\processThermalData.py:40
 msgid "Terminal losses"
 msgstr ""
 
 #: .\cmmmodel\transform\processEnergyData.py:40
+#: .\cmmmodel\transform\processThermalData.py:42
 msgid "Ventilation"
 msgstr "Ventilación"
 
 #: .\cmmmodel\transform\processEnergyData.py:41
+#: .\cmmmodel\transform\processThermalData.py:43
 msgid "DC distribution losses"
 msgstr ""
 
 #: .\cmmmodel\transform\processEnergyData.py:42
+#: .\cmmmodel\transform\processThermalData.py:44
 msgid "DC SESS losses"
 msgstr ""
 
 #: .\cmmmodel\transform\processEnergyData.py:43
+#: .\cmmmodel\transform\processThermalData.py:45
 msgid "No saving capacity losses"
 msgstr ""
+
+#: .\cmmmodel\transform\processThermalData.py:20
+msgid "Heat absorved by the ground on the stations"
+msgstr "Calor absorvido por el suelo en estaciones"
+
+#: .\cmmmodel\transform\processThermalData.py:21
+msgid "Heat losses from passengers on stations"
+msgstr "Calor perdido de pasajeros en estaciones"
+
+#: .\cmmmodel\transform\processThermalData.py:22
+msgid "Heat losses on stations"
+msgstr "Calor perdido en estaciones"
+
+#: .\cmmmodel\transform\processThermalData.py:23
+msgid "Average temperature during the day"
+msgstr "Temperatura promedio durante el día"
+
+#: .\cmmmodel\transform\processThermalData.py:24
+msgid "Average absolutely humidity during the day"
+msgstr "Humedad absoluta promedio durante el día"
+
+#: .\cmmmodel\transform\processThermalData.py:25
+msgid "Average relative humidity during the day"
+msgstr "Humedad relativa promedio durante el día"
+
+#: .\cmmmodel\transform\processThermalData.py:72
+msgid "Thermal model"
+msgstr "Modelo termal"
+
+#: .\cmmmodel\transform\processThermalData.py:75
+msgid "Heat"
+msgstr "Calor"
+
+#: .\cmmmodel\transform\processThermalData.py:76
+msgid "Description"
+msgstr "Descripción"

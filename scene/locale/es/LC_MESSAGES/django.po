@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-02 22:54-0300\n"
+"POT-Creation-Date: 2017-12-19 05:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,9 +25,9 @@ msgstr "Cambiar nombre"
 
 #: .\scene\templates\scene\scenePanel.html:32
 #: .\scene\templates\scene\scenePanel.html:134
-#: .\scene\templates\scene\step0.html:75 .\scene\templates\scene\step0.html:83
-#: .\scene\templates\scene\step0.html:117
-#: .\scene\templates\scene\step0.html:236
+#: .\scene\templates\scene\step0.html:76 .\scene\templates\scene\step0.html:84
+#: .\scene\templates\scene\step0.html:118
+#: .\scene\templates\scene\step0.html:237
 msgid "Delete"
 msgstr "Eliminar"
 
@@ -63,10 +63,10 @@ msgstr "Cambiar nombre de escenario"
 #: .\scene\templates\scene\scenePanel_operation.html:24
 #: .\scene\templates\scene\scenePanel_topology.html:11
 #: .\scene\templates\scene\scenePanel_topology.html:39
-#: .\scene\templates\scene\step0.html:33 .\scene\templates\scene\step0.html:73
-#: .\scene\templates\scene\step0.html:113
-#: .\scene\templates\scene\step0.html:147
-#: .\scene\templates\scene\step0.html:292
+#: .\scene\templates\scene\step0.html:34 .\scene\templates\scene\step0.html:74
+#: .\scene\templates\scene\step0.html:114
+#: .\scene\templates\scene\step0.html:148
+#: .\scene\templates\scene\step0.html:293
 msgid "Name"
 msgstr "Nombre"
 
@@ -363,13 +363,13 @@ msgid "Lines"
 msgstr "Líneas"
 
 #: .\scene\templates\scene\scenePanel_topology.html:12
-#: .\scene\templates\scene\step0.html:34 .\scene\templates\scene\step0.html:153
+#: .\scene\templates\scene\step0.html:35 .\scene\templates\scene\step0.html:154
 msgid "Station number"
 msgstr "N° estaciones"
 
 #: .\scene\templates\scene\scenePanel_topology.html:13
 #: .\scene\templates\scene\scenePanel_topology.html:40
-#: .\scene\templates\scene\step0.html:114
+#: .\scene\templates\scene\step0.html:115
 msgid "Stations"
 msgstr "Estaciones"
 
@@ -389,84 +389,84 @@ msgstr ""
 msgid "Sup. prom."
 msgstr ""
 
-#: .\scene\templates\scene\step0.html:18
+#: .\scene\templates\scene\step0.html:19
 msgid "Metro lines"
 msgstr "Líneas de metro"
 
-#: .\scene\templates\scene\step0.html:23 .\scene\templates\scene\step0.html:63
-#: .\scene\templates\scene\step0.html:103
+#: .\scene\templates\scene\step0.html:24 .\scene\templates\scene\step0.html:64
+#: .\scene\templates\scene\step0.html:104
 msgid "Add"
 msgstr "Agregar"
 
-#: .\scene\templates\scene\step0.html:35 .\scene\templates\scene\step0.html:173
+#: .\scene\templates\scene\step0.html:36 .\scene\templates\scene\step0.html:174
 msgid "Edit stations"
 msgstr "Editar estaciones"
 
-#: .\scene\templates\scene\step0.html:36
+#: .\scene\templates\scene\step0.html:37
 msgid "Delete line"
 msgstr "Eliminar línea"
 
-#: .\scene\templates\scene\step0.html:74 .\scene\templates\scene\step0.html:283
+#: .\scene\templates\scene\step0.html:75 .\scene\templates\scene\step0.html:284
 msgid "Line"
 msgstr "Línea"
 
-#: .\scene\templates\scene\step0.html:115
+#: .\scene\templates\scene\step0.html:116
 msgid "Alt. prom.(m)"
 msgstr ""
 
-#: .\scene\templates\scene\step0.html:116
+#: .\scene\templates\scene\step0.html:117
 msgid "Sup. prom.(m<sup>2</sup>)"
 msgstr ""
 
-#: .\scene\templates\scene\step0.html:142
+#: .\scene\templates\scene\step0.html:143
 msgid "Add line"
 msgstr "Agregar línea"
 
-#: .\scene\templates\scene\step0.html:195
+#: .\scene\templates\scene\step0.html:196
 msgid "Add connection"
 msgstr "Agregar conexión"
 
-#: .\scene\templates\scene\step0.html:210
+#: .\scene\templates\scene\step0.html:211
 msgid "Involved stations:"
 msgstr "Estaciones involucradas"
 
-#: .\scene\templates\scene\step0.html:213
+#: .\scene\templates\scene\step0.html:214
 msgid "Add station"
 msgstr "Agregar estación"
 
-#: .\scene\templates\scene\step0.html:266
-#: .\scene\templates\scene\step0.html:300
+#: .\scene\templates\scene\step0.html:267
+#: .\scene\templates\scene\step0.html:301
 msgid "Create"
 msgstr "Crear"
 
-#: .\scene\templates\scene\step0.html:278
+#: .\scene\templates\scene\step0.html:279
 msgid "Add depot"
 msgstr "Agregar depósito"
 
-#: .\scene\templates\scene\step2.html:8 .\scene\templates\scene\step2.html:41
-#: .\scene\templates\scene\step2.html:137
-#: .\scene\templates\scene\step2.html:151
-#: .\scene\templates\scene\step2.html:165
+#: .\scene\templates\scene\step2.html:9 .\scene\templates\scene\step2.html:42
+#: .\scene\templates\scene\step2.html:138
+#: .\scene\templates\scene\step2.html:152
+#: .\scene\templates\scene\step2.html:166
 msgid "Características de tren:"
 msgstr ""
 
-#: .\scene\templates\scene\step2.html:8
+#: .\scene\templates\scene\step2.html:9
 msgid "Fuerzas"
 msgstr ""
 
-#: .\scene\templates\scene\step2.html:41
+#: .\scene\templates\scene\step2.html:42
 msgid "Estructura"
 msgstr ""
 
-#: .\scene\templates\scene\step2.html:137
+#: .\scene\templates\scene\step2.html:138
 msgid "Traction"
 msgstr "Tracción"
 
-#: .\scene\templates\scene\step2.html:151
+#: .\scene\templates\scene\step2.html:152
 msgid "Energy"
 msgstr "Energía"
 
-#: .\scene\templates\scene\step2.html:165
+#: .\scene\templates\scene\step2.html:166
 msgid "Modelo de tracción CMM"
 msgstr ""
 

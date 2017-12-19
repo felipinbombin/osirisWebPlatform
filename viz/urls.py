@@ -2,6 +2,7 @@ from django.conf.urls import url
 from viz.views.speed import SpeedModelViz, SpeedModelVizData
 from viz.views.force import ForceModelViz, ForceModelVizData
 from viz.views.energy import EnergyModelViz, EnergyModelVizData
+from viz.views.heat import ThermalModelViz, ThermalModelVizData
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
@@ -17,4 +18,8 @@ urlpatterns = [
       login_required(EnergyModelViz.as_view()), name='energyModel'),
     url(r'^energy/data/(?P<scene_id>[0-9]+)$',
       login_required(EnergyModelVizData.as_view()), name='energyModelData'),
+    url(r'^heat/(?P<scene_id>[0-9]+)$',
+      login_required(ThermalModelViz.as_view()), name='thermalModel'),
+    url(r'^heat/data/(?P<scene_id>[0-9]+)$',
+      login_required(ThermalModelVizData.as_view()), name='thermalModelData'),
 ]

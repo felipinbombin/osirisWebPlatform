@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-02 22:54-0300\n"
+"POT-Creation-Date: 2017-12-19 05:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,17 +22,17 @@ msgstr ""
 msgid "Energy model"
 msgstr "Modelo de energía"
 
-#: .\viz\templates\viz\energy.html:25
+#: .\viz\templates\viz\energy.html:25 .\viz\templates\viz\heat.html:29
 msgid "Chart:"
 msgstr "Gráfico"
 
 #: .\viz\templates\viz\energy.html:29 .\viz\templates\viz\force.html:37
-#: .\viz\templates\viz\speed.html:41
+#: .\viz\templates\viz\heat.html:33 .\viz\templates\viz\speed.html:41
 msgid "Update data"
 msgstr "Actualizar datos"
 
 #: .\viz\templates\viz\energy.html:33 .\viz\templates\viz\force.html:41
-#: .\viz\templates\viz\speed.html:45
+#: .\viz\templates\viz\heat.html:37 .\viz\templates\viz\speed.html:45
 msgid "Filter"
 msgstr "Filtro"
 
@@ -44,7 +44,8 @@ msgstr "Consumo de energía"
 msgid "Force model"
 msgstr "Modelo de fuerza"
 
-#: .\viz\templates\viz\force.html:25 .\viz\templates\viz\speed.html:25
+#: .\viz\templates\viz\force.html:25 .\viz\templates\viz\heat.html:25
+#: .\viz\templates\viz\speed.html:25
 msgid "Line:"
 msgstr "Línea:"
 
@@ -59,6 +60,14 @@ msgstr "Período de operación:"
 #: .\viz\templates\viz\force.html:48
 msgid "Power consumption"
 msgstr "Consumo de potencias"
+
+#: .\viz\templates\viz\heat.html:21
+msgid "Thermal model"
+msgstr "Modelo de temperatura"
+
+#: .\viz\templates\viz\heat.html:50
+msgid "Thermal analysis"
+msgstr "Análisis termal"
 
 #: .\viz\templates\viz\speed.html:22
 msgid "Speed model"
