@@ -242,3 +242,19 @@ class ExecuteModel(TestCase):
             process_answer(answer, execution_obj)
 
         self.assertEqual(ModelAnswer.objects.count(), 21)
+
+    def test_processHeatAnswer(self):
+        """ test load data from heat model output dict based on situation of file """
+        file_name = "heat.model_output"
+        file_path = os.path.join("cmmmodel", "tests", file_name)
+
+        self.create_topologic_system()
+
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=Model.THERMAL_MODEL_ID,
+                                                             externalId=uuid.uuid4(), start=timezone.now())
+        with open(file_path, "rb") as answer_file:
+            answer = pickle.load(answer_file)
+            answer = answer["output"]
+            process_answer(answer, execution_obj)
+
+        self.assertEqual(ModelAnswer.objects.count(), 21)
