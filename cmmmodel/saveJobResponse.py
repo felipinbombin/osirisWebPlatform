@@ -34,7 +34,7 @@ def process_answer(answer_dict, execution_obj):
         answer_dict = answer_dict["EM"]
     elif execution_obj.model_id == Model.THERMAL_MODEL_ID:
         processor = ProcessThermalData(execution_obj)
-        answer_dict = answer_dict["TM"]
+        # answer_dict = answer_dict["TM"]
 
     if processor is not None:
         processor.load(answer_dict)

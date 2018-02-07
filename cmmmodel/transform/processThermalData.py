@@ -18,31 +18,12 @@ import numpy as np
 class ProcessThermalData(ProcessData):
     dictionary_group = {
         "heatAbsorvedByTheGroundOnTheStations": _("Heat absorved by the ground on the stations"),
+        "heatLossesFromTraction": _("Heat losses from traction"),
         "heatLossesFromPassengersOnStations": _("Heat losses from passengers on stations"),
         "heatLossesOnStations": _("Heat losses on stations"),
         "averageTemperatureDuringTheDay": _("Average temperature during the day"),
         "averageAbsolutelyHumidityDuringTheDay": _("Average absolutely humidity during the day"),
         "averageRelativeHumidityDuringTheDay": _("Average relative humidity during the day"),
-    }
-    dictionary_detail = {
-        "trains": _("Trains"),
-        "stations": _("Stations"),
-        "tracks": _("Tracks"),
-        "substations": _("Substations"),
-        "recoveredEnergy": _("Recovered energy"),
-
-        "auxiliaries": _("Auxiliaries"),
-        "hvac": _("HVAC"),
-        "traction": _("Traction"),
-        "obess": _("OBESS"),
-        "tractionRecovery": _("Traction recovery"),
-        "obessRecovery": _("OBESS recovery"),
-        "terminalLosses": _("Terminal losses"),
-
-        "ventilation": _("Ventilation"),
-        "dcDistributionLosses": _("DC distribution losses"),
-        "dcSessLosses": _("DC SESS losses"),
-        "noSavingCapacityLosses": _("No saving capacity losses"),
     }
 
     def __init__(self, execution_obj):
@@ -51,23 +32,30 @@ class ProcessThermalData(ProcessData):
     def load(self, data):
         self.delete_previous_data()
 
-        line_number = MetroLine.objects.filter(scene=self.scene_obj).order_by("id").count()
-        heats = [
-            self.get_heat_absorved_by_the_ground_on_the_stations(line_number, data),
-            self.get_train_consumption(line_number, data),
-            self.get_track_consumption(line_number, data),
-            self.get_station_consumption(line_number, data),
-            self.get_depot_consumption(line_number, data)
-        ]
-
-        for names, values in heats:
-            for index, name, value in zip(range(len(names)), names, values):
-                ModelAnswer.objects.create(execution=self.execution_obj, metroLine=None, direction=None,
-                                           metroTrack=None, operationPeriod=None, attributeName=name, order=index,
-                                           value=value)
+        line_objs = MetroLine.objects.prefetch_related('metrostation_set').filter(scene=self.scene_obj).order_by("id")
+        for line_index, line_obj in enumerate(line_objs):
+            station_obj_list = line_obj.metrostation_set.order_by('id').all()
+            heat_metrics = [
+                (self.dictionary_group["heatAbsorvedByTheGroundOnTheStations"],
+                 self.get_heat_absorved_by_the_ground_on_the_stations(line_index, data)),
+                (self.dictionary_group["heatLossesFromTraction"], self.get_heat_losses_from_traction(line_index, data)),
+                (self.dictionary_group["heatLossesFromPassengersOnStations"],
+                 self.get_heat_losses_from_passengers_on_stations(line_index, data)),
+                (self.dictionary_group["heatLossesOnStations"], self.get_heat_losses_on_stations(line_index, data)),
+                (self.dictionary_group["averageTemperatureDuringTheDay"],
+                 self.get_average_temperature_during_the_day(line_index, station_obj_list, data)),
+                (self.dictionary_group["averageAbsolutelyHumidityDuringTheDay"],
+                 self.get_average_absolutely_humidity_during_the_day(line_index, data)),
+                (self.dictionary_group["averageRelativeHumidityDuringTheDay"],
+                 self.get_average_relative_humidity_during_the_day(line_index, data)),
+            ]
+            for name, pair in heat_metrics:
+                for x_value, y_value in pair:
+                    ModelAnswer.objects.create(execution=self.execution_obj, metroLine=line_obj, direction=None,
+                                               metroTrack=None, operationPeriod=None, attributeName=name,
+                                               order=x_value, value=y_value)
 
     def create_excel_file(self, data):
-
         # NAMES
         file_name = _("Thermal model")
         file_extension = ".xlsx"
@@ -143,124 +131,137 @@ class ProcessThermalData(ProcessData):
         self.execution_obj.downloadFile.save("{}_{}{}".format(file_name, now, file_extension),
                                              ContentFile(string_io.getvalue()))
 
-    def get_heat_absorved_by_the_ground_on_the_stations(self, line_number, data):
+    def get_heat_absorved_by_the_ground_on_the_stations(self, line_index, data):
 
-        for k in range(line_number):
-            qg = data['lines'][k]['Qg']
-            temp = data['lines'][k]['Temp']
-            dz = data['lines'][k]['dz']
-            Ndz = data['lines'][k]['Ndz']
-            # Ndz1 = data['lines'][k]['Ndz1']
-            # h = data['lines'][k]['h']
-            r = data['lines'][k]['Rtot']
-            station = data['lines'][k]['Station']
+        qg = data['TM']['lines'][line_index]['Qg']
+        temp = data['TM']['lines'][line_index]['Temp']
+        dz = data['TM']['lines'][line_index]['dz']
+        Ndz = data['TM']['lines'][line_index]['Ndz']
+        # Ndz1 = data['TM']['lines'][k]['Ndz1']
+        # h = data['TM']['lines'][k]['h']
+        r = data['TM']['lines'][line_index]['Rtot']
+        station = data['TM']['lines'][line_index]['Station']
 
-            data = np.empty(Ndz)
-            for j in range(Ndz):
-                if station[j] == 0:
-                    data[j] = 0
-                else:
-                    data[j] = np.sum(qg[:, j]) - np.sum(temp[:, j] / r[j])
+        result_data = np.empty(Ndz)
+        for j in range(Ndz):
+            if station[j] == 0:
+                result_data[j] = 0
+            else:
+                result_data[j] = np.sum(qg[:, j]) - np.sum(temp[:, j] / r[j])
 
-            x = np.array(range(Ndz)) * dz
-            y = data * 2.77778e-7  # J to kWh
+        x = np.array(range(Ndz)) * dz
+        y = result_data * 2.77778e-7  # J to kWh
 
-            names = ["%s_%s" % (
-            self.dictionary_group["heatAbsorvedByTheGroundOnTheStations"], self.dictionary_detail["trains"]),
-                     ]
-            # TODO: remove [0]
-            values = [t2, s2[0], tr2[0], ss2, r2]
+        return x, y
 
-        return names, values
+    def get_heat_losses_from_traction(self, line_index, data):
 
-    def get_train_consumption(self, line_number, data):
+        qt = data['TM']['lines'][line_index]['Qt']
+        dz = data['TM']['lines'][line_index]['dz']
+        Ndz = data['TM']['lines'][line_index]['Ndz']
+        Ndz1 = data['TM']['lines'][line_index]['Ndz1']
+        h = data['TM']['lines'][line_index]['h']
 
-        au = 0
-        h = 0
-        t = 0
-        o = 0
-        tr = 0
-        ore = 0
-        tl = 0
+        d0 = np.empty(Ndz)
+        d1 = np.sum(qt, axis=0)
+        aux = 0
+        for j in range(Ndz1):
+            if h[j] != -1:
+                d0[aux] = d1[j]
+                aux = + 1
 
-        factor = 0.000277778 / 1000
-        for k in range(line_number):
-            for s in range(2):
-                au += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 0] * factor
-                h += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 1] * factor
-                t += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 2] * factor
-                o += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 3] * factor
-                tr += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 4] * factor
-                ore += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 5] * factor
-                tl += data['Trains']['Lines'][k]['Energy_Trains'][s][-1, 6] * factor
+        x = np.array(range(Ndz)) * dz
+        y = d0 * 2.77778e-7  # J to kWh
 
-        names = ["%s_%s" % (self.dictionary_group["trainConsumption"], self.dictionary_detail["auxiliaries"]),
-                 "%s_%s" % (self.dictionary_group["trainConsumption"], self.dictionary_detail["hvac"]),
-                 "%s_%s" % (self.dictionary_group["trainConsumption"], self.dictionary_detail["traction"]),
-                 "%s_%s" % (self.dictionary_group["trainConsumption"], self.dictionary_detail["obess"]),
-                 "%s_%s" % (self.dictionary_group["trainConsumption"], self.dictionary_detail["tractionRecovery"]),
-                 "%s_%s" % (self.dictionary_group["trainConsumption"], self.dictionary_detail["obessRecovery"]),
-                 "%s_%s" % (self.dictionary_group["trainConsumption"], self.dictionary_detail["terminalLosses"]),
-                 ]
-        values = [au, h, t, o, tr, ore, tl]
+        return x, y
 
-        return names, values
+    def get_heat_losses_from_passengers_on_stations(self, line_index, data):
 
-    def get_track_consumption(self, line_number, data):
+        # qpas = data['TM']['lines'][line_index]['Qpas']
+        dz = data['TM']['lines'][line_index]['dz']
+        ndz = data['TM']['lines'][line_index]['Ndz']
+        ndz1 = data['TM']['lines'][line_index]['Ndz1']
+        h = data['TM']['lines'][line_index]['h']
+        time = data['TM']['lines'][line_index]['time']
+        sum_st = data['TM']['lines'][line_index]['sumSt']
+        temp = data['TM']['lines'][line_index]['Temp']
+        station = data['TM']['lines'][line_index]['Station']
+        nst = max(station)
+        thermal_in = data['EM']['Thermal_in']
+        en_ps_st = thermal_in[line_index][:, 3 + 2 * nst:4 + 3 * nst - 1]
 
-        au = 0
-        v = 0
-        dc = 0
-        se = 0
-        lns = 0
-        factor = 0.000277778 / 1000
-        for k in range(line_number):
-            au += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][0] * factor
-            v += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][1] * factor
-            dc += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][2] * factor
-            se += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][3] * factor
-            lns += data['Tracks']['Lines'][k]['Energy'][data['thours'].seconds - 1][4] * factor
+        t1 = []
+        for t in range(len(en_ps_st[:, 0])):
+            if t in time:
+                t1.append(t)
 
-        names = ["%s_%s" % (self.dictionary_group["trackConsumption"], self.dictionary_detail["auxiliaries"]),
-                 "%s_%s" % (self.dictionary_group["trackConsumption"], self.dictionary_detail["ventilation"]),
-                 "%s_%s" % (self.dictionary_group["trackConsumption"], self.dictionary_detail["dcDistributionLosses"]),
-                 "%s_%s" % (self.dictionary_group["trackConsumption"], self.dictionary_detail["dcSessLosses"]),
-                 "%s_%s" % (
-                 self.dictionary_group["trackConsumption"], self.dictionary_detail["noSavingCapacityLosses"]),
-                 ]
-        values = [au, v, dc, se, lns]
+        d = np.zeros([len(time), ndz])
+        for j in range(ndz1):
+            if h[j] == -1:
+                j1 = int(h[j + 1])
+                s = int(station[j1] - 1)
+                d[:, j1] = en_ps_st[t1, s] * (-3.6517 * temp[:, j] + 168.15) / sum_st[s]
+            else:
+                if h[j - 1] == -1:
+                    j1 = int(h[j])
+                    d[:, j1] = en_ps_st[t1, int(station[j1] - 1)] * (
+                            -3.6517 * temp[:, j] + 168.15) / sum_st[int(station[j1] - 1)]
 
-        return names, values
+        dt = np.append(0, np.diff(time))
+        d2 = np.dot(np.transpose(d), dt)
 
-    def get_station_consumption(self, line_number, data):
+        x = np.array(range(ndz)) * dz
+        y = d2 * 2.77778e-7  # j to kWh
 
-        au = 0
-        v = 0
-        factor = 0.000277778 / 1000
-        for k in range(line_number):
-            au += data['Stations']['Lines'][k]['E_Aux'] * factor
-            v += data['Stations']['Lines'][k]['E_HVAC'] * factor
+        return x, y
 
-        names = ["%s_%s" % (self.dictionary_group["stationConsumption"], self.dictionary_detail["auxiliaries"]),
-                 "%s_%s" % (self.dictionary_group["stationConsumption"], self.dictionary_detail["ventilation"]),
-                 ]
-        # TODO: remove [0]
-        values = [au[0], v[0]]
+    def get_heat_losses_on_stations(self, line_index, data):
 
-        return names, values
+        qst = data['TM']['lines'][line_index]['Qst']
+        dz = data['TM']['lines'][line_index]['dz']
+        ndz = data['TM']['lines'][line_index]['Ndz']
+        ndz1 = data['TM']['lines'][line_index]['Ndz1']
+        h = data['TM']['lines'][line_index]['h']
 
-    def get_depot_consumption(self, line_number, data):
+        d0 = np.empty(ndz)
+        d1 = np.sum(qst, axis=0)
+        aux = 0
+        for j in range(ndz1):
+            if h[j] != -1:
+                d0[aux] = d1[j]
+                aux = + 1
 
-        au = 0
-        v = 0
-        factor = 0.000277778 / 1000
-        for k in range(line_number):
-            au += data['Depots']['Lines'][k]['E_aux'] * factor
-            v += data['Depots']['Lines'][k]['E_vent'] * factor
+        x = np.array(range(ndz)) * dz
+        y = d0 * 2.77778e-7 * 2  # j to kWh
 
-        names = ["%s_%s" % (self.dictionary_group["depotConsumption"], self.dictionary_detail["auxiliaries"]),
-                 "%s_%s" % (self.dictionary_group["depotConsumption"], self.dictionary_detail["ventilation"]),
-                 ]
-        values = [au, v]
+        return x, y
 
-        return names, values
+    def get_average_temperature_during_the_day(self, line_index, station_obj_list, data):
+
+        data1 = data['TM']['lines'][line_index]['tables'][0][0]
+        data2l = data['TM']['lines'][line_index]['tables'][0][1]
+
+        cell_text = np.around(data1, decimals=2)
+        cell_text2l = np.around(data2l, decimals=2)
+
+        return [], []
+
+    def get_average_absolutely_humidity_during_the_day(self, line_index, station_obj_list, data):
+
+        data1 = data['TM']['lines'][line_index]['tables'][1][0]
+        data2l = data['TM']['lines'][line_index]['tables'][1][1]
+
+        cell_text = np.around(data1, decimals=5)
+        cell_text2l = np.around(data2l, decimals=5)
+
+        return [], []
+
+    def get_average_relative_humidity_during_the_day(self, line_index, data):
+
+        data1 = data['TM']['lines'][line_index]['tables'][2][0]
+        data2l = data['TM']['lines'][line_index]['tables'][2][1]
+
+        cell_text = np.around(data1, decimals=5)
+        cell_text2l = np.around(data2l, decimals=5)
+
+        return [], []
