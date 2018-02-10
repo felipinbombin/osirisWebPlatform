@@ -257,4 +257,4 @@ class ExecuteModel(TestCase):
             answer = answer["output"]
             process_answer(answer, execution_obj)
 
-        self.assertEqual(ModelAnswer.objects.count(), 21)
+        self.assertEqual(ModelAnswer.objects.count(), 3336)

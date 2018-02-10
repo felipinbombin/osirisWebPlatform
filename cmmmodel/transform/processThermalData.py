@@ -50,7 +50,7 @@ class ProcessThermalData(ProcessData):
                  self.get_average_relative_humidity_during_the_day(line_index, data)),
             ]
             for name, pair in heat_metrics:
-                for x_value, y_value in pair:
+                for x_value, y_value in zip(*pair):
                     ModelAnswer.objects.create(execution=self.execution_obj, metroLine=line_obj, direction=None,
                                                metroTrack=None, operationPeriod=None, attributeName=name,
                                                order=x_value, value=y_value)
@@ -241,18 +241,18 @@ class ProcessThermalData(ProcessData):
         data1 = data['TM']['lines'][line_index]['tables'][0][0]
         data2l = data['TM']['lines'][line_index]['tables'][0][1]
 
-        cell_text = np.around(data1, decimals=2)
-        cell_text2l = np.around(data2l, decimals=2)
+        # cell_text = np.around(data1, decimals=2)
+        # cell_text2l = np.around(data2l, decimals=2)
 
         return [], []
 
-    def get_average_absolutely_humidity_during_the_day(self, line_index, station_obj_list, data):
+    def get_average_absolutely_humidity_during_the_day(self, line_index, data):
 
         data1 = data['TM']['lines'][line_index]['tables'][1][0]
         data2l = data['TM']['lines'][line_index]['tables'][1][1]
 
-        cell_text = np.around(data1, decimals=5)
-        cell_text2l = np.around(data2l, decimals=5)
+        # cell_text = np.around(data1, decimals=5)
+        # cell_text2l = np.around(data2l, decimals=5)
 
         return [], []
 
@@ -261,7 +261,7 @@ class ProcessThermalData(ProcessData):
         data1 = data['TM']['lines'][line_index]['tables'][2][0]
         data2l = data['TM']['lines'][line_index]['tables'][2][1]
 
-        cell_text = np.around(data1, decimals=5)
-        cell_text2l = np.around(data2l, decimals=5)
+        # cell_text = np.around(data1, decimals=5)
+        # cell_text2l = np.around(data2l, decimals=5)
 
         return [], []
