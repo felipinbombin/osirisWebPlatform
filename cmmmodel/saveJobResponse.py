@@ -3,6 +3,7 @@ import os
 import sys
 import pickle
 import django
+import gzip
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "osirisWebPlatform.settings")
 django.setup()
@@ -58,7 +59,7 @@ def save_model_response(external_id, output_file_name, std_out, std_err):
         # process output for viz
         file_path = os.path.join(settings.MODEL_OUTPUT_PATH, output_file_name)
         if os.path.isfile(file_path):
-            with open(file_path, "rb") as answer_file:
+            with gzip.open(file_path, "rb") as answer_file:
                 answer = pickle.load(answer_file)
                 answer = answer["output"]
                 process_answer(answer, execution_obj)
