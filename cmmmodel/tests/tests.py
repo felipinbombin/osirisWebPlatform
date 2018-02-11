@@ -195,7 +195,7 @@ class ExecuteModel(TestCase):
 
     def test_processSpeedAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "speed.output"
+        file_name = "speed.output.gz"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
@@ -212,7 +212,7 @@ class ExecuteModel(TestCase):
 
     def test_processForceAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "force.output"
+        file_name = "force.output.gz"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
@@ -229,7 +229,7 @@ class ExecuteModel(TestCase):
 
     def test_processEnergyAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "energy.output"
+        file_name = "energy.output.gz"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()

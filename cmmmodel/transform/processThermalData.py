@@ -56,6 +56,7 @@ class ProcessThermalData(ProcessData):
                                                order=x_value, value=y_value)
 
     def create_excel_file(self, data):
+        return
         # NAMES
         file_name = _("Thermal model")
         file_extension = ".xlsx"

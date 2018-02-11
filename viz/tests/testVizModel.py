@@ -17,6 +17,7 @@ import uuid
 import pickle
 import os
 import json
+import gzip
 
 
 def create_fake_execution(scene_obj, model_id, file_path):
@@ -48,16 +49,16 @@ def create_fake_execution(scene_obj, model_id, file_path):
     execution_obj = ModelExecutionHistory.objects.create(scene=scene_obj, model_id=model_id,
                                                          externalId=uuid.uuid4(), start=timezone.now())
 
-    with open(file_path, "rb") as answer_file:
+    with gzip.open(file_path, "rb") as answer_file:
         answer = pickle.load(answer_file)
         answer = answer["output"]
         process_answer(answer, execution_obj)
 
 
-speed_file_name = "speed.output"
-force_file_name = "force.output"
-energy_file_name = "energy.output"
-thermal_file_name = "heat.output"
+speed_file_name = "speed.output.gz"
+force_file_name = "force.output.gz"
+energy_file_name = "energy.output.gz"
+thermal_file_name = "heat.output.gz"
 
 
 class SpeedModelVizTest(TestCase):
