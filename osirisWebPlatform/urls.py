@@ -16,11 +16,14 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.conf.urls.static import static
 
 urlpatterns = [
+    url(r'^login/$', auth_views.login, name='login'),
+    url(r'^logout/$', auth_views.logout, name='logout'),
     url(r'^$', login_required(TemplateView.as_view(template_name="admin/base_site.html")), name="index"),
     url(r'^admin/', include('scene.urls', namespace='scene')),
     url(r'^admin/', admin.site.urls),

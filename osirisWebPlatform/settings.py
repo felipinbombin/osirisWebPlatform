@@ -137,7 +137,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # User url
-LOGIN_URL = '/admin/login/'
+LOGIN_URL = '/login/'
 
 # To storage excel files
 MEDIA_URL = '/media/'
