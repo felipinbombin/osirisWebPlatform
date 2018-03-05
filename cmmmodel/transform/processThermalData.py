@@ -7,9 +7,9 @@ from io import BytesIO
 
 from cmmmodel.transform.processData import ProcessData
 from cmmmodel.models import Model
-from scene.models import MetroLine
+from scene.models import MetroLine, MetroLineMetric
 from scene.views.ExcelWriter import ExcelHelper
-from viz.models import ModelAnswer
+from viz.models import ModelAnswer, HeatModelTableAnswer
 
 import xlsxwriter
 import numpy as np
@@ -42,89 +42,98 @@ class ProcessThermalData(ProcessData):
                 (self.dictionary_group["heatLossesFromPassengersOnStations"],
                  self.get_heat_losses_from_passengers_on_stations(line_index, data)),
                 (self.dictionary_group["heatLossesOnStations"], self.get_heat_losses_on_stations(line_index, data)),
-                (self.dictionary_group["averageTemperatureDuringTheDay"],
-                 self.get_average_temperature_during_the_day(line_index, station_obj_list, data)),
-                (self.dictionary_group["averageAbsolutelyHumidityDuringTheDay"],
-                 self.get_average_absolutely_humidity_during_the_day(line_index, data)),
-                (self.dictionary_group["averageRelativeHumidityDuringTheDay"],
-                 self.get_average_relative_humidity_during_the_day(line_index, data)),
             ]
             for name, pair in heat_metrics:
                 for x_value, y_value in zip(*pair):
                     ModelAnswer.objects.create(execution=self.execution_obj, metroLine=line_obj, direction=None,
                                                metroTrack=None, operationPeriod=None, attributeName=name,
                                                order=x_value, value=y_value)
+            heat_table_metrics = [
+                (self.dictionary_group["averageTemperatureDuringTheDay"],
+                 self.get_average_temperature_during_the_day(line_index, data)),
+                (self.dictionary_group["averageAbsolutelyHumidityDuringTheDay"],
+                 self.get_average_absolutely_humidity_during_the_day(line_index, data)),
+                (self.dictionary_group["averageRelativeHumidityDuringTheDay"],
+                 self.get_average_relative_humidity_during_the_day(line_index, data)),
+            ]
+            for name, (platform_level, second_level) in heat_table_metrics:
+                for direction_index, direction in enumerate([MetroLineMetric.GOING, MetroLineMetric.REVERSE]):
+                    for station_index, station_obj in enumerate(station_obj_list):
+                        platform_level_value = platform_level[direction_index][station_index]
+                        second_level_value = second_level[direction_index][station_index]
+                        for group, value in [('platform_level', platform_level_value),
+                                             ('second_level', second_level_value)]:
+                            HeatModelTableAnswer.objects.create(execution=self.execution_obj, metroStation=station_obj,
+                                                                direction=direction, attributeName=name, group=group,
+                                                                value=value)
 
     def create_excel_file(self, data):
-        return
         # NAMES
         file_name = _("Thermal model")
         file_extension = ".xlsx"
-
-        worksheet_name = _("Heat")
-        description = _("Description")
-        item = "Item"
-        unit = "[MWh]"
-        percentage = "%"
 
         string_io = BytesIO()
         workbook = xlsxwriter.Workbook(string_io, {'in_memory': True})
         excel_helper = ExcelHelper(workbook)
 
-        worksheet = workbook.add_worksheet(worksheet_name)
+        line_objs = MetroLine.objects.prefetch_related('metrostation_set').filter(scene=self.scene_obj).order_by("id")
+        for line_obj in line_objs:
+            worksheet_name = line_obj.name
+            worksheet = workbook.add_worksheet(worksheet_name)
 
-        first_column_index = 0
-        first_row_index = 0
+            first_column_index = 0
+            first_row_index = 0
 
-        current_row = first_row_index
-        # header
-        corner = (current_row, first_column_index)
-        excel_helper.make_title_cell(worksheet, corner, description, width=2)
-        current_row += 2
+            current_row = first_row_index
+            # header
+            corner = (current_row, first_column_index)
+            return True
+            excel_helper.make_title_cell(worksheet, corner, description, width=2)
+            current_row += 2
 
-        line_number = MetroLine.objects.filter(scene=self.scene_obj).count()
-        consumptions = [
-            self.get_heat_absorved_by_the_ground_on_the_stations(line_number, data),
-            self.get_train_consumption(line_number, data),
-            self.get_track_consumption(line_number, data),
-            self.get_station_consumption(line_number, data),
-            self.get_depot_consumption(line_number, data)
-        ]
+            line_number = MetroLine.objects.filter(scene=self.scene_obj).count()
+            consumptions = [
+                self.get_heat_absorved_by_the_ground_on_the_stations(line_number, data),
+                self.get_train_consumption(line_number, data),
+                self.get_track_consumption(line_number, data),
+                self.get_station_consumption(line_number, data),
+                self.get_depot_consumption(line_number, data)
+            ]
 
-        titles = [
-            self.dictionary_group["totalConsumption"],
-            self.dictionary_group["trainConsumption"],
-            self.dictionary_group["trackConsumption"],
-            self.dictionary_group["stationConsumption"],
-            self.dictionary_group["depotConsumption"]
-        ]
+            titles = [
+                self.dictionary_group["totalConsumption"],
+                self.dictionary_group["trainConsumption"],
+                self.dictionary_group["trackConsumption"],
+                self.dictionary_group["stationConsumption"],
+                self.dictionary_group["depotConsumption"]
+            ]
 
-        for title, (names, values) in zip(titles, consumptions):
+            for title, (names, values) in zip(titles, consumptions):
 
-            excel_helper.make_title_cell(worksheet, (current_row, 0), title, width=2)
-            current_row += 1
-
-            for current_column, label in enumerate([item, unit, percentage]):
-                corner = (current_row, current_column)
-                excel_helper.make_title_cell(worksheet, corner, label)
-            current_row += 1
-
-            total = sum(values)
-            for name, value in zip(names, values):
-                attr_name = name.split("_")[1]
-                perc = value / total if total != 0 else 0
-
-                worksheet.write(current_row, 0, attr_name)
-                worksheet.write(current_row, 1, value)
-                worksheet.write(current_row, 2, perc)
-
-                excel_helper.fit_column_width(worksheet, 0, attr_name)
-                excel_helper.fit_column_width(worksheet, 1, str(value))
-                excel_helper.fit_column_width(worksheet, 2, str(perc))
-
+                excel_helper.make_title_cell(worksheet, (current_row, 0), title, width=2)
                 current_row += 1
 
-            current_row += 1
+                for current_column, label in enumerate([item, unit, percentage]):
+                    corner = (current_row, current_column)
+                    excel_helper.make_title_cell(worksheet, corner, label)
+                current_row += 1
+
+                total = sum(values)
+                for name, value in zip(names, values):
+                    attr_name = name.split("_")[1]
+                    perc = value / total if total != 0 else 0
+
+                    worksheet.write(current_row, 0, attr_name)
+                    worksheet.write(current_row, 1, value)
+                    worksheet.write(current_row, 2, perc)
+
+                    excel_helper.fit_column_width(worksheet, 0, attr_name)
+                    excel_helper.fit_column_width(worksheet, 1, str(value))
+                    excel_helper.fit_column_width(worksheet, 2, str(perc))
+
+                    current_row += 1
+
+                current_row += 1
 
         workbook.close()
         now = timezone.now().replace(microsecond=0)
@@ -237,32 +246,32 @@ class ProcessThermalData(ProcessData):
 
         return x, y
 
-    def get_average_temperature_during_the_day(self, line_index, station_obj_list, data):
+    def get_average_temperature_during_the_day(self, line_index, data):
 
         data1 = data['TM']['lines'][line_index]['tables'][0][0]
         data2l = data['TM']['lines'][line_index]['tables'][0][1]
 
-        # cell_text = np.around(data1, decimals=2)
-        # cell_text2l = np.around(data2l, decimals=2)
+        cell_text = np.around(data1, decimals=2)
+        cell_text2l = np.around(data2l, decimals=2)
 
-        return [], []
+        return cell_text, cell_text2l
 
     def get_average_absolutely_humidity_during_the_day(self, line_index, data):
 
         data1 = data['TM']['lines'][line_index]['tables'][1][0]
         data2l = data['TM']['lines'][line_index]['tables'][1][1]
 
-        # cell_text = np.around(data1, decimals=5)
-        # cell_text2l = np.around(data2l, decimals=5)
+        cell_text = np.around(data1, decimals=5)
+        cell_text2l = np.around(data2l, decimals=5)
 
-        return [], []
+        return cell_text, cell_text2l
 
     def get_average_relative_humidity_during_the_day(self, line_index, data):
 
         data1 = data['TM']['lines'][line_index]['tables'][2][0]
         data2l = data['TM']['lines'][line_index]['tables'][2][1]
 
-        # cell_text = np.around(data1, decimals=5)
-        # cell_text2l = np.around(data2l, decimals=5)
+        cell_text = np.around(data1, decimals=5)
+        cell_text2l = np.around(data2l, decimals=5)
 
-        return [], []
+        return cell_text, cell_text2l
