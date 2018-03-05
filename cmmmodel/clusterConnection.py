@@ -72,6 +72,8 @@ def run_task(scene_obj, model_id, next_model_ids):
         gzip_file  = gzip.GzipFile(fileobj=file_obj, mode='wb')
         gzip_file.write(model_input_data)
         gzip_file.close()
+        # move to beginning of file
+        file_obj.seek(0)
 
         sftp = client.open_sftp()
         sftp.putfo(file_obj, destination)
