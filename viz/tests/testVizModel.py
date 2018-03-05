@@ -421,3 +421,16 @@ class JavascriptModelVizTest(StaticLiveServerTestCase):
         self.browser.visit(self.live_server_url + url)
         self.browser.find_by_id("btnUpdateChart").click()
         self.assertTrue(self.browser.is_element_present_by_tag("canvas", wait_time=5))
+
+    def test_heat_model_javascript(self):
+        file_path = os.path.join(self.dir_path, thermal_file_name)
+
+        create_fake_execution(self.scene_obj, Model.THERMAL_MODEL_ID, file_path)
+        # simulate execution finished well
+        ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
+
+        # visit energy answer
+        url = reverse("viz:thermalModel", kwargs={"scene_id": self.scene_obj.id})
+        self.browser.visit(self.live_server_url + url)
+        self.browser.find_by_id("btnUpdateChart").click()
+        self.assertTrue(self.browser.is_element_present_by_tag("canvas", wait_time=5))
