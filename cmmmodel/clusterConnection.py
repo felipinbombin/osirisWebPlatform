@@ -67,8 +67,16 @@ def run_task(scene_obj, model_id, next_model_ids):
         input_file_name = "{}.model_input".format(external_id)
         destination = "osiris/inputs/" + input_file_name
 
+        # gzipped file before sending to cluster
+        file_obj = BytesIO()
+        gzip_file  = gzip.GzipFile(fileobj=file_obj, mode='wb')
+        gzip_file.write(model_input_data)
+        gzip_file.close()
+        # move to beginning of file
+        file_obj.seek(0)
+
         sftp = client.open_sftp()
-        sftp.putfo(BytesIO(model_input_data), destination)
+        sftp.putfo(file_obj, destination)
         sftp.close()
 
         command = "sbatch ~/osiris/runModel.sh {} {} \"{}\" {} \"{}\" {} {}".format(settings.SERVER_IP,
