@@ -13,6 +13,7 @@ import paramiko
 import os
 import uuid
 import pickle
+import gzip
 
 
 class EnqueuedModelException(Exception):
@@ -146,7 +147,7 @@ def get_input_data(scene_id, model_id):
         if model_obj is None:
             raise ModelInputDoesNotExistException
 
-        with open(model_obj.answer.path, mode="rb") as answer_file:
+        with gzip.open(model_obj.answer.path, mode="rb") as answer_file:
             input_dict = answer_file.read()
 
     return input_dict
