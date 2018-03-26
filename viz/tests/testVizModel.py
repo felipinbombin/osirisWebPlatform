@@ -13,6 +13,8 @@ from cmmmodel.transform.processEnergyData import ProcessEnergyData
 
 from viz.tests.splinterHelper import SplinterTestHelper
 
+from unittest import skip
+
 import uuid
 import pickle
 import os
@@ -280,9 +282,6 @@ class EnergyModelVizTest(TestCase):
             self.assertIn(ProcessEnergyData.dictionary_detail["substations"], line["attributes"])
             self.assertIn(ProcessEnergyData.dictionary_detail["tracks"], line["attributes"])
             self.assertIn(ProcessEnergyData.dictionary_detail["trains"], line["attributes"])
-
-
-from unittest import skip
 
 
 @skip("TODO: remove this when thermal model works")

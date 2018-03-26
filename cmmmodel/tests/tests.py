@@ -141,7 +141,7 @@ class ExecuteModel(TestCase):
         self.scene_obj.save()
 
         # create execution record
-        file_name = "speed.output"
+        file_name = "speed.model_output.gz"
         file_path = os.path.join("..", "..", "cmmmodel", "tests", file_name)
         std_out = ""
         std_err = ""
@@ -195,7 +195,7 @@ class ExecuteModel(TestCase):
 
     def test_processSpeedAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "speed.output.gz"
+        file_name = "speed.model_output.gz"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
@@ -212,7 +212,7 @@ class ExecuteModel(TestCase):
 
     def test_processForceAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "force.output.gz"
+        file_name = "force.model_output.gz"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
@@ -229,7 +229,7 @@ class ExecuteModel(TestCase):
 
     def test_processEnergyAnswer(self):
         """ test load data from speed model output dict based on situation of file """
-        file_name = "energy.output.gz"
+        file_name = "energy.model_output.gz"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
@@ -246,7 +246,7 @@ class ExecuteModel(TestCase):
 
     def test_processHeatAnswer(self):
         """ test load data from heat model output dict based on situation of file """
-        file_name = "heat.output.gz"
+        file_name = "heat.model_output.gz"
         file_path = os.path.join("cmmmodel", "tests", file_name)
 
         self.create_topologic_system()
