@@ -69,7 +69,7 @@ def run_task(scene_obj, model_id, next_model_ids):
 
         # gzipped file before sending to cluster
         file_obj = BytesIO()
-        gzip_file  = gzip.GzipFile(fileobj=file_obj, mode='wb')
+        gzip_file = gzip.GzipFile(fileobj=file_obj, mode='wb')
         gzip_file.write(model_input_data)
         gzip_file.close()
         # move to beginning of file
@@ -131,6 +131,10 @@ class ModelInputDoesNotExistException(Exception):
     pass
 
 
+class PreviousModelDidNotFinishWellException(Exception):
+    pass
+
+
 def get_input_data(scene_id, model_id):
     """ get input data to run model """
 
@@ -149,11 +153,13 @@ def get_input_data(scene_id, model_id):
         input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
     else:
         previous_model = model_id - 1
-        model_obj = ModelExecutionHistory.objects.filter(status=ModelExecutionHistory.OK,
-                                                         scene_id=scene_id,
+        model_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id,
                                                          model_id=previous_model).order_by("-end").first()
         if model_obj is None:
             raise ModelInputDoesNotExistException
+
+        if model_obj.status != ModelExecutionHistory.OK:
+            raise PreviousModelDidNotFinishWellException
 
         with gzip.open(model_obj.answer.path, mode="rb") as answer_file:
             input_dict = answer_file.read()

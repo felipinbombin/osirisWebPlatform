@@ -20,6 +20,7 @@ class Status:
     INCOMPLETE_SCENE_ERROR = 412
     LAST_MODEL_ANSWER_DATA_DOES_NOT_EXISTS_ERROR = 413
     LAST_MODEL_FINISHED_BADLY_ERROR = 414
+    PREVIOUS_MODEL_DID_NOT_FINISH_WELL = 415
     GENERIC_ERROR = 499
 
     statusDict = {
@@ -97,6 +98,11 @@ class Status:
         USER_NOT_LOGGED_ERROR: {
             "code": USER_NOT_LOGGED_ERROR, "title": "Error",
             "message": "Debe iniciar sesión nuevamente", "type": "error"
+        },
+        PREVIOUS_MODEL_DID_NOT_FINISH_WELL: {
+            "code": PREVIOUS_MODEL_DID_NOT_FINISH_WELL, "title": "Error",
+            "message": "La ejecución del modelo previo no terminó bien. Debe corregir el problema antes de continuar.",
+            "type": "error"
         }
     }
 

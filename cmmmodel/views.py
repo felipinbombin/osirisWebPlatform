@@ -12,7 +12,7 @@ from scene.statusResponse import Status as StatusResponse
 
 from cmmmodel.models import ModelExecutionHistory, Model
 from cmmmodel.clusterConnection import run_task, cancel_task, EnqueuedModelException, ModelIsRunningException, \
-    IncompleteSceneException, ModelInputDoesNotExistException
+    IncompleteSceneException, ModelInputDoesNotExistException, PreviousModelDidNotFinishWellException
 
 
 class Run(View):
@@ -45,6 +45,8 @@ class Run(View):
             StatusResponse.getJsonStatus(StatusResponse.MODEL_IS_RUNNING_ERROR, response)
         except IncompleteSceneException:
             StatusResponse.getJsonStatus(StatusResponse.INCOMPLETE_SCENE_ERROR, response)
+        except PreviousModelDidNotFinishWellException:
+            StatusResponse.getJsonStatus(StatusResponse.PREVIOUS_MODEL_DID_NOT_FINISH_WELL, response)
         except Exception as e:
             StatusResponse.getJsonStatus(StatusResponse.GENERIC_ERROR, response)
             response["status"]["message"] = str(e)
