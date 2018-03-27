@@ -64,7 +64,7 @@ def run_task(scene_obj, model_id, next_model_ids):
 
         # create file with serialized input model data
         model_input_data = get_input_data(scene_obj.id, model_id)
-        input_file_name = "{}.model_input".format(external_id)
+        input_file_name = "{0}.model_input".format(external_id)
         destination = "osiris/inputs/{0}".format(input_file_name)
 
         # gzipped file before sending to cluster
