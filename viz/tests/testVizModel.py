@@ -57,10 +57,10 @@ def create_fake_execution(scene_obj, model_id, file_path):
         process_answer(answer, execution_obj)
 
 
-speed_file_name = "speed.output.gz"
-force_file_name = "force.output.gz"
-energy_file_name = "energy.output.gz"
-thermal_file_name = "heat.output.gz"
+speed_file_name = "speed.model_output.gz"
+force_file_name = "force.model_output.gz"
+energy_file_name = "energy.model_output.gz"
+thermal_file_name = "heat.model_output.gz"
 
 
 class SpeedModelVizTest(TestCase):
