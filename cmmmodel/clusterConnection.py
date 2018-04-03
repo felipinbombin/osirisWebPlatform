@@ -157,8 +157,7 @@ def get_input_data(scene_id, model_id):
                                                          model_id=previous_model).order_by("-end").first()
         if model_obj is None:
             raise ModelInputDoesNotExistException
-
-        if model_obj.status != ModelExecutionHistory.OK:
+        elif model_obj.status != ModelExecutionHistory.OK:
             raise PreviousModelDidNotFinishWellException
 
         with gzip.open(model_obj.answer.path, mode="rb") as answer_file:

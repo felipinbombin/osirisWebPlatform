@@ -114,10 +114,10 @@ class ExecuteModel(TestCase):
         self.scene_obj.save()
 
         json_response = self.run_test_model()
-        #print(json_response.content)
+        # print(json_response.content)
 
         # set modelexecutionhistory object to modify model status response (to show a model is running in json)
-        #ModelExecutionHistory.objects.update(model_id=1)
+        # ModelExecutionHistory.objects.update(model_id=1)
         json_response = json.loads(self.get_model_status().content.decode("utf-8"))
         test_model_position = len(json_response) - 1
         self.assertIn("lastExecutionInfo", json_response[test_model_position].keys())
@@ -131,7 +131,7 @@ class ExecuteModel(TestCase):
         # restore model execution status
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.RUNNING)
         json_response = self.stop_test_model()
-        #print(json_response.content)
+        # print(json_response.content)
 
     def test_saveJob(self):
         """ simulate a call from cluster after finish model execution to saveJobResponse file """
@@ -147,10 +147,10 @@ class ExecuteModel(TestCase):
         std_err = ""
         external_id = uuid.uuid4()
         meh = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=TEST_MODEL_ID, externalId=external_id,
-                                             start=timezone.now())
+                                                   start=timezone.now())
 
         # added test model to queue to test queue model execution process
-        ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=TEST_MODEL_ID)
+        ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=Model.SPEED_MODEL_ID)
 
         save_model_response(str(external_id), file_path, std_out, std_err)
 
