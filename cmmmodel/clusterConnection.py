@@ -154,7 +154,7 @@ def get_input_data(scene_id, model_id):
     else:
         previous_model = model_id - 1
         model_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id,
-                                                         model_id=previous_model).order_by("-end").first()
+                                                         model_id=previous_model).order_by("-start").first()
         if model_obj is None:
             raise ModelInputDoesNotExistException
         elif model_obj.status != ModelExecutionHistory.OK:
