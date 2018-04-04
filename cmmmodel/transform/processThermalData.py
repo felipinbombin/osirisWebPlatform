@@ -7,7 +7,7 @@ from io import BytesIO
 
 from cmmmodel.transform.processData import ProcessData
 from cmmmodel.models import Model
-from scene.models import MetroLine, MetroLineMetric
+from scene.models import MetroLine, OperationPeriod
 from scene.views.ExcelWriter import ExcelHelper
 from viz.models import ModelAnswer, HeatModelTableAnswer
 
@@ -57,15 +57,16 @@ class ProcessThermalData(ProcessData):
                  self.get_average_relative_humidity_during_the_day(line_index, data)),
             ]
             for name, (platform_level, second_level) in heat_table_metrics:
-                for direction_index, direction in enumerate([MetroLineMetric.GOING, MetroLineMetric.REVERSE]):
+                for op_index, op_period_obj in enumerate(
+                        OperationPeriod.objects.filter(scene_id=self.execution_obj.scene_id)):
                     for station_index, station_obj in enumerate(station_obj_list):
-                        platform_level_value = platform_level[direction_index][station_index]
-                        second_level_value = second_level[direction_index][station_index]
+                        platform_level_value = platform_level[op_index][station_index]
+                        second_level_value = second_level[op_index][station_index]
                         for group, value in [('platform_level', platform_level_value),
                                              ('second_level', second_level_value)]:
                             HeatModelTableAnswer.objects.create(execution=self.execution_obj, metroStation=station_obj,
-                                                                direction=direction, attributeName=name, group=group,
-                                                                value=value)
+                                                                operationPeriod=op_period_obj, attributeName=name,
+                                                                group=group, value=value)
 
     def create_excel_file(self, data):
         # NAMES
