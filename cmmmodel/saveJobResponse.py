@@ -12,7 +12,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.conf import settings
 
-from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue, Model
+from cmmmodel.models import ModelExecutionHistory, ModelExecutionQueue, CMMModel
 from cmmmodel.clusterConnection import run_task
 from cmmmodel.transform.processSpeedData import ProcessSpeedData
 from cmmmodel.transform.processForceData import ProcessForceData
@@ -24,16 +24,16 @@ def process_answer(answer_dict, execution_obj):
     """ fill viz table with answer dictionary """
     processor = None
 
-    if execution_obj.model_id == Model.SPEED_MODEL_ID:
+    if execution_obj.model_id == CMMModel.SPEED_MODEL_ID:
         processor = ProcessSpeedData(execution_obj)
         answer_dict = answer_dict["SM"]
-    elif execution_obj.model_id == Model.FORCE_MODEL_ID:
+    elif execution_obj.model_id == CMMModel.FORCE_MODEL_ID:
         processor = ProcessForceData(execution_obj)
         answer_dict = answer_dict["FM"]
-    elif execution_obj.model_id == Model.ENERGY_MODEL_ID:
+    elif execution_obj.model_id == CMMModel.ENERGY_MODEL_ID:
         processor = ProcessEnergyData(execution_obj)
         answer_dict = answer_dict["EM"]
-    elif execution_obj.model_id == Model.THERMAL_MODEL_ID:
+    elif execution_obj.model_id == CMMModel.THERMAL_MODEL_ID:
         processor = ProcessThermalData(execution_obj)
         # answer_dict = answer_dict["TM"]
 

@@ -9,7 +9,7 @@ from itertools import groupby
 
 from scene.models import Scene, MetroLineMetric, OperationPeriodForMetroStation
 from scene.statusResponse import Status
-from cmmmodel.models import ModelExecutionHistory, Model
+from cmmmodel.models import ModelExecutionHistory, CMMModel
 from viz.models import ModelAnswer
 
 
@@ -43,7 +43,7 @@ class SpeedModelViz(View):
                                       scene_obj.operationperiod_set.all().order_by("id")]
         self.context["table_titles"] = ["Sección", "Tiempo (seg)"]
         self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj,
-                                                                             model_id=Model.SPEED_MODEL_ID).order_by(
+                                                                             model_id=CMMModel.SPEED_MODEL_ID).order_by(
             "-id").first()
 
         return render(request, self.template, self.context)
@@ -123,7 +123,7 @@ class SpeedModelVizData(View):
         metro_tracks = request.GET.getlist("tracks[]", [])
 
         scene_id = int(scene_id)
-        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.SPEED_MODEL_ID). \
+        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=CMMModel.SPEED_MODEL_ID). \
             order_by("-id").first()
 
         response = {

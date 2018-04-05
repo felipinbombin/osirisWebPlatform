@@ -6,7 +6,7 @@ from django.utils.translation import ugettext as _
 from io import BytesIO
 
 from cmmmodel.transform.processData import ProcessData
-from cmmmodel.models import Model
+from cmmmodel.models import CMMModel
 from scene.models import MetroLine, OperationPeriod
 from scene.views.ExcelWriter import ExcelHelper
 from viz.models import ModelAnswer, HeatModelTableAnswer
@@ -27,7 +27,7 @@ class ProcessThermalData(ProcessData):
     }
 
     def __init__(self, execution_obj):
-        super(ProcessThermalData, self).__init__(Model.THERMAL_MODEL_ID, execution_obj)
+        super(ProcessThermalData, self).__init__(CMMModel.THERMAL_MODEL_ID, execution_obj)
 
     def load(self, data):
         self.delete_previous_data()

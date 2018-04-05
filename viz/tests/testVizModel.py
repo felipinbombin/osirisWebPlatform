@@ -7,7 +7,7 @@ from scene.tests.testHelper import TestHelper
 from scene.models import MetroLine, MetroStation, OperationPeriod, MetroTrack
 from scene.statusResponse import Status
 
-from cmmmodel.models import ModelExecutionHistory, Model
+from cmmmodel.models import ModelExecutionHistory, CMMModel
 from cmmmodel.saveJobResponse import process_answer
 from cmmmodel.transform.processEnergyData import ProcessEnergyData
 
@@ -77,7 +77,7 @@ class SpeedModelVizTest(TestCase):
         scene_name = "test scene name"
         self.scene_obj = self.test_helper.create_scene(scene_name)
 
-        create_fake_execution(self.scene_obj, Model.SPEED_MODEL_ID, file_path)
+        create_fake_execution(self.scene_obj, CMMModel.SPEED_MODEL_ID, file_path)
 
     def test_loadHTML(self):
         """ ask for speed output html file """
@@ -155,7 +155,7 @@ class ForceModelVizTest(TestCase):
         scene_name = "test scene name"
         self.scene_obj = self.test_helper.create_scene(scene_name)
 
-        create_fake_execution(self.scene_obj, Model.FORCE_MODEL_ID, file_path)
+        create_fake_execution(self.scene_obj, CMMModel.FORCE_MODEL_ID, file_path)
 
     def test_loadHTML(self):
         """ ask for force output html file """
@@ -229,7 +229,7 @@ class EnergyModelVizTest(TestCase):
         scene_name = "test scene name"
         self.scene_obj = self.test_helper.create_scene(scene_name)
 
-        create_fake_execution(self.scene_obj, Model.ENERGY_MODEL_ID, file_path)
+        create_fake_execution(self.scene_obj, CMMModel.ENERGY_MODEL_ID, file_path)
 
     def test_loadHTML(self):
         """ ask for energy output html file """
@@ -299,7 +299,7 @@ class ThermalModelVizTest(TestCase):
         scene_name = "test scene name"
         self.scene_obj = self.test_helper.create_scene(scene_name)
 
-        create_fake_execution(self.scene_obj, Model.THERMAL_MODEL_ID, file_path)
+        create_fake_execution(self.scene_obj, CMMModel.THERMAL_MODEL_ID, file_path)
 
     def test_loadHTML(self):
         """ ask for energy output html file """
@@ -381,7 +381,7 @@ class JavascriptModelVizTest(StaticLiveServerTestCase):
     def test_speed_model_javascript(self):
         file_path = os.path.join(self.dir_path, speed_file_name)
 
-        create_fake_execution(self.scene_obj, Model.SPEED_MODEL_ID, file_path)
+        create_fake_execution(self.scene_obj, CMMModel.SPEED_MODEL_ID, file_path)
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
 
@@ -396,7 +396,7 @@ class JavascriptModelVizTest(StaticLiveServerTestCase):
     def test_force_model_javascript(self):
         file_path = os.path.join(self.dir_path, force_file_name)
 
-        create_fake_execution(self.scene_obj, Model.FORCE_MODEL_ID, file_path)
+        create_fake_execution(self.scene_obj, CMMModel.FORCE_MODEL_ID, file_path)
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
 
@@ -411,7 +411,7 @@ class JavascriptModelVizTest(StaticLiveServerTestCase):
     def test_energy_model_javascript(self):
         file_path = os.path.join(self.dir_path, energy_file_name)
 
-        create_fake_execution(self.scene_obj, Model.ENERGY_MODEL_ID, file_path)
+        create_fake_execution(self.scene_obj, CMMModel.ENERGY_MODEL_ID, file_path)
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
 
@@ -424,7 +424,7 @@ class JavascriptModelVizTest(StaticLiveServerTestCase):
     def test_heat_model_javascript(self):
         file_path = os.path.join(self.dir_path, thermal_file_name)
 
-        create_fake_execution(self.scene_obj, Model.THERMAL_MODEL_ID, file_path)
+        create_fake_execution(self.scene_obj, CMMModel.THERMAL_MODEL_ID, file_path)
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
 

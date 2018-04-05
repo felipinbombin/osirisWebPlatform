@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from io import BytesIO
 
-from cmmmodel.models import ModelExecutionHistory, Model, ModelExecutionQueue
+from cmmmodel.models import ModelExecutionHistory, CMMModel, ModelExecutionQueue
 from cmmmodel.firstInput import first_input
 from scene.models import Scene
 
@@ -44,7 +44,7 @@ def run_task(scene_obj, model_id, next_model_ids):
     """ connect to cluster server and run model """
 
     with transaction.atomic():
-        model_obj = Model.objects.get(id=model_id)
+        model_obj = CMMModel.objects.get(id=model_id)
 
         if scene_obj.status == Scene.INCOMPLETE:
             raise IncompleteSceneException
@@ -144,7 +144,7 @@ def get_input_data(scene_id, model_id):
             "seconds": 60
         }
         input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
-    elif model_id == Model.SPEED_MODEL_ID:
+    elif model_id == CMMModel.SPEED_MODEL_ID:
         input_dict = first_input(scene_id)
         input_dict = {
             "input": input_dict,

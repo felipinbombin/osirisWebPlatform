@@ -9,7 +9,7 @@ from itertools import groupby
 
 from scene.models import Scene, MetroLineMetric
 from scene.statusResponse import Status
-from cmmmodel.models import ModelExecutionHistory, Model
+from cmmmodel.models import ModelExecutionHistory, CMMModel
 from viz.models import ModelAnswer
 
 
@@ -40,7 +40,7 @@ class ForceModelViz(View):
                                                                      op_period_obj.end)} for op_period_obj in
                                       scene_obj.operationperiod_set.all().order_by("id")]
         self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj,
-                                                                             model_id=Model.FORCE_MODEL_ID).order_by(
+                                                                             model_id=CMMModel.FORCE_MODEL_ID).order_by(
             "-id").first()
 
         return render(request, self.template, self.context)
@@ -98,7 +98,7 @@ class ForceModelVizData(View):
         metro_line_name = request.GET.get("metroLineName", None)
 
         scene_id = int(scene_id)
-        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.FORCE_MODEL_ID). \
+        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=CMMModel.FORCE_MODEL_ID). \
             order_by("-id").first()
 
         response = {}

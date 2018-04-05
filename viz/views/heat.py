@@ -11,7 +11,7 @@ from itertools import groupby
 from scene.models import Scene
 from scene.statusResponse import Status
 
-from cmmmodel.models import ModelExecutionHistory, Model
+from cmmmodel.models import ModelExecutionHistory, CMMModel
 from cmmmodel.transform.processThermalData import ProcessThermalData
 
 from viz.models import ModelAnswer
@@ -46,7 +46,7 @@ class ThermalModelViz(View):
         self.context["charts"] = charts
         self.context["lines"] = lines
         self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj,
-                                                                             model_id=Model.THERMAL_MODEL_ID). \
+                                                                             model_id=CMMModel.THERMAL_MODEL_ID). \
             order_by("-id").first()
 
         return render(request, self.template, self.context)
@@ -89,7 +89,7 @@ class ThermalModelVizData(View):
         prefix = request.GET.get("prefix", "")
 
         scene_id = int(scene_id)
-        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=Model.THERMAL_MODEL_ID). \
+        execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=CMMModel.THERMAL_MODEL_ID). \
             order_by("-id").first()
 
         response = {}

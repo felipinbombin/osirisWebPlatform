@@ -7,7 +7,7 @@ from datetime import timedelta
 from scene.models import Scene
 
 
-class Model(models.Model):
+class CMMModel(models.Model):
     """ math models used by osiris web platform """
     name = models.CharField('Nombre', max_length=100)
     clusterExecutionId = models.CharField('archivo bash', max_length=100)
@@ -34,14 +34,14 @@ class Model(models.Model):
 
 class PossibleQueue(models.Model):
     """ define which models can run after one model """
-    start = models.ForeignKey(Model, on_delete=models.CASCADE, related_name="start_set")
-    follow = models.ForeignKey(Model, on_delete=models.CASCADE, related_name="follow_set")
+    start = models.ForeignKey(CMMModel, on_delete=models.CASCADE, related_name="start_set")
+    follow = models.ForeignKey(CMMModel, on_delete=models.CASCADE, related_name="follow_set")
 
 
 class ModelExecutionHistory(models.Model):
     """  record history of models execution """
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
-    model = models.ForeignKey(Model, on_delete=models.CASCADE)
+    model = models.ForeignKey(CMMModel, on_delete=models.CASCADE)
     start = models.DateTimeField('Tiempo de inicio', null=False)
     end = models.DateTimeField('Tiempo de fin', null=True)
     # answer given by executed model in CMM cluster
@@ -105,7 +105,7 @@ class ModelExecutionHistory(models.Model):
 class ModelExecutionQueue(models.Model):
     """  record history of models execution """
     modelExecutionHistory = models.ForeignKey(ModelExecutionHistory, on_delete=models.CASCADE)
-    model = models.ForeignKey(Model, on_delete=models.CASCADE)
+    model = models.ForeignKey(CMMModel, on_delete=models.CASCADE)
 
     def get_dictionary(self):
         """  """

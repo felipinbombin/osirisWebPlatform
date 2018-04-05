@@ -10,7 +10,7 @@ from django.views.generic import View
 from scene.models import Scene
 from scene.statusResponse import Status as StatusResponse
 
-from cmmmodel.models import ModelExecutionHistory, Model
+from cmmmodel.models import ModelExecutionHistory, CMMModel
 from cmmmodel.clusterConnection import run_task, cancel_task, EnqueuedModelException, ModelIsRunningException, \
     IncompleteSceneException, ModelInputDoesNotExistException, PreviousModelDidNotFinishWellException
 
@@ -90,7 +90,7 @@ class Status(View):
 
     def resume_status(self, scene_obj):
         """  """
-        model_list = Model.objects.all().order_by("id")
+        model_list = CMMModel.objects.all().order_by("id")
         model_status_list = []
         for model in model_list:
             model_status = model.get_dictionary()

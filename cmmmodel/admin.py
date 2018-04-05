@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .models import ModelExecutionHistory, ModelExecutionQueue, Model, PossibleQueue
+from .models import ModelExecutionHistory, ModelExecutionQueue, CMMModel, PossibleQueue
 
 
 class CMMModelAdmin(admin.ModelAdmin):
@@ -18,7 +18,7 @@ class ModelExecutionHistoryAdmin(admin.ModelAdmin):
     list_display = ('get_username', 'scene', 'model', 'start', 'end', 'status', 'jobNumber', 'externalId')
 
 
-admin.site.register(Model, CMMModelAdmin)
+admin.site.register(CMMModel, CMMModelAdmin)
 admin.site.register(ModelExecutionHistory, ModelExecutionHistoryAdmin)
 admin.site.register(ModelExecutionQueue)
 admin.site.register(PossibleQueue)

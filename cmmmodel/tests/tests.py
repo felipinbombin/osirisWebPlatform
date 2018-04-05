@@ -7,7 +7,7 @@ from scene.tests.testHelper import TestHelper
 from scene.models import Scene
 from scene.statusResponse import Status as st
 
-from cmmmodel.models import ModelExecutionQueue, Model, ModelExecutionHistory, PossibleQueue
+from cmmmodel.models import ModelExecutionQueue, CMMModel, ModelExecutionHistory, PossibleQueue
 from cmmmodel.views import Status
 from cmmmodel.saveJobResponse import save_model_response, process_answer
 
@@ -86,7 +86,7 @@ class ExecuteModel(TestCase):
         # add test model to queue
         meh = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=1, start=timezone.now(),
                                                    externalId=uuid.uuid4())
-        model = Model.objects.get(id=TEST_MODEL_ID)
+        model = CMMModel.objects.get(id=TEST_MODEL_ID)
         ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model=model)
 
         self.run_test_model(expected_response=st.getJsonStatus(st.ENQUEUED_MODEL_ERROR, {}))
@@ -150,7 +150,7 @@ class ExecuteModel(TestCase):
                                                    start=timezone.now())
 
         # added test model to queue to test queue model execution process
-        ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=Model.SPEED_MODEL_ID)
+        ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=CMMModel.SPEED_MODEL_ID)
 
         save_model_response(str(external_id), file_path, std_out, std_err)
 
@@ -200,7 +200,7 @@ class ExecuteModel(TestCase):
 
         self.create_topologic_system()
 
-        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=Model.SPEED_MODEL_ID,
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.SPEED_MODEL_ID,
                                                              externalId=uuid.uuid4(), start=timezone.now())
 
         with gzip.open(file_path, "rb") as answer_file:
@@ -217,7 +217,7 @@ class ExecuteModel(TestCase):
 
         self.create_topologic_system()
 
-        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=Model.FORCE_MODEL_ID,
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.FORCE_MODEL_ID,
                                                              externalId=uuid.uuid4(), start=timezone.now())
 
         with gzip.open(file_path, "rb") as answer_file:
@@ -234,7 +234,7 @@ class ExecuteModel(TestCase):
 
         self.create_topologic_system()
 
-        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=Model.ENERGY_MODEL_ID,
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.ENERGY_MODEL_ID,
                                                              externalId=uuid.uuid4(), start=timezone.now())
 
         with gzip.open(file_path, "rb") as answer_file:
@@ -251,7 +251,7 @@ class ExecuteModel(TestCase):
 
         self.create_topologic_system()
 
-        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=Model.THERMAL_MODEL_ID,
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.THERMAL_MODEL_ID,
                                                              externalId=uuid.uuid4(), start=timezone.now())
         with gzip.open(file_path, "rb") as answer_file:
             answer = pickle.load(answer_file)

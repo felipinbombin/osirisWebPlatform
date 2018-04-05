@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 from viz.models import ModelAnswer, HeatModelTableAnswer
-from cmmmodel.models import Model
+from cmmmodel.models import CMMModel
 
 
 class ProcessData:
@@ -16,7 +16,7 @@ class ProcessData:
         # delete data before insert a new one
         ModelAnswer.objects.filter(execution__model_id=self.model_id,
                                    execution__scene=self.scene_obj).delete()
-        if self.model_id == Model.THERMAL_MODEL_ID:
+        if self.model_id == CMMModel.THERMAL_MODEL_ID:
             HeatModelTableAnswer.objects.filter(execution__model_id=self.model_id,
                                                 execution__scene=self.scene_obj).delete()
 

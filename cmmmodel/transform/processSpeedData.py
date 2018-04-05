@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.utils import timezone
 
 from cmmmodel.transform.processData import ProcessData
-from cmmmodel.models import Model
+from cmmmodel.models import CMMModel
 from scene.models import MetroLine, MetroLineMetric, OperationPeriod
 from scene.views.ExcelWriter import ExcelHelper
 from viz.models import ModelAnswer
@@ -17,7 +17,7 @@ import xlsxwriter
 
 class ProcessSpeedData(ProcessData):
     def __init__(self, execution_obj):
-        super(ProcessSpeedData, self).__init__(Model.SPEED_MODEL_ID, execution_obj)
+        super(ProcessSpeedData, self).__init__(CMMModel.SPEED_MODEL_ID, execution_obj)
 
         self.metrics = [
             {
