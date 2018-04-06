@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'scene',
     'cmmmodel',
     'viz',
-    'bowerapp'
+    'bowerapp',
+    'energycentermodel'
 ]
 
 MIDDLEWARE = [
