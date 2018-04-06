@@ -12,11 +12,14 @@ class CMMModel(models.Model):
     name = models.CharField('Nombre', max_length=100)
     clusterExecutionId = models.CharField('archivo bash', max_length=100)
     vizURL = models.CharField(max_length=100)
+    """ model id of previous model that which output works as input of the model """
+    modelRequired = models.IntegerField(null=True)
 
     SPEED_MODEL_ID = 1
     FORCE_MODEL_ID = 2
     ENERGY_MODEL_ID = 3
-    THERMAL_MODEL_ID = 4
+    ENERGY_CENTER_MODEL_ID = 4
+    THERMAL_MODEL_ID = 5
 
     def get_dictionary(self):
         """  """

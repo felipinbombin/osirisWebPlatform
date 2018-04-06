@@ -1,38 +1,52 @@
 [
   {
-    "model": "cmmmodel.model",
+    "model": "cmmmodel.cmmmodel",
     "pk": 1,
     "fields": {
       "name": "Velocidad",
       "vizURL": "/viz/speed/{0}",
-      "clusterExecutionId": "S"
+      "clusterExecutionId": "S",
+      "modelRequired": null
     }
   },
   {
-    "model": "cmmmodel.model",
+    "model": "cmmmodel.cmmmodel",
     "pk": 2,
     "fields": {
       "name": "Fuerza",
       "vizURL": "/viz/force/{0}",
-      "clusterExecutionId": "F"
+      "clusterExecutionId": "F",
+      "modelRequired": 1
     }
   },
   {
-    "model": "cmmmodel.model",
+    "model": "cmmmodel.cmmmodel",
     "pk": 3,
     "fields": {
       "name": "Energía",
       "vizURL": "/viz/energy/{0}",
-      "clusterExecutionId": "E"
+      "clusterExecutionId": "E",
+      "modelRequired": 2
     }
   },
   {
-    "model": "cmmmodel.model",
+    "model": "cmmmodel.cmmmodel",
     "pk": 4,
+    "fields": {
+      "name": "Centro de energía",
+      "vizURL": "/viz/energyCenter/{0}",
+      "clusterExecutionId": "CE",
+      "modelRequired": 3
+    }
+  },
+  {
+    "model": "cmmmodel.cmmmodel",
+    "pk": 5,
     "fields": {
       "name": "Temperatura",
       "vizURL": "/viz/heat/{0}",
-      "clusterExecutionId": "T"
+      "clusterExecutionId": "T",
+      "modelRequired": 4
     }
   }
 ]

@@ -152,7 +152,7 @@ def get_input_data(scene_id, model_id):
         }
         input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
     else:
-        previous_model = model_id - 1
+        previous_model = CMMModel.objects.get(id=model_id).modelRequired
         model_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id,
                                                          model_id=previous_model).order_by("-start").first()
         if model_obj is None:

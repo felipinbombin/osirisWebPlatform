@@ -68,6 +68,10 @@ def save_model_response(external_id, output_file_name, std_out, std_err):
         next_models = ModelExecutionQueue.objects.filter(modelExecutionHistory=execution_obj).order_by('id').\
             values_list('model_id', flat=True)
 
+        # if current model is energy, add energy center model to next model
+        if execution_obj.model_id == CMMModel.ENERGY_MODEL_ID:
+            next_models.insert(0, CMMModel.ENERGY_CENTER_MODEL_ID)
+
         if len(next_models) >= 1:
             ModelExecutionQueue.objects.filter(modelExecutionHistory=execution_obj).delete()
             run_task(execution_obj.scene, next_models[0], next_models[1:])
