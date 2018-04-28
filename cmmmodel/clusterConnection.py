@@ -163,4 +163,13 @@ def get_input_data(scene_id, model_id):
         with gzip.open(model_obj.answer.path, mode="rb") as answer_file:
             input_dict = answer_file.read()
 
+            if model_id == CMMModel.ENERGY_CENTER_MODEL_ID:
+                # add additional data
+                from energycentermodel.read_data import datos_ac, datos_dc
+                # TODO: ¿cómo yo se el nombre y las fechas?¿lo debería enlazar para cada fecha?
+                input_dict['ECM'] = {
+                    'ac_data': datos_ac('Cochrane', '2017-01-01 00:00:00', '2017-01-01 23:59:00'),
+                    'dc_data': datos_dc('Linea1', '2017-01-01 00:00:00', '2017-01-01 23:59:00')
+                }
+
     return input_dict
