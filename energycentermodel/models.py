@@ -31,7 +31,7 @@ class Atributos_Vias(models.Model):
     # en metros
     Resistividad = models.FloatField()
     # Ω/m
-    Nrieles = models.IntegerField(max_length=100)
+    Nrieles = models.IntegerField()
 
 
 class Lista_Elementos_DC(models.Model):
