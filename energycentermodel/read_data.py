@@ -205,7 +205,7 @@ def leer_escenarios_ac(data_dict, fecha_ini, fecha_fin):
             PerfilPV = dict()
             for row in results:
                 PerfilPV[row.Fecha] = {
-                    'P': row.p
+                    'P': row.P
                 }
             # Guardar datos de simulación
             PerfilPVSim[PVacID] = PerfilPV
