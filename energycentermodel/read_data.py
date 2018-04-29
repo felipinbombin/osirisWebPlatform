@@ -125,7 +125,7 @@ def leer_atributos_ac(red_ac_id, data_dict):
         PVacData = dict()
         for row in ListaPVAC:
             # Obtener ID de cada módulo
-            PVACID = row.PVac_id
+            PVACID = row.PVac_ID
             voltaje = row.Vnom
             capacidad = row.Snom
             term_id = row.Term_ID
