@@ -60,6 +60,8 @@ class Atributos_Trenes(models.Model):
     # define si se encuentra o no en operación
     Save = models.BooleanField()
     # True si se desea guardar los resultados de las simulaciones
+    x0 = models.FloatField()
+    p0 = models.IntegerField()
 
 
 class Atributos_SER(models.Model):
@@ -172,7 +174,7 @@ class Atributos_Cables(models.Model):
     """
     Cable_ID = models.CharField(max_length=100)
     Red_ID = models.CharField(max_length=100)
-    En_operacion = models.FloatField()
+    En_operacion = models.BooleanField()
     Term_ID1 = models.CharField(max_length=100)
     Term_ID2 = models.CharField(max_length=100)
     Largo = models.FloatField()
