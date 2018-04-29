@@ -6,14 +6,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('energycentermodel', '0002_auto_20180428_1227'),
+        ('energycentermodel', '0004_auto_20180428_2318'),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='atributos_cables',
+        migrations.AddField(
+            model_name='atributos_trenes',
             name='En_operacion',
-        )
+            field=models.BooleanField(),
+            preserve_default=False,
+        ),
     ]
