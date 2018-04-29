@@ -17,4 +17,10 @@ class Migration(migrations.Migration):
             field=models.BooleanField(),
             preserve_default=False,
         ),
+        migrations.AddField(
+            model_name='atributos_cables',
+            name='En_operacion',
+            field=models.BooleanField(default=1),
+            preserve_default=False,
+        ),
     ]
