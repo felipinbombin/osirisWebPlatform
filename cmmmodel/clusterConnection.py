@@ -8,6 +8,7 @@ from io import BytesIO
 from cmmmodel.models import ModelExecutionHistory, CMMModel, ModelExecutionQueue
 from cmmmodel.firstInput import first_input
 from scene.models import Scene
+from energycentermodel.read_data import datos_ac, datos_dc
 
 import paramiko
 import os
@@ -165,8 +166,6 @@ def get_input_data(scene_id, model_id):
 
             if model_id == CMMModel.ENERGY_CENTER_MODEL_ID:
                 # add additional data
-                from energycentermodel.read_data import datos_ac, datos_dc
-                # TODO: ¿cómo yo se el nombre y las fechas?¿lo debería enlazar para cada fecha?
                 input_dict = pickle.loads(input_dict)
                 input_dict['ECM'] = {
                     'ac_data': datos_ac('Cochrane', '2017-01-01 00:00:00', '2017-01-01 23:59:00'),
