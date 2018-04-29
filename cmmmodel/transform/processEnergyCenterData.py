@@ -37,12 +37,10 @@ class ProcessEnergyCenterData(ProcessData):
 
     def load(self, data):
         self.delete_previous_data()
-        results = data['ECM']
 
-        saveACresults('Cochrane', results, 'sim1')
-
+        saveACresults('Cochrane', data, 'sim1')
         # Guardar resultados de simulaciones de líneas en base de datos
-        for lineaID, lineaRes in results['Lineas'].items():
+        for lineaID, lineaRes in data['Lineas'].items():
             saveDCresults(lineaID, lineaRes, 'sim1')
 
     def create_excel_file(self, data):
