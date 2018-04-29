@@ -421,7 +421,7 @@ def leer_escenarios_dc(lLinea_id, data_dict, fecha_ini, fecha_fin):
         # Recuperar arreglo de fechas
         fechas = [row.Fecha for row in results]
         # Obtener lista perfilPV para simulación
-        MPPT = [row.p for row in results]
+        MPPT = [row.P for row in results]
         perfil_pv_dict[PVID] = {
             'Fechas': fechas,
             'P': MPPT
