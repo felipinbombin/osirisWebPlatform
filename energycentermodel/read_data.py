@@ -24,7 +24,7 @@ def leer_atributos_ac(red_ac_id, data_dict):
     for row in results:
         term_data_dict[row.Term_ID] = {
             'Vnom': row.Vnom,
-            'Save': row.save
+            'Save': row.Save
         }
     # Guardar diccionario con atributos de terminales en diccionario de datos de red AC
     atributos['TermData'] = term_data_dict
