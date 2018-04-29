@@ -399,7 +399,7 @@ def leer_escenarios_dc(lLinea_id, data_dict, fecha_ini, fecha_fin):
         # Obtener lista de posiciones para simulación
         bitacora_dict = dict()
         for row in results:
-            bitacora_dict[row['fecha']] = {
+            bitacora_dict[row.Fecha] = {
                 'pos': row.Posicion,
                 'P': row.Potencia
             }
