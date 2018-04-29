@@ -55,7 +55,7 @@ def leer_atributos_ac(red_ac_id, data_dict):
             'X': reactancia,
             'HV': HVTermID,
             'LV': LVTermID,
-            'Save': row.save
+            'Save': row.Save
         }
 
     # Guardar diccionario con atributos de trafos en diccionario de datos de red AC
@@ -110,7 +110,7 @@ def leer_atributos_ac(red_ac_id, data_dict):
             'Vac': Vac,
             'Snom': capacidad,
             'TermID': term_id,
-            'Save': row.save
+            'Save': row.Save
         }
 
     # Guardar diccionario con atributos de CDC en diccionario de datos de red AC
@@ -173,7 +173,7 @@ def leer_atributos_ac(red_ac_id, data_dict):
             'c': capacitancia,
             'Term1': Term1ID,
             'Term2': Term2ID,
-            'Save': row.save
+            'Save': row.Save
         }
 
     # Guardar diccionario con atributos de cables en diccionario de datos de red AC
@@ -187,8 +187,6 @@ def leer_atributos_ac(red_ac_id, data_dict):
 
 # Funcion para leer datos de atributos de objetos de red AC
 def leer_escenarios_ac(data_dict, fecha_ini, fecha_fin):
-    # Resetear diccionario de datos generales
-    data_dict['Escenario'] = dict()
     # Crear diccionario de datos para red ac
     escenario_dict = dict()
     # Si hay una red con atributos definida en el diccionario de datos, empezar a rescatar datos de simulación
@@ -382,8 +380,6 @@ def leer_atributos_dc(linea_id, data_dict):
 
 # Funcion para leer datos de atributos de objetos de red AC
 def leer_escenarios_dc(lLinea_id, data_dict, fecha_ini, fecha_fin):
-    # Resetear diccionario de datos generales
-    data_dict['Escenario'] = dict()
     # Crear diccionario de datos para red ac
     escenario_dict = dict()
 
