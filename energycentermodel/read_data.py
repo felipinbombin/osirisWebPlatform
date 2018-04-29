@@ -225,8 +225,8 @@ def leer_escenarios_ac(data_dict, fecha_ini, fecha_fin):
             PerfilSAF = dict()
             for row in results:
                 PerfilSAF[row.Fecha] = {
-                    'P': row.p,
-                    'Q': row.q
+                    'P': row.P,
+                    'Q': row.Q
                 }
             # Guardar datos de simulación
             PerfilSAFSim[SAFID] = PerfilSAF
