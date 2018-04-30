@@ -7,7 +7,7 @@ class ConnectionException(Exception):
 
 
 class CheckConnectionStatusTest(TestCase):
-
+    """ check that server can connect to cluster """
 
     def test_ExectCommandWithRealConnection(self):
         """  """
