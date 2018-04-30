@@ -433,8 +433,8 @@ def leer_escenarios_dc(lLinea_id, data_dict, fecha_ini, fecha_fin):
 def datos_dc(linea_id, fecha_ini, fecha_fin):
     data_dict = dict()
 
-    fecha_ini = datetime.strptime(fecha_ini, '%A-%m-%d %H:%M:%S')
-    fecha_fin = datetime.strptime(fecha_fin, '%A-%m-%d %H:%M:%S')
+    fecha_ini = datetime.strptime(fecha_ini, '%Y-%m-%d %H:%M:%S')
+    fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d %H:%M:%S')
 
     leer_atributos_dc(linea_id, data_dict)
     leer_escenarios_dc(linea_id, data_dict, fecha_ini, fecha_fin)
@@ -446,8 +446,8 @@ def datos_dc(linea_id, fecha_ini, fecha_fin):
 def datos_ac(red_ac_id, fecha_ini, fecha_fin):
     data_dict = dict()
 
-    fecha_ini = datetime.strptime(fecha_ini, '%A-%m-%d %H:%M:%S')
-    fecha_fin = datetime.strptime(fecha_fin, '%A-%m-%d %H:%M:%S')
+    fecha_ini = datetime.strptime(fecha_ini, '%Y-%m-%d %H:%M:%S')
+    fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d %H:%M:%S')
 
     leer_atributos_ac(red_ac_id, data_dict)
     leer_escenarios_ac(data_dict, fecha_ini, fecha_fin)
