@@ -223,6 +223,15 @@ class Perfiles_SAF(models.Model):
 
 # tablas para almacenar resultados
 
+class Resumen_Simulaciones_DC(models.Model):
+    """
+
+    """
+    e_ser = models.FloatField()
+    e_trenes = models.FloatField()
+    e_perdidas = models.FloatField()
+    e_almacenable = models.FloatField()
+
 
 class Resultados_Elementos_DC(models.Model):
     """
