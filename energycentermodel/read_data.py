@@ -5,7 +5,7 @@ from energycentermodel.models import Atributos_Terminales, Atributos_Trafos, Atr
     Lista_Elementos_DC, Atributos_SER, Atributos_PVdc, Bitacora_trenes
 
 import warnings
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Funcion para leer datos de atributos de objetos de red AC
 def leer_atributos_ac(red_ac_id, data_dict):
@@ -436,9 +436,6 @@ def datos_dc(linea_id, fecha_ini, fecha_fin):
     fecha_ini = datetime.strptime(fecha_ini, '%Y-%m-%d %H:%M:%S')
     fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d %H:%M:%S')
 
-    fecha_ini = fecha_ini - timedelta(hours=3)
-    fecha_fin = fecha_fin - timedelta(hours=3)
-
     leer_atributos_dc(linea_id, data_dict)
     leer_escenarios_dc(linea_id, data_dict, fecha_ini, fecha_fin)
 
@@ -451,9 +448,6 @@ def datos_ac(red_ac_id, fecha_ini, fecha_fin):
 
     fecha_ini = datetime.strptime(fecha_ini, '%Y-%m-%d %H:%M:%S')
     fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d %H:%M:%S')
-
-    fecha_ini = fecha_ini - timedelta(hours=3)
-    fecha_fin = fecha_fin - timedelta(hours=3)
 
     leer_atributos_ac(red_ac_id, data_dict)
     leer_escenarios_ac(data_dict, fecha_ini, fecha_fin)
