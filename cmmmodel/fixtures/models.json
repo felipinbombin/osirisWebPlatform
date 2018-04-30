@@ -35,7 +35,7 @@
     "fields": {
       "name": "Centro de energía",
       "vizURL": "/viz/energyCenter/{0}",
-      "clusterExecutionId": "CE",
+      "clusterExecutionId": "EC",
       "modelRequired": 3
     }
   },
@@ -46,7 +46,7 @@
       "name": "Temperatura",
       "vizURL": "/viz/heat/{0}",
       "clusterExecutionId": "T",
-      "modelRequired": 4
+      "modelRequired": 3
     }
   }
 ]
