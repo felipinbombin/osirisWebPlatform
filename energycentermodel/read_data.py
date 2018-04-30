@@ -10,18 +10,16 @@ from energycentermodel.models import Atributos_Terminales, Atributos_Trafos, Atr
 def leer_atributos_ac(red_ac_id, data_dict):
     # Crear diccionario de datos para red ac
     atributos = dict()
-    # Resetear diccionario de datos generales
-    data_dict['Atributos'] = dict()
 
     # Crear terminales en lado AC para red respectiva
 
     # Crear diccionario para datos de terminales
     term_data_dict = dict()
-    results = Atributos_Terminales.objects.filter(Red_ID=red_ac_id)
-    if len(results) == 0:
+    query_set = Atributos_Terminales.objects.filter(Red_ID=red_ac_id)
+    if query_set.exists():
         raise ValueError(
             'No se encuentran terminales para la red especificada. No es posible construir la topología')
-    for row in results:
+    for row in query_set:
         term_data_dict[row.Term_ID] = {
             'Vnom': row.Vnom,
             'Save': row.Save
@@ -240,8 +238,6 @@ def leer_escenarios_ac(data_dict, fecha_ini, fecha_fin):
 
 # Funcion para leer datos de atributos de objetos de red DC
 def leer_atributos_dc(linea_id, data_dict):
-    # Resetear diccionario de datos generales
-    data_dict['Atributos'] = dict()
     # Crear diccionario de datos para red ac
     atributos = dict()
 
