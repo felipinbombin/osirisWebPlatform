@@ -93,7 +93,7 @@ class Atributos_PVdc(models.Model):
     PVdc_ID = models.CharField(max_length=100)
     Linea_ID = models.CharField(max_length=100)
     Via = models.CharField(max_length=100)
-    PosVia = models.CharField(max_length=100)
+    PosVia = models.FloatField()
     En_operacion = models.BooleanField()
     PerfilPV = models.CharField(max_length=100)
     Save = models.BooleanField()
