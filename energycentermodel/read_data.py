@@ -17,15 +17,16 @@ def leer_atributos_ac(red_ac_id, data_dict):
     term_data_dict = dict()
     query_set = Atributos_Terminales.objects.filter(Red_ID=red_ac_id)
     if query_set.exists():
+        for row in query_set:
+            term_data_dict[row.Term_ID] = {
+                'Vnom': row.Vnom,
+                'Save': row.Save
+            }
+        # Guardar diccionario con atributos de terminales en diccionario de datos de red AC
+        atributos['TermData'] = term_data_dict
+    else:
         raise ValueError(
             'No se encuentran terminales para la red especificada. No es posible construir la topología')
-    for row in query_set:
-        term_data_dict[row.Term_ID] = {
-            'Vnom': row.Vnom,
-            'Save': row.Save
-        }
-    # Guardar diccionario con atributos de terminales en diccionario de datos de red AC
-    atributos['TermData'] = term_data_dict
 
     # Crear transformadores de red AC
 
