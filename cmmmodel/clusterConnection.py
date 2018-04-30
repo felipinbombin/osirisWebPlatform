@@ -167,7 +167,7 @@ def get_input_data(scene_id, model_id):
             if model_id == CMMModel.ENERGY_CENTER_MODEL_ID:
                 # add additional data
                 input_dict = pickle.loads(input_dict)
-                input_dict['ECM'] = {
+                input_dict['input']['ECM'] = {
                     'ac_data': datos_ac('Cochrane', '2017-01-01 00:00:00', '2017-01-01 23:59:00'),
                     'dc_data': datos_dc('Linea1', '2017-01-01 00:00:00', '2017-01-01 23:59:00')
                 }
