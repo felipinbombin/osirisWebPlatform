@@ -227,6 +227,7 @@ class Resumen_Simulaciones_DC(models.Model):
     """
 
     """
+    sim_id = models.CharField(max_length=100)
     e_ser = models.FloatField()
     e_trenes = models.FloatField()
     e_perdidas = models.FloatField()
@@ -237,12 +238,12 @@ class Resultados_Elementos_DC(models.Model):
     """
 
     """
-    Sim_ID = models.CharField(max_length=100)
-    Fecha = models.DateTimeField()
-    Elemento_ID = models.CharField(max_length=100)
-    Linea_ID = models.CharField(max_length=100)
-    V = models.FloatField()
-    P = models.FloatField()
+    sim_id = models.CharField(max_length=100)
+    fecha = models.DateTimeField()
+    elemento_id = models.CharField(max_length=100)
+    linea_id = models.CharField(max_length=100)
+    v = models.FloatField()
+    p = models.FloatField()
 
 
 
@@ -250,27 +251,27 @@ class Resultados_Terminales(models.Model):
     """
 
     """
-    Sim_ID = models.CharField(max_length=100)
-    Fecha = models.DateTimeField()
-    Term_ID = models.CharField(max_length=100)
-    Red_ID = models.CharField(max_length=100)
-    V = models.FloatField()
+    sim_id = models.CharField(max_length=100)
+    fecha = models.DateTimeField()
+    term_id = models.CharField(max_length=100)
+    red_id = models.CharField(max_length=100)
+    v = models.FloatField()
     delta = models.FloatField()
-    P = models.FloatField()
-    Q = models.FloatField()
+    p = models.FloatField()
+    q = models.FloatField()
 
 
 class Resultados_Branch(models.Model):
     """
 
     """
-    Sim_ID = models.CharField(max_length=100)
-    Fecha = models.DateTimeField()
-    Branch_ID = models.CharField(max_length=100)
-    Red_ID = models.CharField(max_length=100)
-    Pf = models.FloatField()
-    Qf = models.FloatField()
-    Ploss = models.FloatField()
-    Qloss = models.FloatField()
-    Loading = models.FloatField()
+    sim_id = models.CharField(max_length=100)
+    fecha = models.DateTimeField()
+    branch_id = models.CharField(max_length=100)
+    red_id = models.CharField(max_length=100)
+    pf = models.FloatField()
+    qf = models.FloatField()
+    ploss = models.FloatField()
+    qloss = models.FloatField()
+    loading = models.FloatField()
 
