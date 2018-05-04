@@ -12,12 +12,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='atributos_trenes',
-            name='En_operacion',
-            field=models.BooleanField(),
-            preserve_default=False,
-        ),
-        migrations.AddField(
             model_name='atributos_cables',
             name='En_operacion',
             field=models.BooleanField(default=1),

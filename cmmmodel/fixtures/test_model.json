@@ -1,6 +1,6 @@
 [
   {
-    "model": "cmmmodel.model",
+    "model": "cmmmodel.cmmmodel",
     "pk": 999,
     "fields": {
       "name": "Test",
