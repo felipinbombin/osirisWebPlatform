@@ -16,6 +16,7 @@ class ModelExecutionHistoryAdmin(admin.ModelAdmin):
     get_username.short_description = "usuario"
     fields = (('scene', 'model'), ('start', 'end'), 'status', ('jobNumber', 'externalId'), 'std_out', 'std_err', 'answer')
     list_display = ('get_username', 'scene', 'model', 'start', 'end', 'status', 'jobNumber', 'externalId')
+    readonly_fields = ('scene', 'model', 'start', 'end', 'status', 'jobNumber', 'externalId')
 
 
 admin.site.register(CMMModel, CMMModelAdmin)
