@@ -7,6 +7,7 @@ from energycentermodel.models import Atributos_Terminales, Atributos_Trafos, Atr
 import warnings
 from datetime import datetime
 
+
 # Funcion para leer datos de atributos de objetos de red AC
 def leer_atributos_ac(red_ac_id, data_dict):
     # Crear diccionario de datos para red ac
@@ -304,37 +305,33 @@ def leer_atributos_dc(linea_id, data_dict):
         # Obtener ID de cada SER
         ser_id = row.Elemento_ID
         # Sacar vias que alimenta cada SER
-        try:
-            results = Atributos_SER.objects.filter(ser_id=ser_id, En_operacion=True)
-            # Obtener IDs de Vias alimentadas por cada SER
-            ViasIDSER = set(row.Via_ID for row in results)
-            # recuperar objetos de vias respectivos
-            # RECORDATORIO: POR AHORA LOS SER ESTAN PENSADOS PARA ALIMENTAR VARIAS VIAS, POR LO QUE PODRIAN
-            # TENER MAS DE UNA POSICION, RESISTENCIA, ETC... PERO EL CODIGO ESTA CONSIDERANDO LOS MISMOS
-            # PARAMETROS PARA CADA VIA (pendiente para próxima actualización)
-            # Obtener ID de terminal de conexión para cada SER
-            TermID = set(row.Term_ID for row in results).pop()
-            # Definir el resto de los parámetros de cada SER
-            PosSER = set(row.PosVia for row in results).pop()
-            VacSER = set(row.Vac for row in results).pop()
-            VdcSER = set(row.Vdc for row in results).pop()
-            RSER = set(row.Resistencia for row in results).pop()
-            Save = set(row.Save for row in results).pop()
-            # Guardar datos en diccionario
-            SERData[ser_id] = {
-                'Vias': ViasIDSER,
-                'pos': PosSER,
-                'Vac': VacSER,
-                'Vdc': VdcSER,
-                'R': RSER,
-                'TermID': TermID,
-                'Save': Save
-            }
-        except:
-            pass
+        results = Atributos_SER.objects.filter(SER_ID=ser_id, En_operacion=True)
+        # Obtener IDs de Vias alimentadas por cada SER
+        ViasIDSER = set(row.Via_ID for row in results)
+        # recuperar objetos de vias respectivos
+        # RECORDATORIO: POR AHORA LOS SER ESTAN PENSADOS PARA ALIMENTAR VARIAS VIAS, POR LO QUE PODRIAN
+        # TENER MAS DE UNA POSICION, RESISTENCIA, ETC... PERO EL CODIGO ESTA CONSIDERANDO LOS MISMOS
+        # PARAMETROS PARA CADA VIA (pendiente para próxima actualización)
+        # Obtener ID de terminal de conexión para cada SER
+        TermID = set(row.Term_ID for row in results).pop()
+        # Definir el resto de los parámetros de cada SER
+        PosSER = set(row.PosVia for row in results).pop()
+        VacSER = set(row.Vac for row in results).pop()
+        VdcSER = set(row.Vdc for row in results).pop()
+        RSER = set(row.Resistencia for row in results).pop()
+        Save = set(row.Save for row in results).pop()
+        # Guardar datos en diccionario
+        SERData[ser_id] = {
+            'Vias': ViasIDSER,
+            'pos': PosSER,
+            'Vac': VacSER,
+            'Vdc': VdcSER,
+            'R': RSER,
+            'TermID': TermID,
+            'Save': Save
+        }
     # Guardar diccionario con atributos de SER en diccionario de datos de línea para tracción
     atributos['SERData'] = SERData
-
 
     # módulos PV en lado de tracción
     try:
