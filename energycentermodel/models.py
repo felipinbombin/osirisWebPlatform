@@ -75,11 +75,11 @@ class Atributos_SER(models.Model):
     Term_ID = models.CharField(max_length=100)
     # terminal de conexión a su red de suministro AC
     En_operacion = models.BooleanField()
-    PosVia = models.FloatField()
+    PosVia = models.IntegerField()
     # [m]
     Resistencia = models.FloatField()
     # [Ω]
-    Vdc = models.FloatField()
+    Vdc = models.IntegerField()
     # [V]
     Vac = models.FloatField()
     # [kV]

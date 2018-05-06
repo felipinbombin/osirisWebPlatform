@@ -343,25 +343,22 @@ def leer_atributos_dc(linea_id, data_dict):
             # Obtener ID de cada SER
             PVDCID = row.Elemento_ID
             # Sacar vias que alimenta cada SER
-            try:
-                results = Atributos_PVdc.objects.filter(Linea_ID=linea_id, En_operacion=True)
-                # Obtener IDs de Vias alimentadas por cada SER
-                ViasIDPVDC = set(row.Via for row in results)
-                # RECORDATORIO: POR AHORA LOS PV ESTAN PENSADOS PARA ALIMENTAR VARIAS VIAS, POR LO QUE PODRIAN
-                # TENER MAS DE UNA POSICION, RESISTENCIA, ETC... PERO EL CODIGO ESTA CONSIDERANDO LOS MISMOS
-                # PARAMETROS PARA CADA VIA (pendiente para próxima actualización)
-                PosPVDC = set(row.PosVia for row in results).pop()
-                PerfilPVDC = set(row.PerfilPV for row in results).pop()
-                Save = set(row.Save for row in results).pop()
-                # Agregar PVdc sin perfil, el cual se agrega una vez se realiza la simulación filtrando por fecha
-                PVdcData[PVDCID] = {
-                    'Vias': ViasIDPVDC,
-                    'pos': PosPVDC,
-                    'Perfil': PerfilPVDC,
-                    'Save': Save
-                }
-            except:
-                pass
+            results = Atributos_PVdc.objects.filter(Linea_ID=linea_id, En_operacion=True)
+            # Obtener IDs de Vias alimentadas por cada SER
+            ViasIDPVDC = set(row.Via for row in results)
+            # RECORDATORIO: POR AHORA LOS PV ESTAN PENSADOS PARA ALIMENTAR VARIAS VIAS, POR LO QUE PODRIAN
+            # TENER MAS DE UNA POSICION, RESISTENCIA, ETC... PERO EL CODIGO ESTA CONSIDERANDO LOS MISMOS
+            # PARAMETROS PARA CADA VIA (pendiente para próxima actualización)
+            PosPVDC = set(row.PosVia for row in results).pop()
+            PerfilPVDC = set(row.PerfilPV for row in results).pop()
+            Save = set(row.Save for row in results).pop()
+            # Agregar PVdc sin perfil, el cual se agrega una vez se realiza la simulación filtrando por fecha
+            PVdcData[PVDCID] = {
+                'Vias': ViasIDPVDC,
+                'pos': PosPVDC,
+                'Perfil': PerfilPVDC,
+                'Save': Save
+            }
         # Guardar diccionario con atributos de módulos PV en diccionario de datos de línea para tracción
         atributos['PVdcData'] = PVdcData
     except:
