@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import warnings
+
+from django.utils import dateparse
+from django.utils.timezone import utc
+
 from energycentermodel.models import Atributos_Terminales, Atributos_Trafos, Atributos_SAF, Atributos_CDC, \
     Atributos_PVAC, Atributos_Cables, Perfiles_PV, Perfiles_SAF, Atributos_Lineas, Atributos_Vias, Atributos_Trenes, \
     Lista_Elementos_DC, Atributos_SER, Atributos_PVdc, Bitacora_trenes
-
-import warnings
-from datetime import datetime
 
 
 # Funcion para leer datos de atributos de objetos de red AC
@@ -427,8 +429,8 @@ def leer_escenarios_dc(lLinea_id, data_dict, fecha_ini, fecha_fin):
 def datos_dc(linea_id, fecha_ini, fecha_fin):
     data_dict = dict()
 
-    fecha_ini = datetime.strptime(fecha_ini, '%Y-%m-%d %H:%M:%S')
-    fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d %H:%M:%S')
+    fecha_ini = dateparse.parse_datetime(fecha_ini).replace(tzinfo=utc)
+    fecha_fin = dateparse.parse_datetime(fecha_fin).replace(tzinfo=utc)
 
     leer_atributos_dc(linea_id, data_dict)
     leer_escenarios_dc(linea_id, data_dict, fecha_ini, fecha_fin)
@@ -440,8 +442,8 @@ def datos_dc(linea_id, fecha_ini, fecha_fin):
 def datos_ac(red_ac_id, fecha_ini, fecha_fin):
     data_dict = dict()
 
-    fecha_ini = datetime.strptime(fecha_ini, '%Y-%m-%d %H:%M:%S')
-    fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d %H:%M:%S')
+    fecha_ini = dateparse.parse_datetime(fecha_ini).replace(tzinfo=utc)
+    fecha_fin = dateparse.parse_datetime(fecha_fin).replace(tzinfo=utc)
 
     leer_atributos_ac(red_ac_id, data_dict)
     leer_escenarios_ac(data_dict, fecha_ini, fecha_fin)
