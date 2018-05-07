@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Ejemplo que sirve para linéa de tracción DC independiente
 
-import energycentermodel.RedLineas as line_network
+import energycentermodel.tests.RedLineas as line_network
 import energycentermodel.read_data as read_data
 import energycentermodel.save_data as save_data
 

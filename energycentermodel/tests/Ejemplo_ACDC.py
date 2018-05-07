@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
 # Ejemplo que sirve para simular red AC y linéa de tracción DC de forma secuencial
+import os
 
-import energycentermodel.RedAC as ac_network
-import energycentermodel.RedLineas as line_network
+import django
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'osirisWebPlatform.settings'
+django.setup()
+
+
+import energycentermodel.tests.RedAC as ac_network
+import energycentermodel.tests.RedLineas as line_network
 import energycentermodel.read_data as read_data
 import energycentermodel.save_data as save_data
 

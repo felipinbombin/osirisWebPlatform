@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Ejemplo que sirve para simular red AC independiente
-import energycentermodel.RedAC as ac_network
+import energycentermodel.tests.RedAC as ac_network
 import energycentermodel.read_data as read_data
 import energycentermodel.save_data as save_data
 
