@@ -2,8 +2,9 @@
 
 import warnings
 
+import pytz
+from django.conf import settings
 from django.utils import dateparse
-from django.utils.timezone import utc
 
 from energycentermodel.models import Atributos_Terminales, Atributos_Trafos, Atributos_SAF, Atributos_CDC, \
     Atributos_PVAC, Atributos_Cables, Perfiles_PV, Perfiles_SAF, Atributos_Lineas, Atributos_Vias, Atributos_Trenes, \
@@ -397,6 +398,7 @@ def leer_escenarios_dc(lLinea_id, data_dict, fecha_ini, fecha_fin):
         bitacora_tren_dict[tren_id] = bitacora_dict
 
     # Guardar bitácoras en diccionario de perfiles para simulaciones
+    # print(str(bitacora_tren_dict).replace('\'', '"').replace('True', 'true').replace('False', 'false'))
     escenario_dict['Trenes'] = bitacora_tren_dict
 
     # Extraer y asignar perfiles PVdc
@@ -429,8 +431,10 @@ def leer_escenarios_dc(lLinea_id, data_dict, fecha_ini, fecha_fin):
 def datos_dc(linea_id, fecha_ini, fecha_fin):
     data_dict = dict()
 
-    fecha_ini = dateparse.parse_datetime(fecha_ini).replace(tzinfo=utc)
-    fecha_fin = dateparse.parse_datetime(fecha_fin).replace(tzinfo=utc)
+    fecha_ini = dateparse.parse_datetime(fecha_ini)
+    fecha_fin = dateparse.parse_datetime(fecha_fin)
+    fecha_ini = pytz.timezone(settings.TIME_ZONE).localize(fecha_ini)
+    fecha_fin = pytz.timezone(settings.TIME_ZONE).localize(fecha_fin)
 
     leer_atributos_dc(linea_id, data_dict)
     leer_escenarios_dc(linea_id, data_dict, fecha_ini, fecha_fin)
@@ -442,8 +446,10 @@ def datos_dc(linea_id, fecha_ini, fecha_fin):
 def datos_ac(red_ac_id, fecha_ini, fecha_fin):
     data_dict = dict()
 
-    fecha_ini = dateparse.parse_datetime(fecha_ini).replace(tzinfo=utc)
-    fecha_fin = dateparse.parse_datetime(fecha_fin).replace(tzinfo=utc)
+    fecha_ini = dateparse.parse_datetime(fecha_ini)
+    fecha_fin = dateparse.parse_datetime(fecha_fin)
+    fecha_ini = pytz.timezone(settings.TIME_ZONE).localize(fecha_ini)
+    fecha_fin = pytz.timezone(settings.TIME_ZONE).localize(fecha_fin)
 
     leer_atributos_ac(red_ac_id, data_dict)
     leer_escenarios_ac(data_dict, fecha_ini, fecha_fin)
