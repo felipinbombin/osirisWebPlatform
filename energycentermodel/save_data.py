@@ -4,6 +4,10 @@ from django.db import transaction, DatabaseError
 from energycentermodel.models import Resultados_Terminales, Resultados_Elementos_DC, Resultados_Branch, \
     Resumen_Simulaciones_DC
 
+import pytz
+from django.conf import settings
+from django.utils import dateparse
+
 
 def saveACresults(RedAC, ResData, simID):
     # Guardar resultados de simulación para cada terminal
@@ -15,6 +19,7 @@ def saveACresults(RedAC, ResData, simID):
         Q = list()
 
         for fecha, Res in BusRes.items():
+            fecha = pytz.timezone(settings.TIME_ZONE).localize(dateparse.parse_datetime(fecha))
             fechas.append(fecha)
             V.append(Res['V'])
             delta.append(Res['delta'])
@@ -46,6 +51,7 @@ def saveACresults(RedAC, ResData, simID):
         Qloss = list()
         Loading = list()
         for fecha, Res in BranchRes.items():
+            fecha = pytz.timezone(settings.TIME_ZONE).localize(dateparse.parse_datetime(fecha))
             fechas.append(fecha)
             Pf.append(Res['Pf'])
             Qf.append(Res['Qf'])
@@ -86,6 +92,7 @@ def saveDCresults(Linea, ResData, simID):
         V = list()
         P = list()
         for fecha, Res in TrenRes.items():
+            fecha = pytz.timezone(settings.TIME_ZONE).localize(dateparse.parse_datetime(fecha))
             fechas.append(fecha)
             V.append(Res['V'])
             P.append(Res['P'])
@@ -107,6 +114,7 @@ def saveDCresults(Linea, ResData, simID):
         V = list()
         P = list()
         for fecha, Res in SERRes.items():
+            fecha = pytz.timezone(settings.TIME_ZONE).localize(dateparse.parse_datetime(fecha))
             fechas.append(fecha)
             V.append(Res['V'])
             P.append(Res['P'])
@@ -130,6 +138,7 @@ def saveDCresults(Linea, ResData, simID):
         V = list()
         P = list()
         for fecha, Res in PVdcRes.items():
+            fecha = pytz.timezone(settings.TIME_ZONE).localize(dateparse.parse_datetime(fecha))
             fechas.append(fecha)
             V.append(Res['V'])
             P.append(Res['P'])
