@@ -41,7 +41,7 @@ class EnergyModelViz(View):
         for key in ProcessEnergyCenterData.dictionary_group.keys():
             charts.append({
                 "value": key,
-                "item": _(ProcessEnergyData.dictionary_group[key])
+                "item": _(ProcessEnergyCenterData.dictionary_group[key])
             })
         self.context["charts"] = charts
         self.context["execution_obj"] = ModelExecutionHistory.objects.filter(scene=scene_obj,
