@@ -171,14 +171,14 @@ def get_input_data(scene_id, model_id):
                 input_dict = pickle.loads(input_dict)
 
                 # save trains in bitacora_trenes table
-                bitacora = input_dict['output']['EM']['bitacora']
+                train_schedule = input_dict['output']['EM']['bitacora']
 
-                for line_name in bitacora:
-                    for via in bitacora[line_name]:
-                        for train_name in bitacora[line_name][via]:
-                            print(len(bitacora[line_name][via][train_name]))
+                for line_name in train_schedule:
+                    for via in train_schedule[line_name]:
+                        for train_name in train_schedule[line_name][via]:
+                            print(len(train_schedule[line_name][via][train_name]))
                             """
-                            for row in bitacora[line_name][via][train_name]:
+                            for row in train_schedule[line_name][via][train_name]:
                                 date = pytz.timezone(settings.TIME_ZONE).localize(row[0])
                                 query_set = Bitacora_trenes.objects.filter(Tren_ID=train_name, Linea_ID=line_name,
                                                                            Fecha=date, Via=via)
