@@ -2,6 +2,7 @@ import gzip
 import os
 import pickle
 import uuid
+from shutil import copyfile
 
 from django.test import TestCase
 from django.utils import timezone
@@ -37,13 +38,39 @@ class ExecuteModel(TestCase):
 
         self.api_helper = APIHelper(self.testHelper, self.scene_obj, TEST_MODEL_ID)
 
+    def create_topologic_system(self):
+        """ create fake topologic system to test process data answer (for viz and excel file) """
+
+        l1 = MetroLine.objects.create(scene=self.scene_obj, name="L1", externalId=uuid.uuid4())
+
+        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=l1) for
+                    index in range(1, 11)]
+        for index, station in enumerate(stations[:-1]):
+            MetroTrack.objects.create(metroLine=l1, name="Track{}".format(index),
+                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
+
+        l2 = MetroLine.objects.create(scene=self.scene_obj, name="L2", externalId=uuid.uuid4())
+        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=l2) for
+                    index in range(12, 24)]
+        for index, station in enumerate(stations[:-1]):
+            MetroTrack.objects.create(metroLine=l2, name="Track{}".format(index),
+                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
+
+        OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP1",
+                                       start="09:00:00", end="10:00:00", temperature=0, humidity=0,
+                                       co2Concentration=0,
+                                       solarRadiation=0, sunElevationAngle=0)
+        OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP2",
+                                       start="10:00:00", end="11:00:00", temperature=0, humidity=0,
+                                       co2Concentration=0,
+                                       solarRadiation=0, sunElevationAngle=0)
+
     def test_saveJob(self):
         """ simulate a call from cluster after finish model execution to saveJobResponse file """
 
         # simulate scene is ready to run
         self.scene_obj.status = Scene.OK
         self.scene_obj.save()
-        from shutil import copyfile
         # create execution record
         file_name = "speed.model_output.gz"
         # print(file_path)
@@ -75,33 +102,6 @@ class ExecuteModel(TestCase):
         save_model_response(str(external_id), file_path, std_out, std_err)
         meh.refresh_from_db()
         self.assertEqual(meh.status, ModelExecutionHistory.ERROR)
-
-    def create_topologic_system(self):
-        """ create fake topologic system to test process data answer (for viz and excel file) """
-
-        l1 = MetroLine.objects.create(scene=self.scene_obj, name="L1", externalId=uuid.uuid4())
-
-        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=l1) for
-                    index in range(1, 11)]
-        for index, station in enumerate(stations[:-1]):
-            MetroTrack.objects.create(metroLine=l1, name="Track{}".format(index),
-                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
-
-        l2 = MetroLine.objects.create(scene=self.scene_obj, name="L2", externalId=uuid.uuid4())
-        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=l2) for
-                    index in range(12, 24)]
-        for index, station in enumerate(stations[:-1]):
-            MetroTrack.objects.create(metroLine=l2, name="Track{}".format(index),
-                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
-
-        OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP1",
-                                       start="09:00:00", end="10:00:00", temperature=0, humidity=0,
-                                       co2Concentration=0,
-                                       solarRadiation=0, sunElevationAngle=0)
-        OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP2",
-                                       start="10:00:00", end="11:00:00", temperature=0, humidity=0,
-                                       co2Concentration=0,
-                                       solarRadiation=0, sunElevationAngle=0)
 
     def test_processSpeedAnswer(self):
         """ test load data from speed model output dict based on situation of file """
