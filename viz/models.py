@@ -42,3 +42,15 @@ class HeatModelTableAnswer(models.Model):
     attributeName = models.CharField(max_length=100)
     group = models.CharField(max_length=15)  # platform_level or second_level
     value = models.FloatField()
+
+
+class EnergyCenterModelAnswer(models.Model):
+    """
+
+    """
+    execution = models.ForeignKey(ModelExecutionHistory, on_delete=models.CASCADE)
+    metroLine = models.CharField(max_length=100)
+    via = models.CharField(max_length=100)
+    attributeName = models.CharField(max_length=100)
+    order = models.IntegerField()
+    value = models.FloatField()
