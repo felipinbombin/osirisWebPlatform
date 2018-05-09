@@ -9,12 +9,14 @@ from cmmmodel.models import ModelExecutionHistory, CMMModel, ModelExecutionQueue
 from cmmmodel.firstInput import first_input
 from scene.models import Scene
 from energycentermodel.read_data import datos_ac, datos_dc
+from energycentermodel.models import Bitacora_trenes
 
 import paramiko
 import os
 import uuid
 import pickle
 import gzip
+import pytz
 
 
 class EnqueuedModelException(Exception):
@@ -167,6 +169,29 @@ def get_input_data(scene_id, model_id):
             if model_id == CMMModel.ENERGY_CENTER_MODEL_ID:
                 # add additional data
                 input_dict = pickle.loads(input_dict)
+
+                # save trains in bitacora_trenes table
+                bitacora = input_dict['output']['EM']['bitacora']
+
+                for line_name in bitacora:
+                    for via in bitacora[line_name]:
+                        for train_name in bitacora[line_name][via]:
+                            print(len(bitacora[line_name][via][train_name]))
+                            """
+                            for row in bitacora[line_name][via][train_name]:
+                                date = pytz.timezone(settings.TIME_ZONE).localize(row[0])
+                                query_set = Bitacora_trenes.objects.filter(Tren_ID=train_name, Linea_ID=line_name,
+                                                                           Fecha=date, Via=via)
+                                with transaction.atomic():
+                                    if not query_set.exists():
+                                        Bitacora_trenes.objects.create(Tren_ID=train_name, Linea_ID=line_name, Fecha=date,
+                                                                       Via=via, Posicion=row[1], Velocidad=row[2],
+                                                                       Aceleracion=row[3], Potencia=row[4])
+                                    else:
+                                        query_set.update(Posicion=row[1], Velocidad=row[2], Aceleracion=row[3],
+                                                         Potencia=row[4])
+                            """
+
                 input_dict['input']['ECM'] = {
                     'ac_data': datos_ac('Cochrane', '2017-01-01 00:00:00', '2017-01-01 23:59:00'),
                     'dc_data': datos_dc('Linea1', '2017-01-01 00:00:00', '2017-01-01 23:59:00')
