@@ -46,7 +46,7 @@ class ExecuteModel(TestCase):
         from shutil import copyfile
         # create execution record
         file_name = "speed.model_output.gz"
-        #print(file_path)
+        # print(file_path)
         std_out = ""
         std_err = ""
         external_id = uuid.uuid4()
@@ -76,119 +76,113 @@ class ExecuteModel(TestCase):
         meh.refresh_from_db()
         self.assertEqual(meh.status, ModelExecutionHistory.ERROR)
 
+    def create_topologic_system(self):
+        """ create fake topologic system to test process data answer (for viz and excel file) """
 
-def create_topologic_system(self):
-    """ create fake topologic system to test process data answer (for viz and excel file) """
+        l1 = MetroLine.objects.create(scene=self.scene_obj, name="L1", externalId=uuid.uuid4())
 
-    l1 = MetroLine.objects.create(scene=self.scene_obj, name="L1", externalId=uuid.uuid4())
+        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=l1) for
+                    index in range(1, 11)]
+        for index, station in enumerate(stations[:-1]):
+            MetroTrack.objects.create(metroLine=l1, name="Track{}".format(index),
+                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
 
-    stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=l1) for
-                index in range(1, 11)]
-    for index, station in enumerate(stations[:-1]):
-        MetroTrack.objects.create(metroLine=l1, name="Track{}".format(index),
-                                  startStation_id=station.id, endStation_id=stations[index + 1].id)
+        l2 = MetroLine.objects.create(scene=self.scene_obj, name="L2", externalId=uuid.uuid4())
+        stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=l2) for
+                    index in range(12, 24)]
+        for index, station in enumerate(stations[:-1]):
+            MetroTrack.objects.create(metroLine=l2, name="Track{}".format(index),
+                                      startStation_id=station.id, endStation_id=stations[index + 1].id)
 
-    l2 = MetroLine.objects.create(scene=self.scene_obj, name="L2", externalId=uuid.uuid4())
-    stations = [MetroStation.objects.create(name="S{}".format(index), externalId=uuid.uuid4(), metroLine=l2) for
-                index in range(12, 24)]
-    for index, station in enumerate(stations[:-1]):
-        MetroTrack.objects.create(metroLine=l2, name="Track{}".format(index),
-                                  startStation_id=station.id, endStation_id=stations[index + 1].id)
+        OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP1",
+                                       start="09:00:00", end="10:00:00", temperature=0, humidity=0,
+                                       co2Concentration=0,
+                                       solarRadiation=0, sunElevationAngle=0)
+        OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP2",
+                                       start="10:00:00", end="11:00:00", temperature=0, humidity=0,
+                                       co2Concentration=0,
+                                       solarRadiation=0, sunElevationAngle=0)
 
-    OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP1",
-                                   start="09:00:00", end="10:00:00", temperature=0, humidity=0,
-                                   co2Concentration=0,
-                                   solarRadiation=0, sunElevationAngle=0)
-    OperationPeriod.objects.create(scene=self.scene_obj, externalId=uuid.uuid4(), name="OP2",
-                                   start="10:00:00", end="11:00:00", temperature=0, humidity=0,
-                                   co2Concentration=0,
-                                   solarRadiation=0, sunElevationAngle=0)
+    def test_processSpeedAnswer(self):
+        """ test load data from speed model output dict based on situation of file """
+        file_name = "speed.model_output.gz"
+        file_path = os.path.join("cmmmodel", "tests", file_name)
 
+        self.create_topologic_system()
 
-def test_processSpeedAnswer(self):
-    """ test load data from speed model output dict based on situation of file """
-    file_name = "speed.model_output.gz"
-    file_path = os.path.join("cmmmodel", "tests", file_name)
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.SPEED_MODEL_ID,
+                                                             externalId=uuid.uuid4(), start=timezone.now())
 
-    self.create_topologic_system()
+        with gzip.open(file_path, "rb") as answer_file:
+            answer = pickle.load(answer_file)
+            answer = answer["output"]
+            process_answer(answer, execution_obj)
 
-    execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.SPEED_MODEL_ID,
-                                                         externalId=uuid.uuid4(), start=timezone.now())
+        self.assertEqual(ModelAnswer.objects.count(), 147132)
 
-    with gzip.open(file_path, "rb") as answer_file:
-        answer = pickle.load(answer_file)
-        answer = answer["output"]
-        process_answer(answer, execution_obj)
+    def test_processForceAnswer(self):
+        """ test load data from speed model output dict based on situation of file """
+        file_name = "force.model_output.gz"
+        file_path = os.path.join("cmmmodel", "tests", file_name)
 
-    self.assertEqual(ModelAnswer.objects.count(), 147132)
+        self.create_topologic_system()
 
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.FORCE_MODEL_ID,
+                                                             externalId=uuid.uuid4(), start=timezone.now())
 
-def test_processForceAnswer(self):
-    """ test load data from speed model output dict based on situation of file """
-    file_name = "force.model_output.gz"
-    file_path = os.path.join("cmmmodel", "tests", file_name)
+        with gzip.open(file_path, "rb") as answer_file:
+            answer = pickle.load(answer_file)
+            answer = answer["output"]
+            process_answer(answer, execution_obj)
 
-    self.create_topologic_system()
+        self.assertEqual(ModelAnswer.objects.count(), 27657)
 
-    execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.FORCE_MODEL_ID,
-                                                         externalId=uuid.uuid4(), start=timezone.now())
+    def test_processEnergyAnswer(self):
+        """ test load data from speed model output dict based on situation of file """
+        file_name = "energy.model_output.gz"
+        file_path = os.path.join("cmmmodel", "tests", file_name)
 
-    with gzip.open(file_path, "rb") as answer_file:
-        answer = pickle.load(answer_file)
-        answer = answer["output"]
-        process_answer(answer, execution_obj)
+        self.create_topologic_system()
 
-    self.assertEqual(ModelAnswer.objects.count(), 27657)
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.ENERGY_MODEL_ID,
+                                                             externalId=uuid.uuid4(), start=timezone.now())
 
+        with gzip.open(file_path, "rb") as answer_file:
+            answer = pickle.load(answer_file)
+            answer = answer["output"]
+            process_answer(answer, execution_obj)
 
-def test_processEnergyAnswer(self):
-    """ test load data from speed model output dict based on situation of file """
-    file_name = "energy.model_output.gz"
-    file_path = os.path.join("cmmmodel", "tests", file_name)
+        self.assertEqual(ModelAnswer.objects.count(), 21)
 
-    self.create_topologic_system()
+    def test_processHeatAnswer(self):
+        """ test load data from heat model output dict based on situation of file """
+        file_name = "heat.model_output.gz"
+        file_path = os.path.join("cmmmodel", "tests", file_name)
 
-    execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.ENERGY_MODEL_ID,
-                                                         externalId=uuid.uuid4(), start=timezone.now())
+        self.create_topologic_system()
 
-    with gzip.open(file_path, "rb") as answer_file:
-        answer = pickle.load(answer_file)
-        answer = answer["output"]
-        process_answer(answer, execution_obj)
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.THERMAL_MODEL_ID,
+                                                             externalId=uuid.uuid4(), start=timezone.now())
+        with gzip.open(file_path, "rb") as answer_file:
+            answer = pickle.load(answer_file)
+            answer = answer["output"]
+            process_answer(answer, execution_obj)
 
-    self.assertEqual(ModelAnswer.objects.count(), 21)
+        self.assertEqual(ModelAnswer.objects.count(), 3336)
 
+    def test_processEnergyCenterModelAnswer(self):
+        """ test load data from energy center model output dict based on situation of file """
+        file_name = "energycenter.model_output.gz"
+        file_path = os.path.join("cmmmodel", "tests", file_name)
 
-def test_processHeatAnswer(self):
-    """ test load data from heat model output dict based on situation of file """
-    file_name = "heat.model_output.gz"
-    file_path = os.path.join("cmmmodel", "tests", file_name)
+        self.create_topologic_system()
 
-    self.create_topologic_system()
+        execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj,
+                                                             model_id=CMMModel.ENERGY_CENTER_MODEL_ID,
+                                                             externalId=uuid.uuid4(), start=timezone.now())
+        with gzip.open(file_path, "rb") as answer_file:
+            answer = pickle.load(answer_file)
+            answer = answer["output"]
+            process_answer(answer, execution_obj)
 
-    execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.THERMAL_MODEL_ID,
-                                                         externalId=uuid.uuid4(), start=timezone.now())
-    with gzip.open(file_path, "rb") as answer_file:
-        answer = pickle.load(answer_file)
-        answer = answer["output"]
-        process_answer(answer, execution_obj)
-
-    self.assertEqual(ModelAnswer.objects.count(), 3336)
-
-
-def test_processEnergyCenterModelAnswer(self):
-    """ test load data from energy center model output dict based on situation of file """
-    file_name = "energy_center.model_output.gz"
-    file_path = os.path.join("cmmmodel", "tests", file_name)
-
-    self.create_topologic_system()
-
-    execution_obj = ModelExecutionHistory.objects.create(scene=self.scene_obj,
-                                                         model_id=CMMModel.ENERGY_CENTER_MODEL_ID,
-                                                         externalId=uuid.uuid4(), start=timezone.now())
-    with gzip.open(file_path, "rb") as answer_file:
-        answer = pickle.load(answer_file)
-        answer = answer["output"]
-        process_answer(answer, execution_obj)
-
-    self.assertEqual(ModelAnswer.objects.count(), 3336)
+        self.assertEqual(ModelAnswer.objects.count(), 3336)
