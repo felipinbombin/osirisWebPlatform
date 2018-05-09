@@ -30,9 +30,8 @@ class Run(View):
 
         response = {}
         try:
-            with transaction.atomic():
-                scene_obj = Scene.objects.get(user=request.user, id=scene_id)
-                run_task(scene_obj, model_id, next_model_ids)
+            scene_obj = Scene.objects.get(user=request.user, id=scene_id)
+            run_task(scene_obj, model_id, next_model_ids)
 
             response["models"] = Status().resume_status(scene_obj)
             StatusResponse.getJsonStatus(StatusResponse.OK, response)
