@@ -216,6 +216,7 @@ class Step5ExcelReader(ExcelReader):
             first_row = 3
             current_row = first_row
             current_column = 1
+            period_number = len(periods)
 
             for station in stations:
                 for period in periods:
@@ -229,7 +230,7 @@ class Step5ExcelReader(ExcelReader):
                         operationPeriod=period,
                         metroStation=station,
                         metric=OperationPeriodForMetroStation.PASSENGERS_IN_STATION,
-                        value=worksheet.cell_value(current_row, current_column + 3),
+                        value=worksheet.cell_value(current_row, current_column + period_number + 1),
                         direction=MetroLineMetric.REVERSE)
                     current_column += 1
                 current_row += 1
@@ -250,7 +251,7 @@ class Step5ExcelReader(ExcelReader):
                         operationPeriod=period,
                         metroTrack=track,
                         metric=OperationPeriodForMetroTrack.PASSENGERS_TRAVELING_BETWEEN_STATION,
-                        value=worksheet.cell_value(current_row, current_column + 3),
+                        value=worksheet.cell_value(current_row, current_column + period_number + 1),
                         direction=MetroLineMetric.REVERSE)
                     current_column += 1
                 current_row += 1
@@ -271,7 +272,7 @@ class Step5ExcelReader(ExcelReader):
                         operationPeriod=period,
                         metroTrack=track,
                         metric=OperationPeriodForMetroTrack.MAX_TRAVEL_TIME_BETWEEN_STATION,
-                        value=worksheet.cell_value(current_row, current_column + 3),
+                        value=worksheet.cell_value(current_row, current_column + period_number + 1),
                         direction=MetroLineMetric.REVERSE)
                     current_column += 1
                 current_row += 1
@@ -292,7 +293,7 @@ class Step5ExcelReader(ExcelReader):
                         operationPeriod=period,
                         metroStation=station,
                         metric=OperationPeriodForMetroStation.DWELL_TIME,
-                        value=worksheet.cell_value(current_row, current_column + 3),
+                        value=worksheet.cell_value(current_row, current_column + period_number + 1),
                         direction=MetroLineMetric.REVERSE)
                     current_column += 1
                 current_row += 1
@@ -312,7 +313,7 @@ class Step5ExcelReader(ExcelReader):
                     operationPeriod=period,
                     metroLine=line,
                     metric=OperationPeriodForMetroLine.FREQUENCY,
-                    value=worksheet.cell_value(current_row, current_column + 3),
+                    value=worksheet.cell_value(current_row, current_column + period_number + 1),
                     direction=MetroLineMetric.REVERSE)
                 current_column += 1
             current_row += 1
@@ -332,7 +333,7 @@ class Step5ExcelReader(ExcelReader):
                     operationPeriod=period,
                     metroLine=line,
                     metric=OperationPeriodForMetroLine.PERC_DC_DISTRIBUTION_LOSSES,
-                    value=worksheet.cell_value(current_row, current_column + 3),
+                    value=worksheet.cell_value(current_row, current_column + period_number + 1),
                     direction=MetroLineMetric.REVERSE)
                 current_row += 1
                 OperationPeriodForMetroLine.objects.create(
@@ -345,7 +346,7 @@ class Step5ExcelReader(ExcelReader):
                     operationPeriod=period,
                     metroLine=line,
                     metric=OperationPeriodForMetroLine.PERC_AC_SUBSTATION_LOSSES_FEED_ENTIRE_SYSTEM,
-                    value=worksheet.cell_value(current_row, current_column + 3),
+                    value=worksheet.cell_value(current_row, current_column + period_number + 1),
                     direction=MetroLineMetric.REVERSE)
                 current_row += 1
                 OperationPeriodForMetroLine.objects.create(
@@ -358,7 +359,7 @@ class Step5ExcelReader(ExcelReader):
                     operationPeriod=period,
                     metroLine=line,
                     metric=OperationPeriodForMetroLine.PERC_AC_SUBSTATION_LOSSES_FEED_AC_ELEMENTS,
-                    value=worksheet.cell_value(current_row, current_column + 3),
+                    value=worksheet.cell_value(current_row, current_column + period_number + 1),
                     direction=MetroLineMetric.REVERSE)
                 current_row += 1
                 OperationPeriodForMetroLine.objects.create(
@@ -371,7 +372,7 @@ class Step5ExcelReader(ExcelReader):
                     operationPeriod=period,
                     metroLine=line,
                     metric=OperationPeriodForMetroLine.PERC_DC_SUBSTATION_LOSSES,
-                    value=worksheet.cell_value(current_row, current_column + 3),
+                    value=worksheet.cell_value(current_row, current_column + period_number + 1),
                     direction=MetroLineMetric.REVERSE)
 
                 current_column += 1
