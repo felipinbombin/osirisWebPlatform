@@ -160,7 +160,7 @@ def get_input_data(scene_id, model_id):
             raise ModelInputDoesNotExistException
         elif model_obj.status != ModelExecutionHistory.OK:
             raise PreviousModelDidNotFinishWellException
-
+        print(model_obj.answer.path)
         with gzip.open(model_obj.answer.path, mode="rb") as answer_file:
             input_dict = answer_file.read()
 

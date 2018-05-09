@@ -43,20 +43,26 @@ class ExecuteModel(TestCase):
         # simulate scene is ready to run
         self.scene_obj.status = Scene.OK
         self.scene_obj.save()
-
+        from shutil import copyfile
         # create execution record
         file_name = "speed.model_output.gz"
-        file_path = os.path.join("..", "..", "cmmmodel", "tests", file_name)
+        #print(file_path)
         std_out = ""
         std_err = ""
         external_id = uuid.uuid4()
-        meh = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=TEST_MODEL_ID, externalId=external_id,
-                                                   start=timezone.now())
+        meh = ModelExecutionHistory.objects.create(scene=self.scene_obj, model_id=CMMModel.SPEED_MODEL_ID,
+                                                   externalId=external_id, start=timezone.now())
 
         # added test model to queue to test queue model execution process
-        ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=CMMModel.SPEED_MODEL_ID)
+        ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=CMMModel.FORCE_MODEL_ID)
 
-        save_model_response(str(external_id), file_path, std_out, std_err)
+        file_path = os.path.join(os.getcwd(), "media", "modelOutput", file_name)
+        copyfile(os.path.join(os.getcwd(), 'cmmmodel', 'tests', file_name), file_path)
+
+        save_model_response(str(external_id), file_name, std_out, std_err)
+
+        # remove file
+        os.remove(file_path)
 
         # stop execution model in cmm cluster (queued model)
         self.api_helper.stop_test_model()
