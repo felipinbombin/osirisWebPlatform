@@ -164,7 +164,12 @@ $(document).ready(function () {
                 spinner.stop();
             });
         };
+        var makeAjax = true;
         self.modelRun = function() {
+            if(!makeAjax) {
+                return;
+            }
+            makeAjax = false;
             var model = this;
             var modelId = model.id();
             var nextModelIds = [];
@@ -188,6 +193,7 @@ $(document).ready(function () {
                 }
                 self.showRunModelDialog(false);
             }).always(function () {
+                makeAjax = false;
                 spinner.stop();
             });
         };
