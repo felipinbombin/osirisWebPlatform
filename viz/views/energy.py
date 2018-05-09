@@ -78,7 +78,8 @@ class EnergyModelVizData(View):
     def get_energy_center_model_data(self, execution_obj, prefix):
 
         answer = EnergyCenterModelAnswer.objects.prefetch_related(). \
-            filter(execution=execution_obj, attributeName__startswith=prefix).values_list("attributeName", "value"). \
+            filter(execution=execution_obj, attributeName__startswith=prefix).values_list("attributeName", "order",
+                                                                                          "value"). \
             order_by("attributeName", "order")
 
         groups = []
