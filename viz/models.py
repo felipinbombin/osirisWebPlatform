@@ -48,7 +48,6 @@ class EnergyCenterModelAnswer(models.Model):
     """
 
     """
-    execution = models.ForeignKey(ModelExecutionHistory, on_delete=models.CASCADE)
     metroLine = models.CharField(max_length=100, null=True)
     via = models.CharField(max_length=100, null=True)
     chartName = models.CharField(max_length=100)
