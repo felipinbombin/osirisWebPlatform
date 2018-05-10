@@ -57,8 +57,8 @@ class EnergyModelVizData(View):
     def get_energy_model_data(self, execution_obj, prefix):
         """ get data have gotten from execution instance """
 
-        answer = ModelAnswer.objects.prefetch_related(). \
-            filter(execution=execution_obj, attributeName__startswith=prefix).values_list("attributeName", "value"). \
+        answer = ModelAnswer.objects.filter(execution=execution_obj, attributeName__startswith=prefix). \
+            values_list("attributeName", "value"). \
             order_by("attributeName", "order")
 
         groups = []
@@ -77,24 +77,23 @@ class EnergyModelVizData(View):
 
     def get_energy_center_model_data(self, execution_obj, prefix):
 
-        answer = EnergyCenterModelAnswer.objects.prefetch_related(). \
-            filter(execution=execution_obj, attributeName__startswith=prefix).values_list("attributeName", "order",
-                                                                                          "value"). \
-            order_by("attributeName", "order")
+        answer = EnergyCenterModelAnswer.objects.filter(chartName=prefix). \
+            values_list("groupName", "order", "value"). \
+            order_by("groupName", "order")
 
-        groups = []
-        for key, group in groupby(answer, lambda row: "{}".format(row[0].split("_")[0])):
+        data = []
+        for key, group in groupby(answer, lambda row: row[0]):
             # group by key
             group_element = {
-                "prefix": key,
+                "groupName": key,
                 "attributes": {}
             }
             for key2, value in group:
                 code = key2.split("_")[1]
                 group_element["attributes"][_(code)] = value
-            groups.append(group_element)
+            data.append(group_element)
 
-        return groups
+        return data
 
     def get(self, request, scene_id):
 
