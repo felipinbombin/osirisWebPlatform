@@ -1,17 +1,21 @@
 from __future__ import unicode_literals
-from django.utils import timezone
-from django.core.files.base import ContentFile
-from django.utils.translation import ugettext as _
 
 from io import BytesIO
 
-from cmmmodel.transform.processData import ProcessData
+import pytz
+import xlsxwriter
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.db import transaction
+from django.utils import timezone
+from django.utils.translation import ugettext as _
+
 from cmmmodel.models import CMMModel
+from cmmmodel.transform.processData import ProcessData
+from energycentermodel.models import Bitacora_trenes
 from scene.models import MetroLine
 from scene.views.ExcelWriter import ExcelHelper
 from viz.models import ModelAnswer
-
-import xlsxwriter
 
 
 class ProcessEnergyData(ProcessData):
@@ -63,6 +67,25 @@ class ProcessEnergyData(ProcessData):
                 ModelAnswer.objects.create(execution=self.execution_obj, metroLine=None, direction=None,
                                            metroTrack=None, operationPeriod=None, attributeName=name, order=index,
                                            value=value)
+
+        # save trains in bitacora_trenes table for energy center model
+        train_schedule = data['bitacora']
+
+        for line_name in train_schedule:
+            for via in train_schedule[line_name]:
+                for train_name in train_schedule[line_name][via]:
+                    for row in train_schedule[line_name][via][train_name]:
+                        date = pytz.timezone(settings.TIME_ZONE).localize(row[0])
+                        query_set = Bitacora_trenes.objects.filter(Tren_ID=train_name, Linea_ID=line_name,
+                                                                   Fecha=date, Via=via)
+                        with transaction.atomic():
+                            if not query_set.exists():
+                                Bitacora_trenes.objects.create(Tren_ID=train_name, Linea_ID=line_name, Fecha=date,
+                                                               Via=via, Posicion=row[1], Velocidad=row[2],
+                                                               Aceleracion=row[3], Potencia=row[4])
+                            else:
+                                query_set.update(Posicion=row[1], Velocidad=row[2], Aceleracion=row[3],
+                                                 Potencia=row[4])
 
     def create_excel_file(self, data):
 
@@ -227,7 +250,8 @@ class ProcessEnergyData(ProcessData):
                  "%s_%s" % (self.dictionary_group["trackConsumption"], self.dictionary_detail["ventilation"]),
                  "%s_%s" % (self.dictionary_group["trackConsumption"], self.dictionary_detail["dcDistributionLosses"]),
                  "%s_%s" % (self.dictionary_group["trackConsumption"], self.dictionary_detail["dcSessLosses"]),
-                 "%s_%s" % (self.dictionary_group["trackConsumption"], self.dictionary_detail["noSavingCapacityLosses"]),
+                 "%s_%s" % (
+                     self.dictionary_group["trackConsumption"], self.dictionary_detail["noSavingCapacityLosses"]),
                  ]
         values = [au, v, dc, se, lns]
 
