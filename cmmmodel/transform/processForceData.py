@@ -1,18 +1,18 @@
 from __future__ import unicode_literals
-from django.utils import timezone
-
-from cmmmodel.transform.processData import ProcessData
-from cmmmodel.models import CMMModel
-from scene.models import MetroLine, MetroLineMetric, OperationPeriod
-from scene.views.ExcelWriter import ExcelHelper
-from viz.models import ModelAnswer
-
-from django.core.files.base import ContentFile
 
 from io import BytesIO
+from itertools import islice
 
 import numpy
 import xlsxwriter
+from django.core.files.base import ContentFile
+from django.utils import timezone
+
+from cmmmodel.models import CMMModel
+from cmmmodel.transform.processData import ProcessData
+from scene.models import MetroLine, MetroLineMetric, OperationPeriod
+from scene.views.ExcelWriter import ExcelHelper
+from viz.models import ModelAnswer
 
 
 class ProcessForceData(ProcessData):
@@ -51,24 +51,27 @@ class ProcessForceData(ProcessData):
         line_objs = MetroLine.objects.filter(scene=self.scene_obj).order_by("id")
         operation_periods = OperationPeriod.objects.filter(scene=self.scene_obj).order_by("id")
 
-        object_list = []
+        def data_generator():
+            for metric in self.metrics:
+                for line_index, line_obj in enumerate(line_objs):
+                    for op_index, operation_period in enumerate(operation_periods):
+                        values = data[metric["name"]][line_index][op_index]
+                        if not isinstance(values, numpy.ndarray):
+                            values = [values]
 
-        for metric in self.metrics:
-            for line_index, line_obj in enumerate(line_objs):
-                for op_index, operation_period in enumerate(operation_periods):
-                    values = data[metric["name"]][line_index][op_index]
-                    if not isinstance(values, numpy.ndarray):
-                        values = [values]
+                        for index, value in enumerate(values):
+                            yield ModelAnswer(execution=self.execution_obj, metroLine=line_obj,
+                                              direction=metric["direction"], metroTrack=None,
+                                              operationPeriod=operation_period,
+                                              attributeName=metric["name"], order=index, value=value)
 
-                    for index, value in enumerate(values):
-                        record = ModelAnswer(execution=self.execution_obj, metroLine=line_obj,
-                                             direction=metric["direction"], metroTrack=None,
-                                             operationPeriod=operation_period,
-                                             attributeName=metric["name"], order=index, value=value)
-                        object_list.append(record)
-
-            ModelAnswer.objects.bulk_create(object_list)
-            del object_list[:]
+        batch_size = 10000
+        generator = data_generator()
+        while True:
+            batch = list(islice(generator, batch_size))
+            if not batch:
+                break
+            ModelAnswer.objects.bulk_create(batch, batch_size)
 
     def create_excel_file(self, data):
 
@@ -122,7 +125,7 @@ class ProcessForceData(ProcessData):
                     worksheet.write(current_row + attr_name_index, 3, attr_name)
 
                 for attr_index, attr in enumerate(ATTRS):
-                    if not attr_index % (len(ATTRS)/2):
+                    if not attr_index % (len(ATTRS) / 2):
                         worksheet.write(current_row, 0, line_obj.name)
                         worksheet.write(current_row, 1, operation_period.name)
                         system_direction = MetroLineMetric.GOING if attr[-2:] == "LR" else MetroLineMetric.REVERSE

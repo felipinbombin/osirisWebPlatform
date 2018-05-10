@@ -1,18 +1,18 @@
 from __future__ import unicode_literals
-from django.utils import timezone
-
-from cmmmodel.transform.processData import ProcessData
-from cmmmodel.models import CMMModel
-from scene.models import MetroLine, MetroLineMetric, OperationPeriod
-from scene.views.ExcelWriter import ExcelHelper
-from viz.models import ModelAnswer
-
-from django.core.files.base import ContentFile
 
 from io import BytesIO
+from itertools import islice
 
 import numpy
 import xlsxwriter
+from django.core.files.base import ContentFile
+from django.utils import timezone
+
+from cmmmodel.models import CMMModel
+from cmmmodel.transform.processData import ProcessData
+from scene.models import MetroLine, MetroLineMetric, OperationPeriod
+from scene.views.ExcelWriter import ExcelHelper
+from viz.models import ModelAnswer
 
 
 class ProcessSpeedData(ProcessData):
@@ -36,30 +36,34 @@ class ProcessSpeedData(ProcessData):
         line_objs = MetroLine.objects.prefetch_related("metrotrack_set").filter(scene=self.scene_obj).order_by("id")
         operation_periods = OperationPeriod.objects.filter(scene=self.scene_obj).order_by("id")
 
-        object_list = []
+        def data_generator():
+            for metric in self.metrics:
+                for line_index, line_obj in enumerate(line_objs):
+                    track_objs = line_obj.metrotrack_set.all().order_by("id")
+                    # metro line metrics direction = going (g) or reverse (r)
+                    for direction in [0, 1]:
+                        system_direction = MetroLineMetric.GOING if direction == 0 else MetroLineMetric.REVERSE
+                        for op_index, operation_period in enumerate(operation_periods):
+                            for track_index, track_obj in enumerate(track_objs):
+                                values = data[metric["name"]][line_index][direction][op_index][track_index]
 
-        for metric in self.metrics:
-            for line_index, line_obj in enumerate(line_objs):
-                track_objs = line_obj.metrotrack_set.all().order_by("id")
-                # metro line metrics direction = going (g) or reverse (r)
-                for direction in [0, 1]:
-                    system_direction = MetroLineMetric.GOING if direction == 0 else MetroLineMetric.REVERSE
-                    for op_index, operation_period in enumerate(operation_periods):
-                        for track_index, track_obj in enumerate(track_objs):
-                            values = data[metric["name"]][line_index][direction][op_index][track_index]
+                                if not isinstance(values, numpy.ndarray):
+                                    values = [values]
 
-                            if not isinstance(values, numpy.ndarray):
-                                values = [values]
+                                for index, value in enumerate(values):
+                                    record = ModelAnswer(execution=self.execution_obj, metroLine=line_obj,
+                                                         direction=system_direction,
+                                                         operationPeriod=operation_period, metroTrack=track_obj,
+                                                         attributeName=metric["name"], order=index, value=value)
+                                    yield record
 
-                            for index, value in enumerate(values):
-                                record = ModelAnswer(execution=self.execution_obj, metroLine=line_obj,
-                                                     direction=system_direction,
-                                                     operationPeriod=operation_period, metroTrack=track_obj,
-                                                     attributeName=metric["name"], order=index, value=value)
-                                object_list.append(record)
-
-            ModelAnswer.objects.bulk_create(object_list)
-            del object_list[:]
+        batch_size = 10000
+        generator = data_generator()
+        while True:
+            batch = list(islice(generator, batch_size))
+            if not batch:
+                break
+            ModelAnswer.objects.bulk_create(batch, batch_size)
 
     def create_excel_file(self, data):
 
