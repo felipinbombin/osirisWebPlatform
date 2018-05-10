@@ -1,12 +1,12 @@
 from __future__ import unicode_literals
 
 from io import BytesIO
+from itertools import islice
 
 import pytz
 import xlsxwriter
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
@@ -72,22 +72,26 @@ class ProcessEnergyData(ProcessData):
         train_schedule = data['bitacora']
 
         # delete previous data
-        Bitacora_trenes.objects.delete()
-        for line_name in train_schedule:
-            for via in train_schedule[line_name]:
-                for train_name in train_schedule[line_name][via]:
-                    for row in train_schedule[line_name][via][train_name]:
-                        date = pytz.timezone(settings.TIME_ZONE).localize(row[0])
-                        query_set = Bitacora_trenes.objects.filter(Tren_ID=train_name, Linea_ID=line_name,
-                                                                   Fecha=date, Via=via)
-                        with transaction.atomic():
-                            if not query_set.exists():
-                                Bitacora_trenes.objects.create(Tren_ID=train_name, Linea_ID=line_name, Fecha=date,
-                                                               Via=via, Posicion=row[1], Velocidad=row[2],
-                                                               Aceleracion=row[3], Potencia=row[4])
-                            else:
-                                query_set.update(Posicion=row[1], Velocidad=row[2], Aceleracion=row[3],
-                                                 Potencia=row[4])
+        Bitacora_trenes.objects.all().delete()
+
+        def train_schedule_generator():
+            for line_name in train_schedule:
+                for via in train_schedule[line_name]:
+                    for train_name in train_schedule[line_name][via]:
+                        for row in train_schedule[line_name][via][train_name]:
+                            date = pytz.timezone(settings.TIME_ZONE).localize(row[0])
+
+                            yield Bitacora_trenes(Tren_ID=train_name, Linea_ID=line_name, Fecha=date, Via=via,
+                                                  Posicion=row[1], Velocidad=row[2], Aceleracion=row[3],
+                                                  Potencia=row[4])
+
+        batch_size = 10000
+        generator = train_schedule_generator()
+        while True:
+            batch = list(islice(generator, batch_size))
+            if not batch:
+                break
+            Bitacora_trenes.objects.bulk_create(batch, batch_size)
 
     def create_excel_file(self, data):
 
