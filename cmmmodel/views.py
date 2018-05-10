@@ -90,7 +90,7 @@ class Status(View):
 
     def resume_status(self, scene_obj):
         """  """
-        model_list = CMMModel.objects.all().order_by("id")
+        model_list = CMMModel.objects.exclude(id=CMMModel.ENERGY_CENTER_MODEL_ID).order_by("id")
         model_status_list = []
         for model in model_list:
             model_status = model.get_dictionary()
