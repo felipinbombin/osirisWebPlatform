@@ -14,6 +14,7 @@ from scene.models import MetroLine, MetroTrack, MetroStation, OperationPeriod
 from scene.models import Scene
 from scene.tests.testHelper import TestHelper
 from viz.models import ModelAnswer, EnergyCenterModelAnswer
+from energycentermodel.models import Bitacora_trenes
 
 TEST_MODEL_ID = 999
 
@@ -153,6 +154,7 @@ class ExecuteModel(TestCase):
             process_answer(answer, execution_obj)
 
         self.assertEqual(ModelAnswer.objects.count(), 21)
+        self.assertEqual(Bitacora_trenes.objects.count(), 1612800)
 
     def test_processHeatAnswer(self):
         """ test load data from heat model output dict based on situation of file """

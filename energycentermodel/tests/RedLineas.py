@@ -86,9 +86,6 @@ class Linea:
 
     # Construir objetos de la la línea
     def CargarDatos(self, Data):
-        import pickle
-        with open('a.txt', mode='wb') as fd:
-            pickle.dump(Data, fd)
         # leer datos de diccionario para crear objetos
         # Definir parámetros de la línea
         for LineaID, LineaData in Data['Atributos']['LineaData'].items():
