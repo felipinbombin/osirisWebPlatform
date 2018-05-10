@@ -71,6 +71,8 @@ class ProcessEnergyData(ProcessData):
         # save trains in bitacora_trenes table for energy center model
         train_schedule = data['bitacora']
 
+        # delete previous data
+        Bitacora_trenes.objects.delete()
         for line_name in train_schedule:
             for via in train_schedule[line_name]:
                 for train_name in train_schedule[line_name][via]:
