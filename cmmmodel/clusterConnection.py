@@ -106,8 +106,12 @@ def run_task(scene_obj, model_id, next_model_ids):
                                                    status=status, jobNumber=job_number, externalId=external_id,
                                                    std_err=stderr.read().decode('utf-8'))
 
-        for model_id in next_model_ids:
-            ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=model_id)
+        # if current model is energy, add energy center model to next model list
+        if model_id == CMMModel.ENERGY_MODEL_ID:
+            next_model_ids.insert(0, CMMModel.ENERGY_CENTER_MODEL_ID)
+
+        for next_model_id in next_model_ids:
+            ModelExecutionQueue.objects.create(modelExecutionHistory=meh, model_id=next_model_id)
         # close ssh connection
         client.close()
 
