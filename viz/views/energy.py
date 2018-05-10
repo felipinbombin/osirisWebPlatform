@@ -124,7 +124,7 @@ class EnergyModelVizData(View):
         elif execution_obj.status != ModelExecutionHistory.OK:
             Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, response)
         else:
-            if execution_obj.id == CMMModel.ENERGY_MODEL_ID:
+            if execution_obj.model_id == CMMModel.ENERGY_MODEL_ID:
                 response["answer"] = self.get_energy_model_data(execution_obj, prefix)
             else:
                 response["answer"] = self.get_energy_center_model_data(execution_obj, prefix)
