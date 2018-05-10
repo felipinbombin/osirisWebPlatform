@@ -51,6 +51,7 @@ class EnergyCenterModelAnswer(models.Model):
     execution = models.ForeignKey(ModelExecutionHistory, on_delete=models.CASCADE)
     metroLine = models.CharField(max_length=100, null=True)
     via = models.CharField(max_length=100, null=True)
-    attributeName = models.CharField(max_length=100)
+    chartName = models.CharField(max_length=100)
+    groupName = models.CharField(max_length=100)
     order = models.IntegerField()
     value = models.FloatField()
