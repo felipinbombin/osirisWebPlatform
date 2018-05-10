@@ -85,7 +85,7 @@ class ProcessEnergyData(ProcessData):
                                                   Posicion=row[1], Velocidad=row[2], Aceleracion=row[3],
                                                   Potencia=row[4])
 
-        batch_size = 10000
+        batch_size = 100000
         generator = train_schedule_generator()
         while True:
             batch = list(islice(generator, batch_size))
