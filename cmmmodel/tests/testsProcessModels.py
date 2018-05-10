@@ -13,7 +13,7 @@ from cmmmodel.tests.helper import APIHelper
 from scene.models import MetroLine, MetroTrack, MetroStation, OperationPeriod
 from scene.models import Scene
 from scene.tests.testHelper import TestHelper
-from viz.models import ModelAnswer
+from viz.models import ModelAnswer, EnergyCenterModelAnswer
 
 TEST_MODEL_ID = 999
 
@@ -185,4 +185,4 @@ class ExecuteModel(TestCase):
             answer = answer["output"]
             process_answer(answer, execution_obj)
 
-        self.assertEqual(ModelAnswer.objects.count(), 3336)
+        self.assertEqual(EnergyCenterModelAnswer.objects.count(), 4896)

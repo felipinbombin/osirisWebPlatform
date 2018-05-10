@@ -39,7 +39,7 @@ class ProcessEnergyCenterData(ProcessData):
         Resultados_Branch.objects.all().delete()
         Resultados_Elementos_DC.objects.all().delete()
         Resultados_Terminales.objects.all().delete()
-        EnergyCenterModelAnswer.objects.filter(execution=self.execution_obj).delete()
+        EnergyCenterModelAnswer.objects.all().delete()
 
     def load(self, data):
         self.delete_previous_data()
@@ -50,15 +50,25 @@ class ProcessEnergyCenterData(ProcessData):
             saveDCresults(line_id, line_attributes, 'sim1')
             # save chart data
             for chart in line_attributes['graficos']:
-                print(line_attributes['graficos'][chart]['x_data'])
-                print(line_attributes['graficos'][chart]['y_data'])
-                print("   ----")
+                labels = line_attributes['graficos'][chart]['data_label']
+                x_data = line_attributes['graficos'][chart]['x_data']
+                ys_data = line_attributes['graficos'][chart]['y_data']
+
+                if isinstance(ys_data[0], list):
+                    for label, y_data in zip(labels,  ys_data):
+                        for x, y in zip(x_data, y_data):
+                            EnergyCenterModelAnswer.objects.create(chartName=chart, groupName=label, metroLine=line_id,
+                                                                   via=None, order=x, value=y)
+                else:
+                    for x, y in zip(x_data, ys_data):
+                        EnergyCenterModelAnswer.objects.create(chartName=chart, groupName=labels[0], metroLine=line_id,
+                                                               via=None, order=x, value=y)
 
         # data for network chart
         for chart in data['graficos']:
             for x, y in zip(data['graficos'][chart]['x_data'], data['graficos'][chart]['y_data']):
-                EnergyCenterModelAnswer.objects.create(execution=self.execution_obj, attributeName=chart,
-                                                       metroLine=None, via=None, order=x, value=y)
+                EnergyCenterModelAnswer.objects.create(chartName=chart, groupName=None, metroLine=None, via=None,
+                                                       order=x, value=y)
 
     """
     def create_excel_file(self, data):
