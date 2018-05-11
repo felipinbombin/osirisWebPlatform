@@ -20,15 +20,15 @@ import numpy as np
 class ProcessEnergyCenterData(ProcessData):
     dictionary_group = {
         # network chart
-        "cdc_evol_mw": _("CDC injection evolution [MW]"),
-        "cdc_evol_mvar": _("CDC injection evolution [MVAr]"),
+        "cdc_evol_mw": "Evolución de inyección de CDC [MW]",  # _("CDC injection evolution [MW]"),
+        "cdc_evol_mvar": "Evolución de inyección de CDC [MVAr]",  # _("CDC injection evolution [MVAr]"),
         # line charts
-        "vol_evol": _("Voltage evolution"),
-        "pow_evol": _("Power evolution"),
-        "losses_evol": _("Losses evolution"),
-        "trains_evol": _("Train consumption evolution"),
-        "ser_injection_evol": _("SERs injection evolution"),
-        "pow_pv_injection_evol": _("Evolution of power given by PV"),
+        "vol_evol": "Evolución de voltajes",  # _("Voltage evolution"),
+        "pow_evol": "Evolución de potencia suministrada",  # _("Power evolution"),
+        "losses_evol": "Evolución de perdidas",  # _("Losses evolution"),
+        "trains_evol": "Evolución de consumo de trenes",  # _("Train consumption evolution"),
+        "ser_injection_evol": "Evolución de inyección de SERs",  # _("SERs injection evolution"),
+        "pow_pv_injection_evol": "Evolución de potencia suministrada PV",  # _("Evolution of power given by PV"),
     }
 
     def __init__(self, execution_obj):
@@ -55,7 +55,7 @@ class ProcessEnergyCenterData(ProcessData):
                 ys_data = line_attributes['graficos'][chart]['y_data']
 
                 if isinstance(ys_data[0], list):
-                    for label, y_data in zip(labels,  ys_data):
+                    for label, y_data in zip(labels, ys_data):
                         for x, y in zip(x_data, y_data):
                             EnergyCenterModelAnswer.objects.create(chartName=chart, groupName=label, metroLine=line_id,
                                                                    via=None, order=x, value=y)
