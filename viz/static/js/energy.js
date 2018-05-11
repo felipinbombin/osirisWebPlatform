@@ -100,6 +100,9 @@ $(document).ready(function () {
             }]
         };
         var ECHARTS_LINE_OPTIONS = {
+            title: {
+                text: ""
+            },
             tooltip: {
                 trigger: "axis"
             },
