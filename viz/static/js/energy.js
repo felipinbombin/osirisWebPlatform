@@ -101,7 +101,8 @@ $(document).ready(function () {
         };
         var ECHARTS_LINE_OPTIONS = {
             title: {
-                text: ""
+                text: "",
+                left: "center"
             },
             tooltip: {
                 trigger: "axis"
@@ -109,7 +110,7 @@ $(document).ready(function () {
             yAxis: [{
                 type: "value",
                 name: "",
-                nameLocation: "end",
+                nameLocation: "middle",
                 nameGap: 25,
                 position: "left"
             }],
