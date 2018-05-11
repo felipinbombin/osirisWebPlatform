@@ -104,6 +104,9 @@ $(document).ready(function () {
                 text: "",
                 left: "center"
             },
+            legend: {
+                data: []
+            },
             tooltip: {
                 trigger: "axis"
             },
@@ -228,6 +231,7 @@ $(document).ready(function () {
                 };
                 lineOptions.series.push(serie);
             });
+            lineChart.legend.data = label;
 
             lineChart.clear();
             lineChart.setOption(lineOptions, {
