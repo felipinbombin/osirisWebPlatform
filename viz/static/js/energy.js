@@ -229,6 +229,7 @@ $(document).ready(function () {
             lineChart.setOption(lineOptions, {
                 notMerge: true
             });
+            lineChart.resize();
         };
 
         var makeAjaxCall = true;
