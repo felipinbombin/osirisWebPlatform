@@ -40,13 +40,21 @@
 </div>
 
 <div class="row">
-    {% with barChart='<div id="barChart" style="height:400px;"></div>' pieChart='<div id="pieChart" style="height:400px;"></div>' %}
+    {% with barChart='<div id="barChart" style="height:400px;"></div>' pieChart='<div id="pieChart" style="height:400px;"></div>' lineChart='<div id="lineChart" style="height:400px;"></div>' %}
+
         {% columns 6 12 12 barChart as col1 %}
         {% columns 6 12 12 pieChart as col2 %}
+        {% columns 12 12 12 lineChart as col3 %}
         {% trans "Energy consumption" as chart_panel_label %}
         {% panel "fa-bar-chart" chart_panel_label col1|add:col2 as chart_panel %}
+        {% panel "fa-bar-chart" "Energía" col3 as chart_panel2 %}
 
+        <div id="chart1">
         {% columns 12 12 12 chart_panel %}
+        </div>
+        <div id="chart2">
+        {% columns 12 12 12 chart_panel2 %}
+        </div>
 
     {% endwith %}
 </div>
