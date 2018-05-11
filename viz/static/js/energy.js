@@ -231,7 +231,7 @@ $(document).ready(function () {
                 };
                 lineOptions.series.push(serie);
             });
-            lineChart.legend.data = label;
+            lineOptions.legend.data = label;
 
             lineChart.clear();
             lineChart.setOption(lineOptions, {
