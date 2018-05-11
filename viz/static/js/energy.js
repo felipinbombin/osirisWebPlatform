@@ -153,7 +153,7 @@ $(document).ready(function () {
             });
 
             var barOptions = {};
-            $.extend(true, barOptions, ECHARTS_BAR_OPTIONS);
+            $.extend(barOptions, ECHARTS_BAR_OPTIONS);
             barOptions.series[0].data = data.map(function (el) {
                 return el.value;
             });
@@ -215,7 +215,7 @@ $(document).ready(function () {
             var label = result.answer.label;
 
             var lineOptions = {};
-            $.extend(lineOptions, ECHARTS_LINE_OPTIONS);
+            $.extend(true, lineOptions, ECHARTS_LINE_OPTIONS);
             lineOptions.yAxis[0].name = labels[SELECTED_CHART.val()].y_label;
             lineOptions.xAxis[0].name = labels[SELECTED_CHART.val()].x_label;
             lineOptions.xAxis[0].data = x;
