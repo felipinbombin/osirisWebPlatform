@@ -102,7 +102,7 @@ $(document).ready(function () {
         var ECHARTS_LINE_OPTIONS = {
             title: {
                 text: "",
-                left: "center"
+                left: "left"
             },
             legend: {
                 data: []
