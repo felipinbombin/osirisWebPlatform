@@ -118,7 +118,6 @@ class EnergyModelVizData(View):
             execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=CMMModel.ENERGY_MODEL_ID). \
                 order_by("-id").first()
         except KeyError:
-            prefix = ProcessEnergyCenterData.dictionary_group[prefix]
             execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id,
                                                                  model_id=CMMModel.ENERGY_CENTER_MODEL_ID). \
                 order_by("-id").first()
