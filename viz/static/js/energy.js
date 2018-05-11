@@ -259,7 +259,7 @@ $(document).ready(function () {
                 } else {
                     CHART_WINDOW1.hide();
                     CHART_WINDOW2.show();
-
+                    updateEnergyCenterModel(result);
                 }
             }).always(function () {
                 makeAjaxCall = true;
