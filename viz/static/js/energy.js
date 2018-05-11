@@ -153,7 +153,7 @@ $(document).ready(function () {
             });
 
             var barOptions = {};
-            $.extend(barOptions, ECHARTS_BAR_OPTIONS);
+            $.extend(true, barOptions, ECHARTS_BAR_OPTIONS);
             barOptions.series[0].data = data.map(function (el) {
                 return el.value;
             });
