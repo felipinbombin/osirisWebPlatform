@@ -10,7 +10,7 @@ from energycentermodel.models import Atributos_Terminales, Atributos_Trafos, Atr
     Atributos_PVAC, Atributos_Cables, Perfiles_PV, Perfiles_SAF, Atributos_Lineas, Atributos_Vias, Atributos_Trenes, \
     Lista_Elementos_DC, Atributos_SER, Atributos_PVdc, Bitacora_trenes
 
-
+#comentario sin aporte
 # Funcion para leer datos de atributos de objetos de red AC
 def leer_atributos_ac(red_ac_id, data_dict):
     # Crear diccionario de datos para red ac
