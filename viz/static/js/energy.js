@@ -105,6 +105,7 @@ $(document).ready(function () {
                 left: "left"
             },
             legend: {
+                top: "30px",
                 data: []
             },
             tooltip: {
