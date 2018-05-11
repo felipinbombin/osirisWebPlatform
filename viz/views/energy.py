@@ -81,17 +81,23 @@ class EnergyModelVizData(View):
             values_list("groupName", "order", "value"). \
             order_by("groupName", "order")
 
-        data = []
+        data = {
+            'x': [],
+            'y': [],
+            'label': []
+        }
         for key, group in groupby(answer, lambda row: row[0]):
-            # group by key
-            group_element = {
-                "groupName": key,
-                "attributes": {}
-            }
-            for key2, value in group:
-                code = key2.split("_")[1]
-                group_element["attributes"][_(code)] = value
-            data.append(group_element)
+            data['label'].append(key)
+            create_axis_x = False
+            if len(data['x']) == 0:
+                create_axis_x = True
+
+            y_list = []
+            for key2, x, y in group:
+                if create_axis_x:
+                    data['x'].append(x)
+                y_list.append(y)
+            data['y'].append(y_list)
 
         return data
 
