@@ -174,7 +174,7 @@ def get_input_data(scene_id, model_id):
 
                 input_dict['input']['ECM'] = {
                     'ac_data': datos_ac('Cochrane', '2017-01-01 00:00:00', '2017-01-01 23:59:00'),
-                    'dc_data': datos_dc('Linea1', '2017-01-01 00:00:00', '2017-01-01 23:59:00')
+                    'dc_data': datos_dc('L1', '2017-01-01 00:00:00', '2017-01-01 23:59:00')
                 }
 
                 input_dict = pickle.dumps(input_dict, protocol=pickle.HIGHEST_PROTOCOL)
