@@ -199,7 +199,7 @@ class ProcessThermalData(ProcessData):
         station = data['TM']['lines'][line_index]['Station']
         nst = max(station)
         thermal_in = data['EM']['Thermal_in']
-        en_ps_st = thermal_in[line_index][:, 3 + 2 * nst:4 + 3 * nst - 1]
+        en_ps_st = thermal_in[line_index][:, 3 + 2 * int(nst):4 + 3 * int(nst) - 1]
 
         t1 = []
         for t in range(len(en_ps_st[:, 0])):
