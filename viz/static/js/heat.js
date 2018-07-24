@@ -28,37 +28,13 @@ $(document).ready(function () {
             bottom: 75
         }
     };
-    var ECHARTS_PIE_OPTIONS = {
-        tooltip: {
-            trigger: "item"
-        },
-        series: [{
-            type: "pie",
-            radius: "60%",
-            center: ["50%", "50%"],
-            data: [],
-            animationType: "scale",
-            animationEasing: "elasticOut",
-            animationDelay: function () {
-                return Math.random() * 200;
-            },
-            label: {
-                normal: {
-                    formatter: function (params) {
-                        var number = Number(params.value).toLocaleString();
-                        return params.data.name + "\n" + params.percent + "% (" + number + ")";
-                    }
-                }
-            }
-        }]
-    };
     var ECHARTS_BAR_OPTIONS = {
         tooltip: {
             trigger: "axis"
         },
         yAxis: [{
             type: "value",
-            name: "Energía (MWh)",
+            name: "Energía (kWh)",
             nameLocation: "end",
             nameGap: 25,
             position: "left"
@@ -88,16 +64,15 @@ $(document).ready(function () {
             }
         }]
     };
-    $.extend(true, ECHARTS_PIE_OPTIONS, ECHARTS_COMMON_OPTIONS);
     $.extend(true, ECHARTS_BAR_OPTIONS, ECHARTS_COMMON_OPTIONS);
-    var pieChart = echarts.init(document.getElementById("pieChart"), theme);
     var barChart = echarts.init(document.getElementById("barChart"), theme);
 
     var makeAjaxCall = true;
     $("#btnUpdateChart").click(function () {
         console.log("update chart");
+        var prefix = SELECTED_CHART.val();
         var params = {
-            prefix: SELECTED_CHART.val()
+            prefix: prefix
         };
 
         if (makeAjaxCall) {
@@ -114,20 +89,34 @@ $(document).ready(function () {
                 return;
             }
 
+            if (prefix.startsWith('average')) {
+                var barOptions = {};
+                $.extend(barOptions, ECHARTS_BAR_OPTIONS);
+                var serieProto = barOptions.series[0];
+                barOptions.series = [];
+
+                result.answer.forEach(function (line) {
+                    var serieObj = $.extend({}, serieProto);
+                    serieObj.name = line.group;
+                    $.each(line.opPeriods, function (index, obj) {
+                        serieObj.name = line.group + " - " + obj.name;
+                        serieObj.data = obj.values;
+                    });
+                    barOptions.series.push(serieObj);
+                });
+
+                barChart.clear();
+                barChart.setOption(barOptions, {
+                    notMerge: true
+                });
+                return;
+            }
+
             var data = [];
             result.answer.forEach(function (group) {
                 $.each(group.attributes, function (key, attr) {
                     data.push({value: attr, name: key});
                 });
-            });
-
-            var pieOptions = {};
-            $.extend(pieOptions, ECHARTS_PIE_OPTIONS);
-            pieOptions.series[0].data = data;
-
-            pieChart.clear();
-            pieChart.setOption(pieOptions, {
-                notMerge: true
             });
 
             var barOptions = {};
@@ -149,11 +138,9 @@ $(document).ready(function () {
         });
     });
     $(window).resize(function () {
-        pieChart.resize();
         barChart.resize();
     });
     $("#menu_toggle").click(function () {
-        pieChart.resize();
         barChart.resize();
     });
 });
