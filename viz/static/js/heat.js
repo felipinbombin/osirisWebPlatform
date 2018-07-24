@@ -140,7 +140,9 @@ $(document).ready(function () {
                     var yLabels = [];
                     $.each(table.opPeriods, function (j, obj) {
                         yLabels.push(obj.name);
-                        data.push([j, i, obj.values]);
+                        obj.values.forEach(function (value, k) {
+                            data.push([k, j, value]);
+                        });
                     });
                     heatmapOptions.series[0].data = data;
                     heatmapOptions.yAxis.data = yLabels;
