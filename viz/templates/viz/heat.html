@@ -44,10 +44,11 @@
 </div>
 
 <div class="row">
-    {% with barChart='<div id="barChart" style="height:400px;"></div>' pieChart='<div id="pieChart" style="height:400px;"></div>' %}
-        {% columns 12 12 12 barChart as col1 %}
+    {% with barChart='<div id="barChart" style="height:400px;"></div>' heatmapChart='<div id="heatmapChart" style="height:400px;"></div>' %}
+        {% columns 6 12 12 barChart as col1 %}
+        {% columns 6 12 12 heatmapChart as col2 %}
         {% trans "Thermal analysis" as chart_panel_label %}
-        {% panel "fa-bar-chart" chart_panel_label col1 as chart_panel %}
+        {% panel "fa-bar-chart" chart_panel_label col1|add:col2 as chart_panel %}
 
         {% columns 12 12 12 chart_panel %}
 

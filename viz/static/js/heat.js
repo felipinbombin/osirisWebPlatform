@@ -28,6 +28,46 @@ $(document).ready(function () {
             bottom: 75
         }
     };
+    var ECHARTS_HEATMAP_OPTIONS = {
+        title: {
+            text: "put title here",
+            left: "center"
+        },
+        grid: {
+            height: "70%",
+            y: "10%"
+        },
+        xAxis: {
+            type: "category",
+            data: hours,
+            splitArea: {
+                show: true
+            },
+            position: "top"
+        },
+        yAxis: {
+            type: "category",
+            data: days,
+            splitArea: {
+                show: true
+            }
+        },
+        series: [{
+            type: "heatmap",
+            data: data,
+            label: {
+                normal: {
+                    show: true
+                }
+            },
+            itemStyle: {
+                emphasis: {
+                    shadowBlur: 10,
+                    shadowColor: "rgba(0, 0, 0, 0.5)"
+                }
+            }
+        }]
+    };
     var ECHARTS_BAR_OPTIONS = {
         tooltip: {
             trigger: "axis"
@@ -66,6 +106,7 @@ $(document).ready(function () {
     };
     $.extend(true, ECHARTS_BAR_OPTIONS, ECHARTS_COMMON_OPTIONS);
     var barChart = echarts.init(document.getElementById("barChart"), theme);
+    var heatmapChart = echarts.init(document.getElementById("heatmapChart"), theme);
 
     var makeAjaxCall = true;
     $("#btnUpdateChart").click(function () {
@@ -89,29 +130,28 @@ $(document).ready(function () {
                 return;
             }
 
-            if (prefix.startsWith('average')) {
-                var barOptions = {
-                    legend: {}
-                };
-                $.extend(barOptions, ECHARTS_BAR_OPTIONS);
-                var serieProto = barOptions.series[0];
-                serieProto.type = "line";
-                barOptions.series = [];
-
-                result.answer.forEach(function (line) {
-                    var serieObj = $.extend({}, serieProto);
-                    serieObj.name = line.group;
-                    $.each(line.opPeriods, function (index, obj) {
-                        serieObj.name = line.group + " - " + obj.name;
-                        serieObj.data = obj.values;
+            if (prefix.startsWith("average")) {
+                var charts = [barChart, heatmapChart];
+                result.answer.forEach(function (table, i) {
+                    var heatmapOptions = {};
+                    $.extend(heatmapOptions, ECHARTS_HEATMAP_OPTIONS);
+                    heatmapOptions.title.text = table.group;
+                    var data = [];
+                    var yLabels = [];
+                    $.each(table.opPeriods, function (j, obj) {
+                        yLabels.push(obj.name);
+                        data.push([j, i, obj.values]);
                     });
-                    barOptions.series.push(serieObj);
+                    heatmapOptions.series[0].data = data;
+                    heatmapOptions.yAxis.data = yLabels;
+                    heatmapOptions.xAxis.data = table.row;
+
+                    charts[i].clear();
+                    charts[i].setOption(heatmapOptions, {
+                        notMerge: true
+                    });
                 });
 
-                barChart.clear();
-                barChart.setOption(barOptions, {
-                    notMerge: true
-                });
                 return;
             }
 
