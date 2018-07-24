@@ -90,9 +90,12 @@ $(document).ready(function () {
             }
 
             if (prefix.startsWith('average')) {
-                var barOptions = {};
+                var barOptions = {
+                    legend: {}
+                };
                 $.extend(barOptions, ECHARTS_BAR_OPTIONS);
                 var serieProto = barOptions.series[0];
+                serieProto.type = "line";
                 barOptions.series = [];
 
                 result.answer.forEach(function (line) {
