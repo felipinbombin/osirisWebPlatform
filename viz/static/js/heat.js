@@ -39,7 +39,7 @@ $(document).ready(function () {
         },
         xAxis: {
             type: "category",
-            data: hours,
+            data: [],
             splitArea: {
                 show: true
             },
@@ -47,14 +47,14 @@ $(document).ready(function () {
         },
         yAxis: {
             type: "category",
-            data: days,
+            data: [],
             splitArea: {
                 show: true
             }
         },
         series: [{
             type: "heatmap",
-            data: data,
+            data: [],
             label: {
                 normal: {
                     show: true
