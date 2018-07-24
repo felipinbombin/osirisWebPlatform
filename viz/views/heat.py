@@ -60,7 +60,7 @@ class ThermalModelVizData(View):
         translated_prefix = ProcessThermalData.dictionary_group[prefix]
         groups = []
 
-        if prefix.start_with('average'):
+        if prefix.startswith('average'):
             answer = HeatModelTableAnswer.objects.filter(execution=execution_obj, attributeName=translated_prefix). \
                 values_list('group', 'operationPeriod__name', 'metroStation__name', 'value'). \
                 order_by('group', 'operationPeriod', 'metroStation')
