@@ -6,6 +6,8 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.utils.translation import ugettext as _
 
+from collections import OrderedDict
+
 from itertools import groupby
 
 from scene.models import Scene
@@ -65,14 +67,24 @@ class ThermalModelVizData(View):
                 values_list('group', 'operationPeriod__name', 'metroStation__name', 'value'). \
                 order_by('group', 'operationPeriod', 'metroStation')
 
+            metro_stations = OrderedDict()
             for key, group in groupby(answer, lambda row: row[0]):
                 # group by key
                 group_element = {
                     "group": key,
                     "opPeriods": []
                 }
-                for key2, value in groupby(group, lambda row: row[1]):
-                    group_element["opPeriods"].append(value)
+                for key2, rows in groupby(group, lambda row: row[1]):
+                    values = []
+                    for data in rows:
+                        metro_stations[data[2]] = 1
+                        values.append(data[3])
+                    group_element["opPeriods"].append({
+                        'name': key2,
+                        'values': values,
+                    })
+
+                group_element['row'] = list(metro_stations.keys())
                 groups.append(group_element)
 
         else:
