@@ -14,7 +14,7 @@ from scene.statusResponse import Status
 from cmmmodel.models import ModelExecutionHistory, CMMModel
 from cmmmodel.transform.processThermalData import ProcessThermalData
 
-from viz.models import ModelAnswer
+from viz.models import ModelAnswer, HeatModelTableAnswer
 
 
 class ThermalModelViz(View):
@@ -57,23 +57,40 @@ class ThermalModelVizData(View):
 
     def get_model_data(self, execution_obj, prefix):
         """ get data have gotten from execution instance """
-
-        prefix = ProcessThermalData.dictionary_group[prefix]
-        answer = ModelAnswer.objects.prefetch_related(). \
-            filter(execution=execution_obj, attributeName__startswith=prefix).values_list("attributeName", "value"). \
-            order_by("attributeName", "order")
-
+        translated_prefix = ProcessThermalData.dictionary_group[prefix]
         groups = []
-        for key, group in groupby(answer, lambda row: "{}".format(row[0].split("_")[0])):
-            # group by key
-            group_element = {
-                "prefix": key,
-                "attributes": {}
-            }
-            for key2, value in group:
-                code = key2.split("_")[1]
-                group_element["attributes"][_(code)] = value
-            groups.append(group_element)
+
+        if prefix.start_with('average'):
+            answer = HeatModelTableAnswer.objects.filter(execution=execution_obj, attributeName=translated_prefix). \
+                values_list('group', 'operationPeriod__name', 'metroStation__name', 'value'). \
+                order_by('group', 'operationPeriod', 'metroStation')
+
+            for key, group in groupby(answer, lambda row: row[0]):
+                # group by key
+                group_element = {
+                    "group": key,
+                    "opPeriods": []
+                }
+                for key2, value in groupby(group, lambda row: row[1]):
+                    group_element["opPeriods"].append(value)
+                groups.append(group_element)
+
+        else:
+            answer = ModelAnswer.objects. \
+                filter(execution=execution_obj, attributeName__startswith=translated_prefix). \
+                values_list("attributeName", "value"). \
+                order_by("attributeName", "order")
+
+            for key, group in groupby(answer, lambda row: "{}".format(row[0].split("_")[0])):
+                # group by key
+                group_element = {
+                    "prefix": key,
+                    "attributes": {}
+                }
+                for key2, value in group:
+                    code = key2.split("_")[1]
+                    group_element["attributes"][_(code)] = value
+                groups.append(group_element)
 
         return groups
 

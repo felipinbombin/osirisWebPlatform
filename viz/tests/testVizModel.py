@@ -338,20 +338,21 @@ class ThermalModelVizTest(TestCase):
         # simulate execution finished well
         ModelExecutionHistory.objects.update(status=ModelExecutionHistory.OK)
 
-        params = {
-            "prefix": "totalConsumption",
-        }
+        for prefix in ['heatAbsorvedByTheGroundOnTheStations', 'averageAbsolutelyHumidityDuringTheDay']:
+            params = {
+                "prefix": prefix,
+            }
 
-        response = self.test_helper.make_get_request(url, params, expected_response=None)
-        content = json.loads(response.content.decode("utf-8"))
+            response = self.test_helper.make_get_request(url, params, expected_response=None)
+            content = json.loads(response.content.decode("utf-8"))
 
-        self.assertEqual(len(content["answer"]), 1)
-        for line in content["answer"]:
-            self.assertIn("prefix", line.keys())
-            self.assertIn(ProcessEnergyData.dictionary_detail["recoveredEnergy"], line["attributes"])
-            self.assertIn(ProcessEnergyData.dictionary_detail["substations"], line["attributes"])
-            self.assertIn(ProcessEnergyData.dictionary_detail["tracks"], line["attributes"])
-            self.assertIn(ProcessEnergyData.dictionary_detail["trains"], line["attributes"])
+            self.assertEqual(len(content["answer"]), 1)
+            for line in content["answer"]:
+                self.assertIn("prefix", line.keys())
+                self.assertIn(ProcessEnergyData.dictionary_detail["recoveredEnergy"], line["attributes"])
+                self.assertIn(ProcessEnergyData.dictionary_detail["substations"], line["attributes"])
+                self.assertIn(ProcessEnergyData.dictionary_detail["tracks"], line["attributes"])
+                self.assertIn(ProcessEnergyData.dictionary_detail["trains"], line["attributes"])
 
 
 class JavascriptModelVizTest(StaticLiveServerTestCase):

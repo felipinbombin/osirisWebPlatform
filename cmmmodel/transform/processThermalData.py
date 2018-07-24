@@ -17,7 +17,7 @@ import numpy as np
 
 class ProcessThermalData(ProcessData):
     dictionary_group = {
-        "heatAbsorvedByTheGroundOnTheStations": _("Heat absorved by the ground on the stations"),
+        "heatAbsorbedByTheGroundOnTheStations": _("Heat absorbed by the ground on the stations"),
         "heatLossesFromTraction": _("Heat losses from traction"),
         "heatLossesFromPassengersOnStations": _("Heat losses from passengers on stations"),
         "heatLossesOnStations": _("Heat losses on stations"),
@@ -36,7 +36,7 @@ class ProcessThermalData(ProcessData):
         for line_index, line_obj in enumerate(line_objs):
             station_obj_list = line_obj.metrostation_set.order_by('id').all()
             heat_metrics = [
-                (self.dictionary_group["heatAbsorvedByTheGroundOnTheStations"],
+                (self.dictionary_group["heatAbsorbedByTheGroundOnTheStations"],
                  self.get_heat_absorved_by_the_ground_on_the_stations(line_index, data)),
                 (self.dictionary_group["heatLossesFromTraction"], self.get_heat_losses_from_traction(line_index, data)),
                 (self.dictionary_group["heatLossesFromPassengersOnStations"],
