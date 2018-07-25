@@ -65,8 +65,10 @@ $(document).ready(function () {
                 }
             },
             itemStyle: {
-                borderWidth: 1,
-                borderColor: "black",
+                normal: {
+                    borderWidth: 1,
+                    borderColor: "black"
+                },
                 emphasis: {
                     shadowBlur: 10,
                     shadowColor: "rgba(0, 0, 0, 0.5)"
