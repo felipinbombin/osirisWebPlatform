@@ -87,23 +87,19 @@ class ThermalModelVizData(View):
 
                 group_element['row'] = list(metro_stations.keys())
                 groups.append(group_element)
-
         else:
             answer = ModelAnswer.objects. \
-                filter(execution=execution_obj, attributeName__startswith=translated_prefix). \
-                values_list("attributeName", "value"). \
-                order_by("attributeName", "order")
+                filter(execution=execution_obj, attributeName=translated_prefix).values_list("order", "value"). \
+                order_by("order")
 
-            for key, group in groupby(answer, lambda row: "{}".format(row[0].split("_")[0])):
-                # group by key
-                group_element = {
-                    "prefix": key,
-                    "attributes": {}
-                }
-                for key2, value in group:
-                    code = key2.split("_")[1]
-                    group_element["attributes"][_(code)] = value
-                groups.append(group_element)
+            group_element = {
+                "x": [],
+                "y": []
+            }
+            for record in answer:
+                group_element["x"].append(record[0])
+                group_element["y"].append(record[1])
+            groups.append(group_element)
 
         return groups
 
