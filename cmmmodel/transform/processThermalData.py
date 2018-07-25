@@ -80,7 +80,7 @@ class ProcessThermalData(ProcessData):
         excel_helper = ExcelHelper(workbook)
 
         line_objs = MetroLine.objects.prefetch_related('metrostation_set').filter(scene=self.scene_obj).order_by("id")
-        for line_obj in line_objs:
+        for line_number, line_obj in enumerate(line_objs):
             worksheet_name = line_obj.name
             worksheet = workbook.add_worksheet(worksheet_name)
 
@@ -90,32 +90,49 @@ class ProcessThermalData(ProcessData):
             current_row = first_row_index
             # header
             corner = (current_row, first_column_index)
-            return True
-            excel_helper.make_title_cell(worksheet, corner, description, width=2)
+
+            description = 'Description'
+            excel_helper.make_title_cell(worksheet, corner, description, width=0)
             current_row += 2
 
-            line_number = MetroLine.objects.filter(scene=self.scene_obj).count()
-            consumptions = [
-                self.get_heat_absorved_by_the_ground_on_the_stations(line_number, data),
-                self.get_train_consumption(line_number, data),
-                self.get_track_consumption(line_number, data),
-                self.get_station_consumption(line_number, data),
-                self.get_depot_consumption(line_number, data)
+            losses = [
+                ("Position [m]", "Energy [kWh]", self.dictionary_group["heatAbsorbedByTheGroundOnTheStations"],
+                 self.get_heat_absorved_by_the_ground_on_the_stations(line_number, data)),
+                ("Position [m]", "Energy [kWh]", self.dictionary_group["heatLossesFromTraction"],
+                 self.get_heat_losses_from_traction(line_number, data)),
+                ("Station", "Energy [kWh]", self.dictionary_group["heatLossesFromPassengersOnStations"],
+                 self.get_heat_losses_from_passengers_on_stations(line_number, data)),
+                ("Station", "Energy [kWh]", self.dictionary_group["heatLossesOnStations"],
+                 self.get_heat_losses_on_stations(line_number, data))
             ]
 
-            titles = [
-                self.dictionary_group["totalConsumption"],
-                self.dictionary_group["trainConsumption"],
-                self.dictionary_group["trackConsumption"],
-                self.dictionary_group["stationConsumption"],
-                self.dictionary_group["depotConsumption"]
+            tables = [
+                ("", "", self.dictionary_group["averageTemperatureDuringTheDay"],
+                 self.get_average_temperature_during_the_day(line_number, data)),
+                ("", "", self.dictionary_group["averageAbsolutelyHumidityDuringTheDay"],
+                 self.get_average_absolutely_humidity_during_the_day(line_number, data)),
+                ("", "", self.dictionary_group["averageRelativeHumidityDuringTheDay"],
+                 self.get_average_relative_humidity_during_the_day(line_number, data))
             ]
 
-            for title, (names, values) in zip(titles, consumptions):
-
-                excel_helper.make_title_cell(worksheet, (current_row, 0), title, width=2)
+            for x_label, y_label, name, pair in losses:
+                excel_helper.make_title_cell(worksheet, (current_row, 0), name, width=0)
                 current_row += 1
+                excel_helper.make_title_cell(worksheet, (current_row, 0), x_label, width=0)
+                excel_helper.make_title_cell(worksheet, (current_row + 1, 0), y_label, width=0)
+                current_column = 1
 
+                for x_value, y_value in zip(*pair):
+                    worksheet.write(current_row, current_column, x_value)
+                    worksheet.write(current_row + 1, current_column, y_value)
+                    current_column += 1
+
+                current_row += 3
+
+            """
+            for title, (names, values) in zip(losses_titles, losses):
+                print(names, values)
+                return ""
                 for current_column, label in enumerate([item, unit, percentage]):
                     corner = (current_row, current_column)
                     excel_helper.make_title_cell(worksheet, corner, label)
@@ -137,7 +154,7 @@ class ProcessThermalData(ProcessData):
                     current_row += 1
 
                 current_row += 1
-
+            """
         workbook.close()
         now = timezone.now().replace(microsecond=0)
         self.execution_obj.timestampFile = now
