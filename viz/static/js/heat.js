@@ -73,7 +73,7 @@ $(document).ready(function () {
             }
         }]
     };
-    var ECHARTS_BAR_OPTIONS = {
+    var ECHARTS_LINE_OPTIONS = {
         tooltip: {
             trigger: "axis"
         },
@@ -97,7 +97,7 @@ $(document).ready(function () {
             data: []
         }],
         series: [{
-            type: "bar",
+            type: "line",
             data: [],
             yAxisIndex: 0,
             smooth: true,
@@ -109,7 +109,7 @@ $(document).ready(function () {
             }
         }]
     };
-    $.extend(true, ECHARTS_BAR_OPTIONS, ECHARTS_COMMON_OPTIONS);
+    $.extend(true, ECHARTS_LINE_OPTIONS, ECHARTS_COMMON_OPTIONS);
     $.extend(true, ECHARTS_HEATMAP_OPTIONS, ECHARTS_COMMON_OPTIONS);
     var barChart = echarts.init(document.getElementById("barChart"), theme);
     var heatmapChart = echarts.init(document.getElementById("heatmapChart"), theme);
@@ -173,7 +173,7 @@ $(document).ready(function () {
             });
 
             var barOptions = {};
-            $.extend(barOptions, ECHARTS_BAR_OPTIONS);
+            $.extend(barOptions, ECHARTS_LINE_OPTIONS);
             barOptions.series[0].data = data.map(function (el) {
                 return el.value;
             });

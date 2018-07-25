@@ -89,7 +89,8 @@ class ThermalModelVizData(View):
                 groups.append(group_element)
         else:
             answer = ModelAnswer.objects. \
-                filter(execution=execution_obj, attributeName=translated_prefix).values_list("order", "value"). \
+                filter(execution=execution_obj, attributeName=translated_prefix, metroLine_id=line_id). \
+                values_list("order", "value"). \
                 order_by("order")
 
             group_element = {
