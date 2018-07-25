@@ -156,6 +156,7 @@ $(document).ready(function () {
                     heatmapOptions.yAxis.data = yLabels;
                     heatmapOptions.xAxis.data = table.row;
 
+                    $("#heatmapChart").show();
                     charts[i].clear();
                     charts[i].setOption(heatmapOptions, {
                         notMerge: true
@@ -171,7 +172,7 @@ $(document).ready(function () {
                     lineOptions.xAxis[i].data = line.x;
                 });
 
-                heatmapChart.dispose();
+                $("#heatmapChart").hide();
                 lineChart.clear();
                 lineChart.setOption(lineOptions, {
                     notMerge: true
