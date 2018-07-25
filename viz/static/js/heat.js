@@ -27,7 +27,7 @@ $(document).ready(function () {
             left: "10%",
             right: "5%",
             bottom: 75,
-            top: 30
+            top: 70
         }
     };
     var ECHARTS_HEATMAP_OPTIONS = {
