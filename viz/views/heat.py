@@ -57,14 +57,14 @@ class ThermalModelViz(View):
 class ThermalModelVizData(View):
     """ data for charts  """
 
-    def get_model_data(self, execution_obj, prefix, line_name):
+    def get_model_data(self, execution_obj, prefix, line_id):
         """ get data have gotten from execution instance """
         translated_prefix = ProcessThermalData.dictionary_group[prefix]
         groups = []
 
         if prefix.startswith('average'):
             answer = HeatModelTableAnswer.objects.filter(execution=execution_obj, attributeName=translated_prefix,
-                                                         metroStation__metroLine__name=line_name). \
+                                                         metroStation__metroLine_id=line_id). \
                 values_list('group', 'operationPeriod__name', 'metroStation__name', 'value'). \
                 order_by('group', 'operationPeriod', 'metroStation')
 
@@ -117,7 +117,7 @@ class ThermalModelVizData(View):
 
         # attributes to retrieve
         prefix = request.GET.get("prefix", "")
-        line_name = request.GET.get("lineName", "")
+        line_id = request.GET.get("lineId", "")
 
         scene_id = int(scene_id)
         execution_obj = ModelExecutionHistory.objects.filter(scene_id=scene_id, model_id=CMMModel.THERMAL_MODEL_ID). \
@@ -129,6 +129,6 @@ class ThermalModelVizData(View):
         elif execution_obj.status != ModelExecutionHistory.OK:
             Status.getJsonStatus(Status.LAST_MODEL_FINISHED_BADLY_ERROR, response)
         else:
-            response["answer"] = self.get_model_data(execution_obj, prefix, line_name)
+            response["answer"] = self.get_model_data(execution_obj, prefix, line_id)
 
         return JsonResponse(response, safe=False)
