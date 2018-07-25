@@ -50,6 +50,7 @@ $(document).ready(function () {
         yAxis: {
             type: "category",
             data: [],
+            inverse: true,
             splitArea: {
                 show: true
             }
