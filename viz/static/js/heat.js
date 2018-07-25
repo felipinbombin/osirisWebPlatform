@@ -171,6 +171,7 @@ $(document).ready(function () {
                     lineOptions.xAxis[i].data = line.x;
                 });
 
+                heatmapChart.clear();
                 lineChart.clear();
                 lineChart.setOption(lineOptions, {
                     notMerge: true
