@@ -111,7 +111,7 @@ $(document).ready(function () {
     };
     $.extend(true, ECHARTS_LINE_OPTIONS, ECHARTS_COMMON_OPTIONS);
     $.extend(true, ECHARTS_HEATMAP_OPTIONS, ECHARTS_COMMON_OPTIONS);
-    var barChart = echarts.init(document.getElementById("barChart"), theme);
+    var lineChart = echarts.init(document.getElementById("barChart"), theme);
     var heatmapChart = echarts.init(document.getElementById("heatmapChart"), theme);
 
     var makeAjaxCall = true;
@@ -139,7 +139,7 @@ $(document).ready(function () {
             }
 
             if (prefix.startsWith("average")) {
-                var charts = [barChart, heatmapChart];
+                var charts = [lineChart, heatmapChart];
                 result.answer.forEach(function (table, i) {
                     var heatmapOptions = {};
                     $.extend(heatmapOptions, ECHARTS_HEATMAP_OPTIONS);
@@ -161,39 +161,30 @@ $(document).ready(function () {
                         notMerge: true
                     });
                 });
+            } else {
+                // it is a line chart
+                var lineOptions = {};
+                $.extend(lineOptions, ECHARTS_LINE_OPTIONS);
 
-                return;
-            }
-
-            var data = [];
-            result.answer.forEach(function (group) {
-                $.each(group.attributes, function (key, attr) {
-                    data.push({value: attr, name: key});
+                result.answer.forEach(function (line, i) {
+                    lineOptions.series[i].data = line.x;
+                    lineOptions.xAxis[i].data = line.y;
                 });
-            });
 
-            var barOptions = {};
-            $.extend(barOptions, ECHARTS_LINE_OPTIONS);
-            barOptions.series[0].data = data.map(function (el) {
-                return el.value;
-            });
-            barOptions.xAxis[0].data = data.map(function (el) {
-                return el.name;
-            });
-
-            barChart.clear();
-            barChart.setOption(barOptions, {
-                notMerge: true
-            });
+                lineChart.clear();
+                lineChart.setOption(lineOptions, {
+                    notMerge: true
+                });
+            }
         }).always(function () {
             makeAjaxCall = true;
             button.html(previousMessage);
         });
     });
     $(window).resize(function () {
-        barChart.resize();
+        lineChart.resize();
     });
     $("#menu_toggle").click(function () {
-        barChart.resize();
+        lineChart.resize();
     });
 });
