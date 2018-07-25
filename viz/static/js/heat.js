@@ -3,6 +3,7 @@ $(document).ready(function () {
 
     // selectors
     var SELECTED_CHART = $("#chartFilter");
+    var SELECTED_LINE = $("#lineFilter");
 
     var PATH_NAME = window.location.pathname.split("/");
     var SCENE_ID = parseInt(PATH_NAME[PATH_NAME.length - 1]);
@@ -105,6 +106,7 @@ $(document).ready(function () {
         }]
     };
     $.extend(true, ECHARTS_BAR_OPTIONS, ECHARTS_COMMON_OPTIONS);
+    $.extend(true, ECHARTS_HEATMAP_OPTIONS, ECHARTS_COMMON_OPTIONS);
     var barChart = echarts.init(document.getElementById("barChart"), theme);
     var heatmapChart = echarts.init(document.getElementById("heatmapChart"), theme);
 
@@ -112,8 +114,10 @@ $(document).ready(function () {
     $("#btnUpdateChart").click(function () {
         console.log("update chart");
         var prefix = SELECTED_CHART.val();
+        var lineName = SELECTED_LINE.val();
         var params = {
-            prefix: prefix
+            prefix: prefix,
+            lineName: lineName
         };
 
         if (makeAjaxCall) {
