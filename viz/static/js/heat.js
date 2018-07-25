@@ -48,6 +48,7 @@ $(document).ready(function () {
             position: "top"
         },
         yAxis: {
+            name: "Horario de operación",
             type: "category",
             data: [],
             inverse: true,
