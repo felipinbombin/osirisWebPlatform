@@ -114,10 +114,10 @@ $(document).ready(function () {
     $("#btnUpdateChart").click(function () {
         console.log("update chart");
         var prefix = SELECTED_CHART.val();
-        var lineName = SELECTED_LINE.val();
+        var lineId = SELECTED_LINE.val();
         var params = {
             prefix: prefix,
-            lineName: lineName
+            lineId: lineId
         };
 
         if (makeAjaxCall) {
