@@ -167,8 +167,8 @@ $(document).ready(function () {
                 $.extend(lineOptions, ECHARTS_LINE_OPTIONS);
 
                 result.answer.forEach(function (line, i) {
-                    lineOptions.series[i].data = line.x;
-                    lineOptions.xAxis[i].data = line.y;
+                    lineOptions.series[i].data = line.y;
+                    lineOptions.xAxis[i].data = line.x;
                 });
 
                 lineChart.clear();
