@@ -141,7 +141,7 @@ $(document).ready(function () {
                     $.each(table.opPeriods, function (j, obj) {
                         yLabels.push(obj.name);
                         obj.values.forEach(function (value, k) {
-                            data.push([k, j, value]);
+                            data.push([k, j, value.toFixed(2)]);
                         });
                     });
                     heatmapOptions.series[0].data = data;
