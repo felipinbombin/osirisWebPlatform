@@ -25,6 +25,8 @@ class ProcessThermalData(ProcessData):
         "averageAbsolutelyHumidityDuringTheDay": _("Average absolutely humidity during the day"),
         "averageRelativeHumidityDuringTheDay": _("Average relative humidity during the day"),
     }
+    PLATFORM_LEVEL_LABEL = 'Platform level'
+    SECOND_LEVEL_LABEL = 'Second level'
 
     def __init__(self, execution_obj):
         super(ProcessThermalData, self).__init__(CMMModel.THERMAL_MODEL_ID, execution_obj)
@@ -62,8 +64,8 @@ class ProcessThermalData(ProcessData):
                     for station_index, station_obj in enumerate(station_obj_list):
                         platform_level_value = platform_level[op_index][station_index]
                         second_level_value = second_level[op_index][station_index]
-                        for group, value in [('platform_level', platform_level_value),
-                                             ('second_level', second_level_value)]:
+                        for group, value in [(self.PLATFORM_LEVEL_LABEL, platform_level_value),
+                                             (self.SECOND_LEVEL_LABEL, second_level_value)]:
                             HeatModelTableAnswer.objects.create(execution=self.execution_obj, metroStation=station_obj,
                                                                 operationPeriod=op_period_obj, attributeName=name,
                                                                 group=group, value=value)

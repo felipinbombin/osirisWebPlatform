@@ -119,14 +119,18 @@ msgid "No saving capacity losses"
 msgstr ""
 
 #: .\cmmmodel\transform\processThermalData.py:20
-msgid "Heat absorved by the ground on the stations"
-msgstr "Calor absorvido por el suelo en estaciones"
+msgid "Heat absorbed by the ground on the stations"
+msgstr "Calor absorbido por el suelo en estaciones"
 
 #: .\cmmmodel\transform\processThermalData.py:21
 msgid "Heat losses from passengers on stations"
 msgstr "Calor perdido de pasajeros en estaciones"
 
 #: .\cmmmodel\transform\processThermalData.py:22
+msgid "Heat losses from traction"
+msgstr "Calor perdido por fricción"
+
+#: .\cmmmodel\transform\processThermalData.py:21
 msgid "Heat losses on stations"
 msgstr "Calor perdido en estaciones"
 
@@ -153,3 +157,9 @@ msgstr "Calor"
 #: .\cmmmodel\transform\processThermalData.py:76
 msgid "Description"
 msgstr "Descripción"
+
+msgid "Platform level"
+msgstr "Nivel plataforma"
+
+msgid "Second level"
+msgstr "Segundo nivel"

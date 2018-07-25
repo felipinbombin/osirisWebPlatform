@@ -72,7 +72,7 @@ class ThermalModelVizData(View):
             for key, group in groupby(answer, lambda row: row[0]):
                 # group by key
                 group_element = {
-                    "group": key,
+                    "group": _(key),
                     "opPeriods": []
                 }
                 for key2, rows in groupby(group, lambda row: row[1]):
