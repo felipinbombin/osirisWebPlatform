@@ -85,7 +85,7 @@ $(document).ready(function () {
             position: "left"
         }],
         xAxis: [{
-            //name: "Origen",
+            name: "Distancia (m)",
             type: "category",
             nameLocation: "middle",
             nameTextStyle: {
