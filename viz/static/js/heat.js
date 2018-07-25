@@ -26,7 +26,8 @@ $(document).ready(function () {
         grid: {
             left: "10%",
             right: "5%",
-            bottom: 75
+            bottom: 75,
+            top: 30
         }
     };
     var ECHARTS_HEATMAP_OPTIONS = {
