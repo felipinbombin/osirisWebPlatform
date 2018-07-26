@@ -16,9 +16,7 @@ $(document).ready(function () {
                 saveAsImage: {
                     show: true,
                     title: "Guardar imagen",
-                    name: function () {
-                        return SELECTED_CHART.val();
-                    }
+                    name: ""
                 }
                 //dataZoom: {yAxisIndex: false, title: {zoom: "zoom", back: "volver"}}
             },
@@ -160,6 +158,7 @@ $(document).ready(function () {
                     heatmapOptions.series[0].data = data;
                     heatmapOptions.yAxis.data = yLabels;
                     heatmapOptions.xAxis.data = table.row;
+                    heatmapOptions.toolbox.feature.saveAsImage.name = prefix;
 
                     $("#heatmapChart").show();
                     charts[i].clear();
@@ -171,6 +170,7 @@ $(document).ready(function () {
                 // it is a line chart
                 var lineOptions = {};
                 $.extend(lineOptions, ECHARTS_LINE_OPTIONS);
+                lineOptions.toolbox.feature.saveAsImage.name = prefix;
 
                 result.answer.forEach(function (line, i) {
                     lineOptions.series[i].data = line.y;
