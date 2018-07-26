@@ -17,6 +17,7 @@ class ModelExecutionHistoryAdmin(admin.ModelAdmin):
     fields = (('scene', 'model'), ('start', 'end'), 'status', ('jobNumber', 'externalId'), 'std_out', 'std_err', 'answer')
     list_display = ('get_username', 'scene', 'model', 'start', 'end', 'status', 'jobNumber', 'externalId')
     readonly_fields = ('scene', 'model', 'start', 'end', 'status', 'jobNumber', 'externalId')
+    list_per_page = 20
 
 
 admin.site.register(CMMModel, CMMModelAdmin)

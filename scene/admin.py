@@ -24,6 +24,7 @@ class SceneAdmin(admin.ModelAdmin):
     )
     list_filter = []
     list_display = ('name', 'timeCreation', 'status', 'currentStep')
+    list_per_page = 20
 
     def get_changelist(self, request, **kwargs):
         return SceneChangeList
