@@ -16,7 +16,9 @@ $(document).ready(function () {
                 saveAsImage: {
                     show: true,
                     title: "Guardar imagen",
-                    name: SELECTED_CHART.val()
+                    name: function () {
+                        return SELECTED_CHART.val();
+                    }
                 }
                 //dataZoom: {yAxisIndex: false, title: {zoom: "zoom", back: "volver"}}
             },
