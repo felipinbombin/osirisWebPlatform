@@ -164,12 +164,12 @@ $(document).ready(function () {
                 spinner.stop();
             });
         };
-        var makeAjax = true;
+        self.makeAjax = true;
         self.modelRun = function() {
-            if(!makeAjax) {
+            if(!self.makeAjax) {
                 return;
             }
-            makeAjax = false;
+            self.makeAjax = false;
             var model = this;
             var modelId = model.id();
             var nextModelIds = [];
@@ -193,7 +193,7 @@ $(document).ready(function () {
                 }
                 self.showRunModelDialog(false);
             }).always(function () {
-                makeAjax = false;
+                self.makeAjax = false;
                 spinner.stop();
             });
         };
