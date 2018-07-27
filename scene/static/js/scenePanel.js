@@ -75,7 +75,8 @@ $(document).ready(function () {
             var csrf = Cookies.get("csrftoken");
 
             // activate spinjs
-            spinner.spin(spinnerParentDOM);
+            var spinnerDOM = $("#stopModelDialog")[0];
+            spinner.spin(spinnerDOM);
             $.ajax({
                 url: DELETE_SCENE_URL,
                 type: "post",
@@ -184,7 +185,9 @@ $(document).ready(function () {
                 next_model_ids: nextModelIds
             };
             // activate spinjs
-            spinner.spin(spinnerParentDOM);
+            var spinnerDOM = $("#runModelDialog")[0];
+            spinner.spin(spinnerDOM);
+
             // run model
             $.post(RUN_MODEL_URL, data, function(response) {
                 showNotificationMessage(response.status);
