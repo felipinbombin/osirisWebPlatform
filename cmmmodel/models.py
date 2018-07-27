@@ -104,6 +104,10 @@ class ModelExecutionHistory(models.Model):
 
         return dictionary
 
+    class Meta:
+        verbose_name = 'Ejecución'
+        verbose_name_plural = 'Ejecuciones'
+
 
 class ModelExecutionQueue(models.Model):
     """  record history of models execution """
