@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.utils.translation import gettext, gettext_lazy as _
 
 from django.contrib import admin
-from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import Group, User
+from django.utils.translation import gettext_lazy as _
 
 # Register your models here.
 admin.site.unregister(Group)
@@ -28,5 +28,6 @@ class MyUserAdmin(UserAdmin):
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     list_filter = []
+
 
 admin.site.register(User, MyUserAdmin)
