@@ -154,7 +154,7 @@ $(document).ready(function () {
         };
         self.updateModelButtonState = function() {
             // activate spinjs
-            spinner.spin(spinnerParentDOM);
+            //spinner.spin(spinnerParentDOM);
             // retrieve model data
             var data = {
                 scene_id: SCENE_ID
@@ -162,7 +162,7 @@ $(document).ready(function () {
             $.get(MODEL_INFO_URL, data, function(response) {
                 self.updateButtonsView(response);
             }).always(function () {
-                spinner.stop();
+                //spinner.stop();
             });
         };
         self.makeAjax = true;
