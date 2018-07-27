@@ -139,7 +139,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # User url
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/admin/scene/scene/'
+LOGIN_REDIRECT_URL = '/useradmin/scene/scene/'
 
 # To storage excel files
 MEDIA_URL = '/media/'
