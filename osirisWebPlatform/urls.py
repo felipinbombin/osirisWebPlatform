@@ -22,12 +22,11 @@ from django.contrib.auth.decorators import login_required
 from django.conf.urls.static import static
 
 urlpatterns = [
+    url(r'^$', login_required(TemplateView.as_view(template_name="admin/base_site.html")), name="index"),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, name='logout'),
-    url(r'^$', login_required(TemplateView.as_view(template_name="admin/base_site.html")), name="index"),
     url(r'^admin/', include('scene.urls', namespace='scene')),
     url(r'^admin/', admin.site.urls),
-    url(r'^myadmin/', include('myadmin.urls')),
     url(r'^models/', include('cmmmodel.urls', namespace='cmmmodel')),
     url(r'^viz/', include('viz.urls', namespace='viz')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
