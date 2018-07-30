@@ -20,7 +20,7 @@
                     <tbody>
                     {% for scene in object_list %}
                         <tr>
-                            <td class="field-name"><a href="{% url "scene:panel" scene.id %}">{{ scene.name }}</a></td>
+                            <th><a href="{% url "scene:panel" scene.id %}">{{ scene.name }}</a></th>
                             <td>{{ scene.timeCreation }}</td>
                             <td>{{ scene.get_status_display }}</td>
                             <td>{{ scene.currentStep }}</td>
