@@ -6,7 +6,10 @@ from .views.UploadFile import UploadTopologicFile, UploadSystemicFile, UploadOpe
 from .views.DownloadFile import DownloadStepFile, DownloadStepTemplate
 from django.contrib.auth.decorators import login_required
 
+from scene.views.SceneList import SceneList
+
 urlpatterns = [
+    url(r'^scene/scene/$', login_required(SceneList.as_view()), name='sceneList'),
     url(r'^scene/panel/(?P<scene_id>[0-9]+)$',
         login_required(ScenePanel.as_view()), name='panel'),
     url(r'^scene/panel/data/(?P<scene_id>[0-9]+)$',

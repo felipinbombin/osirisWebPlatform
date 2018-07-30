@@ -1,0 +1,56 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Escenarios disponibles</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li>
+                        <a href="/admin/scene/scene/add/" class="addlink" style="color:#2A3F54">
+                            <i class="fa fa-plus fa-lg"></i> Añadir escenario</a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="x_content">
+                <table class="table table-striped">
+                    <thead><tr><th>Nombre</th><th>Fecha de creación</th><th>Estado</th><th>Paso actual</th></tr></thead>
+                    <tbody>
+                    {% for scene in object_list %}
+                        <tr>
+                            <td class="field-name"><a href="{% url "scene:panel" scene.id %}">{{ scene.name }}</a></td>
+                            <td>{{ scene.timeCreation }}</td>
+                            <td>{{ scene.get_status_display }}</td>
+                            <td>{{ scene.currentStep }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if is_paginated  %}
+                    <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                            <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><span>&laquo;</span></li>
+                        {% endif %}
+                        {% for i in page_obj.paginator.page_range %}
+                            {% if page_obj.number == i %}
+                                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                            {% else %}
+                                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><span>&raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
