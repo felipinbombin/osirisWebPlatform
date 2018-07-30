@@ -9,4 +9,4 @@ class SceneList(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Scene.objects.filter(user=self.request.user)
+        return Scene.objects.filter(user=self.request.user).order_by('-timeCreation')
