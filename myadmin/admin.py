@@ -28,6 +28,7 @@ class MyUserAdmin(UserAdmin):
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     list_filter = []
+    actions = None
 
 
 admin.site.register(User, MyUserAdmin)
